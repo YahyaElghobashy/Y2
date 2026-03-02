@@ -291,15 +291,28 @@ class TaskQueueClient:
             return int(tid[1])
         return 99
 
-    def get_eligible_tasks(self) -> list[dict]:
+    def get_eligible_tasks(self, executor: str = None) -> list[dict]:
         """
         Tasks that are pending AND have all dependencies completed.
         Returns sorted by Phase (from Task ID) → Priority → Task ID.
         This ensures Phase 1 tasks complete before Phase 7 tasks are started.
+
+        Args:
+            executor: Optional filter — "orchestrator" or "claude-code".
+                      If provided, only returns tasks assigned to that executor.
+                      Tasks with no executor value are treated as "orchestrator" (default).
         """
         completed = self.get_completed_task_ids()
         eligible = []
         for task in self.get_pending_tasks():
+            # Filter by executor if specified
+            if executor:
+                task_executor = str(task.get("Executor", "")).strip().lower()
+                if not task_executor:
+                    task_executor = "orchestrator"  # default
+                if task_executor != executor.lower():
+                    continue
+
             deps_raw = str(task.get("Dependencies", "")).strip()
             if deps_raw in ("", "—", "-", "none", "None"):
                 deps = []
@@ -495,10 +508,16 @@ def test_connection():
     print("📋 Tasks...")
     all_t = tq.get_all_tasks()
     print(f"   Total: {len(all_t)}")
-    eligible = tq.get_eligible_tasks()
-    print(f"   Eligible: {len(eligible)}")
-    if eligible:
-        print(f"   Next: {eligible[0]['Task ID']} — {eligible[0]['Name']}")
+    eligible_orch = tq.get_eligible_tasks(executor="orchestrator")
+    eligible_cc = tq.get_eligible_tasks(executor="claude-code")
+    eligible_all = tq.get_eligible_tasks()
+    print(f"   Eligible (all):          {len(eligible_all)}")
+    print(f"   Eligible (orchestrator): {len(eligible_orch)}")
+    print(f"   Eligible (claude-code):  {len(eligible_cc)}")
+    if eligible_orch:
+        print(f"   Next (orchestrator): {eligible_orch[0]['Task ID']} — {eligible_orch[0]['Name']}")
+    if eligible_cc:
+        print(f"   Next (claude-code):  {eligible_cc[0]['Task ID']} — {eligible_cc[0]['Name']}")
     print()
 
     # Write test

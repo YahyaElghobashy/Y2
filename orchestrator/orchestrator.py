@@ -45,6 +45,7 @@ DEFAULTS = {
     "breather_seconds": 30,
     "max_total_runtime_hours": 9,
     "max_consecutive_failures": 5,
+    "max_retries_per_task": 1,
     "builder_max_turns": 60,
     "auditor_max_turns": 30,
     "auto_push": True,
@@ -785,6 +786,7 @@ class Orchestrator:
         self.skipped = []
         self.total_commits = 0
         self.consecutive_failures = 0
+        self.retry_counts: dict[str, int] = {}  # task_id → attempts so far
 
         # Connect to sheets
         print()
@@ -828,6 +830,7 @@ class Orchestrator:
         print(f"   Task timeout:   {self.config['max_task_minutes']}m")
         print(f"   Run timeout:    {self.config['max_total_runtime_hours']}h")
         print(f"   Max failures:   {self.config['max_consecutive_failures']}")
+        print(f"   Max retries:    {self.config['max_retries_per_task']}")
         print()
 
     def is_safe_to_continue(self) -> bool:
@@ -847,8 +850,49 @@ class Orchestrator:
 
         return True
 
+    def _should_retry(self, task_id: str, failure_reason: str) -> bool:
+        """Check if a failed task should be retried. Returns True if retrying."""
+        max_retries = self.config.get("max_retries_per_task", 0)
+        attempts = self.retry_counts.get(task_id, 0)
+        if attempts < max_retries:
+            self.retry_counts[task_id] = attempts + 1
+            attempt_num = attempts + 1
+            print(f"  🔄 Retrying {task_id} (attempt {attempt_num + 1}/{max_retries + 1}): {failure_reason}")
+            self.tq.log_event(
+                "TASK_RETRY", task_id,
+                f"Retry {attempt_num}/{max_retries}: {failure_reason[:200]}",
+                "—", "—", "🔄"
+            )
+            # Breather before retry
+            breather = self.config.get("breather_seconds", 30)
+            if breather > 0:
+                print(f"  💨 Waiting {breather}s before retry...")
+                time.sleep(breather)
+            return True
+        return False
+
+    def _mark_failed(self, task_id: str, duration: str, output: str, event: str, event_detail: str):
+        """Mark a task as definitively failed (no more retries)."""
+        max_retries = self.config.get("max_retries_per_task", 0)
+        attempts = self.retry_counts.get(task_id, 0) + 1  # +1 for the current attempt
+        attempt_info = f" ({attempts}/{max_retries + 1} attempts)" if max_retries > 0 else ""
+        self.tq.update_task_result(
+            task_id, "failed",
+            duration=duration,
+            builder_output=f"{output}{attempt_info}",
+        )
+        self.tq.log_event(
+            event, task_id,
+            f"{event_detail}{attempt_info}",
+            duration, "—", "❌"
+        )
+        self.failed.append(task_id)
+        self.consecutive_failures += 1
+        self._surgical_revert(task_id)
+
     def process_task(self, task: dict):
-        """Full pipeline for one task: build → verify → commit → audit (non-blocking)."""
+        """Full pipeline for one task: build → verify → commit → audit (non-blocking).
+        Retries on failure up to max_retries_per_task times."""
         task_id = str(task["Task ID"]).strip()
         task_name = task["Name"]
         print(f"\n{'─' * 60}")
@@ -862,104 +906,73 @@ class Orchestrator:
 
         task_start = datetime.now()
 
-        # ── 0. Snapshot current state so we can do surgical reverts ──
-        try:
-            snapshot = subprocess.run(
-                ["git", "status", "--porcelain"],
-                cwd=self.repo_path, capture_output=True, text=True, timeout=10
-            )
-            pre_build_clean = not snapshot.stdout.strip()
-        except Exception:
-            pre_build_clean = True
-
         # ── 1. Mark as building ──
         self.tq.update_task_started(task_id)
         self.tq.log_event("TASK_START", task_id, f"Builder spawned: {task_name}", "—", "—", "🔨")
 
-        # ── 2. Run builder ──
-        prompt = build_task_prompt(task, self.repo_path)
-        builder_result = run_claude_code(
-            prompt=prompt,
-            repo_path=self.repo_path,
-            timeout_minutes=self.config["max_task_minutes"],
-            max_turns=self.config["builder_max_turns"],
-            allowed_tools=self.config["allowed_tools"],
-            label=f"BUILD {task_id}",
-        )
+        # ── 2. Run builder (with retry loop) ──
+        while True:
+            build_attempt_start = datetime.now()
+            prompt = build_task_prompt(task, self.repo_path)
+            builder_result = run_claude_code(
+                prompt=prompt,
+                repo_path=self.repo_path,
+                timeout_minutes=self.config["max_task_minutes"],
+                max_turns=self.config["builder_max_turns"],
+                allowed_tools=self.config["allowed_tools"],
+                label=f"BUILD {task_id}",
+            )
 
-        builder_duration = duration_str(task_start, datetime.now())
+            builder_duration = duration_str(task_start, datetime.now())
 
-        # Detect max-turns timeout (Claude exits 0 but prints error)
-        builder_stdout = builder_result.get("stdout", "")
-        if "Reached max turns" in builder_stdout:
-            builder_result["status"] = "max_turns"
+            # Detect max-turns timeout (Claude exits 0 but prints error)
+            builder_stdout = builder_result.get("stdout", "")
+            if "Reached max turns" in builder_stdout:
+                builder_result["status"] = "max_turns"
 
-        if builder_result["status"] != "complete":
-            # Builder failed — surgical revert only files this task touched
-            self.tq.update_task_result(
-                task_id, "failed",
-                duration=builder_duration,
-                builder_output=f"Builder {builder_result['status']}: {builder_result['stderr'][:300]}",
-            )
-            self.tq.log_event(
-                "TASK_FAILED", task_id,
-                f"Builder {builder_result['status']} after {builder_duration}",
-                builder_duration, "—", "❌"
-            )
-            self.failed.append(task_id)
-            self.consecutive_failures += 1
-            self._surgical_revert(task_id)
-            return
+            if builder_result["status"] not in ("complete",):
+                reason = f"Builder {builder_result['status']}"
+                self._surgical_revert(task_id)
+                if self._should_retry(task_id, reason):
+                    self.tq.update_task_started(task_id)  # reset status to building
+                    continue
+                self._mark_failed(
+                    task_id, builder_duration,
+                    f"Builder {builder_result['status']}: {builder_result['stderr'][:300]}",
+                    "TASK_FAILED",
+                    f"Builder {builder_result['status']} after {builder_duration}",
+                )
+                return
 
-        if builder_result["status"] == "max_turns":
-            print(f"  ❌ Builder reached max turns after {builder_duration}")
-            self.tq.update_task_result(
-                task_id, "failed",
-                duration=builder_duration,
-                builder_output=f"Builder reached max turns after {builder_duration}",
-            )
-            self.tq.log_event(
-                "TASK_FAILED", task_id,
-                f"Builder reached max turns after {builder_duration}",
-                builder_duration, "—", "❌"
-            )
-            self.failed.append(task_id)
-            self.consecutive_failures += 1
-            self._surgical_revert(task_id)
-            return
-            
-        # ── 3. Verify build passes ──
-        print(f"\n  🔨 Verifying build...")
-        try:
-            build_check = subprocess.run(
-                ["npm", "run", "build"],
-                cwd=self.repo_path,
-                capture_output=True, text=True, timeout=120,
-            )
-        except subprocess.TimeoutExpired:
-            build_check = type('obj', (object,), {'returncode': 1, 'stderr': 'Build timed out after 2min'})()
+            # ── 3. Verify build passes ──
+            print(f"\n  🔨 Verifying build...")
+            try:
+                build_check = subprocess.run(
+                    ["npm", "run", "build"],
+                    cwd=self.repo_path,
+                    capture_output=True, text=True, timeout=120,
+                )
+            except subprocess.TimeoutExpired:
+                build_check = type('obj', (object,), {'returncode': 1, 'stderr': 'Build timed out after 2min'})()
 
-        if build_check.returncode != 0:
-            # Build failed — surgical revert
-            print(f"  ❌ Build failed:")
-            stderr_tail = build_check.stderr[-400:] if build_check.stderr else "unknown error"
-            print(f"     {stderr_tail}")
-            self.tq.update_task_result(
-                task_id, "failed",
-                duration=builder_duration,
-                builder_output=f"Build failed: {stderr_tail}",
-            )
-            self.tq.log_event(
-                "BUILD_FAIL", task_id,
-                f"npm run build failed after {builder_duration}",
-                builder_duration, "—", "❌"
-            )
-            self.failed.append(task_id)
-            self.consecutive_failures += 1
-            self._surgical_revert(task_id)
-            return
+            if build_check.returncode != 0:
+                stderr_tail = build_check.stderr[-400:] if build_check.stderr else "unknown error"
+                print(f"  ❌ Build failed:")
+                print(f"     {stderr_tail}")
+                self._surgical_revert(task_id)
+                if self._should_retry(task_id, f"Build failed"):
+                    self.tq.update_task_started(task_id)  # reset status to building
+                    continue
+                self._mark_failed(
+                    task_id, builder_duration,
+                    f"Build failed: {stderr_tail}",
+                    "BUILD_FAIL",
+                    f"npm run build failed after {builder_duration}",
+                )
+                return
 
-        print(f"  ✅ Build passes")
+            print(f"  ✅ Build passes")
+            break  # Success — exit retry loop
 
         # ── 4. Commit (before audit — work is preserved no matter what) ──
         commit_hash = git_commit_and_push(
@@ -1139,6 +1152,12 @@ class Orchestrator:
             if not task:
                 print(f"❌ Task {self.single_task} not found in sheet")
                 return
+            # Warn if task is assigned to claude-code executor
+            task_executor = str(task.get("Executor", "")).strip().lower()
+            if task_executor == "claude-code":
+                print(f"⚠️  Task {self.single_task} is marked as 'claude-code' executor.")
+                print(f"   This task is meant for manual Claude Code CLI sessions.")
+                print(f"   Running it anyway since --task was explicitly specified.")
             self.process_task(task)
             self.generate_report()
             return
@@ -1147,7 +1166,7 @@ class Orchestrator:
         iteration = 0
         while self.is_safe_to_continue():
             iteration += 1
-            eligible = self.tq.get_eligible_tasks()
+            eligible = self.tq.get_eligible_tasks(executor="orchestrator")
 
             if not eligible:
                 pending = self.tq.get_pending_tasks()
