@@ -28,7 +28,7 @@ describe('updateSession', () => {
     mockGetUser.mockClear()
   })
 
-  it('returns a response object', async () => {
+  it('returns response and user', async () => {
     const { updateSession } = await import('@/lib/supabase/middleware')
     const mockRequest = {
       cookies: {
@@ -37,9 +37,12 @@ describe('updateSession', () => {
       },
     } as unknown as Parameters<typeof updateSession>[0]
 
-    const response = await updateSession(mockRequest)
-    expect(response).toBeDefined()
-    expect(response).toHaveProperty('cookies')
+    const result = await updateSession(mockRequest)
+    expect(result).toBeDefined()
+    expect(result).toHaveProperty('response')
+    expect(result).toHaveProperty('user')
+    expect(result.response).toHaveProperty('cookies')
+    expect(result.user).toBeNull()
   })
 
   it('calls supabase.auth.getUser() to refresh the session', async () => {
@@ -53,5 +56,21 @@ describe('updateSession', () => {
 
     await updateSession(mockRequest)
     expect(mockGetUser).toHaveBeenCalled()
+  })
+
+  it('returns user when authenticated', async () => {
+    const mockUser = { id: 'user-1', email: 'test@test.com' }
+    mockGetUser.mockResolvedValueOnce({ data: { user: mockUser }, error: null })
+
+    const { updateSession } = await import('@/lib/supabase/middleware')
+    const mockRequest = {
+      cookies: {
+        getAll: vi.fn(() => []),
+        set: vi.fn(),
+      },
+    } as unknown as Parameters<typeof updateSession>[0]
+
+    const result = await updateSession(mockRequest)
+    expect(result.user).toEqual(mockUser)
   })
 })

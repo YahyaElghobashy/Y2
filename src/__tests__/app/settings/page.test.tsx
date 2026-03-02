@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
-import SettingsPage from "@/app/settings/page"
+import SettingsPage from "@/app/(main)/settings/page"
 
 // Mock next/link
 vi.mock("next/link", () => ({

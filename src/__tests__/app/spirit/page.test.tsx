@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
-import SpiritPage from "@/app/spirit/page"
+import SpiritPage from "@/app/(main)/spirit/page"
 
 // Mock next/link
 vi.mock("next/link", () => ({

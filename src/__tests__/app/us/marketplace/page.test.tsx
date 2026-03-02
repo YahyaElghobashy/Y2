@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import fs from "fs"
 import path from "path"
-import MarketplacePage from "@/app/us/marketplace/page"
+import MarketplacePage from "@/app/(main)/us/marketplace/page"
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -145,7 +145,7 @@ describe("MarketplacePage", () => {
   it("does not contain hardcoded color hex values in component source", () => {
     const filePath = path.resolve(
       __dirname,
-      "../../../../app/us/marketplace/page.tsx"
+      "../../../../app/(main)/us/marketplace/page.tsx"
     )
     const source = fs.readFileSync(filePath, "utf-8")
 

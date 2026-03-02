@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next"
 import { Playfair_Display, DM_Sans, JetBrains_Mono } from "next/font/google"
-import { AppShell } from "@/components/shared/AppShell"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
 import "./globals.css"
 
@@ -53,9 +52,7 @@ export default function RootLayout({
       </head>
       <body className="text-text-primary font-body antialiased">
         <AuthProvider>
-          <AppShell>
-            {children}
-          </AppShell>
+          {children}
         </AuthProvider>
       </body>
     </html>

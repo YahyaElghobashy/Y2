@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
-import UsPage from "@/app/us/page"
+import UsPage from "@/app/(main)/us/page"
 
 vi.mock("next/link", () => ({
   default: ({
