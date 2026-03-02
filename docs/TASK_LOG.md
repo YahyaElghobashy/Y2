@@ -9,3 +9,4 @@
 | T102 | PageHeader | ✅ | — | — | Page identity header with back nav, right action slot, balanced layout |
 | T103 | PageTransition + FadeIn + StaggerList | ✅ | — | — | Motion language: 3 animation wrappers (page entrance, fade, stagger list) + barrel export. Respects prefers-reduced-motion. 14 tests passing. |
 | T104 | LoadingSkeleton | ✅ | — | — | 4 variants (card, list-item, header, full-page). CSS-only animate-pulse, warm bg-secondary tones, Server Component. 8 tests passing. |
+| T105 | EmptyState | ✅ | — | — | Reusable empty state shell with icon, title, subtitle, optional copper CTA (Link or button). FadeIn entrance animation. 9 tests passing. |
