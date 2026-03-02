@@ -61,7 +61,9 @@
 
 ## Health Module
 
-(none yet)
+| Component | Status | Path | Props |
+|---|---|---|---|
+| HealthPage | ✅ | `app/health/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Health", back to `/`) + EmptyState with Activity icon. Warm copy: "Your wellness, tracked". No interactivity. 6 tests passing. |
 
 ## Spiritual Module
 

@@ -13,3 +13,4 @@
 | T106 | QuickActionCard | ✅ | — | — | Module doorway card for home 2×2 grid. Icon circle + label + description. Framer Motion press/hover. Wrapped in next/link. 7 tests passing. |
 | T107 | AppShell | ✅ | — | — | Root layout shell. Warm cream bg, dvh viewport height, pb-24 content padding, renders BottomNav. Integrated into layout.tsx. 5 tests passing. |
 | T108 | Home Dashboard | ✅ | — | — | Home page: HomeGreeting (time-aware greeting + date), 2×2 QuickActionCard grid (Us/Health/Spirit/Ops), 2 WidgetSlots for future widgets. Wrapped in PageTransition. 16 tests passing (9 HomeGreeting + 7 page). |
+| T110 | Health Module Shell | ✅ | — | — | /health page shell. PageTransition + PageHeader + EmptyState with Activity icon. Warm copy "Your wellness, tracked". No interactivity, no data fetching. 6 tests passing. |

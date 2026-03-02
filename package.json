@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "screenshot": "bash scripts/visual-audit.sh",
+    "screenshot:route": "bash scripts/visual-audit.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

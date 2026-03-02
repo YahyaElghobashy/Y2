@@ -44,7 +44,7 @@ DEFAULTS = {
     "breather_seconds": 30,
     "max_total_runtime_hours": 9,
     "max_consecutive_failures": 5,
-    "builder_max_turns": 30,
+    "builder_max_turns": 0,
     "auditor_max_turns": 25,
     "auto_push": True,
     "run_build_check": True,
@@ -373,9 +373,11 @@ def run_claude_code(prompt: str, repo_path: str, timeout_minutes: int,
         "claude",
         "-p", prompt,
         "--allowedTools", allowed_tools,
-        "--max-turns", str(max_turns),
         "--output-format", output_format,
     ]
+    if max_turns > 0:
+        cmd.extend(["--max-turns", str(max_turns)])
+
     if json_schema:
         cmd.extend(["--json-schema", json_schema])
 
@@ -828,6 +830,11 @@ class Orchestrator:
 
         builder_duration = duration_str(task_start, datetime.now())
 
+        # Detect max-turns timeout (Claude exits 0 but prints error)
+        builder_stdout = builder_result.get("stdout", "")
+        if "Reached max turns" in builder_stdout:
+            builder_result["status"] = "max_turns"
+
         if builder_result["status"] != "complete":
             # Builder failed — surgical revert only files this task touched
             self.tq.update_task_result(
@@ -845,6 +852,23 @@ class Orchestrator:
             self._surgical_revert(task_id)
             return
 
+        if builder_result["status"] == "max_turns":
+            print(f"  ❌ Builder reached max turns after {builder_duration}")
+            self.tq.update_task_result(
+                task_id, "failed",
+                duration=builder_duration,
+                builder_output=f"Builder reached max turns after {builder_duration}",
+            )
+            self.tq.log_event(
+                "TASK_FAILED", task_id,
+                f"Builder reached max turns after {builder_duration}",
+                builder_duration, "—", "❌"
+            )
+            self.failed.append(task_id)
+            self.consecutive_failures += 1
+            self._surgical_revert(task_id)
+            return
+            
         # ── 3. Verify build passes ──
         print(f"\n  🔨 Verifying build...")
         try:
