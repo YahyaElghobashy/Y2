@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.env
+.env.local
+.env*.local
+token.json
+client_secret.json
+service_account.json
+*.pem
+.DS_Store
+orchestrator/token.json
+orchestrator/client_secret.json
+orchestrator/reports/*.json
+.venv/
