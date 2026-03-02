@@ -46,7 +46,9 @@
 
 ## Home Module
 
-(none yet)
+| Component | Status | Path | Props |
+|---|---|---|---|
+| QuickActionCard | ✅ | `components/home/QuickActionCard.tsx` | `icon: ReactNode, label: string, description: string, href: string, className?` — Module doorway card for 2×2 home grid. Warm icon circle (40px, accent-soft bg), bold label, truncated description. Framer Motion whileHover scale(1.02) + shadow deepen, whileTap scale(0.98). Wrapped in next/link. 7 tests passing. |
 
 ## Relationship Module
 

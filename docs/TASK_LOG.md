@@ -10,3 +10,4 @@
 | T103 | PageTransition + FadeIn + StaggerList | ✅ | — | — | Motion language: 3 animation wrappers (page entrance, fade, stagger list) + barrel export. Respects prefers-reduced-motion. 14 tests passing. |
 | T104 | LoadingSkeleton | ✅ | — | — | 4 variants (card, list-item, header, full-page). CSS-only animate-pulse, warm bg-secondary tones, Server Component. 8 tests passing. |
 | T105 | EmptyState | ✅ | — | — | Reusable empty state shell with icon, title, subtitle, optional copper CTA (Link or button). FadeIn entrance animation. 9 tests passing. |
+| T106 | QuickActionCard | ✅ | — | — | Module doorway card for home 2×2 grid. Icon circle + label + description. Framer Motion press/hover. Wrapped in next/link. 7 tests passing. |
