@@ -5,31 +5,28 @@ Create the `/us` page with a 4-tab relationship module (Notes, Coupons, CoYYns, 
 
 ---
 
-## Files to Create
+## Files to Create/Modify
 
-### 1. `src/components/relationship/RelationshipTabs.tsx`
-- **Type:** Client component (`"use client"`)
-- **Purpose:** Tab bar + tab content container with 4 tabs
-- **Dependencies:**
-  - `framer-motion` → `motion`, `AnimatePresence`
-  - `lucide-react` → `MessageCircle`, `Ticket`, `Coins`, `Bell`
-  - `@/components/shared/EmptyState`
-  - `@/lib/utils` → `cn`
-- **State:** `useState<"notes" | "coupons" | "coyyns" | "send">("notes")`
-
-### 2. `src/app/us/page.tsx`
-- **Type:** Default export page (still uses client components via imports)
-- **Purpose:** `/us` route page composing PageHeader + RelationshipTabs
-- **Dependencies:**
-  - `@/components/shared/PageHeader`
-  - `@/components/animations` → `PageTransition`
-  - `@/components/relationship/RelationshipTabs`
-
-### 3. `src/__tests__/app/us/page.test.tsx`
-- **Type:** Vitest + React Testing Library test
-- **Purpose:** Tests for UsPage + RelationshipTabs behavior
+| Action | Path | Purpose |
+|--------|------|---------|
+| Create | `src/components/relationship/RelationshipTabs.tsx` | Tab bar + content container with 4 tabs |
+| Create | `src/app/us/page.tsx` | /us route page shell |
+| Create | `src/__tests__/app/us/page.test.tsx` | Tests for UsPage + RelationshipTabs |
+| Modify | `docs/COMPONENT_REGISTRY.md` | Register RelationshipTabs |
+| Modify | `docs/TASK_LOG.md` | Log T109 completion |
 
 ---
+
+## Dependencies on Existing Components
+
+| Import | From | Usage |
+|--------|------|-------|
+| `PageHeader` | `@/components/shared/PageHeader` | "Us" title + back to "/" |
+| `PageTransition` | `@/components/animations` | Page entrance animation |
+| `EmptyState` | `@/components/shared/EmptyState` | Tab content empty states |
+| `cn` | `@/lib/utils` | Conditional class merging |
+| `motion, AnimatePresence` | `framer-motion` | Tab underline slide + content crossfade |
+| `MessageCircle, Ticket, Coins, Bell` | `lucide-react` | Tab icons (16px) + empty state icons (48px) |
 
 ## Design Tokens Referenced
 
@@ -56,10 +53,19 @@ UsPage
 ├── PageTransition (animation wrapper)
 │   ├── PageHeader (title="Us", backHref="/")
 │   └── RelationshipTabs
-│       ├── Tab Bar (4 tabs with layoutId indicator)
-│       └── Tab Content (AnimatePresence)
+│       ├── Tab Bar (4 buttons with flex-1, layoutId indicator)
+│       └── Tab Content (AnimatePresence mode="wait")
 │           └── EmptyState (per-tab content)
 ```
+
+### RelationshipTabs
+- `"use client"` — uses useState for active tab
+- State: `useState<"notes" | "coupons" | "coyyns" | "send">("notes")`
+- Tab bar: 4 equal-width `<button>` elements (flex-1), icon + label side-by-side (gap-1.5)
+- Icon 16px, label 13px DM Sans font-medium
+- Underline: `motion.div` with `layoutId="us-tab-indicator"`, 2px height, accent-primary bg
+- Content: `AnimatePresence mode="wait"` wrapping `motion.div` with key={activeTab}
+- Each tab shows EmptyState with tab-specific content
 
 ---
 
@@ -67,8 +73,8 @@ UsPage
 
 | Key | Icon | Label | EmptyState Title | EmptyState Subtitle | CTA |
 |---|---|---|---|---|---|
-| notes | MessageCircle | Notes | "No notes yet" | "Write your first love note" | "Write a note" |
-| coupons | Ticket | Coupons | "No coupons yet" | "Create one for your partner" | "Create coupon" |
+| notes | MessageCircle | Notes | "No notes yet" | "Write your first love note" | "Write a note" (no-op) |
+| coupons | Ticket | Coupons | "No coupons yet" | "Create one for your partner" | "Create coupon" (no-op) |
 | coyyns | Coins | CoYYns | "CoYYns wallet empty" | "Start earning together" | — |
 | send | Bell | Send | "Send a notification" | "Surprise your partner with a message" | — |
 
@@ -97,5 +103,7 @@ UsPage
 
 ## Potential Issues
 
-- `Ticket` icon from lucide-react — need to verify it exists. Fallback: `TicketIcon` or `Tag`.
-- The marketplace page at `src/app/us/marketplace/page.tsx` uses `"use client"` directly — the new `us/page.tsx` should NOT conflict with it since Next.js treats them as separate routes.
+- `Ticket` icon from lucide-react — verified it exists in lucide-react
+- The marketplace page at `src/app/us/marketplace/page.tsx` is a nested route — no conflict
+- No i18n directory exists yet — hardcoding English (consistent with all other pages)
+- No motion.ts utility file — defining EASE_OUT locally (consistent with EmptyState, PageTransition)

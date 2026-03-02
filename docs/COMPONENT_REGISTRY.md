@@ -83,3 +83,10 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | OpsPage | ✅ | `app/ops/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Ops", back to `/`) + EmptyState with CheckSquare icon. Practical copy: "Life, organized". No interactivity. 6 tests passing. |
+
+## Scripts / Infrastructure
+
+| Script | Status | Path | Notes |
+|---|---|---|---|
+| screenshot.mjs | ✅ | `scripts/screenshot.mjs` | Puppeteer headless screenshot capture. Args: url (default localhost:3000), output (default /tmp/y2-audit-home.png). Viewport 375×812 (iPhone). waitUntil networkidle0. Full-page screenshot. No npm dependency — uses npx cached puppeteer. |
+| visual-audit.sh | ✅ | `scripts/visual-audit.sh` | Bash wrapper: builds app if needed, starts next start on port 3099, waits for server (max 15s), calls screenshot.mjs, kills server. Args: $1=route (default /), $2=output path. 7 tests passing. |
