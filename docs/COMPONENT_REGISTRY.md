@@ -14,8 +14,10 @@
 
 | Component | Status | Path | Notes |
 |---|---|---|---|
-| Button | 📋 | `components/ui/button.tsx` | Will be installed via shadcn CLI |
-| Input | 📋 | `components/ui/input.tsx` | |
+| Button | ✅ | `components/ui/button.tsx` | Installed via shadcn CLI. CVA variants: default, destructive, outline, secondary, ghost, link. Sizes: default, xs, sm, lg, icon variants. |
+| Input | ✅ | `components/ui/input.tsx` | Installed via shadcn CLI. Standard input with focus ring, aria-invalid styling. |
+| Label | ✅ | `components/ui/label.tsx` | Installed via shadcn CLI. Radix Label primitive with disabled state handling. |
+| AlertDialog | ✅ | `components/ui/alert-dialog.tsx` | Installed via shadcn CLI. Radix AlertDialog with Header/Footer/Title/Description/Action/Cancel sub-components. |
 | Dialog | 📋 | `components/ui/dialog.tsx` | |
 | Card | 📋 | `components/ui/card.tsx` | |
 | Toggle | 📋 | `components/ui/toggle.tsx` | |
@@ -43,6 +45,8 @@
 | EmptyState | ✅ | `components/shared/EmptyState.tsx` | `icon: ReactNode, title: string, subtitle?: string, actionLabel?: string, actionHref?: string, onAction?: () => void, className?` — Centered empty placeholder with icon, title, optional subtitle, and optional copper CTA button (Link or button). Wrapped in FadeIn for soft entrance. min-h-[300px]. 9 tests passing. |
 | AppShell | ✅ | `components/shared/AppShell.tsx` | `children: ReactNode` — Root layout shell wrapping all pages. Warm cream background (`bg-bg-primary`), `min-h-[100dvh]` for mobile viewport, `pb-24` content padding to clear BottomNav. Renders BottomNav fixed at bottom. Integrated into `app/layout.tsx`. 5 tests passing. |
 | SettingsRow | ✅ | `components/shared/SettingsRow.tsx` | `icon: ReactNode, label: string, subtitle?: string, href?: string, onClick?: () => void, rightElement?: ReactNode, destructive?: boolean, showChevron?: boolean` — Reusable settings list row. Renders as Link (href), button (onClick), or div. Auto-shows ChevronRight for actionable rows. Destructive mode for red styling. Press feedback via active:bg-bg-secondary. 6 tests passing. |
+| ProfileSetupOverlay | ✅ | `components/shared/ProfileSetupOverlay.tsx` | `userId: string, initialName?: string, onComplete: () => void` — Full-screen overlay for first-time profile setup. RHF+Zod name validation (1-50 chars), avatar upload to Supabase Storage (5MB limit), Framer Motion scaleIn/fadeOut animations with AnimatePresence. Appears when profile.display_name is empty/"User". 13 tests passing. |
+| ProfileEditForm | ✅ | `components/shared/ProfileEditForm.tsx` | `profile: { id, display_name, email, avatar_url }, onSave: () => void, onCancel: () => void` — Inline profile editor with avatar upload, RHF+Zod name validation (1-40 chars), initials fallback. Framer Motion height:0→auto expand animation. Used in Settings page. 8 tests passing. |
 | LoadingPulse | 📋 | `components/shared/LoadingPulse.tsx` | — |
 | UserGreeting | 📋 | `components/shared/UserGreeting.tsx` | — |
 
@@ -64,25 +68,36 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| HealthPage | ✅ | `app/health/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Health", back to `/`) + EmptyState with Activity icon. Warm copy: "Your wellness, tracked". No interactivity. 6 tests passing. |
+| HealthPage | ✅ | `app/(main)/health/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Health", back to `/`) + EmptyState with Activity icon. Warm copy: "Your wellness, tracked". No interactivity. 6 tests passing. |
 
 ## Spiritual Module
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| SpiritPage | ✅ | `app/spirit/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Spirit", back to `/`) + EmptyState with Sun icon. Contemplative copy: "Your daily practice". No interactivity. 6 tests passing. |
+| SpiritPage | ✅ | `app/(main)/spirit/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Spirit", back to `/`) + EmptyState with Sun icon. Contemplative copy: "Your daily practice". No interactivity. 6 tests passing. |
 
 ## Settings Module
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| SettingsPage | ✅ | `app/settings/page.tsx` | Client Component. PageTransition + PageHeader ("Settings", back to `/`) + profile card (hardcoded Yahya/yahya@email.com) + 3 sections (Account, Appearance, About) using SettingsRow. Log Out button (red, console.log stub). "Made with love — for Yara" easter egg. 7 tests passing. |
+| SettingsPage | ✅ | `app/(main)/settings/page.tsx` | Client Component. Uses useAuth() for real profile data. PageTransition + PageHeader + profile card (avatar/name/email from auth). ProfileEditForm inline expand on "Profile" row click. AlertDialog confirmation on Log Out → signOut(). LoadingSkeleton when profile is null. 7 tests passing. |
 
 ## Ops Module
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| OpsPage | ✅ | `app/ops/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Ops", back to `/`) + EmptyState with CheckSquare icon. Practical copy: "Life, organized". No interactivity. 6 tests passing. |
+| OpsPage | ✅ | `app/(main)/ops/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Ops", back to `/`) + EmptyState with CheckSquare icon. Practical copy: "Life, organized". No interactivity. 6 tests passing. |
+
+## Auth Infrastructure
+
+| Component | Status | Path | Notes |
+|---|---|---|---|
+| AuthProvider | ✅ | `lib/providers/AuthProvider.tsx` | Context provider with user/profile/partner state from Supabase onAuthStateChange. useAuth() hook. signOut with /login redirect. profileNeedsSetup boolean. refreshProfile() method. 11 tests passing. |
+| LoginPage | ✅ | `app/(auth)/login/page.tsx` | RHF+Zod login form. Supabase signInWithPassword. Framer Motion entrance. Error states + loading spinner. 13 tests passing. |
+| AuthLayout | ✅ | `app/(auth)/layout.tsx` | Minimal layout for auth pages — no AppShell, no BottomNav. |
+| MainLayout | ✅ | `app/(main)/layout.tsx` | Protected route layout with AppShell + ProfileSetupOverlay when needed. |
+| Middleware | ✅ | `middleware.ts` | Next.js Edge middleware. Redirects unauthenticated users to /login, authenticated /login→/. Fail-open on errors. 11 tests passing. |
+| user.types.ts | ✅ | `lib/types/user.types.ts` | Profile type (from database.types.ts Row), AuthContextType interface. |
 
 ## Scripts / Infrastructure
 
