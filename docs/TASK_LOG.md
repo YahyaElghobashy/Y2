@@ -14,3 +14,4 @@
 | T107 | AppShell | ✅ | — | — | Root layout shell. Warm cream bg, dvh viewport height, pb-24 content padding, renders BottomNav. Integrated into layout.tsx. 5 tests passing. |
 | T108 | Home Dashboard | ✅ | — | — | Home page: HomeGreeting (time-aware greeting + date), 2×2 QuickActionCard grid (Us/Health/Spirit/Ops), 2 WidgetSlots for future widgets. Wrapped in PageTransition. 16 tests passing (9 HomeGreeting + 7 page). |
 | T110 | Health Module Shell | ✅ | — | — | /health page shell. PageTransition + PageHeader + EmptyState with Activity icon. Warm copy "Your wellness, tracked". No interactivity, no data fetching. 6 tests passing. |
+| T111 | Spirit Module Shell | ✅ | — | — | /spirit page shell. PageTransition + PageHeader + EmptyState with Sun icon. Contemplative copy "Your daily practice". No interactivity, no data fetching. 6 tests passing. |

@@ -67,7 +67,9 @@
 
 ## Spiritual Module
 
-(none yet)
+| Component | Status | Path | Props |
+|---|---|---|---|
+| SpiritPage | ✅ | `app/spirit/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Spirit", back to `/`) + EmptyState with Sun icon. Contemplative copy: "Your daily practice". No interactivity. 6 tests passing. |
 
 ## Ops Module
 
