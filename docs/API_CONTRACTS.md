@@ -130,6 +130,43 @@ create table milestones (
 );
 ```
 
+### cycle_config
+PRIVATE — Yahya only. Hormonal pill cycle configuration. No partner access.
+
+```sql
+create table cycle_config (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null unique references profiles(id) on delete cascade,
+  pill_start_date date not null,
+  active_days integer not null default 21,
+  break_days integer not null default 7,
+  pms_warning_days integer not null default 3,
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- RLS: OWNER-ONLY. auth.uid() = owner_id for select/insert/update. No delete. No partner access.
+```
+
+### cycle_logs
+PRIVATE — Yahya only. Daily mood/symptom observations. No partner access.
+
+```sql
+create table cycle_logs (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references profiles(id) on delete cascade,
+  date date not null,
+  mood text check (mood in ('good', 'neutral', 'sensitive', 'difficult')),
+  symptoms text[],
+  notes text,
+  created_at timestamptz not null default now(),
+  unique(owner_id, date)
+);
+
+-- RLS: OWNER-ONLY. auth.uid() = owner_id for select/insert/update/delete. No partner access.
+```
+
 ### notifications
 Scheduled notification definitions.
 
