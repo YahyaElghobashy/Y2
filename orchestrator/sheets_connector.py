@@ -283,10 +283,19 @@ class TaskQueueClient:
         return {str(t["Task ID"]).strip() for t in self.get_all_tasks()
                 if str(t.get("Status", "")).strip() in done_statuses}
 
+    @staticmethod
+    def _phase_from_task_id(task_id: str) -> int:
+        """Extract phase number from task ID (T107 → 1, T701 → 7)."""
+        tid = str(task_id).strip()
+        if len(tid) >= 2 and tid[0].upper() == "T" and tid[1].isdigit():
+            return int(tid[1])
+        return 99
+
     def get_eligible_tasks(self) -> list[dict]:
         """
         Tasks that are pending AND have all dependencies completed.
-        Returns sorted by Priority (lowest number = highest priority).
+        Returns sorted by Phase (from Task ID) → Priority → Task ID.
+        This ensures Phase 1 tasks complete before Phase 7 tasks are started.
         """
         completed = self.get_completed_task_ids()
         eligible = []
@@ -298,7 +307,11 @@ class TaskQueueClient:
                 deps = [d.strip() for d in deps_raw.split(",") if d.strip()]
             if all(dep in completed for dep in deps):
                 eligible.append(task)
-        return sorted(eligible, key=lambda t: (t.get("Priority", 999), t.get("Task ID", "")))
+        return sorted(eligible, key=lambda t: (
+            self._phase_from_task_id(t.get("Task ID", "")),
+            int(t.get("Priority", 999)) if str(t.get("Priority", "")).strip().isdigit() else 999,
+            t.get("Task ID", ""),
+        ))
 
     @retry_on_api_error(max_retries=3)
     def _find_task_row(self, task_id: str) -> int | None:
