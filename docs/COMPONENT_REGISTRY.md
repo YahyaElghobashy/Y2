@@ -42,6 +42,7 @@
 | LoadingSkeleton | ✅ | `components/shared/LoadingSkeleton.tsx` | `variant: "card" \| "list-item" \| "header" \| "full-page", count?, className?` — Warm-toned skeleton placeholders with CSS `animate-pulse`. Card (120px with icon/title/subtitle shapes), list-item (repeatable rows with avatar/text shapes), header (title+subtitle bars), full-page (header + 3 cards). Server Component, no JS animation. |
 | EmptyState | ✅ | `components/shared/EmptyState.tsx` | `icon: ReactNode, title: string, subtitle?: string, actionLabel?: string, actionHref?: string, onAction?: () => void, className?` — Centered empty placeholder with icon, title, optional subtitle, and optional copper CTA button (Link or button). Wrapped in FadeIn for soft entrance. min-h-[300px]. 9 tests passing. |
 | AppShell | ✅ | `components/shared/AppShell.tsx` | `children: ReactNode` — Root layout shell wrapping all pages. Warm cream background (`bg-bg-primary`), `min-h-[100dvh]` for mobile viewport, `pb-24` content padding to clear BottomNav. Renders BottomNav fixed at bottom. Integrated into `app/layout.tsx`. 5 tests passing. |
+| SettingsRow | ✅ | `components/shared/SettingsRow.tsx` | `icon: ReactNode, label: string, subtitle?: string, href?: string, onClick?: () => void, rightElement?: ReactNode, destructive?: boolean, showChevron?: boolean` — Reusable settings list row. Renders as Link (href), button (onClick), or div. Auto-shows ChevronRight for actionable rows. Destructive mode for red styling. Press feedback via active:bg-bg-secondary. 6 tests passing. |
 | LoadingPulse | 📋 | `components/shared/LoadingPulse.tsx` | — |
 | UserGreeting | 📋 | `components/shared/UserGreeting.tsx` | — |
 
@@ -70,6 +71,12 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | SpiritPage | ✅ | `app/spirit/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Spirit", back to `/`) + EmptyState with Sun icon. Contemplative copy: "Your daily practice". No interactivity. 6 tests passing. |
+
+## Settings Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| SettingsPage | ✅ | `app/settings/page.tsx` | Client Component. PageTransition + PageHeader ("Settings", back to `/`) + profile card (hardcoded Yahya/yahya@email.com) + 3 sections (Account, Appearance, About) using SettingsRow. Log Out button (red, console.log stub). "Made with love — for Yara" easter egg. 7 tests passing. |
 
 ## Ops Module
 

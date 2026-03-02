@@ -16,3 +16,4 @@
 | T110 | Health Module Shell | ✅ | — | — | /health page shell. PageTransition + PageHeader + EmptyState with Activity icon. Warm copy "Your wellness, tracked". No interactivity, no data fetching. 6 tests passing. |
 | T111 | Spirit Module Shell | ✅ | — | — | /spirit page shell. PageTransition + PageHeader + EmptyState with Sun icon. Contemplative copy "Your daily practice". No interactivity, no data fetching. 6 tests passing. |
 | T112 | Ops Module Shell | ✅ | — | — | /ops page shell. PageTransition + PageHeader + EmptyState with CheckSquare icon. Practical copy "Life, organized". No interactivity, no data fetching. 6 tests passing. |
+| T113 | Settings Page | ✅ | — | — | /settings page. SettingsRow reusable component + settings page with profile card (hardcoded), 3 sections (Account, Appearance, About), Log Out stub, "Made with love for Yara" easter egg. 13 tests passing (6 SettingsRow + 7 page). |
