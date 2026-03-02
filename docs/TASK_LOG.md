@@ -5,3 +5,5 @@
 | Task ID | Name | Status | Completed At | Commit | Notes |
 |---|---|---|---|---|---|
 | — | Project documentation setup | ✅ | (manual) | (initial) | CLAUDE.md + all docs created |
+| T101 | BottomNav | ✅ | — | 0a16ea7 | Fixed bottom nav with 5 tabs, copper slide indicator, Framer Motion |
+| T102 | PageHeader | ✅ | — | — | Page identity header with back nav, right action slot, balanced layout |

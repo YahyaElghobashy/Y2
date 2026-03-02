@@ -368,7 +368,7 @@ def run_claude_code(prompt: str, repo_path: str, timeout_minutes: int,
                     max_turns: int, allowed_tools: str,
                     label: str = "") -> dict:
     """
-    Run Claude Code in headless mode with full guardrails.
+    Run Claude Code in headless mode with live spinner and action logging.
 
     Returns:
         {
@@ -377,6 +377,7 @@ def run_claude_code(prompt: str, repo_path: str, timeout_minutes: int,
             "stderr": str,
             "duration_seconds": int,
             "exit_code": int | None,
+            "logger": BuildLogger,
         }
     """
     cmd = [
@@ -387,76 +388,126 @@ def run_claude_code(prompt: str, repo_path: str, timeout_minutes: int,
         "--output-format", "text",
     ]
 
-    prefix = f"[{label}] " if label else ""
-    print(f"  {prefix}🚀 Spawning Claude Code (timeout: {timeout_minutes}m, max-turns: {max_turns})")
-
+    prefix = f"{label}" if label else "Claude Code"
+    spinner = Spinner(prefix, task_id=label)
+    logger = BuildLogger()
     start = datetime.now()
+
     try:
-        result = subprocess.run(
+        # Use Popen for streaming output
+        process = subprocess.Popen(
             cmd,
             cwd=repo_path,
-            timeout=timeout_minutes * 60,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
             env={**os.environ, "CLAUDE_CODE_HEADLESS": "1"},
         )
+
+        spinner.start()
+        stdout_lines = []
+        stderr_lines = []
+
+        # Read stdout in a thread so we can also monitor timeout
+        def read_stream(stream, line_list, parse=False):
+            for line in stream:
+                line_list.append(line)
+                if parse:
+                    logger.parse_line(line)
+                    spinner.update_count(len(logger.actions))
+
+        stdout_thread = threading.Thread(
+            target=read_stream, args=(process.stdout, stdout_lines, True), daemon=True
+        )
+        stderr_thread = threading.Thread(
+            target=read_stream, args=(process.stderr, stderr_lines, False), daemon=True
+        )
+        stdout_thread.start()
+        stderr_thread.start()
+
+        # Wait with timeout
+        try:
+            process.wait(timeout=timeout_minutes * 60)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+            end = datetime.now()
+            secs = int((end - start).total_seconds())
+            spinner.stop(f"  ⏰ {prefix} TIMEOUT after {timeout_minutes}m ({len(logger.actions)} actions)")
+            if logger.actions:
+                print(f"     Last actions:")
+                for a in logger.actions[-3:]:
+                    print(f"       {a}")
+            return {
+                "status": "timeout",
+                "stdout": "".join(stdout_lines),
+                "stderr": f"Process killed after {timeout_minutes} minute timeout",
+                "duration_seconds": secs,
+                "exit_code": None,
+                "logger": logger,
+            }
+
+        # Process finished
+        stdout_thread.join(timeout=2)
+        stderr_thread.join(timeout=2)
         end = datetime.now()
         secs = int((end - start).total_seconds())
+        dur = duration_str(start, end)
+        stdout_full = "".join(stdout_lines)
+        stderr_full = "".join(stderr_lines)
 
-        if result.returncode == 0:
-            print(f"  {prefix}✅ Completed in {duration_str(start, end)}")
+        if process.returncode == 0:
+            spinner.stop(f"  ✅ {prefix} completed in {dur} — {logger.summary()}")
+            if logger.files_touched:
+                print(f"     Files: {', '.join(logger.files_touched[:8])}")
+                if len(logger.files_touched) > 8:
+                    print(f"     ... and {len(logger.files_touched) - 8} more")
             return {
                 "status": "complete",
-                "stdout": result.stdout,
-                "stderr": result.stderr,
+                "stdout": stdout_full,
+                "stderr": stderr_full,
                 "duration_seconds": secs,
                 "exit_code": 0,
+                "logger": logger,
             }
         else:
-            print(f"  {prefix}⚠️  Exited with code {result.returncode} in {duration_str(start, end)}")
+            spinner.stop(f"  ⚠️  {prefix} exited with code {process.returncode} in {dur}")
+            if logger.errors:
+                print(f"     Errors:")
+                for e in logger.errors[-3:]:
+                    print(f"       ❌ {e}")
             return {
                 "status": "error",
-                "stdout": result.stdout,
-                "stderr": result.stderr,
+                "stdout": stdout_full,
+                "stderr": stderr_full,
                 "duration_seconds": secs,
-                "exit_code": result.returncode,
+                "exit_code": process.returncode,
+                "logger": logger,
             }
 
-    except subprocess.TimeoutExpired:
-        end = datetime.now()
-        secs = int((end - start).total_seconds())
-        print(f"  {prefix}⏰ TIMEOUT after {timeout_minutes} minutes")
-        return {
-            "status": "timeout",
-            "stdout": "",
-            "stderr": f"Process killed after {timeout_minutes} minute timeout",
-            "duration_seconds": secs,
-            "exit_code": None,
-        }
-
     except FileNotFoundError:
-        print(f"  {prefix}❌ 'claude' command not found. Is Claude Code CLI installed?")
+        spinner.stop(f"  ❌ 'claude' command not found. Is Claude Code CLI installed?")
         return {
             "status": "error",
             "stdout": "",
             "stderr": "claude CLI not found",
             "duration_seconds": 0,
             "exit_code": None,
+            "logger": logger,
         }
 
     except Exception as e:
         end = datetime.now()
         secs = int((end - start).total_seconds())
-        print(f"  {prefix}❌ Unexpected error: {e}")
+        spinner.stop(f"  ❌ {prefix} unexpected error: {e}")
         return {
             "status": "error",
             "stdout": "",
             "stderr": str(e),
             "duration_seconds": secs,
             "exit_code": None,
+            "logger": logger,
         }
-
-
 # ─── GIT OPERATIONS ──────────────────────────────────────────
 
 # ─── GIT OPERATIONS ──────────────────────────────────────────
@@ -975,8 +1026,17 @@ class Orchestrator:
                     print(f"\n🎉 ALL TASKS COMPLETE!")
                 break
 
+            # Progress bar
+            total_tasks = len(self.completed) + len(self.failed) + len(eligible) + len(self.tq.get_pending_tasks())
+            done = len(self.completed)
+            bar_width = 30
+            filled = int(bar_width * done / max(total_tasks, 1))
+            bar = "█" * filled + "░" * (bar_width - filled)
+            pct = int(100 * done / max(total_tasks, 1))
+
             print(f"\n{'═' * 60}")
             print(f"  ITERATION {iteration} — {len(eligible)} eligible task(s)")
+            print(f"  Progress: [{bar}] {pct}% ({done}/{total_tasks})")
             print(f"  Completed: {len(self.completed)} | Failed: {len(self.failed)}")
             elapsed = duration_str(self.start_time, datetime.now())
             print(f"  Elapsed: {elapsed}")
