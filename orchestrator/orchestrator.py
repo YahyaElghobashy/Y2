@@ -96,10 +96,46 @@ def get_changed_files_count(repo_path: str) -> int:
 
 # ─── PROMPT BUILDER ───────────────────────────────────────────
 
+def load_project_context(repo_path: str) -> str:
+    """Load PROJECT_CONTEXT.md if it exists. This is the soul of the project."""
+    context_file = Path(repo_path) / "PROJECT_CONTEXT.md"
+    if context_file.exists():
+        return context_file.read_text()
+    return ""
+
+def load_claude_instructions(repo_path: str) -> str:
+    """Load CLAUDE.md if it exists. This is the instructions for the builder."""
+    instructions_file = Path(repo_path) / "CLAUDE.md"
+    if instructions_file.exists():
+        return instructions_file.read_text()
+    return ""
+
+def load_task_prompt(task_id: str, repo_path: str) -> str:
+    """Load the task-specific prompt from orchestrator/prompts/{task_id}.md."""
+    prompt_file = Path(repo_path) / "orchestrator" / "prompts" / f"{task_id}.md"
+    if prompt_file.exists():
+        return prompt_file.read_text()
+    return ""
+
+def load_post_completion_checklist(repo_path: str) -> str:
+    """Load the post-completion checklist from orchestrator/post_completion_checklist.md."""
+    checklist_file = Path(repo_path) / "orchestrator" / "post_completion_checklist.md"
+    if checklist_file.exists():
+        return checklist_file.read_text()
+    return ""
+    
 def build_task_prompt(task: dict, repo_path: str) -> str:
     """
     Construct the full prompt for a Claude Code builder.
-    Reads the task's prompt file if it exists, otherwise builds inline.
+    Forces a plan-first approach: Claude writes a plan, then executes it.
+
+    Every prompt includes:
+    1. PROJECT_CONTEXT.md — the full project vision (loaded once, always present). project_context = load_project_context(repo_path)
+
+    2. Instructions to read CLAUDE.md and supporting docs
+    3. The task-specific prompt (from orchestrator/prompts/{task_id}.md)
+    4. Post-completion checklist
+
     """
     task_id = task["Task ID"]
     task_name = task["Name"]
@@ -109,43 +145,44 @@ def build_task_prompt(task: dict, repo_path: str) -> str:
     prompt_file = Path(repo_path) / "orchestrator" / "prompts" / f"{task_id}.md"
     if prompt_file.exists():
         custom_prompt = prompt_file.read_text()
-        return f"""You are building task {task_id} for the Y2 project.
-
-IMPORTANT: Before writing any code, read CLAUDE.md at the project root. It tells you which docs to read for design system, coding standards, and existing components.
-
-Task: {task_name}
+    else:
+        custom_prompt = f"""Task: {task_name}
 Type: {task_type}
-
-{custom_prompt}
-
-After completing:
-1. Make sure `npm run build` passes
-2. Add any new components to docs/COMPONENT_REGISTRY.md
-3. Do NOT commit — the orchestrator handles git.
-"""
-
-    # Fallback: inline prompt from task metadata
-    return f"""You are building task {task_id} for the Y2 project.
-
-IMPORTANT: Before writing any code, read CLAUDE.md at the project root. It tells you which docs to read for design system, coding standards, and existing components.
-
-Task: {task_name}
-Type: {task_type}
-
 Expected output files: {task.get("Expected Files", "see CLAUDE.md for patterns")}
 Test requirements: {task.get("Test Requirements", "component renders, key interactions work")}
+"""
 
-Guidelines:
-- Follow the design system in docs/DESIGN_SYSTEM.md exactly
-- Use existing components from docs/COMPONENT_REGISTRY.md — don't duplicate
-- Follow coding standards in docs/CODING_STANDARDS.md
-- Create one file at a time, verify it compiles, then move to the next
-- Write tests for every component you create
+    return f"""You are building task {task_id} for the Y2 project.
 
-After completing:
-1. Make sure `npm run build` passes
-2. Update docs/COMPONENT_REGISTRY.md with any new components
-3. Do NOT commit — the orchestrator handles git.
+## PHASE 1: PLAN (do this first, before writing any code)
+
+1. Read CLAUDE.md at the project root. Follow every doc pointer it gives you.
+2. Read docs/COMPONENT_REGISTRY.md to see what already exists.
+3. Read the task requirements below carefully.
+4. Write your build plan to `orchestrator/plans/{task_id}_plan.md` with:
+   - Files you will create or modify (exact paths)
+   - Dependencies on existing components (imports you'll use)
+   - Design tokens you'll reference (colors, radii, animations)
+   - Test cases you'll write
+   - Potential issues or edge cases
+5. Do NOT write any component code until the plan file is saved.
+
+## PHASE 2: BUILD (execute your plan)
+
+6. Create each file one at a time, following your plan.
+7. After each file, verify there are no TypeScript errors.
+8. Write tests for every component.
+9. Run `npm run build` — fix any errors until it passes.
+10. Update docs/COMPONENT_REGISTRY.md with any new components.
+
+## PHASE 3: VERIFY
+
+11. Run `npm run build` one final time to confirm zero errors.
+12. Do NOT commit — the orchestrator handles git.
+
+## Task Details
+
+{custom_prompt}
 """
 
 
@@ -153,41 +190,56 @@ def build_audit_prompt(task: dict) -> str:
     """Construct the prompt for the auditor that reviews completed work."""
     task_id = task["Task ID"]
     task_name = task["Name"]
+    task_phase = task.get("Phase", "")
 
-    return f"""You are auditing task {task_id}: {task_name}
+    return f"""You are auditing task {task_id} ({task_phase}): {task_name}
 
-Review the recent changes in this project. Check:
+Read CLAUDE.md and docs/DESIGN_SYSTEM.md first, then review all recently changed/created files.
+
+AUDIT CHECKLIST:
 
 1. CODE QUALITY
    - Does the code follow docs/CODING_STANDARDS.md?
-   - Are TypeScript types correct (no `any`)?
+   - Are TypeScript types correct and specific (no `any`)?
    - Is the code clean, readable, and well-structured?
+   - Are imports ordered correctly (React → third-party → internal)?
 
-2. DESIGN SYSTEM
-   - Does it follow docs/DESIGN_SYSTEM.md?
-   - Are all colors from theme tokens (no hardcoded hex)?
-   - Are animations using the patterns from the design system?
-   - Are border radii, spacing, and typography correct?
+2. DESIGN SYSTEM COMPLIANCE
+   - Does it follow docs/DESIGN_SYSTEM.md exactly?
+   - All colors from theme tokens (no hardcoded hex values)?
+   - Animations use ease-out deceleration (no bounce, no spring)?
+   - Border radii correct (12px cards, 8px buttons, 6px inputs)?
+   - Typography correct (Playfair Display for headings, DM Sans for body)?
+   - Spacing generous (p-6 not p-4 for cards)?
 
-3. FUNCTIONALITY
-   - Run: npm run build — does it pass?
-   - Run: npm test — do tests pass?
-   - Are there any TypeScript errors?
+3. BUILD & TESTS
+   - Run: `npm run build` — does it pass with zero errors?
+   - Run: `npm test` — do tests pass? (if test runner is configured)
+   - Are there TypeScript compilation errors?
 
 4. COMPLETENESS
-   - Were all expected files created?
-   - Were tests written?
-   - Was docs/COMPONENT_REGISTRY.md updated?
+   - Were all files specified in the task created?
+   - Were test files created?
+   - Was docs/COMPONENT_REGISTRY.md updated with new components?
 
-RESPOND WITH EXACTLY THIS JSON FORMAT (no other text):
+5. UX ASSESSMENT
+   - Does this feel like it belongs in the Warm Mineral design language?
+   - Would this feel warm and intentional to the end user?
+   - Are empty states friendly, not generic?
+
+RESPOND WITH EXACTLY THIS JSON FORMAT (no other text, no markdown fences):
 {{
   "approved": true or false,
   "build_passes": true or false,
   "tests_pass": true or false,
-  "issues": ["list of specific issues found, empty if none"],
-  "summary": "one sentence overall assessment"
+  "files_created": ["list of new/modified files"],
+  "components_built": ["list of component names built"],
+  "issues": ["list of specific issues found — empty array if none"],
+  "design_compliance": "full/partial/none — how well it follows the design system",
+  "summary": "2-3 sentence assessment: what was built, how well, and any concerns"
 }}
 """
+
 
 
 # ─── CLAUDE CODE RUNNER ───────────────────────────────────────
@@ -287,11 +339,19 @@ def run_claude_code(prompt: str, repo_path: str, timeout_minutes: int,
 
 # ─── GIT OPERATIONS ──────────────────────────────────────────
 
-def git_commit_and_push(repo_path: str, task: dict, auto_push: bool) -> str | None:
-    """Stage all changes, commit with conventional message, optionally push."""
+# ─── GIT OPERATIONS ──────────────────────────────────────────
+
+def git_commit_and_push(repo_path: str, task: dict, auto_push: bool,
+                        verdict: dict = None) -> str | None:
+    """Stage all changes, commit with descriptive message, optionally push.
+    
+    The commit message includes: what was built, which files were created,
+    which components are now available, and any auditor notes.
+    """
     task_id = task["Task ID"]
     task_name = task["Name"]
     task_type = task.get("Type", "feat")
+    task_phase = task.get("Phase", "")
 
     # Map task types to conventional commit prefixes
     prefix_map = {
@@ -305,7 +365,43 @@ def git_commit_and_push(repo_path: str, task: dict, auto_push: bool) -> str | No
         "devops": "ci",
     }
     prefix = prefix_map.get(task_type, "feat")
-    msg = f"{prefix}({task_id.lower()}): {task_name}"
+    
+    # Build a rich commit message
+    subject = f"{prefix}({task_id.lower()}): {task_name}"
+    
+    body_lines = [
+        f"Phase: {task_phase}",
+        f"Task: {task_id} — {task_name}",
+        f"Type: {task_type}",
+        "",
+    ]
+    
+    if verdict:
+        files = verdict.get("files_created", [])
+        components = verdict.get("components_built", [])
+        summary = verdict.get("summary", "")
+        design = verdict.get("design_compliance", "")
+        
+        if summary:
+            body_lines.append(f"What was built: {summary}")
+            body_lines.append("")
+        if files:
+            body_lines.append("Files created/modified:")
+            for f in files[:15]:  # cap at 15 to avoid huge commits
+                body_lines.append(f"  - {f}")
+            body_lines.append("")
+        if components:
+            body_lines.append("Components now available:")
+            for c in components:
+                body_lines.append(f"  - {c}")
+            body_lines.append("")
+        if design:
+            body_lines.append(f"Design system compliance: {design}")
+    
+    body_lines.append("")
+    body_lines.append(f"Built by: Y2 Orchestrator (automated)")
+    
+    full_message = subject + "\n\n" + "\n".join(body_lines)
 
     try:
         # Check if there are changes to commit
@@ -322,7 +418,7 @@ def git_commit_and_push(repo_path: str, task: dict, auto_push: bool) -> str | No
 
         # Commit
         subprocess.run(
-            ["git", "commit", "-m", msg],
+            ["git", "commit", "-m", full_message],
             cwd=repo_path, timeout=30, check=True,
             capture_output=True, text=True,
         )
