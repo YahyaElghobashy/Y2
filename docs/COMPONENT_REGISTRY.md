@@ -73,4 +73,6 @@
 
 ## Ops Module
 
-(none yet)
+| Component | Status | Path | Props |
+|---|---|---|---|
+| OpsPage | ✅ | `app/ops/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Ops", back to `/`) + EmptyState with CheckSquare icon. Practical copy: "Life, organized". No interactivity. 6 tests passing. |
