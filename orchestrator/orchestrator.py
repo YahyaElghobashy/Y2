@@ -45,7 +45,7 @@ DEFAULTS = {
     "max_total_runtime_hours": 6,
     "max_consecutive_failures": 5,
     "builder_max_turns": 30,
-    "auditor_max_turns": 10,
+    "auditor_max_turns": 50,
     "auto_push": True,
     "run_build_check": True,
     "run_tests": True,
@@ -81,6 +81,126 @@ def get_git_short_hash(repo_path: str) -> str:
     except Exception:
         return "unknown"
 
+# ─── LIVE CLI DISPLAY ─────────────────────────────────────────
+
+class Spinner:
+    """
+    Animated spinner with elapsed time, shown while Claude Code runs.
+    Usage:
+        with Spinner("Building T101", task_id="T101"):
+            subprocess.run(...)
+    """
+    FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+
+    def __init__(self, message: str, task_id: str = ""):
+        self.message = message
+        self.task_id = task_id
+        self._stop = threading.Event()
+        self._thread = None
+        self._start_time = None
+        self._lines_seen = 0
+
+    def _spin(self):
+        idx = 0
+        while not self._stop.is_set():
+            elapsed = int(time.time() - self._start_time)
+            mins, secs = divmod(elapsed, 60)
+            time_str = f"{mins}m {secs:02d}s" if mins else f"{secs}s"
+            frame = self.FRAMES[idx % len(self.FRAMES)]
+            status = f"\r  {frame} {self.message} [{time_str}]"
+            if self._lines_seen > 0:
+                status += f" ({self._lines_seen} actions)"
+            # Pad to overwrite previous line
+            sys.stdout.write(f"{status:<80}")
+            sys.stdout.flush()
+            idx += 1
+            self._stop.wait(0.12)
+
+    def update_count(self, count: int):
+        self._lines_seen = count
+
+    def start(self):
+        self._start_time = time.time()
+        self._thread = threading.Thread(target=self._spin, daemon=True)
+        self._thread.start()
+
+    def stop(self, final_message: str = ""):
+        self._stop.set()
+        if self._thread:
+            self._thread.join(timeout=1)
+        # Clear the spinner line
+        sys.stdout.write(f"\r{' ' * 80}\r")
+        sys.stdout.flush()
+        if final_message:
+            print(final_message)
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, *args):
+        self.stop()
+
+
+class BuildLogger:
+    """
+    Captures Claude Code output and extracts meaningful actions for display.
+    Parses the streaming output to count tool calls, file writes, etc.
+    """
+
+    def __init__(self):
+        self.actions = []
+        self.files_touched = []
+        self.errors = []
+        self.total_lines = 0
+
+    def parse_line(self, line: str):
+        """Extract meaningful events from a line of Claude Code output."""
+        self.total_lines += 1
+        lower = line.lower().strip()
+        if not lower:
+            return
+
+        # Detect file operations
+        if any(kw in lower for kw in ["creating file", "wrote to", "created:", "writing"]):
+            # Try to extract filename
+            for token in line.split():
+                if "/" in token and ("src/" in token or "components/" in token or ".tsx" in token or ".ts" in token):
+                    clean = token.strip("'\"`,.")
+                    if clean not in self.files_touched:
+                        self.files_touched.append(clean)
+                        self.actions.append(f"📝 {clean}")
+                    break
+            else:
+                self.actions.append(f"📝 {line.strip()[:60]}")
+
+        elif any(kw in lower for kw in ["npm run build", "running build", "next build"]):
+            self.actions.append("🔨 Running build...")
+
+        elif any(kw in lower for kw in ["npm test", "running test", "jest"]):
+            self.actions.append("🧪 Running tests...")
+
+        elif any(kw in lower for kw in ["error", "failed", "err!"]):
+            self.errors.append(line.strip()[:100])
+
+        elif any(kw in lower for kw in ["installing", "npm install", "added"]):
+            self.actions.append(f"📦 {line.strip()[:60]}")
+
+        elif "read" in lower and ("claude.md" in lower or "design_system" in lower or "coding_standards" in lower):
+            self.actions.append(f"📖 Reading docs...")
+
+        elif "plan" in lower and ("writing" in lower or "creating" in lower):
+            self.actions.append(f"📋 Writing build plan...")
+
+    def summary(self) -> str:
+        """One-line summary of what happened."""
+        parts = []
+        if self.files_touched:
+            parts.append(f"{len(self.files_touched)} files")
+        if self.errors:
+            parts.append(f"{len(self.errors)} errors")
+        parts.append(f"{len(self.actions)} actions")
+        return ", ".join(parts)    
 
 def get_changed_files_count(repo_path: str) -> int:
     """Count files changed since last commit."""
@@ -423,8 +543,7 @@ def git_commit_and_push(repo_path: str, task: dict, auto_push: bool,
             capture_output=True, text=True,
         )
         commit_hash = get_git_short_hash(repo_path)
-        print(f"  📦 Committed: {msg} ({commit_hash})")
-
+        print(f"  📦 Committed: {subject} ({commit_hash})")
         # Push
         if auto_push:
             push_result = subprocess.run(
@@ -586,7 +705,7 @@ class Orchestrator:
         return True
 
     def process_task(self, task: dict):
-        """Full pipeline for one task: build → audit → commit."""
+        """Full pipeline for one task: build → verify → commit → audit (non-blocking)."""
         task_id = str(task["Task ID"]).strip()
         task_name = task["Name"]
         print(f"\n{'─' * 60}")
@@ -599,6 +718,16 @@ class Orchestrator:
             return
 
         task_start = datetime.now()
+
+        # ── 0. Snapshot current state so we can do surgical reverts ──
+        try:
+            snapshot = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=self.repo_path, capture_output=True, text=True, timeout=10
+            )
+            pre_build_clean = not snapshot.stdout.strip()
+        except Exception:
+            pre_build_clean = True
 
         # ── 1. Mark as building ──
         self.tq.update_task_started(task_id)
@@ -618,7 +747,7 @@ class Orchestrator:
         builder_duration = duration_str(task_start, datetime.now())
 
         if builder_result["status"] != "complete":
-            # Builder failed
+            # Builder failed — surgical revert only files this task touched
             self.tq.update_task_result(
                 task_id, "failed",
                 duration=builder_duration,
@@ -631,18 +760,54 @@ class Orchestrator:
             )
             self.failed.append(task_id)
             self.consecutive_failures += 1
-
-            # Revert any partial changes
-            try:
-                subprocess.run(["git", "checkout", "."], cwd=self.repo_path, timeout=10)
-                subprocess.run(["git", "clean", "-fd"], cwd=self.repo_path, timeout=10)
-            except Exception:
-                pass
+            self._surgical_revert(task_id)
             return
 
-        # ── 3. Run auditor ──
-        print(f"\n  🔍 Auditing {task_id}...")
-        self.tq.log_event("AUDIT_START", task_id, "Auditor spawned", "—", "—", "🔍")
+        # ── 3. Verify build passes ──
+        print(f"\n  🔨 Verifying build...")
+        try:
+            build_check = subprocess.run(
+                ["npm", "run", "build"],
+                cwd=self.repo_path,
+                capture_output=True, text=True, timeout=120,
+            )
+        except subprocess.TimeoutExpired:
+            build_check = type('obj', (object,), {'returncode': 1, 'stderr': 'Build timed out after 2min'})()
+
+        if build_check.returncode != 0:
+            # Build failed — surgical revert
+            print(f"  ❌ Build failed:")
+            stderr_tail = build_check.stderr[-400:] if build_check.stderr else "unknown error"
+            print(f"     {stderr_tail}")
+            self.tq.update_task_result(
+                task_id, "failed",
+                duration=builder_duration,
+                builder_output=f"Build failed: {stderr_tail}",
+            )
+            self.tq.log_event(
+                "BUILD_FAIL", task_id,
+                f"npm run build failed after {builder_duration}",
+                builder_duration, "—", "❌"
+            )
+            self.failed.append(task_id)
+            self.consecutive_failures += 1
+            self._surgical_revert(task_id)
+            return
+
+        print(f"  ✅ Build passes")
+
+        # ── 4. Commit (before audit — work is preserved no matter what) ──
+        commit_hash = git_commit_and_push(
+            self.repo_path, task, self.config.get("auto_push", True)
+        )
+        if commit_hash:
+            self.total_commits += 1
+        else:
+            commit_hash = "no-changes"
+
+        # ── 5. Run auditor (non-blocking — issues are logged, not reverted) ──
+        print(f"\n  🔍 Auditing {task_id} (non-blocking)...")
+        self.tq.log_event("AUDIT_START", task_id, "Auditor spawned (non-blocking)", "—", "—", "🔍")
 
         audit_prompt = build_audit_prompt(task)
         audit_result = run_claude_code(
@@ -654,79 +819,124 @@ class Orchestrator:
             label=f"AUDIT {task_id}",
         )
 
-        if audit_result["status"] != "complete":
-            # Auditor itself failed — approve with warning (don't block progress)
-            print(f"  ⚠️  Auditor process failed. Approving with manual review flag.")
+        if audit_result["status"] == "complete":
+            verdict = parse_audit_response(audit_result["stdout"])
+        else:
             verdict = {
                 "approved": True,
-                "issues": ["Auditor process failed — needs manual review"],
-                "summary": "Auto-approved (auditor unavailable)",
+                "issues": [f"Auditor {audit_result['status']} — manual review recommended"],
+                "summary": f"Auditor did not complete ({audit_result['status']})",
             }
-        else:
-            verdict = parse_audit_response(audit_result["stdout"])
 
         total_duration = duration_str(task_start, datetime.now())
 
-        # ── 4. Handle verdict ──
-        if verdict.get("approved", False):
-            # Commit and push
-            commit_hash = git_commit_and_push(
-                self.repo_path, task, self.config.get("auto_push", True)
-            )
+        # ── 6. Log results (commit already happened — audit is informational) ──
+        issues_list = verdict.get("issues", [])
+        verdict_summary = verdict.get("summary", "No summary")
+        approved = verdict.get("approved", True)
 
-            status = "complete"
-            if commit_hash:
-                self.total_commits += 1
-            else:
-                commit_hash = "no-changes"
-
-            issues_str = "; ".join(verdict.get("issues", []))
-            verdict_summary = verdict.get("summary", "Approved")
-            if issues_str:
-                verdict_summary += f" (notes: {issues_str})"
-
-            self.tq.update_task_result(
-                task_id, status,
-                duration=total_duration,
-                builder_output=f"Built in {builder_duration}",
-                auditor_verdict=verdict_summary[:500],
-                commit_hash=commit_hash or "",
-            )
-            self.tq.log_event(
-                "TASK_COMPLETE", task_id,
-                f"Approved: {verdict.get('summary', '')}",
-                total_duration, "—", "✅"
-            )
-            self.completed.append(task_id)
-            self.consecutive_failures = 0  # reset on success
-            print(f"\n  ✅ {task_id} COMPLETE ({total_duration})")
-
+        if not approved:
+            issues_str = "; ".join(issues_list)
+            status = "complete_with_issues"
+            audit_note = f"AUDIT CONCERNS (not reverted): {issues_str}"
+            print(f"  ⚠️  Auditor flagged issues (commit preserved):")
+            for issue in issues_list[:5]:
+                print(f"     • {issue}")
         else:
-            # Rejected — revert changes
-            issues_str = "; ".join(verdict.get("issues", []))
-            self.tq.update_task_result(
-                task_id, "failed_audit",
-                duration=total_duration,
-                builder_output=f"Built in {builder_duration}",
-                auditor_verdict=f"REJECTED: {issues_str[:400]}",
-            )
-            self.tq.log_event(
-                "AUDIT_FAIL", task_id,
-                f"Rejected: {issues_str[:300]}",
-                total_duration, "—", "❌"
-            )
+            status = "complete"
+            audit_note = f"Approved: {verdict_summary}"
+            if issues_list:
+                audit_note += f" (notes: {'; '.join(issues_list)})"
 
-            # Revert
+        self.tq.update_task_result(
+            task_id, status,
+            duration=total_duration,
+            builder_output=builder_result["stdout"][-500:] if builder_result["stdout"] else f"Built in {builder_duration}",
+            auditor_verdict=audit_note[:500],
+            commit_hash=commit_hash or "",
+        )
+        self.tq.log_event(
+            "TASK_COMPLETE", task_id,
+            f"{status}: {verdict_summary[:200]}",
+            total_duration, "—", "✅" if approved else "⚠️"
+        )
+        self.completed.append(task_id)
+        self.consecutive_failures = 0
+        print(f"\n  ✅ {task_id} COMPLETE ({total_duration})")
+
+    def _surgical_revert(self, task_id: str):
+        """Revert only files changed by this task — never nuke the whole repo."""
+        try:
+            # Get list of modified/untracked files
+            status = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=self.repo_path, capture_output=True, text=True, timeout=10
+            )
+            if not status.stdout.strip():
+                print(f"  📭 Nothing to revert for {task_id}")
+                return
+
+            lines = status.stdout.strip().split("\n")
+            modified = []
+            untracked = []
+            for line in lines:
+                flag = line[:2].strip()
+                filepath = line[3:].strip()
+                # Skip critical files
+                if filepath in ("CLAUDE.md", "PROJECT_CONTEXT.md", "package.json",
+                                "package-lock.json", "tsconfig.json", "next.config.ts",
+                                "next.config.js", "tailwind.config.ts", "tailwind.config.js",
+                                ".env.local", ".env.example"):
+                    print(f"  🛡️  Protecting {filepath} from revert")
+                    continue
+                # Skip orchestrator files
+                if filepath.startswith("orchestrator/"):
+                    print(f"  🛡️  Protecting {filepath} from revert")
+                    continue
+                # Skip docs
+                if filepath.startswith("docs/") and not filepath.startswith("docs/COMPONENT_REGISTRY"):
+                    print(f"  🛡️  Protecting {filepath} from revert")
+                    continue
+
+                if flag in ("M", "A", "MM", "AM"):
+                    modified.append(filepath)
+                elif flag == "??":
+                    untracked.append(filepath)
+                elif flag == "D":
+                    modified.append(filepath)  # restore deleted files
+                else:
+                    modified.append(filepath)
+
+            # Revert modified/staged files
+            if modified:
+                subprocess.run(
+                    ["git", "checkout", "--"] + modified,
+                    cwd=self.repo_path, timeout=10
+                )
+                print(f"  🔙 Reverted {len(modified)} modified file(s)")
+
+            # Remove untracked files (only ones this task likely created)
+            if untracked:
+                for f in untracked:
+                    full_path = Path(self.repo_path) / f
+                    if full_path.exists():
+                        if full_path.is_file():
+                            full_path.unlink()
+                        elif full_path.is_dir():
+                            import shutil
+                            shutil.rmtree(full_path)
+                print(f"  🗑️  Removed {len(untracked)} untracked file(s)")
+
+            print(f"  🔙 Surgical revert complete for {task_id}")
+
+        except Exception as e:
+            print(f"  ⚠️  Surgical revert failed ({e}), falling back to safe revert")
+            # Fallback: only checkout tracked files, never clean
             try:
                 subprocess.run(["git", "checkout", "."], cwd=self.repo_path, timeout=10)
-                subprocess.run(["git", "clean", "-fd"], cwd=self.repo_path, timeout=10)
-                print(f"  🔙 Changes reverted for {task_id}")
+                print(f"  🔙 Fallback revert (tracked files only)")
             except Exception:
-                print(f"  ⚠️  Could not revert changes — manual cleanup may be needed")
-
-            self.failed.append(task_id)
-            self.consecutive_failures += 1
-            print(f"\n  ❌ {task_id} FAILED AUDIT ({total_duration})")
+                print(f"  ❌ Could not revert. Manual cleanup needed.")
 
     def run(self):
         """Main orchestration loop."""

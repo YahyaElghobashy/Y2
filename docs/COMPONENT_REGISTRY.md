@@ -36,7 +36,7 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| BottomNav | 📋 | `components/shared/BottomNav.tsx` | — |
+| BottomNav | ✅ | `components/shared/BottomNav.tsx` | Fixed bottom nav with 5 tabs (Home, Us, Health, Spirit, Ops). Uses `usePathname()` for active state, Framer Motion `layoutId` for sliding copper indicator, `whileTap` for press feedback. iOS safe area aware. |
 | PageHeader | 📋 | `components/shared/PageHeader.tsx` | `title, subtitle?, action?` |
 | EmptyState | 📋 | `components/shared/EmptyState.tsx` | `icon, title, description, action?` |
 | LoadingPulse | 📋 | `components/shared/LoadingPulse.tsx` | — |
