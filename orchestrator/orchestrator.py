@@ -39,10 +39,10 @@ from sheets_connector import TaskQueueClient
 
 DEFAULTS = {
     "max_concurrent_builders": 3,
-    "max_task_minutes": 15,
-    "max_audit_minutes": 10,
+    "max_task_minutes": 30,
+    "max_audit_minutes": 30,
     "breather_seconds": 30,
-    "max_total_runtime_hours": 6,
+    "max_total_runtime_hours": 9,
     "max_consecutive_failures": 5,
     "builder_max_turns": 30,
     "auditor_max_turns": 50,
