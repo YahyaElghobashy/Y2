@@ -42,13 +42,14 @@ vi.mock("@/lib/supabase/client", () => ({
 import { AuthProvider, useAuth } from "@/lib/providers/AuthProvider"
 
 function TestConsumer() {
-  const { user, profile, partner, isLoading, signOut } = useAuth()
+  const { user, profile, partner, isLoading, profileNeedsSetup, signOut } = useAuth()
   return (
     <div>
       <span data-testid="loading">{String(isLoading)}</span>
       <span data-testid="user">{user?.id ?? "null"}</span>
       <span data-testid="profile">{profile?.display_name ?? "null"}</span>
       <span data-testid="partner">{partner?.display_name ?? "null"}</span>
+      <span data-testid="needs-setup">{String(profileNeedsSetup)}</span>
       <button onClick={signOut}>Sign Out</button>
     </div>
   )

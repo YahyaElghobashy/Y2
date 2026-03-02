@@ -31,8 +31,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .eq("id", userId)
         .single()
 
-      if (error) return null
-      return data
+      if (error || !data) return null
+      return data as Profile
     },
     [supabase]
   )
@@ -74,13 +74,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [supabase, fetchProfile])
 
+  const profileNeedsSetup = !!(user && (!profile?.display_name || profile.display_name === "User"))
+
+  const refreshProfile = useCallback(async () => {
+    if (!user) return
+    const userProfile = await fetchProfile(user.id)
+    setProfile(userProfile)
+    if (userProfile?.partner_id) {
+      const partnerProfile = await fetchProfile(userProfile.partner_id)
+      setPartner(partnerProfile)
+    }
+  }, [user, fetchProfile])
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
     router.push(ROUTES.LOGIN)
   }, [supabase, router])
 
   return (
-    <AuthContext.Provider value={{ user, profile, partner, isLoading, signOut }}>
+    <AuthContext.Provider value={{ user, profile, partner, isLoading, profileNeedsSetup, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

@@ -7,5 +7,7 @@ export type AuthContextType = {
   profile: Profile | null
   partner: Profile | null
   isLoading: boolean
+  profileNeedsSetup: boolean
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
