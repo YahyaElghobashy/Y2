@@ -278,9 +278,10 @@ class TaskQueueClient:
         return [t for t in self.get_all_tasks() if str(t.get("Status", "")).strip() == "pending"]
 
     def get_completed_task_ids(self) -> set[str]:
-        """Get IDs of completed tasks as a set."""
+        """Get IDs of completed tasks as a set (includes tasks with audit notes)."""
+        done_statuses = {"complete", "complete_with_issues"}
         return {str(t["Task ID"]).strip() for t in self.get_all_tasks()
-                if str(t.get("Status", "")).strip() == "complete"}
+                if str(t.get("Status", "")).strip() in done_statuses}
 
     def get_eligible_tasks(self) -> list[dict]:
         """

@@ -11,3 +11,4 @@
 | T104 | LoadingSkeleton | ✅ | — | — | 4 variants (card, list-item, header, full-page). CSS-only animate-pulse, warm bg-secondary tones, Server Component. 8 tests passing. |
 | T105 | EmptyState | ✅ | — | — | Reusable empty state shell with icon, title, subtitle, optional copper CTA (Link or button). FadeIn entrance animation. 9 tests passing. |
 | T106 | QuickActionCard | ✅ | — | — | Module doorway card for home 2×2 grid. Icon circle + label + description. Framer Motion press/hover. Wrapped in next/link. 7 tests passing. |
+| T107 | AppShell | ✅ | — | — | Root layout shell. Warm cream bg, dvh viewport height, pb-24 content padding, renders BottomNav. Integrated into layout.tsx. 5 tests passing. |

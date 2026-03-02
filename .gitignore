@@ -13,3 +13,6 @@ orchestrator/token.json
 orchestrator/client_secret.json
 orchestrator/reports/*.json
 .venv/
+__pycache__/
+*.pyc
+*.pyo

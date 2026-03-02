@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Playfair_Display, DM_Sans, JetBrains_Mono } from "next/font/google"
+import { AppShell } from "@/components/shared/AppShell"
 import "./globals.css"
 
 const playfair = Playfair_Display({
@@ -49,8 +50,10 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
-      <body className="min-h-screen bg-bg-primary text-text-primary font-body antialiased">
-        {children}
+      <body className="text-text-primary font-body antialiased">
+        <AppShell>
+          {children}
+        </AppShell>
       </body>
     </html>
   )
