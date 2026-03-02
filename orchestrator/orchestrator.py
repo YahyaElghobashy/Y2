@@ -27,6 +27,7 @@ import os
 import time
 import signal
 import threading
+import glob
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
@@ -40,17 +41,68 @@ from sheets_connector import TaskQueueClient
 DEFAULTS = {
     "max_concurrent_builders": 3,
     "max_task_minutes": 30,
-    "max_audit_minutes": 30,
+    "max_audit_minutes": 35,
     "breather_seconds": 30,
     "max_total_runtime_hours": 9,
     "max_consecutive_failures": 5,
     "builder_max_turns": 60,
-    "auditor_max_turns": 60,
+    "auditor_max_turns": 30,
     "auto_push": True,
     "run_build_check": True,
     "run_tests": True,
-    "allowed_tools": "Read,Write,Edit,Bash(npm:*),Bash(npx:*),Bash(git:*),Bash(mkdir:*),Bash(ls:*),Bash(cat:*)",
-    "auditor_tools": "Read,Bash(npm run build),Bash(npm test),Bash(npm test -- --passWithNoTests),Bash(npx:*),Bash(ls:*),Bash(cat:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*)",
+    "allowed_tools": ",".join([
+        # ── Core file tools ──
+        "Read", "Write", "Edit", "Glob", "Grep",
+        # ── Shell: package managers & build ──
+        "Bash(npm:*)", "Bash(npx:*)", "Bash(node:*)", "Bash(bun:*)", "Bash(pnpm:*)",
+        # ── Shell: git ──
+        "Bash(git:*)",
+        # ── Shell: Supabase CLI (all subcommands) ──
+        "Bash(supabase:*)",
+        "Bash(supabase init:*)", "Bash(supabase login:*)", "Bash(supabase link:*)",
+        "Bash(supabase start:*)", "Bash(supabase stop:*)", "Bash(supabase status:*)",
+        "Bash(supabase db push:*)", "Bash(supabase db pull:*)", "Bash(supabase db diff:*)",
+        "Bash(supabase db dump:*)", "Bash(supabase db reset:*)", "Bash(supabase db lint:*)",
+        "Bash(supabase db inspect:*)",
+        "Bash(supabase migration:*)", "Bash(supabase squash:*)",
+        "Bash(supabase functions:*)", "Bash(supabase functions new:*)",
+        "Bash(supabase functions deploy:*)", "Bash(supabase functions serve:*)",
+        "Bash(supabase functions list:*)", "Bash(supabase functions delete:*)",
+        "Bash(supabase gen:*)", "Bash(supabase gen types:*)",
+        "Bash(supabase secrets:*)", "Bash(supabase storage:*)",
+        "Bash(supabase test:*)", "Bash(supabase branches:*)",
+        "Bash(supabase projects:*)", "Bash(supabase orgs:*)",
+        "Bash(supabase services:*)", "Bash(supabase bootstrap:*)",
+        # ── Shell: filesystem ──
+        "Bash(mkdir:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(echo:*)",
+        "Bash(cp:*)", "Bash(mv:*)", "Bash(rm:*)", "Bash(touch:*)",
+        "Bash(head:*)", "Bash(tail:*)", "Bash(find:*)", "Bash(grep:*)",
+        "Bash(sed:*)", "Bash(awk:*)", "Bash(wc:*)", "Bash(sort:*)",
+        "Bash(chmod:*)", "Bash(pwd:*)", "Bash(cd:*)", "Bash(test:*)",
+        "Bash(which:*)", "Bash(dirname:*)", "Bash(basename:*)", "Bash(realpath:*)",
+        "Bash(diff:*)", "Bash(tee:*)", "Bash(xargs:*)", "Bash(tr:*)",
+        "Bash(cut:*)", "Bash(uniq:*)", "Bash(env:*)", "Bash(export:*)",
+        "Bash(curl:*)", "Bash(wget:*)",
+    ]),
+    "auditor_tools": ",".join([
+        # ── Core read-only tools ──
+        "Read", "Glob", "Grep",
+        # ── Shell: build & test ──
+        "Bash(npm run build)", "Bash(npm test)", "Bash(npm test -- --passWithNoTests)",
+        "Bash(npx:*)", "Bash(npm:*)",
+        # ── Shell: git (read-only) ──
+        "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)", "Bash(git status:*)",
+        # ── Shell: Supabase CLI (read-only subset) ──
+        "Bash(supabase:*)",
+        "Bash(supabase status:*)", "Bash(supabase db lint:*)",
+        "Bash(supabase db inspect:*)", "Bash(supabase gen types:*)",
+        "Bash(supabase functions list:*)", "Bash(supabase test:*)",
+        # ── Shell: filesystem (read-only) ──
+        "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)", "Bash(tail:*)",
+        "Bash(find:*)", "Bash(grep:*)", "Bash(wc:*)", "Bash(diff:*)",
+        # ── Shell: visual audit ──
+        "Bash(npm run screenshot:*)",
+    ]),
 }
 
 AUDIT_JSON_SCHEMA = json.dumps({
@@ -62,9 +114,10 @@ AUDIT_JSON_SCHEMA = json.dumps({
         "files_reviewed": {"type": "array", "items": {"type": "string"}},
         "issues": {"type": "array", "items": {"type": "string"}},
         "design_compliance": {"type": "string", "enum": ["full", "partial", "none"]},
+        "visual_pass": {"type": "boolean"},
         "summary": {"type": "string"}
     },
-    "required": ["approved", "build_passes", "tests_pass", "files_reviewed", "issues", "design_compliance", "summary"]
+    "required": ["approved", "build_passes", "tests_pass", "files_reviewed", "issues", "design_compliance", "visual_pass", "summary"]
 })
 
 
@@ -345,6 +398,12 @@ STEP 4 — Verify tests:
 
 STEP 5 — Design check (from the diff only):
   Colors use CSS variables not hex. Border-radius follows system (12px cards, 8px buttons). Animations use Framer Motion. Spacing generous (p-6 not p-4 for cards).
+
+STEP 6 — Visual check (if UI component):
+  npm run screenshot
+  Then use the Read tool to view /tmp/y2-audit-home.png
+  Check: Does the page render? Are colors warm (cream/copper tones)? Is spacing generous? Does typography look correct?
+  If the screenshot fails or is blank, set visual_pass to false but don't fail the audit.
 
 Output your JSON verdict. The schema is enforced — just fill in accurate values."""
 
@@ -758,7 +817,7 @@ class Orchestrator:
             "auditor_max_turns": 15,
             "builder_max_turns": 15,
             "max_task_minutes": 5,
-            "max_audit_minutes": 3,
+            "max_audit_minutes": 5,
         }
         for key, floor in CONFIG_FLOORS.items():
             if key in self.config and self.config[key] < floor:
@@ -951,12 +1010,13 @@ class Orchestrator:
         build_ok = verdict.get("build_passes", True)
         tests_ok = verdict.get("tests_pass", True)
         design = verdict.get("design_compliance", "unknown")
+        visual_ok = verdict.get("visual_pass", True)
         summary = verdict.get("summary", "No summary")
         files_reviewed = verdict.get("files_reviewed", [])
 
-        # Structured audit note: PASS|build:yes|tests:yes|design:full|files:3|...
+        # Structured audit note: PASS|build:yes|tests:yes|design:full|visual:yes|files:3|...
         tag = "PASS" if approved else "FAIL"
-        header = f"{tag}|build:{'yes' if build_ok else 'NO'}|tests:{'yes' if tests_ok else 'NO'}|design:{design}|files:{len(files_reviewed)}|turns:{turns_str}|cost:{cost_str}"
+        header = f"{tag}|build:{'yes' if build_ok else 'NO'}|tests:{'yes' if tests_ok else 'NO'}|design:{design}|visual:{'yes' if visual_ok else 'NO'}|files:{len(files_reviewed)}|turns:{turns_str}|cost:{cost_str}"
 
         if not approved:
             status = "complete_with_issues"
@@ -983,6 +1043,13 @@ class Orchestrator:
         self.completed.append(task_id)
         self.consecutive_failures = 0
         print(f"\n  ✅ {task_id} COMPLETE ({total_duration}) [audit: {cost_str}]")
+
+        # Clean up audit screenshots
+        for f in glob.glob("/tmp/y2-audit-*.png"):
+            try:
+                os.remove(f)
+            except OSError:
+                pass
 
     def _surgical_revert(self, task_id: str):
         """Revert only files changed by this task — never nuke the whole repo."""
