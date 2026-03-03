@@ -56,7 +56,8 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | QuickActionCard | ✅ | `components/home/QuickActionCard.tsx` | `icon: ReactNode, label: string, description: string, href: string, className?` — Module doorway card for 2×2 home grid. Warm icon circle (40px, accent-soft bg), bold label, truncated description. Framer Motion whileHover scale(1.02) + shadow deepen, whileTap scale(0.98). Wrapped in next/link. 7 tests passing. |
-| HomeGreeting | ✅ | `components/home/HomeGreeting.tsx` | `name?: string` — Time-aware greeting (Good morning/afternoon/evening/night) with user name in Playfair Display 28px bold. Date line formatted via date-fns ("EEEE, MMMM d"). Greeting logic: 12am–5am night, 5am–12pm morning, 12pm–5pm afternoon, 5pm–9pm evening, 9pm–12am night. 9 tests passing. |
+| HomeGreeting | ✅ | `components/home/HomeGreeting.tsx` | `className?` — Time-aware greeting using `useAuth()` for dynamic profile name (fallback "there"). Playfair Display 28px bold. Date via date-fns ("EEEE, MMMM d"). Greeting logic: 12am–5am night, 5am–12pm morning, 12pm–5pm afternoon, 5pm–9pm evening, 9pm–12am night. 9 tests passing. |
+| CoyynsWidget | ✅ | `components/home/CoyynsWidget.tsx` | `className?` — Compact CoYYns card for home dashboard. Shows CoyynsBadge balance, 3 recent transactions with +/− prefixes and earn/spend color coding, "See all →" footer link. Wrapped in `next/link` to `/us` with `motion.div` whileTap scale(0.99). Loading: LoadingSkeleton list-item ×3. Empty: "Start earning CoYYns together". 12 tests passing. |
 | WidgetSlot | ✅ | `components/home/WidgetSlot.tsx` | `label?: string, className?` — Placeholder card for future live widgets (CoYYns balance, cycle tracker). 100px height, centered muted text, elevated bg with border and soft shadow. Server Component compatible. |
 
 ## Relationship Module
@@ -109,6 +110,9 @@
 | Hook | Status | Path | API |
 |---|---|---|---|
 | useCoyyns | ✅ | `lib/hooks/use-coyyns.ts` | `useCoyyns() → { wallet, partnerWallet, transactions, isLoading, error, addCoyyns, spendCoyyns, refreshWallet }` — Client-side data layer for CoYYns feature. Three parallel initial fetches (user wallet, partner wallet, last 50 transactions). Realtime subscription on `coyyns_wallets` for live sync. `addCoyyns(amount, description, category?)` validates positive integer, inserts earn transaction. `spendCoyyns(amount, description, category?)` checks balance before inserting spend transaction. Auth-safe: returns inert state when user is null. 13 tests passing. |
+| useNotifications | ✅ | `lib/hooks/use-notifications.ts` | `useNotifications() → { notifications, dailyLimit, canSend, remainingSends, isLoading, error, sendNotification, refreshLimits }` — Notification sending with daily limits (2 free + bonus sends). Optimistic insert with rollback on failure. Calls `send-push-notification` edge function after DB insert. Double-tap prevention via `isSending` ref. Auth-safe: inert state when user is null. 10 tests passing. |
+| useCycle | ✅ | `lib/hooks/use-cycle.ts` | `useCycle() → { config, logs, currentDay, currentPhase, pmsWindow, periodLikelihood, isLoading, error, updateConfig, addLog, refreshCycle }` — Pill cycle tracking with phase calculations. Dual-layer privacy: profile null guard + owner_id comparison. Derived computations: currentDay, phase (active/break), PMS window (days 21-28), period likelihood. Upsert config, insert logs. Auth-safe: null return for non-owners. 14 tests passing. |
+| useCoupons | ✅ | `lib/hooks/use-coupons.ts` | `useCoupons() → { myCoupons, receivedCoupons, pendingApprovals, isLoading, error, createCoupon, redeemCoupon, approveCoupon, rejectCoupon, revealSurprise, refreshCoupons }` — Full coupon CRUD lifecycle with realtime subscription. Status guards on all mutations. Surprise reveal with coupon_history logging. Auth-safe: inert state when user is null. 8 tests passing. |
 
 ## Types
 
@@ -116,6 +120,15 @@
 |---|---|---|---|
 | coyyns.types.ts | ✅ | `lib/types/coyyns.types.ts` | `CoyynsWallet`, `CoyynsTransaction` — derived from `database.types.ts` Row types for `coyyns_wallets` and `coyyns_transactions` tables. |
 | user.types.ts | ✅ | `lib/types/user.types.ts` | `Profile`, `AuthContextType` — Profile type from database.types.ts, AuthContextType interface. |
+| notification.types.ts | ✅ | `lib/types/notification.types.ts` | `PushPermissionState`, `NotificationStatus`, `Notification`, `DailyLimit`, `UseNotificationsReturn` — Push permission states, notification/daily limit Row types from database.types.ts. |
+| health.types.ts | ✅ | `lib/types/health.types.ts` | `CycleConfig`, `CycleLog`, `CyclePhase`, `CycleMood`, `UseCycleReturn` — Cycle tracker types from database.types.ts Row types. |
+| relationship.types.ts | ✅ | `lib/types/relationship.types.ts` | `CouponCategory`, `CouponStatus`, `Coupon`, `CreateCouponData`, `UseCouponsReturn` — Love coupon types with full status enum and creation data shape. |
+
+## Services
+
+| Service | Status | Path | API |
+|---|---|---|---|
+| push-service | ✅ | `lib/services/push-service.ts` | `isPushSupported(), getPushPermission(), subscribeToPush(userId), unsubscribeFromPush(userId)` — Web Push API wrapper. VAPID key subscription via PushManager. Stores subscription JSON in Supabase `push_subscriptions`. Delete+insert pattern for subscription updates. 9 tests passing. |
 
 ## Scripts / Infrastructure
 
