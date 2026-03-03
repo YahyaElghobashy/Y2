@@ -34,6 +34,13 @@ Before writing any code, read the relevant docs:
 14. **RTL-ready** — use logical properties (ps, pe, ms, me) not left/right in Tailwind
 15. **Pre-build validation plan** — Before starting any task, populate the Google Sheets "Validation Log" tab with: expected behavior, test type, test steps, and verification location. Pre-Build Status must be `documented` before writing code. See `docs/VALIDATION_SUITE.md` for full instructions and schema.
 16. **Post-build test recording** — After completing a task, run its test steps and record pass/fail/partial in the Validation Log. A task is not complete until its Test Result is recorded. If `fail` or `partial`, fix and re-test before marking done.
+17. **Task completion workflow (mandatory)** — After finishing code for a task, follow this sequence **before starting any new task**:
+    1. **Local test/validate** — Run the task's test steps locally (unit tests, build, visual check, dev server preview, etc.)
+    2. **Update Validation Log** — Record results in the Google Sheets Validation Log (Test Result, Tested At, Tested By, Failure Notes)
+    3. **Iterate if needed** — If `fail` or `partial`, fix the code, re-test, and update the Validation Log until `pass`
+    4. **Commit & push** — Commit with conventional commit message, push to GitHub
+    5. **Update Task Queue** — Set Status to `complete` (or `complete_with_issues`), fill Finished At, Duration, Commit Hash, and Builder Output in the Google Sheets Task Queue
+    - ⛔ **Do NOT pick up the next task until all 5 steps are done for the current one.**
 
 ## Tech Stack Quick Reference
 
@@ -86,6 +93,13 @@ The Y2 project uses a Google Sheet as its single source of truth for task tracki
 | M | Auditor Verdict | Structured audit note |
 | N | Commit Hash | Git short hash |
 | O | Executor | `orchestrator` (automated dev) or `claude-code` (manual CLI) |
+| P | V2 Notes | Additional context or notes for the task |
+| Q | Files | Key files involved in this task |
+| R | Implementation Detail | Technical implementation notes |
+| S | Acceptance Criteria | What must be true for the task to be accepted |
+| T | Flags | Any flags or tags (e.g. `blocked`, `needs-review`) |
+
+> **Note:** Task Queue has decorative header rows — actual column headers are at **row 4** (not row 1).
 
 ### Executor Column
 
@@ -95,15 +109,13 @@ Tasks are assigned to one of two executors:
 
 The orchestrator automatically skips tasks marked as `claude-code`. When working in this chat, filter for `claude-code` tasks to see what needs manual attention.
 
-### Other Sheets
+### Spreadsheet Tabs
 
-| Tab | Purpose |
-|-----|---------|
-| Run Log | Timestamped events from orchestrator runs |
-| Component Registry | Components built with status |
-| Overnight Report | Summary of last overnight run |
-| Config | Orchestrator settings (max turns, timeouts, etc.) |
-| Validation Log | Per-task: expected behavior, test steps, pass/fail results (see `docs/VALIDATION_SUITE.md`) |
+| Tab | Headers Row | Purpose |
+|-----|-------------|---------|
+| Task Queue | Row 4 | Master task list with status, priority, execution tracking (cols A–T) |
+| Validation Log | Row 1 | Per-task: expected behavior, test steps, pass/fail results — see `docs/VALIDATION_SUITE.md` |
+| Run Log | Row 3 | Timestamped events from orchestrator and manual runs (Timestamp, Event, Task ID, Details, Duration, Cost Est., Status) |
 
 ### Using from Claude Code CLI
 
@@ -120,4 +132,12 @@ tq.update_task_result("T301", "complete", duration="12m", commit_hash="abc1234")
 
 # Log an event
 tq.log_event("MANUAL_BUILD", "T301", "Built via Claude Code CLI")
+
+# ── Post-task workflow (rule 17) ──
+# 1. Run tests locally
+# 2. Update Validation Log → Test Result, Tested At, Tested By, Failure Notes
+# 3. Iterate until pass
+# 4. git commit && git push
+# 5. tq.update_task_result(...) → Task Queue status, duration, commit hash
+# ⛔ Do NOT start next task until all 5 steps complete
 ```
