@@ -2,7 +2,7 @@ import type { Database } from "@/lib/types/database.types"
 
 export type PushPermissionState = "granted" | "denied" | "default" | "unsupported"
 
-export type NotificationStatus = "pending" | "delivered" | "failed"
+export type NotificationStatus = "sent" | "delivered" | "failed"
 
 export type Notification = Database["public"]["Tables"]["notifications"]["Row"]
 

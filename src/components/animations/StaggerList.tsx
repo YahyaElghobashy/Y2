@@ -8,6 +8,7 @@ type StaggerListProps = {
   children: React.ReactNode
   staggerDelay?: number
   className?: string
+  role?: React.AriaRole
 }
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
@@ -37,6 +38,7 @@ export function StaggerList({
   children,
   staggerDelay = 0.05,
   className,
+  role,
 }: StaggerListProps) {
   const prefersReducedMotion =
     typeof window !== "undefined" &&
@@ -54,6 +56,7 @@ export function StaggerList({
       initial="hidden"
       animate="visible"
       className={cn(className)}
+      role={role}
     >
       {childArray.map((child, index) => (
         <motion.div key={index} variants={itemVariants(prefersReducedMotion)}>

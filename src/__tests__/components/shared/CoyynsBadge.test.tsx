@@ -14,9 +14,9 @@ const MOCK_WALLET = {
 }
 
 const defaultCoyynsReturn = {
-  wallet: MOCK_WALLET,
-  partnerWallet: null,
-  transactions: [],
+  wallet: MOCK_WALLET as typeof MOCK_WALLET | null,
+  partnerWallet: null as typeof MOCK_WALLET | null,
+  transactions: [] as unknown[],
   isLoading: false,
   error: null as string | null,
   addCoyyns: vi.fn(),

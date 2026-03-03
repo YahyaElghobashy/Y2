@@ -39,9 +39,9 @@ const MOCK_PARTNER_WALLET = {
 const mockRefreshWallet = vi.fn()
 
 let mockCoyynsReturn = {
-  wallet: MOCK_WALLET,
-  partnerWallet: MOCK_PARTNER_WALLET,
-  transactions: [],
+  wallet: MOCK_WALLET as typeof MOCK_WALLET | null,
+  partnerWallet: MOCK_PARTNER_WALLET as typeof MOCK_PARTNER_WALLET | null,
+  transactions: [] as unknown[],
   isLoading: false,
   error: null as string | null,
   addCoyyns: vi.fn(),

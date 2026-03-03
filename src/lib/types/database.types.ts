@@ -95,34 +95,37 @@ export interface Database {
         Row: {
           id: string
           sender_id: string
-          receiver_id: string
+          recipient_id: string
           title: string
           body: string
           emoji: string | null
           status: string
-          send_type: string
+          type: string
+          metadata: Json
           created_at: string
         }
         Insert: {
           id?: string
           sender_id: string
-          receiver_id: string
+          recipient_id: string
           title: string
           body: string
           emoji?: string | null
           status?: string
-          send_type: string
+          type?: string
+          metadata?: Json
           created_at?: string
         }
         Update: {
           id?: string
           sender_id?: string
-          receiver_id?: string
+          recipient_id?: string
           title?: string
           body?: string
           emoji?: string | null
           status?: string
-          send_type?: string
+          type?: string
+          metadata?: Json
           created_at?: string
         }
         Relationships: [
@@ -134,8 +137,8 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "notifications_receiver_id_fkey"
-            columns: ["receiver_id"]
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -181,26 +184,26 @@ export interface Database {
         Row: {
           id: string
           user_id: string
-          endpoint: string
-          keys: Json
-          user_agent: string | null
+          subscription: Json
+          device_name: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          endpoint: string
-          keys: Json
-          user_agent?: string | null
+          subscription: Json
+          device_name?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          endpoint?: string
-          keys?: Json
-          user_agent?: string | null
+          subscription?: Json
+          device_name?: string | null
           created_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -221,6 +224,8 @@ export interface Database {
           break_days: number
           pms_warning_days: number
           notes: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -230,6 +235,8 @@ export interface Database {
           break_days?: number
           pms_warning_days?: number
           notes?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -239,6 +246,8 @@ export interface Database {
           break_days?: number
           pms_warning_days?: number
           notes?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -370,22 +379,25 @@ export interface Database {
         Row: {
           id: string
           coupon_id: string
-          event: string
+          action: string
           actor_id: string
+          note: string | null
           created_at: string
         }
         Insert: {
           id?: string
           coupon_id: string
-          event: string
+          action: string
           actor_id: string
+          note?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           coupon_id?: string
-          event?: string
+          action?: string
           actor_id?: string
+          note?: string | null
           created_at?: string
         }
         Relationships: [

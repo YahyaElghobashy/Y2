@@ -54,6 +54,10 @@
     --color-accent-primary: #C4956A;
     --color-accent-soft: #E8D5C0;
     --color-border-subtle: rgba(44, 40, 37, 0.08);
+    --color-error: #C27070;
+    --color-success: #7CB67C;
+    --color-accent-hover: #B0845C;
+    --shadow-soft: 0 2px 12px rgba(44, 40, 37, 0.06);
     --font-display: 'Playfair Display', serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -92,6 +96,20 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* Short aliases for components using var(--text-primary) etc. */
+    --text-primary: #2C2825;
+    --text-secondary: #8C8279;
+    --text-muted: #B5ADA4;
+    --accent-primary: #C4956A;
+    --accent-soft: #E8D5C0;
+    --accent-hover: #B0845C;
+    --bg-primary: #FBF8F4;
+    --bg-secondary: #F5F0E8;
+    --bg-elevated: #FFFFFF;
+    --border-subtle: rgba(44, 40, 37, 0.08);
+    --error: #C27070;
+    --success: #7CB67C;
 }
 
 .dark {

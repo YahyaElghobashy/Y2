@@ -48,13 +48,15 @@ export function RelationshipTabs() {
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex border-b border-[var(--border-subtle)] px-6">
+      <div className="flex border-b border-[var(--border-subtle)] px-6" role="tablist">
         {TABS.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
           return (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={isActive}
               onClick={() => setActiveTab(tab.id)}
               className="relative flex flex-1 items-center justify-center gap-1.5 py-3"
             >
@@ -78,7 +80,7 @@ export function RelationshipTabs() {
               {isActive && (
                 <motion.div
                   layoutId="us-tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--accent-primary)]"
+                  className="absolute bottom-0 inset-x-0 h-0.5 bg-[var(--accent-primary)]"
                   transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
                 />
               )}

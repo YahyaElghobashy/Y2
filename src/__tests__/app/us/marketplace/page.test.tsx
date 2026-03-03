@@ -2,6 +2,21 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import fs from "fs"
 import path from "path"
+
+// Mock useCoyyns
+vi.mock("@/lib/hooks/use-coyyns", () => ({
+  useCoyyns: () => ({
+    wallet: { balance: 1250, lifetime_earned: 2000, lifetime_spent: 750 },
+    partnerWallet: null,
+    transactions: [],
+    isLoading: false,
+    error: null,
+    addCoyyns: vi.fn(),
+    spendCoyyns: vi.fn(),
+    refreshWallet: vi.fn(),
+  }),
+}))
+
 import MarketplacePage from "@/app/(main)/us/marketplace/page"
 
 // Mock next/link
@@ -73,9 +88,7 @@ describe("MarketplacePage", () => {
 
   it("renders CoyynsBadge in the header area", () => {
     render(<MarketplacePage />)
-    const badge = screen.getByTestId("coyyns-badge")
-    expect(badge).toBeInTheDocument()
-    expect(badge.textContent).toContain("1,250")
+    expect(screen.getByText("1,250")).toBeInTheDocument()
   })
 
   it("renders 'Shop' and 'Challenges' tab labels", () => {

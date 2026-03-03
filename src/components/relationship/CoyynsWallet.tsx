@@ -66,13 +66,13 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
         transition={{ duration: 0.35, ease: EASE_OUT }}
       >
         <div className="flex flex-col items-center gap-2 py-4">
-          <p className="text-[13px] text-text-secondary font-[var(--font-body)]">
+          <p className="text-[13px] text-text-secondary font-[family-name:var(--font-body)]">
             Couldn&apos;t load wallet
           </p>
           <button
             type="button"
             onClick={() => refreshWallet()}
-            className="text-[13px] text-accent-primary font-medium font-[var(--font-body)]"
+            className="text-[13px] text-accent-primary font-medium font-[family-name:var(--font-body)]"
           >
             Retry
           </button>
@@ -115,12 +115,12 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
           </span>
 
           {/* Balance */}
-          <div className="mt-3 text-[40px] leading-none font-[var(--font-mono)] text-accent-primary font-normal">
+          <div className="mt-3 text-[40px] leading-none font-[family-name:var(--font-mono)] text-accent-primary font-normal">
             <AnimatedBalance value={wallet?.balance ?? 0} />
           </div>
 
           {/* Label */}
-          <p className="mt-1.5 text-sm text-text-secondary font-[var(--font-body)] uppercase tracking-[0.12em]">
+          <p className="mt-1.5 text-sm text-text-secondary font-[family-name:var(--font-body)] uppercase tracking-[0.12em]">
             CoYYns
           </p>
 
@@ -130,21 +130,21 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
           {/* Stats row */}
           <div className="mt-4 flex w-full justify-between">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[13px] text-text-muted font-[var(--font-body)]">Earned</span>
-              <span className="text-[13px] text-text-muted font-[var(--font-mono)]" data-testid="lifetime-earned">
+              <span className="text-[13px] text-text-muted font-[family-name:var(--font-body)]">Earned</span>
+              <span className="text-[13px] text-text-muted font-[family-name:var(--font-mono)]" data-testid="lifetime-earned">
                 {(wallet?.lifetime_earned ?? 0).toLocaleString()}
               </span>
             </div>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[13px] text-text-muted font-[var(--font-body)]">Spent</span>
-              <span className="text-[13px] text-text-muted font-[var(--font-mono)]" data-testid="lifetime-spent">
+              <span className="text-[13px] text-text-muted font-[family-name:var(--font-body)]">Spent</span>
+              <span className="text-[13px] text-text-muted font-[family-name:var(--font-mono)]" data-testid="lifetime-spent">
                 {(wallet?.lifetime_spent ?? 0).toLocaleString()}
               </span>
             </div>
           </div>
 
           {/* Partner row */}
-          <p className="mt-3 text-[13px] text-text-secondary font-[var(--font-body)] italic" data-testid="partner-row">
+          <p className="mt-3 text-[13px] text-text-secondary font-[family-name:var(--font-body)] italic" data-testid="partner-row">
             {partnerName} has {partnerBalance.toLocaleString()} CoYYns
           </p>
 
@@ -156,14 +156,14 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
             <button
               type="button"
               onClick={onAdd}
-              className="flex-1 h-10 rounded-xl border border-accent-primary text-accent-primary text-sm font-medium font-[var(--font-body)] transition-colors"
+              className="flex-1 h-10 rounded-xl border border-accent-primary text-accent-primary text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
             >
               + Add
             </button>
             <button
               type="button"
               onClick={onSpend}
-              className="flex-1 h-10 rounded-xl bg-accent-primary text-[var(--color-bg-elevated)] text-sm font-medium font-[var(--font-body)] transition-colors"
+              className="flex-1 h-10 rounded-xl bg-accent-primary text-[var(--color-bg-elevated)] text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
             >
               − Spend
             </button>

@@ -194,7 +194,7 @@ export const stagger = {
 ### Card Pattern
 ```tsx
 <motion.div
-  className="rounded-2xl bg-[var(--bg-elevated)] p-5 border border-[var(--border-subtle)] shadow-[var(--shadow-soft)]"
+  className="rounded-2xl bg-bg-elevated p-5 border border-border-subtle shadow-soft"
   whileHover={{ scale: 1.02 }}
   transition={{ duration: 0.2, ease: EASE_OUT }}
 >

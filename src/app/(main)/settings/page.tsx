@@ -51,7 +51,7 @@ export default function SettingsPage() {
       <PageHeader title="Settings" backHref="/" />
 
       {/* Profile Card */}
-      <div className="mx-6 mt-4 p-4 bg-bg-elevated rounded-xl border border-border-subtle shadow-[var(--shadow-soft)]">
+      <div className="mx-6 mt-4 p-4 bg-bg-elevated rounded-xl border border-border-subtle shadow-soft">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-accent-soft flex items-center justify-center shrink-0 overflow-hidden">
             {profile.avatar_url ? (

@@ -6,7 +6,9 @@ import { Bell, Gift, Trophy, Plus } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { CoyynsBadge } from "@/components/shared/CoyynsBadge"
 import { StaggerList } from "@/components/animations"
+import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import { cn } from "@/lib/utils"
 
 type MarketplaceTab = "shop" | "challenges"
@@ -50,21 +52,6 @@ const TABS: { key: MarketplaceTab; label: string }[] = [
   { key: "shop", label: "Shop" },
   { key: "challenges", label: "Challenges" },
 ]
-
-// Hardcoded balance for V1 — will be replaced by useCoyyns (T302) when available
-const MOCK_BALANCE = 1250
-
-function CoyynsBadge({ balance }: { balance: number }) {
-  return (
-    <span
-      className="flex items-center gap-1 font-mono text-[14px] font-medium text-accent-primary"
-      data-testid="coyyns-badge"
-    >
-      <span aria-hidden="true">&#x1FA99;</span>
-      {balance.toLocaleString()}
-    </span>
-  )
-}
 
 function ItemCardStub({
   item,
@@ -121,9 +108,8 @@ function ItemCardStub({
 
 export default function MarketplacePage() {
   const [activeTab, setActiveTab] = useState<MarketplaceTab>("shop")
-
-  // V1: hardcoded balance — replace with useCoyyns() from T302
-  const balance: number = MOCK_BALANCE
+  const { wallet } = useCoyyns()
+  const balance = wallet?.balance ?? 0
   const isBalanceZero = balance <= 0
 
   return (
@@ -132,7 +118,7 @@ export default function MarketplacePage() {
         <PageHeader
           title="Marketplace"
           backHref="/us"
-          rightAction={<CoyynsBadge balance={balance} />}
+          rightAction={<CoyynsBadge />}
         />
 
         {/* Tab bar */}

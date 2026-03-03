@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod/v4"
+import { z } from "zod"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
@@ -75,7 +75,7 @@ export default function LoginPage() {
               autoComplete="email"
               className={cn(
                 "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted",
-                errors.email && "border-[var(--error)] focus-visible:ring-[var(--error)]/20"
+                errors.email && "border-error focus-visible:ring-error/20"
               )}
               {...register("email")}
             />
@@ -93,7 +93,7 @@ export default function LoginPage() {
               autoComplete="current-password"
               className={cn(
                 "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted",
-                errors.password && "border-[var(--error)] focus-visible:ring-[var(--error)]/20"
+                errors.password && "border-error focus-visible:ring-error/20"
               )}
               {...register("password")}
             />

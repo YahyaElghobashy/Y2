@@ -76,6 +76,7 @@ export function CoyynsHistory({
     <StaggerList
       staggerDelay={0.04}
       className={cn("overflow-y-auto", className)}
+      role="list"
     >
       {displayTransactions.map((tx, index) => {
         const isEarn = tx.type === "earn"

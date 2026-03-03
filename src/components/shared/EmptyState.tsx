@@ -60,7 +60,7 @@ export function EmptyState({
           >
             <Link
               href={actionHref}
-              className="inline-block rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-[var(--shadow-soft)]"
+              className="inline-block rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-soft"
             >
               {actionLabel}
             </Link>
@@ -71,7 +71,7 @@ export function EmptyState({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2, ease: EASE_OUT }}
-            className="rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-[var(--shadow-soft)]"
+            className="rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-soft"
           >
             {actionLabel}
           </motion.button>

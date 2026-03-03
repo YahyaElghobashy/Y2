@@ -19,7 +19,7 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
     <Link href="/us" className="block">
       <motion.div
         className={cn(
-          "bg-[var(--color-bg-elevated)] rounded-2xl shadow-[var(--shadow-soft)] p-4",
+          "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft p-4",
           className
         )}
         whileTap={{ scale: 0.99 }}
