@@ -9,14 +9,15 @@ export default function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { user, profileNeedsSetup, refreshProfile } = useAuth()
+  const { user, profileNeedsSetup, refreshProfile, isLoading } = useAuth()
 
   return (
     <AppShell>
       {children}
-      {profileNeedsSetup && user && (
+      {!isLoading && profileNeedsSetup && user && (
         <ProfileSetupOverlay
           userId={user.id}
+          userEmail={user.email ?? ""}
           onComplete={refreshProfile}
         />
       )}

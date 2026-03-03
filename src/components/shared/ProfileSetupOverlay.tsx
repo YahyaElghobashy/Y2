@@ -21,11 +21,12 @@ type ProfileFormData = z.infer<typeof profileSchema>
 
 type ProfileSetupOverlayProps = {
   userId: string
+  userEmail: string
   initialName?: string
   onComplete: () => void
 }
 
-export function ProfileSetupOverlay({ userId, initialName, onComplete }: ProfileSetupOverlayProps) {
+export function ProfileSetupOverlay({ userId, userEmail, initialName, onComplete }: ProfileSetupOverlayProps) {
   const supabase = getSupabaseBrowserClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
@@ -84,17 +85,36 @@ export function ProfileSetupOverlay({ userId, initialName, onComplete }: Profile
         avatar_url = urlData.publicUrl
       }
 
-      const { error: updateError } = await supabase
+      const profileData = {
+        display_name: data.display_name,
+        email: userEmail,
+        ...(avatar_url ? { avatar_url } : {}),
+      }
+
+      // Try UPDATE first (row should exist from handle_new_user trigger)
+      const { data: updated, error: updateError } = await supabase
         .from("profiles")
-        .update({
-          display_name: data.display_name,
-          ...(avatar_url ? { avatar_url } : {}),
-        })
+        .update(profileData)
         .eq("id", userId)
+        .select()
 
       if (updateError) {
+        console.error("Profile update failed:", updateError.message ?? updateError)
         setError("root", { message: "Failed to save profile" })
         return
+      }
+
+      // If update returned no rows, row doesn't exist — insert it
+      if (!updated || updated.length === 0) {
+        const { error: insertError } = await supabase
+          .from("profiles")
+          .insert({ id: userId, ...profileData })
+
+        if (insertError) {
+          console.error("Profile insert failed:", insertError.message ?? insertError)
+          setError("root", { message: "Failed to save profile" })
+          return
+        }
       }
 
       setIsVisible(false)

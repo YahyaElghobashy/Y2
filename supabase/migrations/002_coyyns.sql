@@ -176,23 +176,5 @@ create policy "coyyns_transactions: own insert"
 
 
 -- ── 7. SEED DATA ─────────────────────────────────────────────
--- Creates a wallet row for each of the two pre-seeded users.
--- Uses the same placeholder UUIDs as 001_auth_profiles.sql.
--- Replace with the same real UUIDs you used in that migration.
---
--- This seed is safe to run after 001_auth_profiles.sql seed has been run
--- (i.e., after both profile rows exist in public.profiles).
-
-do $$
-declare
-  yahya_id uuid := '00000000-0000-0000-0000-000000000001'; -- REPLACE with real UUID
-  yara_id  uuid := '00000000-0000-0000-0000-000000000002'; -- REPLACE with real UUID
-begin
-  -- Insert wallets for both users (balance starts at 0)
-  insert into public.coyyns_wallets (user_id, balance, lifetime_earned, lifetime_spent)
-  values
-    (yahya_id, 0, 0, 0),
-    (yara_id,  0, 0, 0)
-  on conflict (user_id) do nothing;
-end;
-$$;
+-- Wallet rows are seeded by scripts/seed-users.mjs after real
+-- auth users are created. No placeholder UUIDs needed here.

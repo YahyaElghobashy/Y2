@@ -101,6 +101,7 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
         .eq("id", profile.id)
 
       if (updateError) {
+        console.error("Profile update failed:", updateError)
         setError("root", { message: "Failed to save profile" })
         return
       }

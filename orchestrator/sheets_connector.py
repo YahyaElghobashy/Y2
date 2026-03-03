@@ -195,9 +195,17 @@ class TaskQueueClient:
             self.sheet = get_sheet()
             self._task_queue = self.sheet.worksheet("Task Queue")
             self._run_log = self.sheet.worksheet("Run Log")
-            self._component_registry = self.sheet.worksheet("Component Registry")
-            self._overnight_report = self.sheet.worksheet("Overnight Report")
-            self._config = self.sheet.worksheet("Config")
+            # Optional worksheets — may not exist
+            for attr, name in [
+                ("_config", "Config"),
+                ("_component_registry", "Component Registry"),
+                ("_overnight_report", "Overnight Report"),
+                ("_validation_log", "Validation Log"),
+            ]:
+                try:
+                    setattr(self, attr, self.sheet.worksheet(name))
+                except Exception:
+                    setattr(self, attr, None)
             print(f"📊 Connected to: {self.sheet.title}")
         except Exception as e:
             print(f"⚠️  Google Sheets unavailable ({e})")
@@ -228,6 +236,8 @@ class TaskQueueClient:
     @retry_on_api_error(max_retries=3)
     def get_config(self) -> dict:
         """Read orchestrator config from the Config tab."""
+        if self._config is None:
+            return {}
         rows = self._config.get_all_values()
         config = {}
         for row in rows[3:]:  # skip title + header rows
@@ -419,6 +429,9 @@ class TaskQueueClient:
             "props": props, "built_by": built_by,
         })
 
+        if self._component_registry is None:
+            return
+
         @retry_on_api_error(max_retries=2)
         def _do():
             self._component_registry.append_row(row_data)
@@ -446,6 +459,9 @@ class TaskQueueClient:
         # Local backup
         self.backup.finalize(fields)
 
+        if self._overnight_report is None:
+            return
+
         def _do():
             for field_name, value in fields.items():
                 try:
@@ -456,6 +472,112 @@ class TaskQueueClient:
                     pass  # best effort on report fields
 
         self._safe_sheet_op("finalize_report", _do)
+
+    # ── Validation Log ─────────────────────────────────────
+
+    def _ensure_validation_log(self):
+        """Create the Validation Log worksheet if it doesn't exist."""
+        if self._validation_log is not None:
+            return True
+        if not self._sheets_available:
+            return False
+        try:
+            headers = [
+                "Task ID", "Phase", "Task Name", "Milestone",
+                "Expected Behavior", "Test Type", "Test Steps",
+                "Verification Location", "Pre-Build Status", "Test Result",
+                "Tested At", "Tested By", "Failure Notes", "Linked Test File",
+            ]
+            ws = self.sheet.add_worksheet(title="Validation Log", rows=100, cols=14)
+            ws.append_row(headers, value_input_option="USER_ENTERED")
+            self._validation_log = ws
+            print("  ✅ Created 'Validation Log' worksheet")
+            return True
+        except Exception as e:
+            print(f"  ⚠️  Could not create Validation Log: {e}")
+            return False
+
+    @retry_on_api_error(max_retries=3)
+    def get_validated_task_ids(self) -> set[str]:
+        """Return set of Task IDs already present in the Validation Log."""
+        if not self._sheets_available:
+            return set()
+        if not self._ensure_validation_log():
+            return set()
+        col_a = self._validation_log.col_values(1)  # Column A = Task ID
+        return {str(v).strip() for v in col_a if v.strip() and v.strip() != "Task ID"}
+
+    def batch_add_validation_entries(self, rows: list[list[str]]):
+        """
+        Batch-append pre-build validation rows to the Validation Log.
+        Each row should be a list of 14 values matching columns A–N:
+        [Task ID, Phase, Task Name, Milestone, Expected Behavior, Test Type,
+         Test Steps, Verification Location, Pre-Build Status, Test Result,
+         Tested At, Tested By, Failure Notes, Linked Test File]
+        """
+        self.backup.log_event({
+            "event": "VALIDATION_BATCH_ADD",
+            "count": len(rows),
+            "task_ids": [r[0] for r in rows],
+        })
+
+        if not self._ensure_validation_log():
+            return
+
+        @retry_on_api_error(max_retries=3)
+        def _do():
+            self._validation_log.append_rows(rows, value_input_option="USER_ENTERED")
+
+        self._safe_sheet_op("batch_add_validation", _do)
+
+    def update_validation_result(self, task_id: str, result: str,
+                                  tested_by: str = "claude-code",
+                                  failure_notes: str = ""):
+        """
+        Update post-build columns J–M for a single task in the Validation Log.
+        result: pass / fail / partial / skip
+        """
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        self.backup.log_event({
+            "event": "VALIDATION_RESULT",
+            "task_id": task_id, "result": result,
+            "tested_by": tested_by, "failure_notes": failure_notes,
+        })
+
+        if not self._ensure_validation_log():
+            return
+
+        @retry_on_api_error(max_retries=3)
+        def _do():
+            col_a = self._validation_log.col_values(1)
+            row_num = None
+            for i, val in enumerate(col_a):
+                if str(val).strip() == str(task_id).strip():
+                    row_num = i + 1
+                    break
+            if not row_num:
+                print(f"  ⚠️  Task {task_id} not found in Validation Log")
+                return
+            # Columns J=10, K=11, L=12, M=13
+            self._validation_log.update(f"J{row_num}:M{row_num}", [[
+                result, now, tested_by, failure_notes[:500]
+            ]])
+
+        self._safe_sheet_op(f"validation_result_{task_id}", _do)
+
+    def batch_update_validation_results(self, updates: list[dict]):
+        """
+        Batch-update post-build results for multiple tasks.
+        Each update dict: {"task_id": str, "result": str, "failure_notes": str}
+        """
+        for update in updates:
+            self.update_validation_result(
+                task_id=update["task_id"],
+                result=update["result"],
+                tested_by=update.get("tested_by", "claude-code"),
+                failure_notes=update.get("failure_notes", ""),
+            )
 
     # ── Status Check ────────────────────────────────────────
 
@@ -470,9 +592,16 @@ class TaskQueueClient:
             self.sheet = get_sheet()
             self._task_queue = self.sheet.worksheet("Task Queue")
             self._run_log = self.sheet.worksheet("Run Log")
-            self._component_registry = self.sheet.worksheet("Component Registry")
-            self._overnight_report = self.sheet.worksheet("Overnight Report")
-            self._config = self.sheet.worksheet("Config")
+            for attr, name in [
+                ("_config", "Config"),
+                ("_component_registry", "Component Registry"),
+                ("_overnight_report", "Overnight Report"),
+                ("_validation_log", "Validation Log"),
+            ]:
+                try:
+                    setattr(self, attr, self.sheet.worksheet(name))
+                except Exception:
+                    setattr(self, attr, None)
             self._sheets_available = True
             print("📊 Reconnected to Google Sheets")
             return True

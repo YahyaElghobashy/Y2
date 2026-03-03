@@ -14,6 +14,7 @@ Before writing any code, read the relevant docs:
 | Any code | `docs/CODING_STANDARDS.md` |
 | Understanding the app | `docs/ARCHITECTURE.md` |
 | Checking what exists | `docs/COMPONENT_REGISTRY.md` + `docs/TASK_LOG.md` |
+| Planning/validating a task | `docs/VALIDATION_SUITE.md` + Google Sheets Validation Log |
 
 ## Project Rules
 
@@ -31,6 +32,8 @@ Before writing any code, read the relevant docs:
 12. **Never install packages** without checking if they're already in package.json
 13. **Mobile-first** — all layouts start from 375px width and scale up
 14. **RTL-ready** — use logical properties (ps, pe, ms, me) not left/right in Tailwind
+15. **Pre-build validation plan** — Before starting any task, populate the Google Sheets "Validation Log" tab with: expected behavior, test type, test steps, and verification location. Pre-Build Status must be `documented` before writing code. See `docs/VALIDATION_SUITE.md` for full instructions and schema.
+16. **Post-build test recording** — After completing a task, run its test steps and record pass/fail/partial in the Validation Log. A task is not complete until its Test Result is recorded. If `fail` or `partial`, fix and re-test before marking done.
 
 ## Tech Stack Quick Reference
 
@@ -100,6 +103,7 @@ The orchestrator automatically skips tasks marked as `claude-code`. When working
 | Component Registry | Components built with status |
 | Overnight Report | Summary of last overnight run |
 | Config | Orchestrator settings (max turns, timeouts, etc.) |
+| Validation Log | Per-task: expected behavior, test steps, pass/fail results (see `docs/VALIDATION_SUITE.md`) |
 
 ### Using from Claude Code CLI
 

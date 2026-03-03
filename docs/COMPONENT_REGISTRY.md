@@ -31,7 +31,8 @@
 | PageTransition | ✅ | `components/animations/PageTransition.tsx` | `children, className?` — Page-level fade+slide wrapper. Fades in (opacity 0→1) with subtle slide up (y 8→0). Duration 250ms, ease-out deceleration. Respects `prefers-reduced-motion`. |
 | FadeIn | ✅ | `components/animations/FadeIn.tsx` | `children, delay?, duration?, className?` — Simple opacity fade wrapper. Configurable delay (default 0) and duration (default 0.3s). Respects `prefers-reduced-motion`. |
 | StaggerList | ✅ | `components/animations/StaggerList.tsx` | `children, staggerDelay?, className?` — Staggered list entrance. Children appear sequentially with configurable delay (default 0.05s). Each item fades+slides (y 6→0). Returns null for 0 children. Respects `prefers-reduced-motion`. |
-| Barrel Export | ✅ | `components/animations/index.ts` | Re-exports PageTransition, FadeIn, StaggerList for clean imports. |
+| HayahGradient | ✅ | `components/animations/HayahGradient.tsx` | `className?` — Ambient flowing gradient background. Pure CSS `@keyframes` animation (25s cycle, GPU-composited via `will-change: background-position`). Three layered `radial-gradient` blobs at low opacity using warm mineral palette (#E8D5C0 35%, #F5F0E8 50%, #C4956A 6%). `position: fixed; inset: 0; z-index: 0; pointer-events: none; aria-hidden="true"`. Renders in AppShell and AuthLayout. Respects `prefers-reduced-motion: reduce` (animation: none). Zero JS cost — no Framer Motion. |
+| Barrel Export | ✅ | `components/animations/index.ts` | Re-exports PageTransition, FadeIn, StaggerList, HayahGradient for clean imports. |
 | SlideUp | 📋 | `components/animations/SlideUp.tsx` | `children, delay?` |
 | ScaleIn | 📋 | `components/animations/ScaleIn.tsx` | `children, delay?` |
 

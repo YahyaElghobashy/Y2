@@ -74,4 +74,4 @@ Link (href) → wraps entire card
 ## Potential Issues
 
 - The task spec says `rounded-xl` (12px) but the design system says cards use `rounded-2xl` (16px). Following the task spec exactly.
-- Shadow values use raw CSS since Tailwind v4 custom shadow tokens are applied via `shadow-[var(...)]` syntax, matching the existing EmptyState pattern.
+- Shadow values use the registered theme token `shadow-soft`, which Tailwind v4 resolves from the `@theme inline` block.

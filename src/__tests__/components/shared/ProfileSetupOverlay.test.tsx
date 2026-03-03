@@ -5,8 +5,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 // --- Mocks ---
 const mockUpload = vi.fn()
 const mockGetPublicUrl = vi.fn()
-const mockUpdate = vi.fn()
-const mockEq = vi.fn()
+const mockSelect = vi.fn()
+const mockEq = vi.fn(() => ({ select: mockSelect }))
+const mockUpdate = vi.fn(() => ({ eq: mockEq }))
+const mockInsert = vi.fn()
 
 const mockSupabase = {
   storage: {
@@ -16,9 +18,8 @@ const mockSupabase = {
     })),
   },
   from: vi.fn(() => ({
-    update: mockUpdate.mockReturnValue({
-      eq: mockEq,
-    }),
+    update: mockUpdate,
+    insert: mockInsert,
   })),
 }
 
@@ -43,14 +44,16 @@ describe("ProfileSetupOverlay", () => {
   const mockOnComplete = vi.fn()
   const defaultProps = {
     userId: "user-1",
+    userEmail: "yahya@test.com",
     onComplete: mockOnComplete,
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockEq.mockResolvedValue({ error: null })
+    mockSelect.mockResolvedValue({ data: [{ id: "user-1" }], error: null })
     mockUpload.mockResolvedValue({ error: null })
     mockGetPublicUrl.mockReturnValue({ data: { publicUrl: "https://cdn.test/avatar.jpg" } })
+    mockInsert.mockResolvedValue({ error: null })
   })
 
   it("renders heading and subtitle", () => {
@@ -89,7 +92,9 @@ describe("ProfileSetupOverlay", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }))
 
     await waitFor(() => {
-      expect(mockUpdate).toHaveBeenCalledWith({ display_name: "Yahya" })
+      expect(mockUpdate).toHaveBeenCalledWith(
+        { display_name: "Yahya", email: "yahya@test.com" }
+      )
       expect(mockEq).toHaveBeenCalledWith("id", "user-1")
     })
   })
@@ -116,7 +121,7 @@ describe("ProfileSetupOverlay", () => {
   })
 
   it("shows error on profile update failure", async () => {
-    mockEq.mockResolvedValueOnce({ error: { message: "db error" } })
+    mockSelect.mockResolvedValueOnce({ data: null, error: { message: "db error" } })
     const user = userEvent.setup()
     render(<ProfileSetupOverlay {...defaultProps} />)
 
@@ -129,7 +134,7 @@ describe("ProfileSetupOverlay", () => {
   })
 
   it("shows loading state during submit", async () => {
-    mockEq.mockImplementation(() => new Promise(() => {}))
+    mockSelect.mockImplementation(() => new Promise(() => {}))
     const user = userEvent.setup()
     render(<ProfileSetupOverlay {...defaultProps} />)
 
@@ -150,13 +155,13 @@ describe("ProfileSetupOverlay", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }))
 
     await waitFor(() => {
-      expect(mockEq).toHaveBeenCalled()
+      expect(mockUpdate).toHaveBeenCalled()
     })
 
     vi.advanceTimersByTime(500)
 
     await waitFor(() => {
-      expect(mockOnComplete).toHaveBeenCalledOnce()
+      expect(mockOnComplete).toHaveBeenCalled()
     })
 
     vi.useRealTimers()
@@ -176,10 +181,12 @@ describe("ProfileSetupOverlay", () => {
       expect(mockUpload).toHaveBeenCalled()
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
+          email: "yahya@test.com",
           display_name: "Yahya",
           avatar_url: "https://cdn.test/avatar.jpg",
         })
       )
+      expect(mockEq).toHaveBeenCalledWith("id", "user-1")
     })
   })
 

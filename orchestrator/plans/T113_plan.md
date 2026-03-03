@@ -36,7 +36,7 @@
 | `--accent-primary` | `text-accent-primary` | Avatar initial text |
 | `--accent-soft` | `bg-accent-soft` | Avatar circle background |
 | `--border-subtle` | `border-border-subtle` | Row separators, profile card border |
-| `--shadow-soft` | `shadow-[var(--shadow-soft)]` | Profile card shadow |
+| `--shadow-soft` | `shadow-soft` | Profile card shadow |
 
 ## Lucide Icons Used
 
