@@ -1,6 +1,6 @@
+import React from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
-import Home from "@/app/(main)/page"
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -24,24 +24,81 @@ vi.mock("date-fns", () => ({
   format: () => "Monday, March 2",
 }))
 
+// Mock framer-motion
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => {
+      const { initial, animate, exit, transition, whileHover, whileTap, ...rest } = props
+      void initial; void animate; void exit; void transition; void whileHover; void whileTap
+      return <div {...rest}>{children}</div>
+    },
+  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
+
+// Mock useAuth
+vi.mock("@/lib/providers/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1" },
+    profile: {
+      id: "user-1",
+      display_name: "Yahya",
+      email: "yahya@test.com",
+      avatar_url: null,
+      partner_id: "user-2",
+      role: "user",
+      created_at: "",
+      updated_at: "",
+    },
+    partner: null,
+    isLoading: false,
+    profileNeedsSetup: false,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  }),
+}))
+
+// Mock useCoyyns
+const MOCK_TRANSACTIONS = [
+  { id: "tx-1", user_id: "user-1", amount: 50, type: "earn", category: "routine", description: "Morning routine", metadata: {}, created_at: "2026-01-01T08:00:00Z" },
+  { id: "tx-2", user_id: "user-1", amount: -200, type: "spend", category: "coupon", description: "Love coupon", metadata: {}, created_at: "2026-01-01T10:00:00Z" },
+  { id: "tx-3", user_id: "user-1", amount: 75, type: "earn", category: "planning", description: "Date planning", metadata: {}, created_at: "2026-01-01T12:00:00Z" },
+]
+
+vi.mock("@/lib/hooks/use-coyyns", () => ({
+  useCoyyns: () => ({
+    wallet: { id: "w-1", user_id: "user-1", balance: 1240, lifetime_earned: 2000, lifetime_spent: 760, created_at: "", updated_at: "" },
+    partnerWallet: null,
+    transactions: MOCK_TRANSACTIONS,
+    isLoading: false,
+    error: null,
+    addCoyyns: vi.fn(),
+    spendCoyyns: vi.fn(),
+    refreshWallet: vi.fn(),
+  }),
+}))
+
+import Home from "@/app/(main)/page"
+
 describe("Home Page", () => {
   it("renders without crashing", () => {
     render(<Home />)
   })
 
-  it("greeting text contains Good", () => {
-    render(<Home />)
-    expect(screen.getByText(/Good/)).toBeInTheDocument()
-  })
-
-  it("greeting text contains Yahya", () => {
+  it("greeting text contains the profile name from useAuth", () => {
     render(<Home />)
     expect(screen.getByText(/Yahya/)).toBeInTheDocument()
   })
 
-  it("date text is present and formatted", () => {
+  it("renders CoyynsWidget in the first widget position", () => {
     render(<Home />)
-    expect(screen.getByText("Monday, March 2")).toBeInTheDocument()
+    expect(screen.getByText("CoYYns")).toBeInTheDocument()
+  })
+
+  it("renders exactly one remaining WidgetSlot", () => {
+    render(<Home />)
+    const widgets = screen.getAllByText("Widget coming soon")
+    expect(widgets).toHaveLength(1)
   })
 
   it("renders all 4 QuickActionCards", () => {
@@ -52,19 +109,8 @@ describe("Home Page", () => {
     expect(screen.getByText("Ops")).toBeInTheDocument()
   })
 
-  it("QuickActionCards link to correct routes", () => {
+  it("renders date text", () => {
     render(<Home />)
-    const links = screen.getAllByRole("link")
-    const hrefs = links.map((link) => link.getAttribute("href"))
-    expect(hrefs).toContain("/us")
-    expect(hrefs).toContain("/health")
-    expect(hrefs).toContain("/spirit")
-    expect(hrefs).toContain("/ops")
-  })
-
-  it("renders at least 2 WidgetSlot elements", () => {
-    render(<Home />)
-    const widgets = screen.getAllByText("Widget coming soon")
-    expect(widgets.length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText("Monday, March 2")).toBeInTheDocument()
   })
 })

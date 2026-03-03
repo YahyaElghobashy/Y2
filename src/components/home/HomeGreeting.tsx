@@ -1,9 +1,11 @@
 "use client"
 
 import { format } from "date-fns"
+import { useAuth } from "@/lib/providers/AuthProvider"
+import { cn } from "@/lib/utils"
 
 type HomeGreetingProps = {
-  name?: string
+  className?: string
 }
 
 function getGreeting(hour: number): string {
@@ -13,13 +15,15 @@ function getGreeting(hour: number): string {
   return "Good night"
 }
 
-export function HomeGreeting({ name = "Yahya" }: HomeGreetingProps) {
+export function HomeGreeting({ className }: HomeGreetingProps) {
+  const { profile } = useAuth()
+  const name = profile?.display_name ?? "there"
   const now = new Date()
   const greeting = getGreeting(now.getHours())
   const dateString = format(now, "EEEE, MMMM d")
 
   return (
-    <div className="px-5 pt-4 pb-4">
+    <div className={cn("px-5 pt-4 pb-4", className)}>
       <h1 className="font-[family-name:var(--font-display)] text-[28px] font-bold leading-[1.2] text-[var(--color-text-primary)]">
         {greeting}, {name}
       </h1>

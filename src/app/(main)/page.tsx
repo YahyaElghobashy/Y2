@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/animations"
 import { HomeGreeting } from "@/components/home/HomeGreeting"
 import { QuickActionCard } from "@/components/home/QuickActionCard"
 import { WidgetSlot } from "@/components/home/WidgetSlot"
+import { CoyynsWidget } from "@/components/home/CoyynsWidget"
 
 export default function Home() {
   return (
@@ -21,7 +22,7 @@ export default function Home() {
 
       {/* Widget Slots */}
       <div className="flex flex-col gap-4 px-5 mt-6">
-        <WidgetSlot />
+        <CoyynsWidget />
         <WidgetSlot />
       </div>
     </PageTransition>
