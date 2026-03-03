@@ -91,6 +91,320 @@ export interface Database {
           }
         ]
       }
+      notifications: {
+        Row: {
+          id: string
+          sender_id: string
+          receiver_id: string
+          title: string
+          body: string
+          emoji: string | null
+          status: string
+          send_type: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          receiver_id: string
+          title: string
+          body: string
+          emoji?: string | null
+          status?: string
+          send_type: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          receiver_id?: string
+          title?: string
+          body?: string
+          emoji?: string | null
+          status?: string
+          send_type?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      daily_send_limits: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          free_sends_used: number
+          bonus_sends_used: number
+          bonus_sends_available: number
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          free_sends_used?: number
+          bonus_sends_used?: number
+          bonus_sends_available?: number
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          free_sends_used?: number
+          bonus_sends_used?: number
+          bonus_sends_available?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_send_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          endpoint: string
+          keys: Json
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          endpoint: string
+          keys: Json
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          endpoint?: string
+          keys?: Json
+          user_agent?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      cycle_config: {
+        Row: {
+          id: string
+          owner_id: string
+          pill_start_date: string
+          active_days: number
+          break_days: number
+          pms_warning_days: number
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          pill_start_date: string
+          active_days?: number
+          break_days?: number
+          pms_warning_days?: number
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          pill_start_date?: string
+          active_days?: number
+          break_days?: number
+          pms_warning_days?: number
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cycle_config_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      cycle_logs: {
+        Row: {
+          id: string
+          owner_id: string
+          date: string
+          mood: string | null
+          symptoms: string[]
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          date: string
+          mood?: string | null
+          symptoms?: string[]
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          date?: string
+          mood?: string | null
+          symptoms?: string[]
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cycle_logs_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      coupons: {
+        Row: {
+          id: string
+          creator_id: string
+          recipient_id: string
+          title: string
+          description: string | null
+          emoji: string | null
+          category: string
+          image_url: string | null
+          status: string
+          is_surprise: boolean
+          surprise_revealed: boolean
+          redeemed_at: string | null
+          approved_at: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          expires_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          creator_id: string
+          recipient_id: string
+          title: string
+          description?: string | null
+          emoji?: string | null
+          category?: string
+          image_url?: string | null
+          status?: string
+          is_surprise?: boolean
+          surprise_revealed?: boolean
+          redeemed_at?: string | null
+          approved_at?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          creator_id?: string
+          recipient_id?: string
+          title?: string
+          description?: string | null
+          emoji?: string | null
+          category?: string
+          image_url?: string | null
+          status?: string
+          is_surprise?: boolean
+          surprise_revealed?: boolean
+          redeemed_at?: string | null
+          approved_at?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupons_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      coupon_history: {
+        Row: {
+          id: string
+          coupon_id: string
+          event: string
+          actor_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          coupon_id: string
+          event: string
+          actor_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          coupon_id?: string
+          event?: string
+          actor_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_history_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_history_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           id: string
