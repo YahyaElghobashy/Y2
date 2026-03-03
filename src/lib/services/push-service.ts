@@ -45,16 +45,18 @@ export async function subscribeToPush(userId: string): Promise<PushSubscription 
     const subscriptionJson = subscription.toJSON()
     const supabase = getSupabaseBrowserClient()
 
-    await supabase.from("push_subscriptions").upsert(
-      {
-        user_id: userId,
-        endpoint: subscriptionJson.endpoint!,
-        keys: subscriptionJson.keys as Record<string, string>,
-        user_agent: navigator.userAgent,
-        created_at: new Date().toISOString(),
-      },
-      { onConflict: "endpoint" }
-    )
+    // Delete existing subscription for this user with same endpoint
+    await supabase
+      .from("push_subscriptions")
+      .delete()
+      .eq("user_id", userId)
+      .contains("subscription", { endpoint: subscriptionJson.endpoint })
+
+    // Insert new subscription
+    await supabase.from("push_subscriptions").insert({
+      user_id: userId,
+      subscription: subscriptionJson as unknown as import("@/lib/types/database.types").Json,
+    })
 
     return subscription
   } catch {
@@ -79,7 +81,7 @@ export async function unsubscribeFromPush(userId: string): Promise<boolean> {
       .from("push_subscriptions")
       .delete()
       .eq("user_id", userId)
-      .eq("endpoint", endpoint)
+      .contains("subscription", { endpoint })
 
     return true
   } catch {

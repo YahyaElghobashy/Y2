@@ -18,12 +18,13 @@ const MOCK_NOTIFICATIONS = [
   {
     id: "notif-1",
     sender_id: "user-1",
-    receiver_id: "user-2",
+    recipient_id: "user-2",
     title: "Hello",
     body: "Miss you",
     emoji: null,
     status: "delivered",
-    send_type: "free",
+    type: "custom",
+    metadata: {},
     created_at: "2026-01-02T00:00:00Z",
   },
 ]
@@ -44,12 +45,13 @@ const mockInsertChain = {
     data: {
       id: "notif-new",
       sender_id: "user-1",
-      receiver_id: "user-2",
+      recipient_id: "user-2",
       title: "Test",
       body: "Body",
       emoji: null,
-      status: "pending",
-      send_type: "free",
+      status: "sent",
+      type: "custom",
+      metadata: {},
       created_at: new Date().toISOString(),
     },
     error: null,
@@ -118,12 +120,13 @@ describe("useNotifications", () => {
       data: {
         id: "notif-new",
         sender_id: "user-1",
-        receiver_id: "user-2",
+        recipient_id: "user-2",
         title: "Test",
         body: "Body",
         emoji: null,
-        status: "pending",
-        send_type: "free",
+        status: "sent",
+        type: "custom",
+        metadata: {},
         created_at: new Date().toISOString(),
       },
       error: null,
@@ -226,10 +229,9 @@ describe("useNotifications", () => {
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
         sender_id: "user-1",
-        receiver_id: "user-2",
+        recipient_id: "user-2",
         title: "Test",
         body: "Body",
-        status: "pending",
       })
     )
     expect(mockFunctionsInvoke).toHaveBeenCalledWith("send-push-notification", {

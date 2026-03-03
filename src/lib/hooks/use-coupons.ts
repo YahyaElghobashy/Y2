@@ -249,7 +249,7 @@ export function useCoupons(): UseCouponsReturn {
       // Log the reveal event
       await supabase.from("coupon_history").insert({
         coupon_id: couponId,
-        event: "revealed",
+        action: "revealed",
         actor_id: user.id,
       })
 

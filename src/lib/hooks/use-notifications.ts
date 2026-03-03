@@ -84,7 +84,7 @@ export function useNotifications(): UseNotificationsReturn {
           supabase
             .from("notifications")
             .select("*")
-            .or(`sender_id.eq.${user!.id},receiver_id.eq.${user!.id}`)
+            .or(`sender_id.eq.${user!.id},recipient_id.eq.${user!.id}`)
             .order("created_at", { ascending: false })
             .limit(50),
           supabase
@@ -143,17 +143,16 @@ export function useNotifications(): UseNotificationsReturn {
       if (isSending.current) return
       isSending.current = true
 
-      const sendType: "free" | "bonus" = freeSendsRemaining > 0 ? "free" : "bonus"
-
       const optimisticNotification: Notification = {
         id: `optimistic-${Date.now()}`,
         sender_id: user.id,
-        receiver_id: partner.id,
+        recipient_id: partner.id,
         title,
         body,
         emoji: emoji ?? null,
-        status: "pending",
-        send_type: sendType,
+        status: "sent",
+        type: "custom",
+        metadata: {},
         created_at: new Date().toISOString(),
       }
 
@@ -164,12 +163,10 @@ export function useNotifications(): UseNotificationsReturn {
           .from("notifications")
           .insert({
             sender_id: user.id,
-            receiver_id: partner.id,
+            recipient_id: partner.id,
             title,
             body,
             emoji: emoji ?? null,
-            status: "pending",
-            send_type: sendType,
           })
           .select()
           .single()
@@ -205,7 +202,7 @@ export function useNotifications(): UseNotificationsReturn {
         isSending.current = false
       }
     },
-    [user, partner, canSend, freeSendsRemaining, supabase, refreshLimits]
+    [user, partner, canSend, supabase, refreshLimits]
   )
 
   if (!user) {
