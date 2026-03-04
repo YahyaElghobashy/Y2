@@ -5,7 +5,9 @@ import { useRouter, usePathname } from "next/navigation"
 import { AppShell } from "@/components/shared/AppShell"
 import { ProfileSetupOverlay } from "@/components/shared/ProfileSetupOverlay"
 import { InstallPrompt } from "@/components/shared/InstallPrompt"
+import { CouponReceiveAnimation } from "@/components/coupons/CouponReceiveAnimation"
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { useNewCouponDetection } from "@/lib/hooks/use-new-coupon-detection"
 
 export default function AppLayout({
   children,
@@ -15,6 +17,7 @@ export default function AppLayout({
   const { user, profile, profileNeedsSetup, refreshProfile, isLoading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+  const { newCoupon, showAnimation, onSaveForLater } = useNewCouponDetection()
 
   // Redirect unpaired users to /pair (unless already there or setting up profile)
   useEffect(() => {
@@ -35,6 +38,18 @@ export default function AppLayout({
         />
       )}
       <InstallPrompt />
+      {showAnimation && newCoupon && (
+        <CouponReceiveAnimation
+          visible={showAnimation}
+          couponTitle={newCoupon.title}
+          couponId={newCoupon.id}
+          onOpen={(id) => {
+            onSaveForLater()
+            router.push(`/us/coupons/${id}`)
+          }}
+          onDismiss={onSaveForLater}
+        />
+      )}
     </AppShell>
   )
 }
