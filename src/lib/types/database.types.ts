@@ -578,6 +578,9 @@ export interface Database {
           avatar_url: string | null
           partner_id: string | null
           role: string
+          invite_code: string | null
+          pairing_status: string
+          paired_at: string | null
           created_at: string
           updated_at: string
         }
@@ -588,6 +591,9 @@ export interface Database {
           avatar_url?: string | null
           partner_id?: string | null
           role?: string
+          invite_code?: string | null
+          pairing_status?: string
+          paired_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -598,6 +604,9 @@ export interface Database {
           avatar_url?: string | null
           partner_id?: string | null
           role?: string
+          invite_code?: string | null
+          pairing_status?: string
+          paired_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -605,6 +614,194 @@ export interface Database {
           {
             foreignKeyName: "profiles_partner_id_fkey"
             columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      events: {
+        Row: {
+          id: string
+          creator_id: string
+          title: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          end_time: string | null
+          recurrence: string
+          category: string
+          color: string | null
+          google_calendar_event_id: string | null
+          is_shared: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          creator_id: string
+          title: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          end_time?: string | null
+          recurrence?: string
+          category?: string
+          color?: string | null
+          google_calendar_event_id?: string | null
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          creator_id?: string
+          title?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          end_time?: string | null
+          recurrence?: string
+          category?: string
+          color?: string | null
+          google_calendar_event_id?: string | null
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      prayer_log: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          fajr: boolean
+          dhuhr: boolean
+          asr: boolean
+          maghrib: boolean
+          isha: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          fajr?: boolean
+          dhuhr?: boolean
+          asr?: boolean
+          maghrib?: boolean
+          isha?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          fajr?: boolean
+          dhuhr?: boolean
+          asr?: boolean
+          maghrib?: boolean
+          isha?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prayer_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      quran_log: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          pages_read: number
+          daily_goal: number
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          pages_read?: number
+          daily_goal?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          pages_read?: number
+          daily_goal?: number
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quran_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      azkar_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          session_type: string
+          count: number
+          target: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          session_type: string
+          count?: number
+          target?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          session_type?: string
+          count?: number
+          target?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "azkar_sessions_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
