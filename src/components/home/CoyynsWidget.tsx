@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useCoyyns } from "@/lib/hooks/use-coyyns"
@@ -12,6 +13,7 @@ type CoyynsWidgetProps = {
 }
 
 export function CoyynsWidget({ className }: CoyynsWidgetProps) {
+  const router = useRouter()
   const { wallet, transactions, isLoading } = useCoyyns()
   const recentTransactions = transactions.slice(0, 3)
 
@@ -73,9 +75,17 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
 
         {/* Footer */}
         <div className="flex justify-end mt-3">
-          <span className="font-[family-name:var(--font-body)] text-[13px] font-medium text-accent-primary">
-            See all &rarr;
-          </span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              router.push("/us/marketplace")
+            }}
+            className="font-[family-name:var(--font-body)] text-[13px] font-medium text-accent-primary"
+          >
+            Marketplace &rarr;
+          </button>
         </div>
       </motion.div>
     </Link>

@@ -2,12 +2,15 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bell, Gift, Trophy, Plus } from "lucide-react"
+import { Trophy, Plus } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { CoyynsBadge } from "@/components/shared/CoyynsBadge"
 import { StaggerList } from "@/components/animations"
+import { MarketplaceItemCard } from "@/components/relationship/MarketplaceItemCard"
+import { BuyExtraPingModal } from "@/components/ping/BuyExtraPingModal"
+import { CreateChallengeForm } from "@/components/relationship/CreateChallengeForm"
 import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import { cn } from "@/lib/utils"
 
@@ -15,7 +18,7 @@ type MarketplaceTab = "shop" | "challenges"
 
 type ShopItem = {
   id: string
-  icon: "Bell" | "Gift"
+  icon: string
   name: string
   description: string
   price: number | null
@@ -27,7 +30,7 @@ const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 const SHOP_ITEMS: ShopItem[] = [
   {
     id: "extra-notifications",
-    icon: "Bell",
+    icon: "🔔",
     name: "Extra Notifications",
     description: "Send more messages today",
     price: 25,
@@ -35,7 +38,7 @@ const SHOP_ITEMS: ShopItem[] = [
   },
   {
     id: "coming-soon-1",
-    icon: "Gift",
+    icon: "🎁",
     name: "Coming Soon",
     description: "More items on the way",
     price: null,
@@ -43,74 +46,24 @@ const SHOP_ITEMS: ShopItem[] = [
   },
 ]
 
-const ICON_MAP = {
-  Bell,
-  Gift,
-} as const
-
 const TABS: { key: MarketplaceTab; label: string }[] = [
   { key: "shop", label: "Shop" },
   { key: "challenges", label: "Challenges" },
 ]
 
-function ItemCardStub({
-  item,
-  disabled,
-}: {
-  item: ShopItem
-  disabled: boolean
-}) {
-  const Icon = ICON_MAP[item.icon]
-  const isComingSoon = !item.available
-
-  return (
-    <motion.div
-      className={cn(
-        "rounded-2xl bg-bg-elevated p-5 border border-border-subtle shadow-[0_2px_12px_rgba(44,40,37,0.06)]",
-        isComingSoon && "opacity-60",
-        disabled && item.available && "opacity-50 pointer-events-none"
-      )}
-      whileHover={!isComingSoon && !disabled ? { scale: 1.02, boxShadow: "0 4px 24px rgba(44,40,37,0.10)" } : undefined}
-      whileTap={!isComingSoon && !disabled ? { scale: 0.98 } : undefined}
-      transition={{ duration: 0.2, ease: EASE_OUT }}
-      data-testid="item-card"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-            <Icon
-              className="h-[18px] w-[18px] text-accent-primary"
-              strokeWidth={1.75}
-            />
-          </div>
-          <div className="min-w-0">
-            <h3 className="font-body text-[15px] font-semibold text-text-primary line-clamp-2">
-              {item.name}
-            </h3>
-            <p className="font-body text-[13px] text-text-secondary line-clamp-2">
-              {item.description}
-            </p>
-          </div>
-        </div>
-        <span className="shrink-0 font-mono text-[14px] font-medium text-accent-primary">
-          {item.price !== null ? (
-            <>
-              {item.price} <span aria-hidden="true">&#x1FA99;</span>
-            </>
-          ) : (
-            "???"
-          )}
-        </span>
-      </div>
-    </motion.div>
-  )
-}
-
 export default function MarketplacePage() {
   const [activeTab, setActiveTab] = useState<MarketplaceTab>("shop")
   const { wallet } = useCoyyns()
   const balance = wallet?.balance ?? 0
-  const isBalanceZero = balance <= 0
+
+  const [showBuyPing, setShowBuyPing] = useState(false)
+  const [showCreateChallenge, setShowCreateChallenge] = useState(false)
+
+  const handleItemClick = (item: ShopItem) => {
+    if (item.id === "extra-notifications") {
+      setShowBuyPing(true)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-bg-primary px-5 pt-4 pb-24">
@@ -169,10 +122,15 @@ export default function MarketplacePage() {
             >
               <StaggerList className="flex flex-col gap-3">
                 {SHOP_ITEMS.map((item) => (
-                  <ItemCardStub
+                  <MarketplaceItemCard
                     key={item.id}
-                    item={item}
-                    disabled={isBalanceZero}
+                    icon={item.icon}
+                    title={item.name}
+                    description={item.description}
+                    price={item.price}
+                    available={item.available}
+                    affordable={item.price !== null ? balance >= item.price : false}
+                    onPurchase={() => handleItemClick(item)}
                   />
                 ))}
               </StaggerList>
@@ -186,7 +144,7 @@ export default function MarketplacePage() {
               transition={{ duration: 0.15, ease: EASE_OUT }}
               className="mt-4"
             >
-              {/* V1: No challenges — show EmptyState */}
+              {/* V1: No challenges -- show EmptyState */}
               <EmptyState
                 icon={<Trophy size={24} strokeWidth={1.75} />}
                 title="No challenges yet"
@@ -198,6 +156,7 @@ export default function MarketplacePage() {
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.2, ease: EASE_OUT }}
                   className="flex items-center gap-2 font-body text-[14px] font-medium text-accent-primary"
+                  onClick={() => setShowCreateChallenge(true)}
                   data-testid="create-challenge-btn"
                 >
                   <Plus size={18} strokeWidth={1.75} />
@@ -208,6 +167,19 @@ export default function MarketplacePage() {
           )}
         </AnimatePresence>
       </PageTransition>
+
+      {/* Modals */}
+      <BuyExtraPingModal
+        open={showBuyPing}
+        onClose={() => setShowBuyPing(false)}
+        onPurchased={() => setShowBuyPing(false)}
+      />
+
+      <CreateChallengeForm
+        open={showCreateChallenge}
+        onClose={() => setShowCreateChallenge(false)}
+        onCreated={() => setShowCreateChallenge(false)}
+      />
     </main>
   )
 }

@@ -2,6 +2,12 @@ import React from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
+// Mock next/navigation
+const mockPush = vi.fn()
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush, replace: vi.fn(), back: vi.fn() }),
+}))
+
 // Mock next/link
 vi.mock("next/link", () => ({
   default: ({
@@ -136,9 +142,9 @@ describe("CoyynsWidget", () => {
     expect(pulses.length).toBeGreaterThan(0)
   })
 
-  it('renders "See all" text', () => {
+  it('renders "Marketplace" button text', () => {
     render(<CoyynsWidget />)
-    expect(screen.getByText(/See all/)).toBeInTheDocument()
+    expect(screen.getByText(/Marketplace/)).toBeInTheDocument()
   })
 
   it("card links to /us", () => {

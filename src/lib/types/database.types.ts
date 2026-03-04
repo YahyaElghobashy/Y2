@@ -417,6 +417,62 @@ export interface Database {
           }
         ]
       }
+      challenges: {
+        Row: {
+          id: string
+          creator_id: string
+          title: string
+          description: string | null
+          emoji: string | null
+          stakes: number
+          deadline: string | null
+          status: string
+          claimed_by: string | null
+          winner_id: string | null
+          actual_transfer: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          creator_id: string
+          title: string
+          description?: string | null
+          emoji?: string | null
+          stakes?: number
+          deadline?: string | null
+          status?: string
+          claimed_by?: string | null
+          winner_id?: string | null
+          actual_transfer?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          creator_id?: string
+          title?: string
+          description?: string | null
+          emoji?: string | null
+          stakes?: number
+          deadline?: string | null
+          status?: string
+          claimed_by?: string | null
+          winner_id?: string | null
+          actual_transfer?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           id: string
