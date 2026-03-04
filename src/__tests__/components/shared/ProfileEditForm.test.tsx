@@ -26,6 +26,10 @@ vi.mock("@/lib/supabase/client", () => ({
   getSupabaseBrowserClient: () => mockSupabase,
 }))
 
+vi.mock("@/lib/avatar-upload", () => ({
+  uploadAvatar: vi.fn().mockResolvedValue({ url: "https://cdn.test/processed.webp" }),
+}))
+
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => {
@@ -117,7 +121,7 @@ describe("ProfileEditForm", () => {
         profile={{ ...defaultProps.profile, avatar_url: "https://cdn.test/existing.jpg" }}
       />
     )
-    expect(screen.getByAltText("Avatar")).toBeInTheDocument()
+    expect(screen.getByAltText("Yahya")).toBeInTheDocument()
   })
 
   it("shows error on profile update failure", async () => {

@@ -9,6 +9,8 @@ import { Camera } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Avatar } from "@/components/shared/Avatar"
+import { uploadAvatar } from "@/lib/avatar-upload"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -28,10 +30,6 @@ type ProfileEditFormProps = {
   }
   onSave: () => void
   onCancel: () => void
-}
-
-function getInitials(name: string): string {
-  return name.charAt(0).toUpperCase()
 }
 
 export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormProps) {
@@ -77,19 +75,12 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
       let avatar_url: string | undefined
 
       if (avatarFile) {
-        const ext = avatarFile.name.split(".").pop()
-        const path = `avatars/${profile.id}/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(path, avatarFile)
-
-        if (uploadError) {
-          setError("root", { message: "Failed to upload avatar" })
+        const result = await uploadAvatar(avatarFile, profile.id)
+        if ("error" in result) {
+          setError("root", { message: result.error })
           return
         }
-
-        const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path)
-        avatar_url = urlData.publicUrl
+        avatar_url = result.url
       }
 
       const { error: updateError } = await supabase
@@ -128,22 +119,16 @@ export function ProfileEditForm({ profile, onSave, onCancel }: ProfileEditFormPr
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="relative w-16 h-16 rounded-full bg-accent-soft flex items-center justify-center overflow-hidden border-2 border-border-subtle focus:outline-none focus:ring-2 focus:ring-accent-primary/30"
+            className="relative focus:outline-none focus:ring-2 focus:ring-accent-primary/30 rounded-full"
             aria-label="Change avatar"
           >
-            {currentAvatar ? (
-              <img
-                src={currentAvatar}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-accent-primary font-bold text-xl font-body">
-                {getInitials(profile.display_name)}
-              </span>
-            )}
-            <span className="absolute bottom-0 end-0 w-5 h-5 rounded-full bg-accent-primary flex items-center justify-center">
-              <Camera size={10} strokeWidth={2} className="text-white" />
+            <Avatar
+              src={currentAvatar}
+              name={profile.display_name}
+              size="xl"
+            />
+            <span className="absolute bottom-0 end-0 w-6 h-6 rounded-full bg-[var(--color-accent-primary)] flex items-center justify-center">
+              <Camera size={12} strokeWidth={2} className="text-white" />
             </span>
           </button>
           <input

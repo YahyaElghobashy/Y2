@@ -10,14 +10,17 @@ import {
   Info,
   LogOut,
   Link2Off,
+  Calendar,
 } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { SettingsRow } from "@/components/shared/SettingsRow"
 import { ProfileEditForm } from "@/components/shared/ProfileEditForm"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { Avatar } from "@/components/shared/Avatar"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { GoogleCalendarConnect } from "@/components/calendar/GoogleCalendarConnect"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,13 +51,6 @@ export default function MorePage() {
     )
   }
 
-  const initials = (profile.display_name || "U")
-    .split(" ")
-    .map((w: string) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-
   return (
     <PageTransition>
       <PageHeader title="More" />
@@ -62,17 +58,11 @@ export default function MorePage() {
       <div className="flex flex-col gap-6 px-5 py-5">
         {/* Profile Card */}
         <div className="flex items-center gap-4 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-4">
-          {profile.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt={profile.display_name || "Avatar"}
-              className="h-14 w-14 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent-soft)] font-[family-name:var(--font-display)] text-[18px] font-semibold text-[var(--color-accent-primary)]">
-              {initials}
-            </div>
-          )}
+          <Avatar
+            src={profile.avatar_url}
+            name={profile.display_name}
+            size="lg"
+          />
           <div className="flex-1">
             <p className="font-[family-name:var(--font-display)] text-[17px] font-semibold text-[var(--color-text-primary)]">
               {profile.display_name || "User"}
@@ -129,6 +119,7 @@ export default function MorePage() {
               label="Notifications"
               subtitle="Push notification settings"
             />
+            <GoogleCalendarConnect />
             <SettingsRow
               icon={<Palette size={20} strokeWidth={1.5} />}
               label="Theme"
