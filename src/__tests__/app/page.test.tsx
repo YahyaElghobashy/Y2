@@ -120,6 +120,24 @@ vi.mock("@/lib/hooks/use-cycle", () => ({
   }),
 }))
 
+// Mock sonner (used by PurchaseConfirmModal)
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
+
+// Mock useMarketplace (used by HomeMarketplaceRow)
+vi.mock("@/lib/hooks/use-marketplace", () => ({
+  useMarketplace: () => ({
+    items: [],
+    purchases: [],
+    isLoading: false,
+    error: null,
+    createPurchase: vi.fn(),
+    refreshItems: vi.fn(),
+    refreshPurchases: vi.fn(),
+  }),
+}))
+
 // Mock useNotifications (used by MoodStrip)
 vi.mock("@/lib/hooks/use-notifications", () => ({
   useNotifications: () => ({

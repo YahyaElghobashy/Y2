@@ -9,6 +9,7 @@ import { CoyynsWidget } from "@/components/home/CoyynsWidget"
 import { HomeCycleWidget } from "@/components/home/HomeCycleWidget"
 import { HomeCouponInbox } from "@/components/home/HomeCouponInbox"
 import { FeelingGenerousCTA } from "@/components/home/FeelingGenerousCTA"
+import { HomeMarketplaceRow } from "@/components/home/HomeMarketplaceRow"
 
 export default function Home() {
   return (
@@ -23,6 +24,9 @@ export default function Home() {
         <QuickActionCard icon={<Sparkles size={20} />} label="2026" description="Vision board" href="/2026" />
         <QuickActionCard icon={<MoreHorizontal size={20} />} label="More" description="Settings & tools" href="/more" />
       </div>
+
+      {/* Marketplace Quick Buys */}
+      <HomeMarketplaceRow className="mt-6" />
 
       {/* Widget Slots */}
       <div className="flex flex-col gap-4 px-5 mt-6">

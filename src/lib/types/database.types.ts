@@ -473,6 +473,103 @@ export interface Database {
           }
         ]
       }
+      marketplace_items: {
+        Row: {
+          id: string
+          name: string
+          description: string
+          price: number
+          icon: string
+          effect_type: string
+          effect_config: Json
+          is_active: boolean
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description: string
+          price: number
+          icon: string
+          effect_type: string
+          effect_config?: Json
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string
+          price?: number
+          icon?: string
+          effect_type?: string
+          effect_config?: Json
+          is_active?: boolean
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      purchases: {
+        Row: {
+          id: string
+          buyer_id: string
+          target_id: string
+          item_id: string
+          cost: number
+          effect_payload: Json | null
+          status: string
+          created_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          buyer_id: string
+          target_id: string
+          item_id: string
+          cost: number
+          effect_payload?: Json | null
+          status?: string
+          created_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          buyer_id?: string
+          target_id?: string
+          item_id?: string
+          cost?: number
+          effect_payload?: Json | null
+          status?: string
+          created_at?: string
+          completed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_items"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           id: string

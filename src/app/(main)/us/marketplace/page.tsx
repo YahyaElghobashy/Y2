@@ -8,43 +8,20 @@ import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { CoyynsBadge } from "@/components/shared/CoyynsBadge"
 import { StaggerList } from "@/components/animations"
-import { MarketplaceItemCard } from "@/components/relationship/MarketplaceItemCard"
-import { BuyExtraPingModal } from "@/components/ping/BuyExtraPingModal"
+import {
+  MarketplaceItemCard,
+  MarketplaceItemCardSkeleton,
+} from "@/components/relationship/MarketplaceItemCard"
+import { PurchaseConfirmModal } from "@/components/relationship/PurchaseConfirmModal"
 import { CreateChallengeForm } from "@/components/relationship/CreateChallengeForm"
+import { useMarketplace } from "@/lib/hooks/use-marketplace"
 import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import { cn } from "@/lib/utils"
+import type { MarketplaceItem, Purchase } from "@/lib/types/marketplace.types"
 
 type MarketplaceTab = "shop" | "challenges"
 
-type ShopItem = {
-  id: string
-  icon: string
-  name: string
-  description: string
-  price: number | null
-  available: boolean
-}
-
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
-
-const SHOP_ITEMS: ShopItem[] = [
-  {
-    id: "extra-notifications",
-    icon: "🔔",
-    name: "Extra Notifications",
-    description: "Send more messages today",
-    price: 25,
-    available: true,
-  },
-  {
-    id: "coming-soon-1",
-    icon: "🎁",
-    name: "Coming Soon",
-    description: "More items on the way",
-    price: null,
-    available: false,
-  },
-]
 
 const TABS: { key: MarketplaceTab; label: string }[] = [
   { key: "shop", label: "Shop" },
@@ -55,14 +32,23 @@ export default function MarketplacePage() {
   const [activeTab, setActiveTab] = useState<MarketplaceTab>("shop")
   const { wallet } = useCoyyns()
   const balance = wallet?.balance ?? 0
+  const { items, isLoading, error } = useMarketplace()
 
-  const [showBuyPing, setShowBuyPing] = useState(false)
+  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null)
+  const [showModal, setShowModal] = useState(false)
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
 
-  const handleItemClick = (item: ShopItem) => {
-    if (item.id === "extra-notifications") {
-      setShowBuyPing(true)
+  const handleBuy = (itemId: string) => {
+    const item = items.find((i) => i.id === itemId)
+    if (item) {
+      setSelectedItem(item)
+      setShowModal(true)
     }
+  }
+
+  const handleConfirmed = (_purchase: Purchase) => {
+    setShowModal(false)
+    setSelectedItem(null)
   }
 
   return (
@@ -120,20 +106,37 @@ export default function MarketplacePage() {
               transition={{ duration: 0.15, ease: EASE_OUT }}
               className="mt-4"
             >
-              <StaggerList className="flex flex-col gap-3">
-                {SHOP_ITEMS.map((item) => (
-                  <MarketplaceItemCard
-                    key={item.id}
-                    icon={item.icon}
-                    title={item.name}
-                    description={item.description}
-                    price={item.price}
-                    available={item.available}
-                    affordable={item.price !== null ? balance >= item.price : false}
-                    onPurchase={() => handleItemClick(item)}
-                  />
-                ))}
-              </StaggerList>
+              {isLoading ? (
+                <div className="flex flex-col gap-3">
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <MarketplaceItemCardSkeleton key={i} variant="vertical" />
+                  ))}
+                </div>
+              ) : error && items.length === 0 ? (
+                <EmptyState
+                  icon={<Trophy size={24} strokeWidth={1.75} />}
+                  title="Marketplace unavailable"
+                  subtitle="Please try again later"
+                />
+              ) : items.length === 0 ? (
+                <EmptyState
+                  icon={<Trophy size={24} strokeWidth={1.75} />}
+                  title="No items yet"
+                  subtitle="Check back soon for new items"
+                />
+              ) : (
+                <StaggerList className="flex flex-col gap-3">
+                  {items.map((item) => (
+                    <MarketplaceItemCard
+                      key={item.id}
+                      item={item}
+                      balance={balance}
+                      onBuy={handleBuy}
+                      variant="vertical"
+                    />
+                  ))}
+                </StaggerList>
+              )}
             </motion.div>
           ) : (
             <motion.div
@@ -168,11 +171,16 @@ export default function MarketplacePage() {
         </AnimatePresence>
       </PageTransition>
 
-      {/* Modals */}
-      <BuyExtraPingModal
-        open={showBuyPing}
-        onClose={() => setShowBuyPing(false)}
-        onPurchased={() => setShowBuyPing(false)}
+      {/* Purchase modal */}
+      <PurchaseConfirmModal
+        item={selectedItem}
+        balance={balance}
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false)
+          setSelectedItem(null)
+        }}
+        onConfirmed={handleConfirmed}
       />
 
       <CreateChallengeForm

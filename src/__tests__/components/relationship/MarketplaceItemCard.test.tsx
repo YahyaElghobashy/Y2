@@ -1,6 +1,6 @@
 import React from "react"
-import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { render, screen, fireEvent, act } from "@testing-library/react"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
@@ -10,101 +10,129 @@ vi.mock("framer-motion", () => ({
       void initial; void animate; void exit; void transition; void whileHover; void whileTap
       return <div {...rest}>{children}</div>
     },
+    button: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
+      const { initial, animate, exit, transition, whileHover, whileTap, ...rest } = props
+      void initial; void animate; void exit; void transition; void whileHover; void whileTap
+      return <button {...rest}>{children}</button>
+    },
   },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
-import { MarketplaceItemCard } from "@/components/relationship/MarketplaceItemCard"
+import { MarketplaceItemCard, MarketplaceItemCardSkeleton } from "@/components/relationship/MarketplaceItemCard"
+import type { MarketplaceItem } from "@/lib/types/marketplace.types"
+
+const mockItem: MarketplaceItem = {
+  id: "item-1",
+  name: "Extra Notification",
+  description: "Send more messages today",
+  price: 10,
+  icon: "🔔",
+  effect_type: "extra_ping",
+  effect_config: { extra_sends: 1 },
+  is_active: true,
+  sort_order: 1,
+  created_at: "2024-01-01T00:00:00Z",
+}
 
 const defaultProps = {
-  icon: "🔔",
-  title: "Extra Notification",
-  description: "Send more messages today",
-  price: 25 as number | null,
+  item: mockItem,
+  balance: 100,
+  onBuy: vi.fn(),
+  variant: "vertical" as const,
 }
 
 describe("MarketplaceItemCard", () => {
-  it("renders without crashing", () => {
-    render(<MarketplaceItemCard {...defaultProps} />)
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.useFakeTimers()
   })
 
-  it("renders the title text", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("renders vertical variant without crashing", () => {
+    render(<MarketplaceItemCard {...defaultProps} />)
+    expect(screen.getByTestId("marketplace-item-card")).toBeInTheDocument()
+  })
+
+  it("renders horizontal variant without crashing", () => {
+    render(<MarketplaceItemCard {...defaultProps} variant="horizontal" />)
+    expect(screen.getByTestId("marketplace-item-card")).toBeInTheDocument()
+  })
+
+  it("renders the item name", () => {
     render(<MarketplaceItemCard {...defaultProps} />)
     expect(screen.getByText("Extra Notification")).toBeInTheDocument()
   })
 
-  it("renders the description text", () => {
+  it("renders the item description in vertical variant", () => {
     render(<MarketplaceItemCard {...defaultProps} />)
     expect(screen.getByText("Send more messages today")).toBeInTheDocument()
   })
 
-  it("renders the icon emoji", () => {
+  it("renders the item icon", () => {
     render(<MarketplaceItemCard {...defaultProps} />)
     expect(screen.getByText("🔔")).toBeInTheDocument()
   })
 
-  it("renders the price in the price pill", () => {
+  it("calls onBuy with item.id when buy button clicked and affordable", () => {
+    const onBuy = vi.fn()
+    render(<MarketplaceItemCard {...defaultProps} onBuy={onBuy} />)
+    fireEvent.click(screen.getByTestId("buy-button"))
+    act(() => { vi.advanceTimersByTime(100) })
+    expect(onBuy).toHaveBeenCalledWith("item-1")
+  })
+
+  it("does NOT call onBuy when balance < price", () => {
+    const onBuy = vi.fn()
+    render(<MarketplaceItemCard {...defaultProps} balance={5} onBuy={onBuy} />)
+    fireEvent.click(screen.getByTestId("buy-button"))
+    act(() => { vi.advanceTimersByTime(200) })
+    expect(onBuy).not.toHaveBeenCalled()
+  })
+
+  it("shows 'Need X more' tooltip when tapped and cannot afford", () => {
+    render(<MarketplaceItemCard {...defaultProps} balance={5} />)
+    fireEvent.click(screen.getByTestId("buy-button"))
+    expect(screen.getByTestId("need-more-tooltip")).toHaveTextContent("Need 5 more")
+  })
+
+  it("buy button has disabled styling when cannot afford", () => {
+    render(<MarketplaceItemCard {...defaultProps} balance={5} />)
+    const btn = screen.getByTestId("buy-button")
+    expect(btn).toHaveClass("cursor-not-allowed")
+  })
+
+  it("applies className prop", () => {
+    render(<MarketplaceItemCard {...defaultProps} className="mt-6" />)
+    expect(screen.getByTestId("marketplace-item-card")).toHaveClass("mt-6")
+  })
+
+  it("horizontal variant has 140px width class", () => {
+    render(<MarketplaceItemCard {...defaultProps} variant="horizontal" />)
+    expect(screen.getByTestId("marketplace-item-card")).toHaveClass("w-[140px]")
+  })
+
+  it("shows success overlay after buy animation", () => {
     render(<MarketplaceItemCard {...defaultProps} />)
-    expect(screen.getByTestId("price-pill")).toHaveTextContent("25")
+    fireEvent.click(screen.getByTestId("buy-button"))
+    act(() => { vi.advanceTimersByTime(100) })
+    expect(screen.getByTestId("buy-success-overlay")).toBeInTheDocument()
+  })
+})
+
+describe("MarketplaceItemCardSkeleton", () => {
+  it("renders horizontal skeleton", () => {
+    render(<MarketplaceItemCardSkeleton variant="horizontal" />)
+    const el = screen.getByTestId("marketplace-skeleton")
+    expect(el).toHaveClass("w-[140px]")
   })
 
-  it('renders "???" when price is null (coming soon)', () => {
-    render(<MarketplaceItemCard {...defaultProps} price={null} available={false} />)
-    expect(screen.getByTestId("price-pill")).toHaveTextContent("???")
-  })
-
-  it("applies opacity-70 when not affordable", () => {
-    const { container } = render(
-      <MarketplaceItemCard {...defaultProps} affordable={false} />
-    )
-    expect(container.firstChild).toHaveClass("opacity-70")
-  })
-
-  it("applies opacity-60 when not available (coming soon)", () => {
-    const { container } = render(
-      <MarketplaceItemCard {...defaultProps} available={false} />
-    )
-    expect(container.firstChild).toHaveClass("opacity-60")
-  })
-
-  it("calls onPurchase when clicked and affordable", () => {
-    const handlePurchase = vi.fn()
-    render(
-      <MarketplaceItemCard {...defaultProps} onPurchase={handlePurchase} />
-    )
-    fireEvent.click(screen.getByTestId("marketplace-item-card"))
-    expect(handlePurchase).toHaveBeenCalledOnce()
-  })
-
-  it("does NOT call onPurchase when not affordable", () => {
-    const handlePurchase = vi.fn()
-    render(
-      <MarketplaceItemCard
-        {...defaultProps}
-        affordable={false}
-        onPurchase={handlePurchase}
-      />
-    )
-    fireEvent.click(screen.getByTestId("marketplace-item-card"))
-    expect(handlePurchase).not.toHaveBeenCalled()
-  })
-
-  it("does NOT call onPurchase when not available", () => {
-    const handlePurchase = vi.fn()
-    render(
-      <MarketplaceItemCard
-        {...defaultProps}
-        available={false}
-        onPurchase={handlePurchase}
-      />
-    )
-    fireEvent.click(screen.getByTestId("marketplace-item-card"))
-    expect(handlePurchase).not.toHaveBeenCalled()
-  })
-
-  it("accepts className prop", () => {
-    const { container } = render(
-      <MarketplaceItemCard {...defaultProps} className="mt-6" />
-    )
-    expect(container.firstChild).toHaveClass("mt-6")
+  it("renders vertical skeleton", () => {
+    render(<MarketplaceItemCardSkeleton variant="vertical" />)
+    const el = screen.getByTestId("marketplace-skeleton")
+    expect(el).toHaveClass("w-full")
   })
 })

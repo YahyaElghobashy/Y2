@@ -2,33 +2,27 @@ import React from "react"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-// --- Mocks ---
-const mockSpendCoyyns = vi.fn()
+// ── Mocks ──────────────────────────────────────────────
+const mockCreatePurchase = vi.fn()
 
-const defaultCoyynsReturn = {
-  wallet: { id: "w-1", user_id: "user-1", balance: 500, lifetime_earned: 1000, lifetime_spent: 500, created_at: "", updated_at: "" },
-  partnerWallet: null,
-  transactions: [],
-  isLoading: false,
-  error: null as string | null,
-  addCoyyns: vi.fn(),
-  spendCoyyns: mockSpendCoyyns,
-  refreshWallet: vi.fn(),
-}
-
-const { useCoyyns } = vi.hoisted(() => ({
-  useCoyyns: vi.fn(() => defaultCoyynsReturn),
+const { useMarketplace } = vi.hoisted(() => ({
+  useMarketplace: vi.fn(() => ({
+    items: [],
+    purchases: [],
+    isLoading: false,
+    error: null,
+    createPurchase: mockCreatePurchase,
+    refreshItems: vi.fn(),
+    refreshPurchases: vi.fn(),
+  })),
 }))
 
-vi.mock("@/lib/hooks/use-coyyns", () => ({
-  useCoyyns,
-}))
+vi.mock("@/lib/hooks/use-marketplace", () => ({ useMarketplace }))
 
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 
-// Mock framer-motion
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
@@ -41,27 +35,42 @@ vi.mock("framer-motion", () => ({
 }))
 
 import { PurchaseConfirmModal } from "@/components/relationship/PurchaseConfirmModal"
+import type { MarketplaceItem } from "@/lib/types/marketplace.types"
 
-const defaultItem = {
-  icon: "🔔",
-  title: "Extra Notification",
+const mockItem: MarketplaceItem = {
+  id: "item-1",
+  name: "Extra Notification",
   description: "Send more messages today",
+  price: 10,
+  icon: "🔔",
+  effect_type: "extra_ping",
+  effect_config: { extra_sends: 1 },
+  is_active: true,
+  sort_order: 1,
+  created_at: "2024-01-01T00:00:00Z",
+}
+
+const vetoItem: MarketplaceItem = {
+  ...mockItem,
+  id: "item-veto",
+  name: "Movie Night Veto",
+  effect_type: "veto",
   price: 25,
-  category: "marketplace",
+  effect_config: { requires_input: true, input_prompt: "What movie?" },
 }
 
 const defaultProps = {
-  open: true,
+  item: mockItem,
+  balance: 100,
+  isOpen: true,
   onClose: vi.fn(),
-  item: defaultItem,
-  onSuccess: vi.fn(),
+  onConfirmed: vi.fn(),
 }
 
 describe("PurchaseConfirmModal", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useCoyyns.mockReturnValue({ ...defaultCoyynsReturn })
-    mockSpendCoyyns.mockResolvedValue(undefined)
+    mockCreatePurchase.mockResolvedValue({ id: "purchase-1", status: "pending" })
   })
 
   it("renders the dialog when open", () => {
@@ -70,7 +79,12 @@ describe("PurchaseConfirmModal", () => {
   })
 
   it("does not render when closed", () => {
-    render(<PurchaseConfirmModal {...defaultProps} open={false} />)
+    render(<PurchaseConfirmModal {...defaultProps} isOpen={false} />)
+    expect(screen.queryByTestId("purchase-dialog")).not.toBeInTheDocument()
+  })
+
+  it("does not render when item is null", () => {
+    render(<PurchaseConfirmModal {...defaultProps} item={null} />)
     expect(screen.queryByTestId("purchase-dialog")).not.toBeInTheDocument()
   })
 
@@ -89,7 +103,7 @@ describe("PurchaseConfirmModal", () => {
     expect(screen.getByText("🔔")).toBeInTheDocument()
   })
 
-  it("renders balance breakdown section", () => {
+  it("renders balance breakdown", () => {
     render(<PurchaseConfirmModal {...defaultProps} />)
     expect(screen.getByTestId("balance-breakdown")).toBeInTheDocument()
     expect(screen.getByText("Cost")).toBeInTheDocument()
@@ -99,68 +113,92 @@ describe("PurchaseConfirmModal", () => {
 
   it("shows after-balance as (balance - cost)", () => {
     render(<PurchaseConfirmModal {...defaultProps} />)
-    // 500 - 25 = 475
-    expect(screen.getByTestId("after-balance")).toHaveTextContent("475")
+    // 100 - 10 = 90
+    expect(screen.getByTestId("after-balance")).toHaveTextContent("90")
   })
 
   it("shows 'Insufficient' when balance < cost", () => {
-    useCoyyns.mockReturnValue({
-      ...defaultCoyynsReturn,
-      wallet: { ...defaultCoyynsReturn.wallet!, balance: 10 },
-    })
-    render(<PurchaseConfirmModal {...defaultProps} />)
+    render(<PurchaseConfirmModal {...defaultProps} balance={5} />)
     expect(screen.getByTestId("after-balance")).toHaveTextContent("Insufficient")
   })
 
   it("disables confirm button when cannot afford", () => {
-    useCoyyns.mockReturnValue({
-      ...defaultCoyynsReturn,
-      wallet: { ...defaultCoyynsReturn.wallet!, balance: 10 },
-    })
-    render(<PurchaseConfirmModal {...defaultProps} />)
+    render(<PurchaseConfirmModal {...defaultProps} balance={5} />)
     expect(screen.getByTestId("purchase-confirm")).toBeDisabled()
   })
 
-  it("calls spendCoyyns on confirm", async () => {
+  it("shows 'Not enough CoYYns' when cannot afford", () => {
+    render(<PurchaseConfirmModal {...defaultProps} balance={5} />)
+    expect(screen.getByTestId("purchase-confirm")).toHaveTextContent("Not enough CoYYns")
+  })
+
+  it("shows input field when requires_input is true", () => {
+    render(<PurchaseConfirmModal {...defaultProps} item={vetoItem} />)
+    expect(screen.getByTestId("purchase-input-section")).toBeInTheDocument()
+    expect(screen.getByTestId("purchase-input")).toBeInTheDocument()
+  })
+
+  it("shows input prompt from effect_config", () => {
+    render(<PurchaseConfirmModal {...defaultProps} item={vetoItem} />)
+    expect(screen.getByText("What movie?")).toBeInTheDocument()
+  })
+
+  it("does NOT show input field when requires_input is false", () => {
+    render(<PurchaseConfirmModal {...defaultProps} />)
+    expect(screen.queryByTestId("purchase-input-section")).not.toBeInTheDocument()
+  })
+
+  it("validates input is not empty when required", async () => {
+    render(<PurchaseConfirmModal {...defaultProps} item={vetoItem} />)
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(screen.getByTestId("purchase-error")).toHaveTextContent("Please fill in the required field")
+    })
+    expect(mockCreatePurchase).not.toHaveBeenCalled()
+  })
+
+  it("calls createPurchase on confirm", async () => {
     render(<PurchaseConfirmModal {...defaultProps} />)
     fireEvent.click(screen.getByTestId("purchase-confirm"))
     await waitFor(() => {
-      expect(mockSpendCoyyns).toHaveBeenCalledWith(25, "Extra Notification", "marketplace")
+      expect(mockCreatePurchase).toHaveBeenCalledWith("item-1", undefined)
     })
   })
 
-  it("calls onClose when backdrop is clicked", () => {
+  it("calls createPurchase with effect payload when input provided", async () => {
+    render(<PurchaseConfirmModal {...defaultProps} item={vetoItem} />)
+    fireEvent.change(screen.getByTestId("purchase-input"), { target: { value: "Inception" } })
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(mockCreatePurchase).toHaveBeenCalledWith("item-veto", { movie: "Inception" })
+    })
+  })
+
+  it("calls onConfirmed with purchase after success", async () => {
+    const onConfirmed = vi.fn()
+    render(<PurchaseConfirmModal {...defaultProps} onConfirmed={onConfirmed} />)
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(onConfirmed).toHaveBeenCalledWith({ id: "purchase-1", status: "pending" })
+    })
+  })
+
+  it("calls onClose when backdrop clicked", () => {
     const onClose = vi.fn()
     render(<PurchaseConfirmModal {...defaultProps} onClose={onClose} />)
     fireEvent.click(screen.getByTestId("purchase-backdrop"))
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it("calls onClose when close button is clicked", () => {
-    const onClose = vi.fn()
-    render(<PurchaseConfirmModal {...defaultProps} onClose={onClose} />)
-    fireEvent.click(screen.getByTestId("purchase-close"))
-    expect(onClose).toHaveBeenCalledOnce()
-  })
-
-  it("calls onClose when cancel button is clicked", () => {
+  it("calls onClose when cancel clicked", () => {
     const onClose = vi.fn()
     render(<PurchaseConfirmModal {...defaultProps} onClose={onClose} />)
     fireEvent.click(screen.getByTestId("purchase-cancel"))
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it("calls onSuccess after successful purchase", async () => {
-    const onSuccess = vi.fn()
-    render(<PurchaseConfirmModal {...defaultProps} onSuccess={onSuccess} />)
-    fireEvent.click(screen.getByTestId("purchase-confirm"))
-    await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalledOnce()
-    })
-  })
-
   it("shows error message when purchase fails", async () => {
-    mockSpendCoyyns.mockRejectedValueOnce(new Error("fail"))
+    mockCreatePurchase.mockRejectedValueOnce(new Error("fail"))
     render(<PurchaseConfirmModal {...defaultProps} />)
     fireEvent.click(screen.getByTestId("purchase-confirm"))
     await waitFor(() => {

@@ -3,7 +3,55 @@ import { describe, it, expect, vi } from "vitest"
 import fs from "fs"
 import path from "path"
 
-// Mock useCoyyns
+// ── Mocks ──────────────────────────────────────────────
+const { useMarketplace } = vi.hoisted(() => ({
+  useMarketplace: vi.fn(() => ({
+    items: [
+      { id: "1", name: "Extra Notification", description: "Send more", price: 10, icon: "🔔", effect_type: "extra_ping", effect_config: {}, is_active: true, sort_order: 1, created_at: "" },
+      { id: "2", name: "Movie Night Veto", description: "Pick a movie", price: 25, icon: "🎬", effect_type: "veto", effect_config: {}, is_active: true, sort_order: 2, created_at: "" },
+    ],
+    purchases: [],
+    isLoading: false,
+    error: null,
+    createPurchase: vi.fn(),
+    refreshItems: vi.fn(),
+    refreshPurchases: vi.fn(),
+  })),
+}))
+
+vi.mock("@/lib/hooks/use-marketplace", () => ({ useMarketplace }))
+
+// Mock useAuth (used by CreateChallengeForm)
+vi.mock("@/lib/providers/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1" },
+    profile: {
+      id: "user-1",
+      display_name: "Yahya",
+      email: "yahya@test.com",
+      avatar_url: null,
+      partner_id: "user-2",
+      role: "user",
+      created_at: "",
+      updated_at: "",
+    },
+    partner: {
+      id: "user-2",
+      display_name: "Yara",
+      email: "yara@test.com",
+      avatar_url: null,
+      partner_id: "user-1",
+      role: "user",
+      created_at: "",
+      updated_at: "",
+    },
+    isLoading: false,
+    profileNeedsSetup: false,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  }),
+}))
+
 vi.mock("@/lib/hooks/use-coyyns", () => ({
   useCoyyns: () => ({
     wallet: { balance: 1250, lifetime_earned: 2000, lifetime_spent: 750 },
@@ -16,8 +64,6 @@ vi.mock("@/lib/hooks/use-coyyns", () => ({
     refreshWallet: vi.fn(),
   }),
 }))
-
-import MarketplacePage from "@/app/(main)/us/marketplace/page"
 
 // Mock next/link
 vi.mock("next/link", () => ({
@@ -55,6 +101,7 @@ vi.mock("framer-motion", () => ({
         exit,
         ...domProps
       } = props
+      void whileHover; void whileTap; void transition; void initial; void animate; void exit
       return (
         <div data-layoutid={layoutId as string} {...domProps}>
           {children}
@@ -66,6 +113,7 @@ vi.mock("framer-motion", () => ({
       ...props
     }: React.PropsWithChildren<Record<string, unknown>>) => {
       const { whileHover, whileTap, transition, ...domProps } = props
+      void whileHover; void whileTap; void transition
       return <button {...domProps}>{children}</button>
     },
   },
@@ -73,6 +121,12 @@ vi.mock("framer-motion", () => ({
     <>{children}</>
   ),
 }))
+
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
+
+import MarketplacePage from "@/app/(main)/us/marketplace/page"
 
 describe("MarketplacePage", () => {
   it("renders without crashing", () => {
@@ -117,8 +171,8 @@ describe("MarketplacePage", () => {
   it("clicking 'Challenges' tab switches the active content area", () => {
     render(<MarketplacePage />)
 
-    // Shop content visible by default
-    expect(screen.getAllByTestId("item-card").length).toBeGreaterThan(0)
+    // Shop content visible by default (item cards from useMarketplace)
+    expect(screen.getAllByTestId("marketplace-item-card").length).toBeGreaterThan(0)
 
     // Click Challenges tab
     fireEvent.click(screen.getByRole("tab", { name: "Challenges" }))
@@ -128,7 +182,7 @@ describe("MarketplacePage", () => {
     expect(challengesTab).toHaveAttribute("aria-selected", "true")
 
     // Item cards should no longer be present
-    expect(screen.queryAllByTestId("item-card")).toHaveLength(0)
+    expect(screen.queryAllByTestId("marketplace-item-card")).toHaveLength(0)
 
     // Empty state should be visible
     expect(screen.getByText("No challenges yet")).toBeInTheDocument()
@@ -136,7 +190,7 @@ describe("MarketplacePage", () => {
 
   it("Shop tab content includes at least one item card", () => {
     render(<MarketplacePage />)
-    const itemCards = screen.getAllByTestId("item-card")
+    const itemCards = screen.getAllByTestId("marketplace-item-card")
     expect(itemCards.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -184,5 +238,34 @@ describe("MarketplacePage", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Challenges" }))
     expect(screen.getByTestId("create-challenge-btn")).toBeInTheDocument()
     expect(screen.getByText("Create Challenge")).toBeInTheDocument()
+  })
+
+  it("shows loading skeletons when items are loading", () => {
+    useMarketplace.mockReturnValue({
+      items: [],
+      purchases: [],
+      isLoading: true,
+      error: null,
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+    render(<MarketplacePage />)
+    const skeletons = screen.getAllByTestId("marketplace-skeleton")
+    expect(skeletons).toHaveLength(4)
+  })
+
+  it("shows empty state when no items and error", () => {
+    useMarketplace.mockReturnValue({
+      items: [],
+      purchases: [],
+      isLoading: false,
+      error: "Failed",
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+    render(<MarketplacePage />)
+    expect(screen.getByText("Marketplace unavailable")).toBeInTheDocument()
   })
 })
