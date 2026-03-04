@@ -676,6 +676,8 @@ export interface Database {
           invite_code: string | null
           pairing_status: string
           paired_at: string | null
+          google_calendar_refresh_token: string | null
+          google_calendar_connected_at: string | null
           created_at: string
           updated_at: string
         }
@@ -689,6 +691,8 @@ export interface Database {
           invite_code?: string | null
           pairing_status?: string
           paired_at?: string | null
+          google_calendar_refresh_token?: string | null
+          google_calendar_connected_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -702,6 +706,8 @@ export interface Database {
           invite_code?: string | null
           pairing_status?: string
           paired_at?: string | null
+          google_calendar_refresh_token?: string | null
+          google_calendar_connected_at?: string | null
           created_at?: string
           updated_at?: string
         }

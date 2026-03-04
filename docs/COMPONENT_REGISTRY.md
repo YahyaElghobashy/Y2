@@ -126,6 +126,13 @@
 | AzkarCounter | ✅ | `components/spiritual/AzkarCounter.tsx` | `className?` — Azkar counter with morning/evening toggle pills (layoutId sliding indicator), 120px circular tap area with count/target, completion ripple via AnimatePresence, reset button. Uses `useAzkar()` hook. Loading skeleton. Error state. 20 tests passing. |
 | SoulPage | ✅ | `app/(main)/me/soul/page.tsx` | Client Component. Full spiritual practice page: PrayerTracker → QuranTracker → AzkarCounter with dividers. "Daily Verse / Hadith — coming soon" placeholder. PageHeader with back to /me. 9 tests passing. |
 
+## Calendar Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| EventCategoryBadge | ✅ | `components/calendar/EventCategoryBadge.tsx` | `category: EventCategory, variant: "dot" \| "pill", className?` — Category badge with two variants. Dot: 8px colored circle. Pill: rounded label with 10% opacity background. Colors from `calendar-constants.ts`. `aria-label` on dots. 18 tests passing. |
+| GoogleCalendarConnect | ✅ | `components/calendar/GoogleCalendarConnect.tsx` | `className?` — Google Calendar connect/disconnect toggle. Uses `useAuth()` for profile data, checks `google_calendar_connected_at`. Connect: redirects to Google OAuth. Disconnect: nulls token columns via `disconnectGoogleCalendar()`. 10 tests passing. |
+
 ## Settings Module
 
 | Component | Status | Path | Props |
@@ -189,6 +196,7 @@
 | useDailyBonus | ✅ | `lib/hooks/use-daily-bonus.ts` | `useDailyBonus() → { claimed: boolean, justClaimed: boolean }` — Daily login bonus hook. On mount, checks coyyns_transactions for today's `daily_bonus` category (UTC date boundaries). If none exists, inserts +5 earn transaction. `hasChecked` ref prevents duplicate calls across re-renders. Silent error handling (bonus is non-critical). Auth-safe: returns inert `{false, false}` when user is null. 6 tests passing. |
 | usePrayer | ✅ | `lib/hooks/use-prayer.ts` | `usePrayer() → { today, togglePrayer, completedCount, isLoading, error }` — Prayer tracking hook. Fetches today's prayer_log via `.maybeSingle()`, upserts new row if none exists. `togglePrayer(name)` optimistic flip + rollback on error. `completedCount` via useMemo counting true values. Auth-safe: inert state when user null. 11 tests passing. |
 | useQuran | ✅ | `lib/hooks/use-quran.ts` | `useQuran() → { today, logPages, monthlyTotal, dailyGoal, setDailyGoal, isLoading, error }` — Quran reading tracker hook. Fetches today + monthly logs. `logPages(pages)` optimistic increment. `setDailyGoal(goal)` rejects < 1. `monthlyTotal` via useMemo. Auth-safe: inert state when user null. 12 tests passing. |
+| useCalendar | ✅ | `lib/hooks/use-calendar.ts` | `useCalendar() → { events, upcomingEvents, milestones, isLoading, error, createEvent, updateEvent, deleteEvent, refreshEvents, getEventsForMonth }` — Calendar data hook. Fetches events from Supabase, derives upcomingEvents (>= today) and milestones (category=milestone). CRUD with creator_id guard. Realtime subscription. Auth-safe: inert state when user null. 14 tests passing. |
 | useAzkar | ✅ | `lib/hooks/use-azkar.ts` | `useAzkar() → { session, sessionType, increment, reset, setTarget, switchType, isLoading, error, justCompleted }` — Azkar counter hook. Morning/evening session switching. `increment()` optimistic update. `justCompleted` fires once per target reach via ref. 3-column upsert conflict (user_id, date, session_type). Auth-safe: inert state when user null. 14 tests passing. |
 
 ## Types
@@ -200,6 +208,7 @@
 | notification.types.ts | ✅ | `lib/types/notification.types.ts` | `PushPermissionState`, `NotificationStatus`, `Notification`, `DailyLimit`, `UseNotificationsReturn` — Push permission states, notification/daily limit Row types from database.types.ts. |
 | health.types.ts | ✅ | `lib/types/health.types.ts` | `CycleConfig`, `CycleLog`, `CyclePhase`, `CycleMood`, `UseCycleReturn` — Cycle tracker types from database.types.ts Row types. |
 | relationship.types.ts | ✅ | `lib/types/relationship.types.ts` | `CouponCategory`, `CouponStatus`, `Coupon`, `CreateCouponData`, `UseCouponsReturn` — Love coupon types with full status enum and creation data shape. |
+| calendar.types.ts | ✅ | `lib/types/calendar.types.ts` | `CalendarEvent`, `CalendarEventInsert`, `CalendarEventUpdate`, `EventCategory`, `EventRecurrence`, `UseCalendarReturn`, `EVENT_CATEGORIES`, `EVENT_RECURRENCES` — Calendar event types from database.types.ts. Category/recurrence union types. |
 | spiritual.types.ts | ✅ | `lib/types/spiritual.types.ts` | `PrayerLog`, `QuranLog`, `AzkarSession` (+ Insert/Update variants), `PrayerName`, `AzkarSessionType`, `PRAYER_NAMES`, `AZKAR_SESSION_TYPES` — Spiritual practice types derived from database.types.ts. |
 
 ## Services
@@ -207,6 +216,8 @@
 | Service | Status | Path | API |
 |---|---|---|---|
 | push-service | ✅ | `lib/services/push-service.ts` | `isPushSupported(), getPushPermission(), subscribeToPush(userId), unsubscribeFromPush(userId)` — Web Push API wrapper. VAPID key subscription via PushManager. Stores subscription JSON in Supabase `push_subscriptions`. Delete+insert pattern for subscription updates. 9 tests passing. |
+| google-calendar | ✅ | `lib/google-calendar.ts` | `getGoogleAuthUrl(), disconnectGoogleCalendar(supabase, userId)` — Google OAuth URL builder with env-based client_id + redirect_uri. Disconnect nulls token columns in profiles. 8 tests passing. |
+| calendar-constants | ✅ | `lib/calendar-constants.ts` | `EVENT_CATEGORY_CONFIG`, `getCategoryColor(cat)`, `getCategoryLabel(cat)` — 4-category color config (date_night=#B87333, milestone=#DAA520, reminder=#9CA3AF, other=#4A4543) with Heart/Star/Bell/Calendar icons. 10 tests passing. |
 | avatar-upload | ✅ | `lib/avatar-upload.ts` | `uploadAvatar(file: File, userId: string) → { url } \| { error }` — Validates image type/size (5MB max), center-crops to 400x400 via OffscreenCanvas, exports as WebP 80% quality, uploads to Supabase Storage `avatars/${userId}.webp` with cache-busting URL. 13 tests passing. |
 
 ## Scripts / Infrastructure
