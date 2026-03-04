@@ -83,6 +83,58 @@ vi.mock("@/lib/hooks/use-coyyns", () => ({
   }),
 }))
 
+// Mock useCoupons (used by MoodStrip)
+vi.mock("@/lib/hooks/use-coupons", () => ({
+  useCoupons: () => ({
+    myCoupons: [],
+    receivedCoupons: [],
+    pendingApprovals: [],
+    isLoading: false,
+    error: null,
+    createCoupon: vi.fn(),
+    redeemCoupon: vi.fn(),
+    approveCoupon: vi.fn(),
+    rejectCoupon: vi.fn(),
+    revealSurprise: vi.fn(),
+    refreshCoupons: vi.fn(),
+  }),
+}))
+
+// Mock useCycle (used by HomeCycleWidget)
+vi.mock("@/lib/hooks/use-cycle", () => ({
+  useCycle: () => ({
+    config: null,
+    currentDay: null,
+    phase: null,
+    daysUntilBreak: null,
+    daysUntilActive: null,
+    isPMSWindow: false,
+    isPeriodLikely: false,
+    nextPeriodDate: null,
+    cycleLogs: [],
+    isLoading: false,
+    error: null,
+    updateConfig: vi.fn(),
+    addLog: vi.fn(),
+    refreshCycle: vi.fn(),
+  }),
+}))
+
+// Mock useNotifications (used by MoodStrip)
+vi.mock("@/lib/hooks/use-notifications", () => ({
+  useNotifications: () => ({
+    notifications: [],
+    dailyLimit: null,
+    canSend: true,
+    remainingSends: 2,
+    isLoading: false,
+    error: null,
+    sendNotification: vi.fn(),
+    purchaseBonusSend: vi.fn(),
+    refreshLimits: vi.fn(),
+  }),
+}))
+
 import Home from "@/app/(main)/page"
 
 describe("Home Page", () => {
@@ -100,18 +152,12 @@ describe("Home Page", () => {
     expect(screen.getByText("CoYYns")).toBeInTheDocument()
   })
 
-  it("renders exactly one remaining WidgetSlot", () => {
-    render(<Home />)
-    const widgets = screen.getAllByText("Widget coming soon")
-    expect(widgets).toHaveLength(1)
-  })
-
   it("renders all 4 QuickActionCards", () => {
     render(<Home />)
     expect(screen.getByText("Us")).toBeInTheDocument()
-    expect(screen.getByText("Health")).toBeInTheDocument()
-    expect(screen.getByText("Spirit")).toBeInTheDocument()
-    expect(screen.getByText("Ops")).toBeInTheDocument()
+    expect(screen.getByText("Me")).toBeInTheDocument()
+    expect(screen.getByText("2026")).toBeInTheDocument()
+    expect(screen.getByText("More")).toBeInTheDocument()
   })
 
   it("renders date text", () => {

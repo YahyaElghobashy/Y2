@@ -3,6 +3,7 @@
 import { Heart, Sparkles, User, MoreHorizontal } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { HomeGreeting } from "@/components/home/HomeGreeting"
+import { MoodStrip } from "@/components/home/MoodStrip"
 import { QuickActionCard } from "@/components/home/QuickActionCard"
 import { CoyynsWidget } from "@/components/home/CoyynsWidget"
 import { HomeCycleWidget } from "@/components/home/HomeCycleWidget"
@@ -13,6 +14,7 @@ export default function Home() {
   return (
     <PageTransition>
       <HomeGreeting />
+      <MoodStrip className="mt-2" />
 
       {/* Quick Actions Grid */}
       <div className="grid grid-cols-2 gap-4 px-5 mt-2">

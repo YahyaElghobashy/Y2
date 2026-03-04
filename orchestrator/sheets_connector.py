@@ -13,6 +13,7 @@ Usage:
   python sheets_connector.py          # First run: authenticate
   python sheets_connector.py --test   # Verify full read/write cycle
 """
+from __future__ import annotations
 
 import json
 import os
