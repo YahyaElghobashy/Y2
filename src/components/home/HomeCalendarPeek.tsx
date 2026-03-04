@@ -1,0 +1,134 @@
+"use client"
+
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { CalendarPlus } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useCalendar } from "@/lib/hooks/use-calendar"
+import { getCategoryColor } from "@/lib/calendar-constants"
+import { format } from "date-fns"
+
+export function HomeCalendarPeek({ className }: { className?: string }) {
+  const { upcomingEvents, isLoading } = useCalendar()
+
+  if (isLoading) return null
+
+  const preview = upcomingEvents.slice(0, 3)
+
+  if (preview.length === 0) {
+    return (
+      <div
+        className={cn(
+          "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft overflow-hidden px-4 py-4",
+          className
+        )}
+        data-testid="home-calendar-peek"
+      >
+        <p className="text-[14px] text-[var(--color-text-secondary)] text-center mb-3" data-testid="empty-message">
+          No upcoming events. Plan something together?
+        </p>
+        <Link
+          href="/us/calendar?action=create"
+          className="flex items-center justify-center gap-1.5 text-[13px] font-medium text-[var(--color-accent-primary)]"
+          data-testid="add-event-cta"
+        >
+          <CalendarPlus size={14} />
+          Add Event
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={cn(
+        "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft overflow-hidden px-4 py-4",
+        className
+      )}
+      data-testid="home-calendar-peek"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className="text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--color-text-primary)]"
+          data-testid="peek-header"
+        >
+          Coming Up
+        </span>
+        <Link
+          href="/us/calendar"
+          className="text-[12px] font-medium text-[var(--color-accent-primary)]"
+          data-testid="see-all-link"
+        >
+          See All
+        </Link>
+      </div>
+
+      {/* Event rows */}
+      <div className="flex flex-col gap-2.5">
+        {preview.map((event) => {
+          const color = getCategoryColor(event.category)
+          const dayNum = format(new Date(event.event_date + "T00:00:00"), "d")
+          const monthAbbr = format(new Date(event.event_date + "T00:00:00"), "MMM")
+
+          return (
+            <Link
+              key={event.id}
+              href={`/us/calendar?date=${event.event_date}`}
+              className="block"
+            >
+              <motion.div
+                className="flex items-center gap-3"
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.1 }}
+                data-testid="event-row"
+              >
+                {/* Date badge */}
+                <div
+                  className="w-8 h-8 rounded-full flex flex-col items-center justify-center shrink-0"
+                  style={{ backgroundColor: `${color}1A` }}
+                  data-testid="date-badge"
+                  data-color={color}
+                >
+                  <span
+                    className="text-[11px] font-bold leading-none"
+                    style={{ color }}
+                  >
+                    {dayNum}
+                  </span>
+                  <span
+                    className="text-[8px] leading-none mt-px"
+                    style={{ color }}
+                  >
+                    {monthAbbr}
+                  </span>
+                </div>
+
+                {/* Title + time */}
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-[14px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)] truncate"
+                    data-testid="event-title"
+                  >
+                    {event.title}
+                  </p>
+                  {event.event_time && (
+                    <p
+                      className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted)]"
+                      data-testid="event-time"
+                    >
+                      {format(
+                        new Date(`2000-01-01T${event.event_time}`),
+                        "h:mm a"
+                      )}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

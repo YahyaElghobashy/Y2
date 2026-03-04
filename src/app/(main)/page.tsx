@@ -11,6 +11,8 @@ import { HomeCouponInbox } from "@/components/home/HomeCouponInbox"
 import { FeelingGenerousCTA } from "@/components/home/FeelingGenerousCTA"
 import { HomeMarketplaceRow } from "@/components/home/HomeMarketplaceRow"
 import { HomePrayerWidget } from "@/components/home/HomePrayerWidget"
+import { HomeCountdownWidget } from "@/components/home/HomeCountdownWidget"
+import { HomeCalendarPeek } from "@/components/home/HomeCalendarPeek"
 
 export default function Home() {
   return (
@@ -34,6 +36,8 @@ export default function Home() {
         <CoyynsWidget />
         <HomeCycleWidget />
         <HomePrayerWidget />
+        <HomeCountdownWidget />
+        <HomeCalendarPeek />
         <HomeCouponInbox />
         <FeelingGenerousCTA />
       </div>
