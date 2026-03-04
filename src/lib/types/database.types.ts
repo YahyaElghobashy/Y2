@@ -430,6 +430,8 @@ export interface Database {
           claimed_by: string | null
           winner_id: string | null
           actual_transfer: number | null
+          acceptor_id: string | null
+          resolution_note: string | null
           created_at: string
           updated_at: string
         }
@@ -445,6 +447,8 @@ export interface Database {
           claimed_by?: string | null
           winner_id?: string | null
           actual_transfer?: number | null
+          acceptor_id?: string | null
+          resolution_note?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -460,6 +464,8 @@ export interface Database {
           claimed_by?: string | null
           winner_id?: string | null
           actual_transfer?: number | null
+          acceptor_id?: string | null
+          resolution_note?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -467,6 +473,95 @@ export interface Database {
           {
             foreignKeyName: "challenges_creator_id_fkey"
             columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      bounties: {
+        Row: {
+          id: string
+          creator_id: string
+          title: string
+          trigger_description: string
+          reward: number
+          is_recurring: boolean
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          creator_id: string
+          title: string
+          trigger_description: string
+          reward: number
+          is_recurring?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          creator_id?: string
+          title?: string
+          trigger_description?: string
+          reward?: number
+          is_recurring?: boolean
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bounties_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      bounty_claims: {
+        Row: {
+          id: string
+          bounty_id: string
+          claimer_id: string
+          confirmed_by: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          bounty_id: string
+          claimer_id: string
+          confirmed_by?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          bounty_id?: string
+          claimer_id?: string
+          confirmed_by?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bounty_claims_bounty_id_fkey"
+            columns: ["bounty_id"]
+            isOneToOne: false
+            referencedRelation: "bounties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bounty_claims_claimer_id_fkey"
+            columns: ["claimer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -810,7 +905,35 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      pair_partners: {
+        Args: {
+          my_id: string
+          partner_code: string
+        }
+        Returns: Json
+      }
+      resolve_challenge_payout: {
+        Args: {
+          p_challenge_id: string
+          p_winner_id: string
+          p_amount: number
+        }
+        Returns: undefined
+      }
+      refund_challenge_stake: {
+        Args: {
+          p_challenge_id: string
+        }
+        Returns: undefined
+      }
+      confirm_bounty_claim: {
+        Args: {
+          p_claim_id: string
+        }
+        Returns: undefined
+      }
+    }
     Enums: Record<string, never>
   }
 }
