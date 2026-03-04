@@ -158,13 +158,29 @@
 |---|---|---|---|
 | 2026 Vision Board | ✅ | `app/(main)/2026/page.tsx` | Server Component. EmptyState placeholder with Sparkles icon. "Your 2026 vision board is coming soon". |
 | /us Layout | ✅ | `app/(main)/us/layout.tsx` | Server Component. Wraps children with PageHeader("Us") + HorizontalTabBar (CoYYns, Coupons, Calendar, Ping). |
-| /us CoYYns Tab | ✅ | `app/(main)/us/coyyns/page.tsx` | Client Component. CoyynsWallet + CoyynsHistory. |
+| /us CoYYns Tab | ✅ | `app/(main)/us/coyyns/page.tsx` | Client Component. Full challenges + bounties dashboard. Sections: CoyynsWallet, CoyynsHistory (compact, limit=5), Challenges (pending + active cards, New button → CreateChallengeForm), Bounties (active BountyCards, New button → CreateBountyForm), History (collapsible). Modals: ChallengeAcceptFlow, ChallengeResolveFlow, ChallengeWinAnimation, BountyClaimFlow. Status mapping from V2→V1 ChallengeCard statuses. 17 tests passing. |
 | /us Calendar Tab | ✅ | `app/(main)/us/calendar/page.tsx` | Server Component. EmptyState placeholder with Calendar icon. |
 | /us Ping Tab | ✅ | `app/(main)/us/ping/page.tsx` | Client Component. Wraps PingTabContent from ping module. |
 | Me Page | ✅ | `app/(main)/me/page.tsx` | Client Component. Body/Soul dual-section landing. Two large navigation cards with stagger animation. |
 | Soul Page | ✅ | `app/(main)/me/soul/page.tsx` | Client Component. Full spiritual practice dashboard: PrayerTracker → QuranTracker → AzkarCounter with dividers. Future placeholder for Daily Verse/Hadith. 9 tests passing. |
 | More Page | ✅ | `app/(main)/more/page.tsx` | Client Component. Utility drawer: Profile card, Account, Preferences, About, Logout with AlertDialog. |
 | About Hayah Page | ✅ | `app/(main)/more/about/page.tsx` | Server Component. Why Hayah? + Built with intention sections. |
+
+## Challenges Module (P8)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| ChallengeAcceptFlow | ✅ | `components/challenges/ChallengeAcceptFlow.tsx` | `{ challenge, open, onClose, onAccepted?, onDeclined? }` — Portal dialog for accepting/declining pending challenges. Balance breakdown with insufficient funds warning. Two-step decline confirmation. Uses useCoyyns + useChallenges hooks. 16 tests passing. |
+| ChallengeResolveFlow | ✅ | `components/challenges/ChallengeResolveFlow.tsx` | `{ challenge, open, onClose, onResolved? }` — Multi-state portal dialog: claim (I Won!), waiting (pulsing clock), confirm (Confirm/Dispute), disputed (shows note). Realtime subscription for status changes. Dispute textarea. 16 tests passing. |
+| ChallengeWinAnimation | ✅ | `components/challenges/ChallengeWinAnimation.tsx` | `{ open, isWinner, amount, onComplete? }` — Winner: trophy + confetti (20 particles, copper/gold) + counter animation (0→amount). Loser: frown + wobble + negative amount. prefers-reduced-motion: skip particles, 800ms timeout. 16 tests passing. |
+
+## Bounties Module (P8)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| BountyCard | ✅ | `components/bounties/BountyCard.tsx` | `{ bounty, pendingClaim?, onClaim? }` — Gift icon + title + reward pill + trigger description. Recurring badge (info colors), Claim Pending badge (amber). "I did it!" button (non-creator, no pending claim). 13 tests passing. |
+| CreateBountyForm | ✅ | `components/bounties/CreateBountyForm.tsx` | `{ open, onClose, onCreated? }` — Bottom sheet form. Title + trigger description + reward stepper (min 1, max 1000, step 5) + recurring toggle. RHF + Zod validation. Calls useBounties().createBounty(). 17 tests passing. |
+| BountyClaimFlow | ✅ | `components/bounties/BountyClaimFlow.tsx` | `{ bounty, claim, open, onClose, onConfirmed?, onDenied? }` — Portal dialog. Creator view: Review Claim + Confirm & Pay / Deny buttons. Claimer view: waiting message. 15 tests passing. |
 
 ## Pairing Module
 
@@ -199,6 +215,8 @@
 | useQuran | ✅ | `lib/hooks/use-quran.ts` | `useQuran() → { today, logPages, monthlyTotal, dailyGoal, setDailyGoal, isLoading, error }` — Quran reading tracker hook. Fetches today + monthly logs. `logPages(pages)` optimistic increment. `setDailyGoal(goal)` rejects < 1. `monthlyTotal` via useMemo. Auth-safe: inert state when user null. 12 tests passing. |
 | useCalendar | ✅ | `lib/hooks/use-calendar.ts` | `useCalendar() → { events, upcomingEvents, milestones, isLoading, error, createEvent, updateEvent, deleteEvent, refreshEvents, getEventsForMonth }` — Calendar data hook. Fetches events from Supabase, derives upcomingEvents (>= today) and milestones (category=milestone). CRUD with creator_id guard. Realtime subscription. Auth-safe: inert state when user null. 14 tests passing. |
 | useAzkar | ✅ | `lib/hooks/use-azkar.ts` | `useAzkar() → { session, sessionType, increment, reset, setTarget, switchType, isLoading, error, justCompleted }` — Azkar counter hook. Morning/evening session switching. `increment()` optimistic update. `justCompleted` fires once per target reach via ref. 3-column upsert conflict (user_id, date, session_type). Auth-safe: inert state when user null. 14 tests passing. |
+| useChallenges | ✅ | `lib/hooks/use-challenges.ts` | `useChallenges() → { activeChallenges, pendingChallenges, historyChallenges, isLoading, error, createChallenge, acceptChallenge, declineChallenge, claimVictory, confirmVictory, disputeChallenge, refreshChallenges }` — V2 challenge hook with stake escrow. createChallenge: spendCoyyns → insert pending_acceptance. acceptChallenge: spendCoyyns → update active. confirmVictory: RPC resolve_challenge_payout (stakes×2). declineChallenge: RPC refund_challenge_stake. Realtime subscription. Auth-safe. 16 tests passing. |
+| useBounties | ✅ | `lib/hooks/use-bounties.ts` | `useBounties() → { activeBounties, pendingClaims, isLoading, error, createBounty, claimBounty, confirmClaim, denyClaim, refreshBounties }` — Standing bounties hook. createBounty: insert (reward > 0). claimBounty: insert claim. confirmClaim: RPC confirm_bounty_claim → pays claimer. denyClaim: update status=denied. Realtime on bounties + bounty_claims. Auth-safe. 13 tests passing. |
 
 ## Types
 
@@ -211,6 +229,7 @@
 | relationship.types.ts | ✅ | `lib/types/relationship.types.ts` | `CouponCategory`, `CouponStatus`, `Coupon`, `CreateCouponData`, `UseCouponsReturn` — Love coupon types with full status enum and creation data shape. |
 | calendar.types.ts | ✅ | `lib/types/calendar.types.ts` | `CalendarEvent`, `CalendarEventInsert`, `CalendarEventUpdate`, `EventCategory`, `EventRecurrence`, `UseCalendarReturn`, `EVENT_CATEGORIES`, `EVENT_RECURRENCES` — Calendar event types from database.types.ts. Category/recurrence union types. |
 | spiritual.types.ts | ✅ | `lib/types/spiritual.types.ts` | `PrayerLog`, `QuranLog`, `AzkarSession` (+ Insert/Update variants), `PrayerName`, `AzkarSessionType`, `PRAYER_NAMES`, `AZKAR_SESSION_TYPES` — Spiritual practice types derived from database.types.ts. |
+| challenges.types.ts | ✅ | `lib/types/challenges.types.ts` | `Challenge`, `ChallengeInsert`, `ChallengeUpdate`, `ChallengeStatus`, `Bounty`, `BountyInsert`, `BountyUpdate`, `BountyClaim`, `BountyClaimInsert`, `BountyClaimStatus`, `CreateChallengeData`, `CreateBountyData`, `UseChallengesReturn`, `UseBountiesReturn` — V2 challenge + bounty types from database.types.ts. |
 
 ## Services
 
