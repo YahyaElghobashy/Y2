@@ -35,12 +35,18 @@ Before writing any code, read the relevant docs:
 15. **Pre-build validation plan** — Before starting any task, populate the Google Sheets "Validation Log" tab with: expected behavior, test type, test steps, and verification location. Pre-Build Status must be `documented` before writing code. See `docs/VALIDATION_SUITE.md` for full instructions and schema.
 16. **Post-build test recording** — After completing a task, run its test steps and record pass/fail/partial in the Validation Log. A task is not complete until its Test Result is recorded. If `fail` or `partial`, fix and re-test before marking done.
 17. **Task completion workflow (mandatory)** — After finishing code for a task, follow this sequence **before starting any new task**:
-    1. **Local test/validate** — Run the task's test steps locally (unit tests, build, visual check, dev server preview, etc.)
+    1. **Local test/validate** — Run the task's test steps locally per rule 18 (unit + interaction + integration tests, build, visual check). Render-only tests do not count as validation.
     2. **Update Validation Log** — Record results in the Google Sheets Validation Log (Test Result, Tested At, Tested By, Failure Notes)
     3. **Iterate if needed** — If `fail` or `partial`, fix the code, re-test, and update the Validation Log until `pass`
     4. **Commit & push** — Commit with conventional commit message, push to GitHub
     5. **Update Task Queue** — Set Status to `complete` (or `complete_with_issues`), fill Finished At, Duration, Commit Hash, and Builder Output in the Google Sheets Task Queue
     - ⛔ **Do NOT pick up the next task until all 5 steps are done for the current one.**
+18. **Test and validate = unit + interaction + integration** — "Tests pass" is not sufficient. Every test file must include:
+    - **Unit**: Callbacks fire with correct arguments, state transitions work, error paths throw, edge cases covered (null user, insufficient balance, empty lists)
+    - **Interaction**: User flows within the component work end-to-end (click buy → modal opens → fill form → confirm → callback receives correct payload)
+    - **Integration**: Mocked dependencies receive correct calls (Supabase `.from()` with right table, `.insert()` with correct fields, hooks called with correct args)
+    - **Backend** (edge functions): All code paths tested — CORS, validation, auth, every switch branch, DB constraint compliance (inserted values match CHECK constraints), notification payloads
+    - ⛔ A test file with only "renders without crashing" assertions is **incomplete** and does not count as validated
 
 ## Tech Stack Quick Reference
 
