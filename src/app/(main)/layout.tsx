@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { AppShell } from "@/components/shared/AppShell"
 import { ProfileSetupOverlay } from "@/components/shared/ProfileSetupOverlay"
+import { InstallPrompt } from "@/components/shared/InstallPrompt"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
 export default function AppLayout({
@@ -33,6 +34,7 @@ export default function AppLayout({
           onComplete={refreshProfile}
         />
       )}
+      <InstallPrompt />
     </AppShell>
   )
 }

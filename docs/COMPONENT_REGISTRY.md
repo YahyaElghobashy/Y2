@@ -52,6 +52,7 @@
 | ProfileEditForm | ✅ | `components/shared/ProfileEditForm.tsx` | `profile: { id, display_name, email, avatar_url }, onSave: () => void, onCancel: () => void` — Inline profile editor using Avatar component + uploadAvatar() for image processing (center-crop 400x400, WebP 80%). RHF+Zod name validation (1-40 chars). Framer Motion height:0→auto expand animation. Used in More page. 8 tests passing. |
 | CoyynsBadge | ✅ | `components/shared/CoyynsBadge.tsx` | `balance?: number, size?: "sm" \| "md", className?` — Inline CoYYns balance pill badge. Shows coin icon + formatted balance in a soft rounded-full pill (accent-soft bg). If `balance` prop provided, displays directly without hook call; if omitted, reads from `useCoyyns()` automatically. Size variants: sm (~24px) and md (~28px, default). Loading state: pulse placeholder. Null balance fallback: "—". Hover: scale(1.02) via Framer Motion. Display-only, not interactive. 14 tests passing. |
 | DailyBonusToast | ✅ | `components/shared/DailyBonusToast.tsx` | `className?` — "+5 Daily bonus!" toast notification. Shows when `useDailyBonus().justClaimed` is true. Framer Motion slide-down (y:-40→0) with coin pulse animation (scale 1→1.2→1). Auto-dismisses after 3000ms via setTimeout. Fixed positioning with safe-area-inset-top. Uses bg-bg-elevated, border-border-subtle, text-text-primary design tokens. 6 tests passing. |
+| InstallPrompt | ✅ | `components/shared/InstallPrompt.tsx` | — Captures `beforeinstallprompt` for Chromium install, iOS share sheet instructions fallback. 3s delayed show, 30-day localStorage dismiss cooldown. Subtle banner above BottomNav. 13 tests passing. |
 | LoadingPulse | 📋 | `components/shared/LoadingPulse.tsx` | — |
 | UserGreeting | 📋 | `components/shared/UserGreeting.tsx` | — |
 
@@ -219,6 +220,7 @@
 | google-calendar | ✅ | `lib/google-calendar.ts` | `getGoogleAuthUrl(), disconnectGoogleCalendar(supabase, userId)` — Google OAuth URL builder with env-based client_id + redirect_uri. Disconnect nulls token columns in profiles. 8 tests passing. |
 | calendar-constants | ✅ | `lib/calendar-constants.ts` | `EVENT_CATEGORY_CONFIG`, `getCategoryColor(cat)`, `getCategoryLabel(cat)` — 4-category color config (date_night=#B87333, milestone=#DAA520, reminder=#9CA3AF, other=#4A4543) with Heart/Star/Bell/Calendar icons. 10 tests passing. |
 | avatar-upload | ✅ | `lib/avatar-upload.ts` | `uploadAvatar(file: File, userId: string) → { url } \| { error }` — Validates image type/size (5MB max), center-crops to 400x400 via OffscreenCanvas, exports as WebP 80% quality, uploads to Supabase Storage `avatars/${userId}.webp` with cache-busting URL. 13 tests passing. |
+| notification-router | ✅ | `lib/notification-router.ts` | `getRouteForNotification(type?, payload?) → string` — Maps notification types to target routes for SW click handler and in-app routing. Handles coupon_received/redeemed/approved (with coupon_id), ping, challenge_created/claimed, purchase_received, daily_bonus. Default → `/`. 11 tests passing. |
 
 ## Scripts / Infrastructure
 
