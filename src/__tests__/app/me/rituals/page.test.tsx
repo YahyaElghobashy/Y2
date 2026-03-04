@@ -31,6 +31,21 @@ vi.mock("@/lib/hooks/use-rituals", () => ({
   useRituals: () => mockUseRituals(),
 }))
 
+vi.mock("@/lib/providers/AuthProvider", () => ({
+  useAuth: () => ({ partner: { id: "p1", display_name: "Yara" } }),
+}))
+
+vi.mock("@/components/rituals/MonthlyLetterComposer", () => ({
+  MonthlyLetterComposer: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="letter-composer">Letter Composer</div> : null,
+}))
+
+vi.mock("@/components/rituals/LetterCard", () => ({
+  LetterCard: ({ content }: { content: string }) => (
+    <div data-testid="letter-card">{content}</div>
+  ),
+}))
+
 vi.mock("framer-motion", () => ({
   motion: {
     div: React.forwardRef(

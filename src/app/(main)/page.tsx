@@ -14,6 +14,7 @@ import { HomePrayerWidget } from "@/components/home/HomePrayerWidget"
 import { HomeCountdownWidget } from "@/components/home/HomeCountdownWidget"
 import { HomeCalendarPeek } from "@/components/home/HomeCalendarPeek"
 import { HomeRitualsWidget } from "@/components/home/HomeRitualsWidget"
+import { HomeLetterPrompt } from "@/components/home/HomeLetterPrompt"
 
 export default function Home() {
   return (
@@ -38,6 +39,7 @@ export default function Home() {
         <HomeCycleWidget />
         <HomePrayerWidget />
         <HomeRitualsWidget />
+        <HomeLetterPrompt />
         <HomeCountdownWidget />
         <HomeCalendarPeek />
         <HomeCouponInbox />
