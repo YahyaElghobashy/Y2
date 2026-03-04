@@ -903,6 +903,115 @@ export interface Database {
           }
         ]
       }
+      shared_lists: {
+        Row: {
+          id: string
+          created_by: string
+          title: string
+          list_type: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          created_by: string
+          title: string
+          list_type?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          created_by?: string
+          title?: string
+          list_type?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_lists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      list_items: {
+        Row: {
+          id: string
+          list_id: string
+          parent_id: string | null
+          title: string
+          is_completed: boolean
+          completed_by: string | null
+          completed_at: string | null
+          coyyns_reward: number
+          position: number
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          list_id: string
+          parent_id?: string | null
+          title: string
+          is_completed?: boolean
+          completed_by?: string | null
+          completed_at?: string | null
+          coyyns_reward?: number
+          position?: number
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          list_id?: string
+          parent_id?: string | null
+          title?: string
+          is_completed?: boolean
+          completed_by?: string | null
+          completed_at?: string | null
+          coyyns_reward?: number
+          position?: number
+          created_by?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "list_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "shared_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "list_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_items_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
