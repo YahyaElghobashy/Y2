@@ -137,6 +137,15 @@
 | ListItemCard | ✅ | `components/list/ListItemCard.tsx` | `item: ListItem, subItems?: ListItem[], isOwn: boolean, onToggle, onDelete, onAddSubItem?, className?` — List item with circle checkbox (copper fill), title (strikethrough when done), CoYYns badge, creator dot (Y/P), expand/collapse sub-items with AnimatePresence, sub-item add input, delete button. 18 tests passing. |
 | SharedListPage | ✅ | `app/(main)/us/list/page.tsx` | Client Component. List selector tabs, QuickAddInput, active items via StaggerList, collapsible completed section, create new list flow, EmptyState for no lists/empty list. Uses `useSharedList()` hook. 17 tests passing. |
 
+## Rituals Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| RitualCard | ✅ | `components/rituals/RitualCard.tsx` | `ritual: Ritual, isLogged: boolean, partnerLogged: boolean, onLog: (id) => void, className?` — 40px emoji circle with accent-soft bg, title, cadence pill (Daily/Weekly/Monthly), CoYYns reward badge, personal single dot / shared dual overlapping dots (copper when logged, heart when both done). Tap-to-log when not logged. 12 tests passing. |
+| CreateRitualForm | ✅ | `components/rituals/CreateRitualForm.tsx` | `open: boolean, onClose: () => void, onSubmit: (data) => void` — Bottom sheet portal with emoji quick-pick (10 emojis), title input, description textarea, cadence 3-pill selector, shared toggle (switch), CoYYns reward number input, "Create Ritual" submit button. Portal + AnimatePresence. 14 tests passing. |
+| HomeRitualsWidget | ✅ | `components/home/HomeRitualsWidget.tsx` | `className?` — Horizontal row of ritual emoji circles (copper fill when logged), title labels, "X/Y completed" summary, "See All" link to /me/rituals. Returns null when loading or no rituals. Uses `useRituals()` hook. 10 tests passing. |
+| RitualsPage | ✅ | `app/(main)/me/rituals/page.tsx` | Client Component. PageHeader with Plus button, grouped by cadence (daily/weekly/monthly sections), StaggerList for RitualCards, EmptyState when no rituals, CreateRitualForm modal. Uses `useRituals()` hook. 11 tests passing. |
+
 ## Calendar Module
 
 | Component | Status | Path | Props |
@@ -227,6 +236,8 @@
 | useAzkar | ✅ | `lib/hooks/use-azkar.ts` | `useAzkar() → { session, sessionType, increment, reset, setTarget, switchType, isLoading, error, justCompleted }` — Azkar counter hook. Morning/evening session switching. `increment()` optimistic update. `justCompleted` fires once per target reach via ref. 3-column upsert conflict (user_id, date, session_type). Auth-safe: inert state when user null. 14 tests passing. |
 | useChallenges | ✅ | `lib/hooks/use-challenges.ts` | `useChallenges() → { activeChallenges, pendingChallenges, historyChallenges, isLoading, error, createChallenge, acceptChallenge, declineChallenge, claimVictory, confirmVictory, disputeChallenge, refreshChallenges }` — V2 challenge hook with stake escrow. createChallenge: spendCoyyns → insert pending_acceptance. acceptChallenge: spendCoyyns → update active. confirmVictory: RPC resolve_challenge_payout (stakes×2). declineChallenge: RPC refund_challenge_stake. Realtime subscription. Auth-safe. 16 tests passing. |
 | useNewCouponDetection | ✅ | `lib/hooks/use-new-coupon-detection.ts` | `useNewCouponDetection() → { newCoupon, showAnimation, onAnimationComplete, onSaveForLater }` — Detects newly received coupons since last_seen (localStorage). Checks on mount + visibilitychange. Triggers CouponReceiveAnimation overlay in main layout. onAnimationComplete/onSaveForLater update last_seen and dismiss. Auth-safe. 11 tests passing. |
+| useRituals | ✅ | `lib/hooks/use-rituals.ts` | `useRituals() → { rituals, todayRituals, logs, isLoading, error, logRitual, isLoggedThisPeriod, partnerLoggedThisPeriod, createRitual, deleteRitual, uploadRitualPhoto }` — Ritual tracking hook with period key calculation (daily/weekly/monthly), optimistic log insert, CoYYns reward on log, Map-based period lookup. Realtime subscription on ritual_logs. Photo upload to `ritual-images` bucket. Auth-safe: inert state when user null. 19 tests passing. |
+| useSharedList | ✅ | `lib/hooks/use-shared-list.ts` | `useSharedList() → { lists, list, items, completedItems, isLoading, error, addItem, addSubItem, toggleComplete, deleteItem, reorderItems, createList, deleteList, selectList }` — Shared list hook with full CRUD, realtime subscription on list_items, optimistic updates with rollback. CoYYns reward on completing partner's item. 7-day auto-archive filter. Auth-safe: inert state when user null. 19 tests passing. |
 | useBounties | ✅ | `lib/hooks/use-bounties.ts` | `useBounties() → { activeBounties, pendingClaims, isLoading, error, createBounty, claimBounty, confirmClaim, denyClaim, refreshBounties }` — Standing bounties hook. createBounty: insert (reward > 0). claimBounty: insert claim. confirmClaim: RPC confirm_bounty_claim → pays claimer. denyClaim: update status=denied. Realtime on bounties + bounty_claims. Auth-safe. 13 tests passing. |
 
 ## Types
@@ -240,6 +251,8 @@
 | relationship.types.ts | ✅ | `lib/types/relationship.types.ts` | `CouponCategory`, `CouponStatus`, `Coupon`, `CreateCouponData`, `UseCouponsReturn` — Love coupon types with full status enum and creation data shape. |
 | calendar.types.ts | ✅ | `lib/types/calendar.types.ts` | `CalendarEvent`, `CalendarEventInsert`, `CalendarEventUpdate`, `EventCategory`, `EventRecurrence`, `UseCalendarReturn`, `EVENT_CATEGORIES`, `EVENT_RECURRENCES` — Calendar event types from database.types.ts. Category/recurrence union types. |
 | spiritual.types.ts | ✅ | `lib/types/spiritual.types.ts` | `PrayerLog`, `QuranLog`, `AzkarSession` (+ Insert/Update variants), `PrayerName`, `AzkarSessionType`, `PRAYER_NAMES`, `AZKAR_SESSION_TYPES` — Spiritual practice types derived from database.types.ts. |
+| rituals.types.ts | ✅ | `lib/types/rituals.types.ts` | `Ritual`, `RitualInsert`, `RitualLog`, `RitualLogInsert`, `Cadence` — Ritual and ritual log types derived from database.types.ts. Cadence union type (daily/weekly/monthly). |
+| shared-list.types.ts | ✅ | `lib/types/shared-list.types.ts` | `SharedList`, `ListItem`, `ListType`, `UseSharedListReturn` — Shared list and list item types derived from database.types.ts. ListType union type. |
 | challenges.types.ts | ✅ | `lib/types/challenges.types.ts` | `Challenge`, `ChallengeInsert`, `ChallengeUpdate`, `ChallengeStatus`, `Bounty`, `BountyInsert`, `BountyUpdate`, `BountyClaim`, `BountyClaimInsert`, `BountyClaimStatus`, `CreateChallengeData`, `CreateBountyData`, `UseChallengesReturn`, `UseBountiesReturn` — V2 challenge + bounty types from database.types.ts. |
 
 ## Services

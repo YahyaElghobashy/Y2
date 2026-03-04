@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { HeartPulse, Sun, ChevronRight } from "lucide-react"
+import { HeartPulse, Sun, Repeat, ChevronRight } from "lucide-react"
 import { motion } from "framer-motion"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -18,6 +18,12 @@ const SECTIONS = [
     title: "Soul",
     subtitle: "Prayer & spiritual practice",
     href: "/me/soul",
+  },
+  {
+    icon: Repeat,
+    title: "Rituals",
+    subtitle: "Daily habits & practices",
+    href: "/me/rituals",
   },
 ] as const
 
