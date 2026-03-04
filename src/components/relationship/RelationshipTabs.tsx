@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageCircle, Ticket, Coins, Bell } from "lucide-react"
+import { MessageCircle, Ticket, Coins, Bell, ShoppingBag } from "lucide-react"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { PingTabContent } from "@/components/ping/PingTabContent"
 
@@ -40,6 +42,15 @@ const PLACEHOLDER_CONTENT: Record<
 
 export function RelationshipTabs() {
   const [activeTab, setActiveTab] = useState<TabId>("notes")
+  const router = useRouter()
+
+  const handleTabClick = (tabId: TabId) => {
+    if (tabId === "coupons") {
+      router.push("/us/coupons")
+      return
+    }
+    setActiveTab(tabId)
+  }
 
   return (
     <div>
@@ -53,7 +64,7 @@ export function RelationshipTabs() {
               key={tab.id}
               role="tab"
               aria-selected={isActive}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               className="relative flex flex-1 items-center justify-center gap-1.5 py-3"
             >
               <Icon
@@ -97,6 +108,27 @@ export function RelationshipTabs() {
           >
             {activeTab === "ping" ? (
               <PingTabContent />
+            ) : activeTab === "coyyns" ? (
+              <div className="flex flex-col gap-4">
+                {(() => {
+                  const content = PLACEHOLDER_CONTENT[activeTab]
+                  return content ? (
+                    <EmptyState
+                      icon={content.icon}
+                      title={content.title}
+                      subtitle={content.subtitle}
+                    />
+                  ) : null
+                })()}
+                <Link
+                  href="/us/marketplace"
+                  className="flex items-center gap-2 py-3 px-1 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--accent-primary)]"
+                  data-testid="marketplace-link"
+                >
+                  <ShoppingBag size={16} />
+                  <span>Marketplace &rarr;</span>
+                </Link>
+              </div>
             ) : (
               (() => {
                 const content = PLACEHOLDER_CONTENT[activeTab]
