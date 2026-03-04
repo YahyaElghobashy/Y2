@@ -84,7 +84,7 @@ function buildPayload(notification: NotificationRow): string {
     data: {
       notification_id: notification.id,
       type: notification.type,
-      url: "/",
+      payload: notification.metadata ?? {},
     },
   });
 }

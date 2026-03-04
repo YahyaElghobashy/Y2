@@ -111,7 +111,8 @@ function createMockSupabaseClient(config: {
         select: (_cols?: string) => {
           calls.push({ table, method: "select" });
           return {
-            eq: (col: string, val: string) => {
+            // deno-lint-ignore no-explicit-any
+            eq: (col: string, val: string): any => {
               if (table === "notifications") {
                 return {
                   single: <T>() => {
@@ -119,12 +120,12 @@ function createMockSupabaseClient(config: {
                       return Promise.resolve({
                         data: null,
                         error: { message: "Not found" },
-                      } as QueryResult) as Promise<{ data: T | null; error: { message: string } | null }>;
+                      });
                     }
                     return Promise.resolve({
                       data: config.notification as unknown as T,
                       error: null,
-                    }) as Promise<{ data: T | null; error: { message: string } | null }>;
+                    });
                   },
                 };
               }
@@ -132,7 +133,7 @@ function createMockSupabaseClient(config: {
                 return Promise.resolve({
                   data: config.subscriptions ?? [],
                   error: null,
-                } as QueryResult);
+                });
               }
               return { single: <T>() => Promise.resolve({ data: null as T | null, error: null }) };
             },
@@ -285,7 +286,7 @@ async function simulateHandler(
       .from("notifications")
       .select("*")
       .eq("id", notification_id)
-      .single<MockNotification>();
+      .single() as { data: MockNotification | null; error: { message: string } | null };
 
     if (notifError || !notification) {
       return {
@@ -363,7 +364,7 @@ async function simulateHandler(
       data: {
         notification_id: notification.id,
         type: notification.type,
-        url: "/",
+        payload: notification.metadata ?? {},
       },
     });
 
@@ -674,6 +675,49 @@ Deno.test("sets notification status to 'failed' when all subscriptions fail", as
   );
   assertExists(statusUpdate);
   assertEquals(statusUpdate.status, "failed");
+});
+
+Deno.test("forwards notification metadata as payload in push data for deep linking", async () => {
+  const notification = createMockNotification({
+    type: "coupon_received",
+    metadata: { coupon_id: "coupon-abc-123" },
+  });
+  const sub1 = createMockSubscription("sub-1");
+
+  const supabase = createMockSupabaseClient({
+    notification,
+    subscriptions: [sub1],
+  });
+
+  let capturedPayload = "";
+  const webpush = {
+    setVapidDetails: () => {},
+    sendNotification: (
+      _subscription: { endpoint: string },
+      payload: string,
+    ) => {
+      capturedPayload = payload;
+      return Promise.resolve({ statusCode: 201 });
+    },
+    _sentTo: [] as string[],
+  };
+
+  const result = await simulateHandler(
+    {
+      method: "POST",
+      body: { notification_id: NOTIFICATION_ID, recipient_id: RECIPIENT_ID },
+      hasAuth: true,
+    },
+    { supabaseAuth: supabase, supabaseService: supabase, webpush },
+  );
+
+  assertEquals(result.status, 200);
+  assertEquals(result.body.delivered, 1);
+
+  // Verify the push payload includes metadata as payload for deep linking
+  const parsed = JSON.parse(capturedPayload);
+  assertEquals(parsed.data.type, "coupon_received");
+  assertEquals(parsed.data.payload.coupon_id, "coupon-abc-123");
 });
 
 Deno.test("returns 200 and skips sending when notification status is already 'delivered'", async () => {
