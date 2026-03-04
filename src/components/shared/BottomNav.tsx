@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { House, Heart, Activity, Sun, CheckSquare } from "lucide-react"
+import { House, Heart, Sparkles, User, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import type { LucideIcon } from "lucide-react"
@@ -13,6 +13,7 @@ type NavTab = {
   href: string
   icon: LucideIcon
   match: (pathname: string) => boolean
+  isCenter?: boolean
 }
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
@@ -31,22 +32,23 @@ const NAV_TABS: NavTab[] = [
     match: (pathname) => pathname.startsWith("/us"),
   },
   {
-    label: "Health",
-    href: "/health",
-    icon: Activity,
-    match: (pathname) => pathname.startsWith("/health"),
+    label: "2026",
+    href: "/2026",
+    icon: Sparkles,
+    match: (pathname) => pathname.startsWith("/2026"),
+    isCenter: true,
   },
   {
-    label: "Spirit",
-    href: "/spirit",
-    icon: Sun,
-    match: (pathname) => pathname.startsWith("/spirit"),
+    label: "Me",
+    href: "/me",
+    icon: User,
+    match: (pathname) => pathname.startsWith("/me"),
   },
   {
-    label: "Ops",
-    href: "/ops",
-    icon: CheckSquare,
-    match: (pathname) => pathname.startsWith("/ops"),
+    label: "More",
+    href: "/more",
+    icon: MoreHorizontal,
+    match: (pathname) => pathname.startsWith("/more"),
   },
 ]
 
@@ -77,17 +79,22 @@ export function BottomNav() {
               <motion.div
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.1 }}
-                className="flex flex-col items-center gap-1"
+                className={cn(
+                  "flex flex-col items-center gap-1",
+                  tab.isCenter && "-translate-y-1.5"
+                )}
               >
                 <div className="relative flex flex-col items-center">
                   <Icon
-                    size={20}
+                    size={tab.isCenter ? 28 : 20}
                     strokeWidth={1.75}
                     className={cn(
                       "transition-colors duration-200",
-                      isActive
+                      tab.isCenter
                         ? "text-accent-primary"
-                        : "text-text-secondary"
+                        : isActive
+                          ? "text-accent-primary"
+                          : "text-text-secondary"
                     )}
                   />
                   {isActive && (
@@ -104,9 +111,11 @@ export function BottomNav() {
                 <span
                   className={cn(
                     "text-[11px] font-medium leading-none font-body",
-                    isActive
-                      ? "text-accent-primary"
-                      : "text-text-secondary"
+                    tab.isCenter
+                      ? "text-accent-primary tabular-nums"
+                      : isActive
+                        ? "text-accent-primary"
+                        : "text-text-secondary"
                   )}
                 >
                   {tab.label}

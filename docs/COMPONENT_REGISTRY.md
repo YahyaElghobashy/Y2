@@ -40,7 +40,8 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| BottomNav | ✅ | `components/shared/BottomNav.tsx` | Fixed bottom nav with 5 tabs (Home, Us, Health, Spirit, Ops). Uses `usePathname()` for active state, Framer Motion `layoutId` for sliding copper indicator, `whileTap` for press feedback. iOS safe area aware. |
+| BottomNav | ✅ | `components/shared/BottomNav.tsx` | Fixed bottom nav with 5 tabs (Home, Us, 2026, Me, More). Center 2026 tab elevated (-translate-y-1.5, 28px icon, always-copper accent). Uses `usePathname()` for active state, Framer Motion `layoutId` for sliding copper indicator, `whileTap` for press feedback. iOS safe area aware. (V2: TF10) |
+| HorizontalTabBar | ✅ | `components/shared/HorizontalTabBar.tsx` | `tabs: { label, href }[], layoutId?, className?` — Reusable route-based horizontal tab bar. Uses `usePathname()` for active detection, copper 2px underline with Framer Motion `layoutId`, `overflow-x-auto` with hidden scrollbar, sticky top-0. Auto-scrolls active tab into view on mount. (V2: T115) |
 | PageHeader | ✅ | `components/shared/PageHeader.tsx` | `title, backHref?, rightAction?, className?` — Page identity header with optional back navigation and right action slot. Uses Playfair Display title, ChevronLeft back icon with Framer Motion `whileTap` press feedback. Three-column balanced layout with spacers. |
 | LoadingSkeleton | ✅ | `components/shared/LoadingSkeleton.tsx` | `variant: "card" \| "list-item" \| "header" \| "full-page", count?, className?` — Warm-toned skeleton placeholders with CSS `animate-pulse`. Card (120px with icon/title/subtitle shapes), list-item (repeatable rows with avatar/text shapes), header (title+subtitle bars), full-page (header + 3 cards). Server Component, no JS animation. |
 | EmptyState | ✅ | `components/shared/EmptyState.tsx` | `icon: ReactNode, title: string, subtitle?: string, actionLabel?: string, actionHref?: string, onAction?: () => void, className?` — Centered empty placeholder with icon, title, optional subtitle, and optional copper CTA button (Link or button). Wrapped in FadeIn for soft entrance. min-h-[300px]. 9 tests passing. |
@@ -69,6 +70,11 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | ChallengeCard | ✅ | `components/relationship/ChallengeCard.tsx` | `title: string, stakes: string, status: "pending" \| "active" \| "completed" \| "declined", participants: { name: string, initial: string }[], onAccept?: () => void, onDecline?: () => void, className?` — Challenge card with trophy icon, color-coded status badge (pending/warning, active/info, completed/success, declined/error), overlapping participant initial avatars, and conditional Accept/Decline buttons for pending status. Framer Motion whileHover scale(1.02) + shadow deepen, whileTap scale(0.98). 15 tests passing. |
+| MarketplaceItemCard | ✅ | `components/relationship/MarketplaceItemCard.tsx` | `icon: ReactNode, title: string, description: string, price: number, available?: boolean, affordable?: boolean, onPurchase?: () => void, className?` — Pure presentational marketplace item card. Three states: affordable (interactive), unaffordable (opacity-70 disabled), coming soon (opacity-60 "Coming soon" badge). Price pill with coin emoji + JetBrains Mono. Framer Motion spring whileHover/whileTap. Line-clamp-2 description. 12 tests passing. |
+| PurchaseConfirmModal | ✅ | `components/relationship/PurchaseConfirmModal.tsx` | `open: boolean, onClose: () => void, item: { icon, title, description, price, category }, onSuccess?: () => void` — Purchase confirmation modal with balance breakdown (Cost/Balance/After). Uses `useCoyyns().spendCoyyns()`. Disabled when unaffordable. Portal + AnimatePresence scale entry. Sonner toast feedback. 15 tests passing. |
+| CreateChallengeForm | ✅ | `components/relationship/CreateChallengeForm.tsx` | `open: boolean, onClose: () => void, onSuccess?: () => void` — Bottom sheet form for creating challenges. Emoji quick-pick (10 options), title/description/stakes/deadline fields. RHF+Zod validation (title required, stakes 1-1000, future deadline). Supabase insert to challenges table. Portal + AnimatePresence. 16 tests passing. |
+| ClaimWinDialog | ✅ | `components/relationship/ChallengeResolution.tsx` | `challenge: Challenge, open: boolean, onClose: () => void, onClaimed?: () => void` — Dialog for claiming challenge win. Sets status to pending_resolution. Waiting state with pulsing trophy + "Waiting for [Partner]…". Cancel claim reverts to active. Realtime subscription for partner confirmation. Portal + AnimatePresence. 9 tests passing. |
+| ConfirmResultDialog | ✅ | `components/relationship/ChallengeResolution.tsx` | `challenge: Challenge, open: boolean, onClose: () => void, onConfirmed?: () => void, onDisputed?: () => void` — Dialog for confirming/disputing challenge results. Only shown to non-claimant. Balance breakdown with partial transfer warning (amber). Confirm Win: transfers CoYYns via spendCoyyns+addCoyyns. Dispute: reverts to active. Portal + AnimatePresence. 10 tests passing. |
 | NotificationBuilder | ✅ | `components/relationship/NotificationBuilder.tsx` | `className?, onBuyMore?: () => void` — Notification composition form with emoji picker, title/body fields (RHF+Zod validation), live preview card, and integrated SendLimitIndicator. Passes `onBuyMore` to SendLimitIndicator. Calls `useNotifications().sendNotification()`. Loading/success/error states. 7 tests passing. |
 | SendLimitIndicator | ✅ | `components/relationship/SendLimitIndicator.tsx` | `remainingSends: number, bonusSends?: number, onBuyMore?: () => void, className?` — Visual daily send limit indicator. Row of colored dots (success→warning→error as remaining decreases), text count, "Buy more" link when exhausted. Pure presentational. 7 tests passing. |
 | CouponCard | ✅ | `components/relationship/CouponCard.tsx` | `coupon: Coupon, onPress?: () => void, compact?: boolean, className?` — Gift-style coupon card with category color badge, status indicator dot (Active/Pending/Used/Expired), creator label, surprise-hidden state. Compact mode for list embedding. Pending approval copper glow pulse. FadeIn on mount. 11 tests passing. |
@@ -96,7 +102,7 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| HealthPage | ✅ | `app/(main)/health/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Health", back to `/`) + EmptyState with Activity icon. Warm copy: "Your wellness, tracked". No interactivity. 6 tests passing. |
+| HealthPage | ✅ | `app/(main)/health/page.tsx` | Redirect to `/me`. (V2: T116 — consolidated into Me page) |
 | CycleDayWidget | ✅ | `components/health/CycleDayWidget.tsx` | `className?` — Current cycle day + phase display with SVG progress arc. Shows day number, phase (active/break), days remaining. PMS window amber glow warning. Pulls data from `useCycle()` hook, only renders when config exists. 7 tests passing. |
 | CycleConfigForm | ✅ | `components/health/CycleConfigForm.tsx` | `open: boolean, onClose: () => void, onSuccess?: () => void, initialConfig?: CycleConfig` — Bottom sheet form for pill cycle configuration (start date, active days, break days, PMS warning days). RHF+Zod validation, portal with AnimatePresence. Upserts via `useCycle().updateConfig()`. 8 tests passing. |
 | CycleCalendarView | ✅ | `components/health/CycleCalendarView.tsx` | `className?` — Month calendar view with phase-colored day cells (copper=active, rose=break, amber=PMS). Today copper ring highlight, past days dimmed. Month navigation with animated transitions. Phase projection from config using date-fns. 9 tests passing. |
@@ -107,19 +113,39 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| SpiritPage | ✅ | `app/(main)/spirit/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Spirit", back to `/`) + EmptyState with Sun icon. Contemplative copy: "Your daily practice". No interactivity. 6 tests passing. |
+| SpiritPage | ✅ | `app/(main)/spirit/page.tsx` | Redirect to `/me`. (V2: T116 — consolidated into Me page) |
 
 ## Settings Module
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| SettingsPage | ✅ | `app/(main)/settings/page.tsx` | Client Component. Uses useAuth() for real profile data. PageTransition + PageHeader + profile card (avatar/name/email from auth). ProfileEditForm inline expand on "Profile" row click. AlertDialog confirmation on Log Out → signOut(). LoadingSkeleton when profile is null. 7 tests passing. |
+| SettingsPage | ✅ | `app/(main)/settings/page.tsx` | Redirect to `/more`. (V2: T117 — consolidated into More page) |
 
 ## Ops Module
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| OpsPage | ✅ | `app/(main)/ops/page.tsx` | Server Component page shell. PageTransition + PageHeader ("Ops", back to `/`) + EmptyState with CheckSquare icon. Practical copy: "Life, organized". No interactivity. 6 tests passing. |
+| OpsPage | ✅ | `app/(main)/ops/page.tsx` | Redirect to `/more`. (V2: T117 — consolidated into More page) |
+
+## Marketplace Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| MarketplacePage | ✅ | `app/(main)/us/marketplace/page.tsx` | Client Component. Two-tab marketplace (Shop/Challenges). Shop tab: MarketplaceItemCards for purchasable items (Extra Notifications, Custom Theme, etc). Challenges tab: ChallengeCard list + create button. Wires BuyExtraPingModal + PurchaseConfirmModal + CreateChallengeForm. Uses useCoyyns() for balance-aware affordability. |
+
+## V2 Navigation (TF10, T115, T116, T117)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| 2026 Vision Board | ✅ | `app/(main)/2026/page.tsx` | Server Component. EmptyState placeholder with Sparkles icon. "Your 2026 vision board is coming soon". |
+| /us Layout | ✅ | `app/(main)/us/layout.tsx` | Server Component. Wraps children with PageHeader("Us") + HorizontalTabBar (CoYYns, Coupons, Calendar, Ping). |
+| /us CoYYns Tab | ✅ | `app/(main)/us/coyyns/page.tsx` | Client Component. CoyynsWallet + CoyynsHistory. |
+| /us Calendar Tab | ✅ | `app/(main)/us/calendar/page.tsx` | Server Component. EmptyState placeholder with Calendar icon. |
+| /us Ping Tab | ✅ | `app/(main)/us/ping/page.tsx` | Client Component. Wraps PingTabContent from ping module. |
+| Me Page | ✅ | `app/(main)/me/page.tsx` | Client Component. Body/Soul dual-section landing. Two large navigation cards with stagger animation. |
+| Soul Page | ✅ | `app/(main)/me/soul/page.tsx` | Server Component. EmptyState placeholder with Sun icon. |
+| More Page | ✅ | `app/(main)/more/page.tsx` | Client Component. Utility drawer: Profile card, Account, Preferences, About, Logout with AlertDialog. |
+| About Hayah Page | ✅ | `app/(main)/more/about/page.tsx` | Server Component. Why Hayah? + Built with intention sections. |
 
 ## Auth Infrastructure
 

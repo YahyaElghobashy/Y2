@@ -27,27 +27,27 @@ describe("BottomNav", () => {
     expect(links).toHaveLength(5)
   })
 
-  it("each tab has the correct label text", () => {
+  it("each tab has the correct V2 label text", () => {
     mockPathname.mockReturnValue("/")
     render(<BottomNav />)
 
     expect(screen.getByText("Home")).toBeInTheDocument()
     expect(screen.getByText("Us")).toBeInTheDocument()
-    expect(screen.getByText("Health")).toBeInTheDocument()
-    expect(screen.getByText("Spirit")).toBeInTheDocument()
-    expect(screen.getByText("Ops")).toBeInTheDocument()
+    expect(screen.getByText("2026")).toBeInTheDocument()
+    expect(screen.getByText("Me")).toBeInTheDocument()
+    expect(screen.getByText("More")).toBeInTheDocument()
   })
 
-  it("each tab links to the correct route", () => {
+  it("each tab links to the correct V2 route", () => {
     mockPathname.mockReturnValue("/")
     render(<BottomNav />)
 
     const links = screen.getAllByRole("link")
     expect(links[0]).toHaveAttribute("href", "/")
     expect(links[1]).toHaveAttribute("href", "/us")
-    expect(links[2]).toHaveAttribute("href", "/health")
-    expect(links[3]).toHaveAttribute("href", "/spirit")
-    expect(links[4]).toHaveAttribute("href", "/ops")
+    expect(links[2]).toHaveAttribute("href", "/2026")
+    expect(links[3]).toHaveAttribute("href", "/me")
+    expect(links[4]).toHaveAttribute("href", "/more")
   })
 
   it("active tab has accent color styling when pathname is /", () => {
@@ -57,7 +57,6 @@ describe("BottomNav", () => {
     const homeLink = screen.getByText("Home").closest("a")
     expect(homeLink).toHaveAttribute("aria-current", "page")
 
-    // Inactive tabs should not have aria-current
     const usLink = screen.getByText("Us").closest("a")
     expect(usLink).not.toHaveAttribute("aria-current")
   })
@@ -71,6 +70,30 @@ describe("BottomNav", () => {
 
     const homeLink = screen.getByText("Home").closest("a")
     expect(homeLink).not.toHaveAttribute("aria-current")
+  })
+
+  it("active tab for /2026 route", () => {
+    mockPathname.mockReturnValue("/2026")
+    render(<BottomNav />)
+
+    const link = screen.getByText("2026").closest("a")
+    expect(link).toHaveAttribute("aria-current", "page")
+  })
+
+  it("active tab for /me route", () => {
+    mockPathname.mockReturnValue("/me")
+    render(<BottomNav />)
+
+    const link = screen.getByText("Me").closest("a")
+    expect(link).toHaveAttribute("aria-current", "page")
+  })
+
+  it("active tab for /more route", () => {
+    mockPathname.mockReturnValue("/more")
+    render(<BottomNav />)
+
+    const link = screen.getByText("More").closest("a")
+    expect(link).toHaveAttribute("aria-current", "page")
   })
 
   it("inactive tabs have secondary color styling", () => {
@@ -89,6 +112,22 @@ describe("BottomNav", () => {
     expect(homeLabel.className).toContain("text-accent-primary")
   })
 
+  it("center tab (2026) always has accent color", () => {
+    mockPathname.mockReturnValue("/")
+    render(<BottomNav />)
+
+    const label2026 = screen.getByText("2026")
+    expect(label2026.className).toContain("text-accent-primary")
+  })
+
+  it("center tab (2026) has tabular-nums", () => {
+    mockPathname.mockReturnValue("/")
+    render(<BottomNav />)
+
+    const label2026 = screen.getByText("2026")
+    expect(label2026.className).toContain("tabular-nums")
+  })
+
   it("all Lucide icons render as SVG elements", () => {
     mockPathname.mockReturnValue("/")
     const { container } = render(<BottomNav />)
@@ -97,22 +136,21 @@ describe("BottomNav", () => {
     expect(svgs).toHaveLength(5)
   })
 
-  it("renders without crashing when pathname is /", () => {
-    mockPathname.mockReturnValue("/")
-    expect(() => render(<BottomNav />)).not.toThrow()
-  })
-
-  it("renders without crashing when pathname is /us", () => {
-    mockPathname.mockReturnValue("/us")
-    expect(() => render(<BottomNav />)).not.toThrow()
-  })
-
   it("shows indicator only on the active tab", () => {
-    mockPathname.mockReturnValue("/health")
+    mockPathname.mockReturnValue("/2026")
     const { container } = render(<BottomNav />)
 
     const indicators = container.querySelectorAll("[data-layoutid='bottomnav-indicator']")
     expect(indicators).toHaveLength(1)
+  })
+
+  it("old routes (Health, Spirit, Ops) are NOT present", () => {
+    mockPathname.mockReturnValue("/")
+    render(<BottomNav />)
+
+    expect(screen.queryByText("Health")).not.toBeInTheDocument()
+    expect(screen.queryByText("Spirit")).not.toBeInTheDocument()
+    expect(screen.queryByText("Ops")).not.toBeInTheDocument()
   })
 
   it("no tab is highlighted on non-nav routes", () => {
