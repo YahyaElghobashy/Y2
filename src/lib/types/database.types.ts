@@ -1018,6 +1018,101 @@ export interface Database {
           }
         ]
       }
+      rituals: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          icon: string
+          cadence: string
+          is_shared: boolean
+          coyyns_reward: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          icon?: string
+          cadence: string
+          is_shared?: boolean
+          coyyns_reward?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          icon?: string
+          cadence?: string
+          is_shared?: boolean
+          coyyns_reward?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rituals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      ritual_logs: {
+        Row: {
+          id: string
+          ritual_id: string
+          user_id: string
+          period_key: string
+          note: string | null
+          photo_url: string | null
+          logged_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          ritual_id: string
+          user_id: string
+          period_key: string
+          note?: string | null
+          photo_url?: string | null
+          logged_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          ritual_id?: string
+          user_id?: string
+          period_key?: string
+          note?: string | null
+          photo_url?: string | null
+          logged_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ritual_logs_ritual_id_fkey"
+            columns: ["ritual_id"]
+            isOneToOne: false
+            referencedRelation: "rituals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ritual_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
