@@ -9,7 +9,7 @@ import {
   Palette,
   Info,
   LogOut,
-  ChevronRight,
+  Link2Off,
 } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -17,6 +17,7 @@ import { SettingsRow } from "@/components/shared/SettingsRow"
 import { ProfileEditForm } from "@/components/shared/ProfileEditForm"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,9 +31,11 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function MorePage() {
-  const { user, profile, partner, signOut } = useAuth()
+  const { user, profile, partner, signOut, refreshProfile } = useAuth()
   const router = useRouter()
   const [editingProfile, setEditingProfile] = useState(false)
+  const [unpairOpen, setUnpairOpen] = useState(false)
+  const [unpairing, setUnpairing] = useState(false)
 
   if (!profile) {
     return (
@@ -110,6 +113,7 @@ export default function MorePage() {
               icon={<Heart size={20} strokeWidth={1.5} />}
               label="Partner"
               subtitle={partner?.display_name || "Not connected"}
+              onClick={partner ? () => setUnpairOpen(true) : () => router.push("/pair")}
             />
           </div>
         </div>
@@ -164,6 +168,44 @@ export default function MorePage() {
             />
           </div>
         </div>
+
+        {/* Unpair Dialog */}
+        <AlertDialog open={unpairOpen} onOpenChange={setUnpairOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Unpair from {partner?.display_name || "partner"}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will disconnect you from your partner. You can re-pair later using a new invite code.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={unpairing}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={unpairing}
+                onClick={async (e) => {
+                  e.preventDefault()
+                  if (!user) return
+                  setUnpairing(true)
+                  try {
+                    const supabase = getSupabaseBrowserClient()
+                    await supabase.rpc("unpair_partners", { my_id: user.id })
+                    await refreshProfile()
+                    setUnpairOpen(false)
+                  } catch {
+                    // silent fail
+                  } finally {
+                    setUnpairing(false)
+                  }
+                }}
+                className="bg-red-600 text-white hover:bg-red-700"
+                data-testid="confirm-unpair-btn"
+              >
+                <Link2Off size={16} className="me-1.5" />
+                {unpairing ? "Unpairing..." : "Unpair"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Logout */}
         <AlertDialog>

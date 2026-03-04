@@ -1022,6 +1022,12 @@ export interface Database {
         }
         Returns: Json
       }
+      unpair_partners: {
+        Args: {
+          my_id: string
+        }
+        Returns: Json
+      }
       resolve_challenge_payout: {
         Args: {
           p_challenge_id: string

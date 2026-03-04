@@ -157,6 +157,14 @@
 | More Page | ✅ | `app/(main)/more/page.tsx` | Client Component. Utility drawer: Profile card, Account, Preferences, About, Logout with AlertDialog. |
 | About Hayah Page | ✅ | `app/(main)/more/about/page.tsx` | Server Component. Why Hayah? + Built with intention sections. |
 
+## Pairing Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| InviteCodeDisplay | ✅ | `components/pairing/InviteCodeDisplay.tsx` | `code: string | null, className?` — Shows user's 6-char invite code in 32px monospace copper text. Copy button (navigator.clipboard.writeText), Share button (navigator.share with clipboard fallback). Loading skeleton when code is null. "Your invite code" label. 9 tests passing. |
+| PairPartnerForm | ✅ | `components/pairing/PairPartnerForm.tsx` | `onPaired: () => void` — Code entry form with 6-char uppercase input (auto-uppercase, alphanumeric filter, maxLength 6). Calls `supabase.rpc('pair_partners', { my_id, partner_code })`. States: idle, loading, success (confetti + partner name + "Enter Hayah" button), error (shake + message). 20 confetti particles (copper/gold). Calls `refreshProfile()` after success. 15 tests passing. |
+| PairPage | ✅ | `app/(main)/pair/page.tsx` | Full-screen pairing flow. Heart icon header, "Find your partner" title, InviteCodeDisplay, "or" divider, PairPartnerForm. Redirects to home if already paired. Loading skeleton. 8 tests passing. |
+
 ## Auth Infrastructure
 
 | Component | Status | Path | Notes |
