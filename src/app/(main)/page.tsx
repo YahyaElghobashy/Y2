@@ -10,6 +10,7 @@ import { HomeCycleWidget } from "@/components/home/HomeCycleWidget"
 import { HomeCouponInbox } from "@/components/home/HomeCouponInbox"
 import { FeelingGenerousCTA } from "@/components/home/FeelingGenerousCTA"
 import { HomeMarketplaceRow } from "@/components/home/HomeMarketplaceRow"
+import { HomePrayerWidget } from "@/components/home/HomePrayerWidget"
 
 export default function Home() {
   return (
@@ -32,6 +33,7 @@ export default function Home() {
       <div className="flex flex-col gap-4 px-5 mt-6">
         <CoyynsWidget />
         <HomeCycleWidget />
+        <HomePrayerWidget />
         <HomeCouponInbox />
         <FeelingGenerousCTA />
       </div>

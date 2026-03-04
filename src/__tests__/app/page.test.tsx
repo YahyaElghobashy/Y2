@@ -153,6 +153,28 @@ vi.mock("@/lib/hooks/use-notifications", () => ({
   }),
 }))
 
+// Mock usePrayer (used by HomePrayerWidget)
+vi.mock("@/lib/hooks/use-prayer", () => ({
+  usePrayer: () => ({
+    today: {
+      id: "row-1",
+      user_id: "user-1",
+      date: "2026-03-04",
+      fajr: true,
+      dhuhr: true,
+      asr: false,
+      maghrib: false,
+      isha: false,
+      created_at: "",
+      updated_at: "",
+    },
+    togglePrayer: vi.fn(),
+    completedCount: 2,
+    isLoading: false,
+    error: null,
+  }),
+}))
+
 import Home from "@/app/(main)/page"
 
 describe("Home Page", () => {
