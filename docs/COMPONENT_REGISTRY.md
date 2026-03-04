@@ -129,6 +129,14 @@
 | AzkarCounter | ✅ | `components/spiritual/AzkarCounter.tsx` | `className?` — Azkar counter with morning/evening toggle pills (layoutId sliding indicator), 120px circular tap area with count/target, completion ripple via AnimatePresence, reset button. Uses `useAzkar()` hook. Loading skeleton. Error state. 20 tests passing. |
 | SoulPage | ✅ | `app/(main)/me/soul/page.tsx` | Client Component. Full spiritual practice page: PrayerTracker → QuranTracker → AzkarCounter with dividers. "Daily Verse / Hadith — coming soon" placeholder. PageHeader with back to /me. 9 tests passing. |
 
+## Shared List Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| QuickAddInput | ✅ | `components/list/QuickAddInput.tsx` | `onAdd: (title: string) => void, placeholder?: string, className?` — Sticky input with Plus button. Enter-to-add, trims whitespace, clears on submit, button disabled when empty. 13 tests passing. |
+| ListItemCard | ✅ | `components/list/ListItemCard.tsx` | `item: ListItem, subItems?: ListItem[], isOwn: boolean, onToggle, onDelete, onAddSubItem?, className?` — List item with circle checkbox (copper fill), title (strikethrough when done), CoYYns badge, creator dot (Y/P), expand/collapse sub-items with AnimatePresence, sub-item add input, delete button. 18 tests passing. |
+| SharedListPage | ✅ | `app/(main)/us/list/page.tsx` | Client Component. List selector tabs, QuickAddInput, active items via StaggerList, collapsible completed section, create new list flow, EmptyState for no lists/empty list. Uses `useSharedList()` hook. 17 tests passing. |
+
 ## Calendar Module
 
 | Component | Status | Path | Props |

@@ -6,6 +6,7 @@ const US_TABS = [
   { label: "Coupons", href: "/us/coupons" },
   { label: "Calendar", href: "/us/calendar" },
   { label: "Ping", href: "/us/ping" },
+  { label: "List", href: "/us/list" },
 ]
 
 export default function UsLayout({ children }: { children: React.ReactNode }) {
