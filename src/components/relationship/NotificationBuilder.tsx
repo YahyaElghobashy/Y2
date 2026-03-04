@@ -23,7 +23,12 @@ type NotificationFormData = z.infer<typeof notificationSchema>
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-export function NotificationBuilder({ className }: { className?: string }) {
+type NotificationBuilderProps = {
+  className?: string
+  onBuyMore?: () => void
+}
+
+export function NotificationBuilder({ className, onBuyMore }: NotificationBuilderProps) {
   const { partner } = useAuth()
   const { sendNotification, canSend, remainingSends } = useNotifications()
   const [sent, setSent] = useState(false)
@@ -213,7 +218,7 @@ export function NotificationBuilder({ className }: { className?: string }) {
               >
                 {isSubmitting ? "Sending..." : "Send Notification"}
               </button>
-              <SendLimitIndicator remainingSends={remainingSends} />
+              <SendLimitIndicator remainingSends={remainingSends} onBuyMore={onBuyMore} />
             </div>
           </motion.form>
         )}

@@ -16,5 +16,6 @@ export type UseNotificationsReturn = {
   isLoading: boolean
   error: string | null
   sendNotification: (title: string, body: string, emoji?: string) => Promise<void>
+  purchaseBonusSend: () => Promise<void>
   refreshLimits: () => Promise<void>
 }

@@ -124,6 +124,34 @@ export function useNotifications(): UseNotificationsReturn {
     }
   }, [user, supabase])
 
+  const purchaseBonusSend = useCallback(async () => {
+    if (!user) return
+
+    const today = getTodayDateString()
+    const currentBonus = dailyLimit?.bonus_sends_available ?? 0
+
+    // Upsert daily limit row — creates if missing, updates bonus_sends_available if exists
+    const { error: upsertError } = await supabase
+      .from("daily_send_limits")
+      .upsert(
+        {
+          user_id: user.id,
+          date: today,
+          free_sends_used: dailyLimit?.free_sends_used ?? 0,
+          bonus_sends_used: dailyLimit?.bonus_sends_used ?? 0,
+          bonus_sends_available: currentBonus + 1,
+        },
+        { onConflict: "user_id,date" }
+      )
+
+    if (upsertError) {
+      setError("Failed to purchase bonus send")
+      return
+    }
+
+    await refreshLimits()
+  }, [user, supabase, dailyLimit, refreshLimits])
+
   const sendNotification = useCallback(
     async (title: string, body: string, emoji?: string) => {
       setError(null)
@@ -214,6 +242,7 @@ export function useNotifications(): UseNotificationsReturn {
       isLoading: false,
       error: null,
       sendNotification: async () => {},
+      purchaseBonusSend: async () => {},
       refreshLimits: async () => {},
     }
   }
@@ -226,6 +255,7 @@ export function useNotifications(): UseNotificationsReturn {
     isLoading,
     error,
     sendNotification,
+    purchaseBonusSend,
     refreshLimits,
   }
 }

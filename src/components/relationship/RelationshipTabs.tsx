@@ -4,18 +4,19 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MessageCircle, Ticket, Coins, Bell } from "lucide-react"
 import { EmptyState } from "@/components/shared/EmptyState"
+import { PingTabContent } from "@/components/ping/PingTabContent"
 
 const TABS = [
   { id: "notes", label: "Notes", icon: MessageCircle },
   { id: "coupons", label: "Coupons", icon: Ticket },
   { id: "coyyns", label: "CoYYns", icon: Coins },
-  { id: "send", label: "Send", icon: Bell },
+  { id: "ping", label: "Ping", icon: Bell },
 ] as const
 
 type TabId = (typeof TABS)[number]["id"]
 
-const TAB_CONTENT: Record<
-  TabId,
+const PLACEHOLDER_CONTENT: Record<
+  string,
   { icon: React.ReactNode; title: string; subtitle: string; actionLabel?: string }
 > = {
   notes: {
@@ -34,11 +35,6 @@ const TAB_CONTENT: Record<
     icon: <Coins size={48} strokeWidth={1.25} />,
     title: "CoYYns wallet empty",
     subtitle: "Start earning together",
-  },
-  send: {
-    icon: <Bell size={48} strokeWidth={1.25} />,
-    title: "Send a notification",
-    subtitle: "Surprise your partner with a message",
   },
 }
 
@@ -99,15 +95,22 @@ export function RelationshipTabs() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <EmptyState
-              icon={TAB_CONTENT[activeTab].icon}
-              title={TAB_CONTENT[activeTab].title}
-              subtitle={TAB_CONTENT[activeTab].subtitle}
-              actionLabel={TAB_CONTENT[activeTab].actionLabel}
-              onAction={
-                TAB_CONTENT[activeTab].actionLabel ? () => {} : undefined
-              }
-            />
+            {activeTab === "ping" ? (
+              <PingTabContent />
+            ) : (
+              (() => {
+                const content = PLACEHOLDER_CONTENT[activeTab]
+                return content ? (
+                  <EmptyState
+                    icon={content.icon}
+                    title={content.title}
+                    subtitle={content.subtitle}
+                    actionLabel={content.actionLabel}
+                    onAction={content.actionLabel ? () => {} : undefined}
+                  />
+                ) : null
+              })()
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

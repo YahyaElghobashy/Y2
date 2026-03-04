@@ -53,7 +53,12 @@ const INSIGHT_CONFIG: Record<
   },
 }
 
-export function CycleInsightCard({ className }: { className?: string }) {
+type CycleInsightCardProps = {
+  className?: string
+  compact?: boolean
+}
+
+export function CycleInsightCard({ className, compact }: CycleInsightCardProps) {
   const { phase, isPMSWindow, isPeriodLikely, config, isLoading } = useCycle()
 
   // Yahya-only guard
@@ -70,7 +75,8 @@ export function CycleInsightCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-[var(--radius-card)] border p-4",
+        "rounded-[var(--radius-card)] border",
+        compact ? "p-3" : "p-4",
         insight.bg,
         insight.border,
         className
@@ -78,21 +84,26 @@ export function CycleInsightCard({ className }: { className?: string }) {
       data-testid="cycle-insight-card"
     >
       <div className="flex items-start gap-3">
-        <div className="mt-0.5">
-          <Icon size={20} strokeWidth={1.5} className="text-text-primary" />
+        <div className={compact ? "" : "mt-0.5"}>
+          <Icon size={compact ? 16 : 20} strokeWidth={1.5} className="text-text-primary" />
         </div>
         <div className="flex flex-col gap-1">
-          <h4
-            className="text-[15px] font-semibold font-[var(--font-body)] text-text-primary"
-            data-testid="insight-title"
-          >
-            {insight.title}
-          </h4>
+          {!compact && (
+            <h4
+              className="text-[15px] font-semibold font-[var(--font-body)] text-text-primary"
+              data-testid="insight-title"
+            >
+              {insight.title}
+            </h4>
+          )}
           <p
-            className="text-[13px] font-[var(--font-body)] text-text-secondary leading-relaxed"
+            className={cn(
+              "font-[var(--font-body)] text-text-secondary leading-relaxed",
+              compact ? "text-[12px]" : "text-[13px]"
+            )}
             data-testid="insight-message"
           >
-            {insight.message}
+            {compact ? insight.title : insight.message}
           </p>
         </div>
       </div>
