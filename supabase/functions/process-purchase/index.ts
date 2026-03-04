@@ -88,7 +88,7 @@ async function sendPushToUser(
       emoji: notification.emoji,
       type: notification.type,
       metadata: notification.metadata ?? {},
-      status: "pending",
+      status: "sent",
     })
     .select()
     .single();

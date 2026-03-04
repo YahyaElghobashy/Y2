@@ -52,11 +52,12 @@ mockInvoke.mockResolvedValue({ data: null, error: null })
 
 vi.mock("@/lib/providers/AuthProvider", () => ({ useAuth }))
 vi.mock("@/lib/hooks/use-coyyns", () => ({ useCoyyns }))
+const mockSupabaseClient = {
+  from: mockFrom,
+  functions: { invoke: mockInvoke },
+}
 vi.mock("@/lib/supabase/client", () => ({
-  getSupabaseBrowserClient: () => ({
-    from: mockFrom,
-    functions: { invoke: mockInvoke },
-  }),
+  getSupabaseBrowserClient: () => mockSupabaseClient,
 }))
 
 import { useMarketplace } from "@/lib/hooks/use-marketplace"
@@ -117,5 +118,97 @@ describe("useMarketplace", () => {
 
     const { result } = renderHook(() => useMarketplace())
     await expect(result.current.createPurchase("item-1")).rejects.toThrow("Not authenticated")
+  })
+
+  it("createPurchase throws when partner is null", async () => {
+    useAuth.mockReturnValue({
+      user: { id: "user-1" },
+      partner: null,
+      profile: null,
+      isLoading: false,
+      profileNeedsSetup: false,
+      signOut: vi.fn(),
+      refreshProfile: vi.fn(),
+    })
+
+    // Return an item so it passes the item lookup
+    mockOrder.mockReturnValueOnce({
+      limit: mockLimit,
+      data: [{ id: "item-1", name: "Test", price: 10, effect_type: "extra_ping", effect_config: {}, is_active: true, sort_order: 1, created_at: "" }],
+      error: null,
+    })
+
+    const { result } = renderHook(() => useMarketplace())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    await expect(result.current.createPurchase("item-1")).rejects.toThrow("No partner connected")
+  })
+
+  it("createPurchase calls spendCoyyns with item price and name", async () => {
+    const testItem = {
+      id: "item-1", name: "Extra Notification", description: "Send more",
+      price: 10, icon: "🔔", effect_type: "extra_ping",
+      effect_config: {}, is_active: true, sort_order: 1, created_at: "",
+    }
+
+    useAuth.mockReturnValue({
+      user: { id: "user-1" },
+      partner: { id: "partner-1" },
+      profile: null,
+      isLoading: false,
+      profileNeedsSetup: false,
+      signOut: vi.fn(),
+      refreshProfile: vi.fn(),
+    })
+
+    mockOrder.mockReturnValueOnce({
+      limit: mockLimit,
+      data: [testItem],
+      error: null,
+    })
+
+    const { result } = renderHook(() => useMarketplace())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await result.current.createPurchase("item-1")
+    expect(mockSpendCoyyns).toHaveBeenCalledWith(10, "Extra Notification", "marketplace")
+  })
+
+  it("createPurchase inserts purchase row with correct buyer, target, item, cost, and status", async () => {
+    const testItem = {
+      id: "item-1", name: "Extra Notification", description: "Send more",
+      price: 10, icon: "🔔", effect_type: "extra_ping",
+      effect_config: {}, is_active: true, sort_order: 1, created_at: "",
+    }
+
+    useAuth.mockReturnValue({
+      user: { id: "user-1" },
+      partner: { id: "partner-1" },
+      profile: null,
+      isLoading: false,
+      profileNeedsSetup: false,
+      signOut: vi.fn(),
+      refreshProfile: vi.fn(),
+    })
+
+    mockOrder.mockReturnValueOnce({
+      limit: mockLimit,
+      data: [testItem],
+      error: null,
+    })
+
+    const { result } = renderHook(() => useMarketplace())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await result.current.createPurchase("item-1")
+
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        buyer_id: "user-1",
+        target_id: "partner-1",
+        item_id: "item-1",
+        cost: 10,
+        status: "pending",
+      })
+    )
   })
 })

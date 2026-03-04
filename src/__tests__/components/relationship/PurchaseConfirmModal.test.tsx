@@ -205,4 +205,47 @@ describe("PurchaseConfirmModal", () => {
       expect(screen.getByTestId("purchase-error")).toHaveTextContent("Purchase failed")
     })
   })
+
+  it("calls createPurchase with {wish} payload for wildcard item", async () => {
+    const wildcardItem: MarketplaceItem = {
+      ...mockItem,
+      id: "item-wildcard",
+      name: "Wildcard Favor",
+      effect_type: "wildcard",
+      price: 50,
+      effect_config: { requires_input: true, input_prompt: "What do you wish for?" },
+    }
+    render(<PurchaseConfirmModal {...defaultProps} item={wildcardItem} />)
+    fireEvent.change(screen.getByTestId("purchase-input"), { target: { value: "Dance in the rain" } })
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(mockCreatePurchase).toHaveBeenCalledWith("item-wildcard", { wish: "Dance in the rain" })
+    })
+  })
+
+  it("calls createPurchase with {task} payload for task_order item", async () => {
+    const taskItem: MarketplaceItem = {
+      ...mockItem,
+      id: "item-task",
+      name: "Breakfast in Bed",
+      effect_type: "task_order",
+      price: 40,
+      effect_config: { requires_input: true, input_prompt: "What task?" },
+    }
+    render(<PurchaseConfirmModal {...defaultProps} item={taskItem} />)
+    fireEvent.change(screen.getByTestId("purchase-input"), { target: { value: "Make pancakes" } })
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(mockCreatePurchase).toHaveBeenCalledWith("item-task", { task: "Make pancakes" })
+    })
+  })
+
+  it("toast.success is called after successful purchase", async () => {
+    const { toast } = await import("sonner")
+    render(<PurchaseConfirmModal {...defaultProps} />)
+    fireEvent.click(screen.getByTestId("purchase-confirm"))
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Purchased Extra Notification!")
+    })
+  })
 })

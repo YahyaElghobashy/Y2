@@ -121,6 +121,24 @@ describe("MarketplaceItemCard", () => {
     act(() => { vi.advanceTimersByTime(100) })
     expect(screen.getByTestId("buy-success-overlay")).toBeInTheDocument()
   })
+
+  it("second click during pressing state does NOT fire onBuy again (double-buy prevention)", () => {
+    const onBuy = vi.fn()
+    render(<MarketplaceItemCard {...defaultProps} onBuy={onBuy} />)
+    const btn = screen.getByTestId("buy-button")
+    fireEvent.click(btn)
+    fireEvent.click(btn)
+    act(() => { vi.advanceTimersByTime(100) })
+    expect(onBuy).toHaveBeenCalledTimes(1)
+  })
+
+  it("tooltip auto-dismisses after 2 seconds", () => {
+    render(<MarketplaceItemCard {...defaultProps} balance={5} />)
+    fireEvent.click(screen.getByTestId("buy-button"))
+    expect(screen.getByTestId("need-more-tooltip")).toBeInTheDocument()
+    act(() => { vi.advanceTimersByTime(2000) })
+    expect(screen.queryByTestId("need-more-tooltip")).not.toBeInTheDocument()
+  })
 })
 
 describe("MarketplaceItemCardSkeleton", () => {

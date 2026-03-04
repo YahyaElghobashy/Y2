@@ -1,5 +1,5 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import { render, screen, fireEvent, act } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // ── Mocks ──────────────────────────────────────────────
@@ -60,9 +60,14 @@ const mockItems: MarketplaceItem[] = [
   { id: "3", name: "Breakfast in Bed", description: "Partner serves", price: 40, icon: "🍳", effect_type: "task_order", effect_config: {}, is_active: true, sort_order: 3, created_at: "" },
 ]
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 describe("HomeMarketplaceRow", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.useFakeTimers()
   })
 
   it("renders section header 'Quick Buys'", () => {
@@ -140,5 +145,67 @@ describe("HomeMarketplaceRow", () => {
   it("applies className prop", () => {
     render(<HomeMarketplaceRow className="mt-6" />)
     expect(screen.getByTestId("home-marketplace-row")).toHaveClass("mt-6")
+  })
+
+  it("renders at most 5 item cards when more items are provided", () => {
+    const sevenItems: MarketplaceItem[] = Array.from({ length: 7 }, (_, i) => ({
+      id: `item-${i}`,
+      name: `Item ${i}`,
+      description: `Desc ${i}`,
+      price: 10 + i,
+      icon: "🎁",
+      effect_type: "extra_ping",
+      effect_config: {},
+      is_active: true,
+      sort_order: i,
+      created_at: "",
+    }))
+    useMarketplace.mockReturnValue({
+      items: sevenItems,
+      purchases: [],
+      isLoading: false,
+      error: null,
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+    render(<HomeMarketplaceRow />)
+    const cards = screen.getAllByTestId("marketplace-item-card")
+    expect(cards).toHaveLength(5)
+  })
+
+  it("shows items (not error) when both error and items are present", () => {
+    useMarketplace.mockReturnValue({
+      items: mockItems,
+      purchases: [],
+      isLoading: false,
+      error: "Some error",
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+    render(<HomeMarketplaceRow />)
+    // Items should render, not the error message
+    expect(screen.getAllByTestId("marketplace-item-card")).toHaveLength(3)
+    expect(screen.queryByText("Marketplace unavailable")).not.toBeInTheDocument()
+  })
+
+  it("clicking buy button on an item card opens the purchase modal", () => {
+    useMarketplace.mockReturnValue({
+      items: mockItems,
+      purchases: [],
+      isLoading: false,
+      error: null,
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+    render(<HomeMarketplaceRow />)
+    const buyButtons = screen.getAllByTestId("buy-button")
+    fireEvent.click(buyButtons[0])
+    // MarketplaceItemCard uses setTimeout(100ms) before calling onBuy
+    act(() => { vi.advanceTimersByTime(100) })
+    // After onBuy fires, the modal should open
+    expect(screen.getByTestId("purchase-dialog")).toBeInTheDocument()
   })
 })
