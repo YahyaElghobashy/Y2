@@ -67,6 +67,7 @@
 | FeelingGenerousCTA | ✅ | `components/home/FeelingGenerousCTA.tsx` | `className?` — Warm speech-bubble CTA card. "Feeling generous?" display text + subtitle + Gift icon (copper). CSS `:before` triangle tail. Links to `/create-coupon`. whileHover scale(1.02), whileTap scale(0.98). 4 tests passing. |
 | HomeMarketplaceRow | ✅ | `components/home/HomeMarketplaceRow.tsx` | `className?` — Horizontal scroll row of marketplace items for home dashboard. Uses `useMarketplace()` for items + `useCoyyns()` for balance. Renders horizontal `MarketplaceItemCard` variants in `overflow-x-auto` scroll container. Integrates `PurchaseConfirmModal` for inline purchasing. "Shop →" link to `/us/marketplace`. Loading: MarketplaceItemCardSkeleton row. Returns null when no items. 7 tests passing. |
 | MoodStrip | ✅ | `components/home/MoodStrip.tsx` | `className?` — Horizontal strip of 4 at-a-glance indicator chips. Chips: CoYYns balance (Coins icon → /us/coyyns), active coupons count (Gift icon → /us/coupons), calendar placeholder (CalendarDays icon → /us/calendar), pings remaining (Bell icon → /us/ping). Uses `useCoyyns`, `useCoupons`, `useNotifications`. Loading: 4 skeleton pills. Graceful degradation: shows 0 or em dash when data unavailable. 15 tests passing. |
+| HomePrayerWidget | ✅ | `components/home/HomePrayerWidget.tsx` | `className?` — Mini prayer dashboard widget for home. 5 mini circles (w-5 h-5), copper fill for completed prayers, "X/5 prayers today" summary text. Wrapped in `Link` to `/me/soul` with `motion.div whileTap`. Returns null when loading or no data. Uses `usePrayer()` hook. 11 tests passing. |
 
 ## Relationship Module
 
@@ -91,7 +92,9 @@
 | PingTabContent | ✅ | `components/ping/PingTabContent.tsx` | — Wrapper assembling all Ping sub-components: PushPermissionPrompt, SendLimitIndicator, NotificationBuilder (with onBuyMore), divider, CustomPingComposer, PingHistory, BuyExtraPingModal. Manages modal open state. |
 | CouponHistory | ✅ | `components/coupons/CouponHistory.tsx` | `className?` — Merged coupon history list. Dedupes myCoupons+receivedCoupons, filters terminal statuses (redeemed/rejected/expired), sorts by activity date desc, groups by month (date-fns). IntersectionObserver infinite scroll (20/page). Compact CouponCards with activity labels + timestamps. Month divider sticky headers. EmptyState when empty. 10 tests passing. |
 | RedeemConfirmModal | ✅ | `components/coupons/RedeemConfirmModal.tsx` | `open, coupon, mode: "redeem" \| "approve" \| "deny", onClose, onConfirm?` — Bottom sheet confirmation modal. Portal + AnimatePresence pattern. 3 modes: redeem (calls redeemCoupon), approve (calls approveCoupon), deny (textarea for reason, calls rejectCoupon). Coupon preview with emoji+title. Body scroll lock. Sonner toast feedback. 10 tests passing. |
-| RedeemStampAnimation | ✅ | `components/coupons/RedeemStampAnimation.tsx` | `visible, onComplete?, className?` — Animated REDEEMED stamp overlay. Drop from above (y:-200→0, 300ms) → scale pulse shake (150ms) → settle. Static rotate(-12deg) CSS. Copper-red uppercase text with thick border. Respects prefers-reduced-motion (instant display). role="status" for a11y. 5 tests passing. |
+| RedeemStampAnimation | ✅ | `components/coupons/RedeemStampAnimation.tsx` | `visible, onComplete?, className?` — Enhanced multi-stage REDEEMED stamp overlay. Appear at 2x scale → accelerating slam → x-axis shake (±3px) → copper-red REDEEMED imprint (rotated -5deg) → 8 radiating ink splatter dots. Respects prefers-reduced-motion (instant display). role="status" for a11y. 17 tests passing. |
+| CouponSendAnimation | ✅ | `components/coupons/CouponSendAnimation.tsx` | `visible, onComplete, className?` — Full-screen paper airplane animation overlay. Multi-stage: fold (400ms) → lift → flight arc to top-right → 12 deterministic particles (copper/gold) → "Sent!" text. `useReducedMotion()` bypass. Timer cleanup. z-50. 16 tests passing. |
+| CouponReceiveAnimation | ✅ | `components/coupons/CouponReceiveAnimation.tsx` | `visible, couponTitle, couponId, onOpen, onDismiss, className?` — Letter envelope descend + bounce overlay. Backdrop warm overlay, coupon title display, "Open" (copper) + "Save for Later" (ghost) buttons. Backdrop click = dismiss. Body scroll lock. `useReducedMotion()` bypass. 20 tests passing. |
 
 ## Coupons Module (Pages)
 
@@ -117,6 +120,10 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | SpiritPage | ✅ | `app/(main)/spirit/page.tsx` | Redirect to `/me`. (V2: T116 — consolidated into Me page) |
+| PrayerTracker | ✅ | `components/spiritual/PrayerTracker.tsx` | `className?` — 5 prayer circles (w-11 h-11) with Arabic labels (فجر، ظهر، عصر، مغرب، عشاء) + English, copper fill on completion, ripple effect on toggle. `aria-pressed` a11y. Uses `usePrayer()` hook. Loading skeleton state. Error message display. 15 tests passing. |
+| QuranTracker | ✅ | `components/spiritual/QuranTracker.tsx` | `className?` — Quran reading tracker card. Pages read / daily goal display, "+" increment button, copper progress bar (300ms width transition), monthly total. Uses `useQuran()` hook. Loading skeleton. Error state. 15 tests passing. |
+| AzkarCounter | ✅ | `components/spiritual/AzkarCounter.tsx` | `className?` — Azkar counter with morning/evening toggle pills (layoutId sliding indicator), 120px circular tap area with count/target, completion ripple via AnimatePresence, reset button. Uses `useAzkar()` hook. Loading skeleton. Error state. 20 tests passing. |
+| SoulPage | ✅ | `app/(main)/me/soul/page.tsx` | Client Component. Full spiritual practice page: PrayerTracker → QuranTracker → AzkarCounter with dividers. "Daily Verse / Hadith — coming soon" placeholder. PageHeader with back to /me. 9 tests passing. |
 
 ## Settings Module
 
@@ -146,7 +153,7 @@
 | /us Calendar Tab | ✅ | `app/(main)/us/calendar/page.tsx` | Server Component. EmptyState placeholder with Calendar icon. |
 | /us Ping Tab | ✅ | `app/(main)/us/ping/page.tsx` | Client Component. Wraps PingTabContent from ping module. |
 | Me Page | ✅ | `app/(main)/me/page.tsx` | Client Component. Body/Soul dual-section landing. Two large navigation cards with stagger animation. |
-| Soul Page | ✅ | `app/(main)/me/soul/page.tsx` | Server Component. EmptyState placeholder with Sun icon. |
+| Soul Page | ✅ | `app/(main)/me/soul/page.tsx` | Client Component. Full spiritual practice dashboard: PrayerTracker → QuranTracker → AzkarCounter with dividers. Future placeholder for Daily Verse/Hadith. 9 tests passing. |
 | More Page | ✅ | `app/(main)/more/page.tsx` | Client Component. Utility drawer: Profile card, Account, Preferences, About, Logout with AlertDialog. |
 | About Hayah Page | ✅ | `app/(main)/more/about/page.tsx` | Server Component. Why Hayah? + Built with intention sections. |
 
@@ -171,6 +178,9 @@
 | useCoupons | ✅ | `lib/hooks/use-coupons.ts` | `useCoupons() → { myCoupons, receivedCoupons, pendingApprovals, isLoading, error, createCoupon, redeemCoupon, approveCoupon, rejectCoupon, revealSurprise, refreshCoupons }` — Full coupon CRUD lifecycle with realtime subscription. Status guards on all mutations. Surprise reveal with coupon_history logging. Auth-safe: inert state when user is null. 8 tests passing. |
 | useMarketplace | ✅ | `lib/hooks/use-marketplace.ts` | `useMarketplace() → { items, purchases, isLoading, error, createPurchase, refreshItems, refreshPurchases }` — Client-side data layer for marketplace. Fetches active marketplace_items and user purchases from Supabase. `createPurchase(itemId, inputValue?)` inserts purchase record with optional input for requires_input items. Auth-safe: returns inert state when user is null. |
 | useDailyBonus | ✅ | `lib/hooks/use-daily-bonus.ts` | `useDailyBonus() → { claimed: boolean, justClaimed: boolean }` — Daily login bonus hook. On mount, checks coyyns_transactions for today's `daily_bonus` category (UTC date boundaries). If none exists, inserts +5 earn transaction. `hasChecked` ref prevents duplicate calls across re-renders. Silent error handling (bonus is non-critical). Auth-safe: returns inert `{false, false}` when user is null. 6 tests passing. |
+| usePrayer | ✅ | `lib/hooks/use-prayer.ts` | `usePrayer() → { today, togglePrayer, completedCount, isLoading, error }` — Prayer tracking hook. Fetches today's prayer_log via `.maybeSingle()`, upserts new row if none exists. `togglePrayer(name)` optimistic flip + rollback on error. `completedCount` via useMemo counting true values. Auth-safe: inert state when user null. 11 tests passing. |
+| useQuran | ✅ | `lib/hooks/use-quran.ts` | `useQuran() → { today, logPages, monthlyTotal, dailyGoal, setDailyGoal, isLoading, error }` — Quran reading tracker hook. Fetches today + monthly logs. `logPages(pages)` optimistic increment. `setDailyGoal(goal)` rejects < 1. `monthlyTotal` via useMemo. Auth-safe: inert state when user null. 12 tests passing. |
+| useAzkar | ✅ | `lib/hooks/use-azkar.ts` | `useAzkar() → { session, sessionType, increment, reset, setTarget, switchType, isLoading, error, justCompleted }` — Azkar counter hook. Morning/evening session switching. `increment()` optimistic update. `justCompleted` fires once per target reach via ref. 3-column upsert conflict (user_id, date, session_type). Auth-safe: inert state when user null. 14 tests passing. |
 
 ## Types
 
@@ -181,6 +191,7 @@
 | notification.types.ts | ✅ | `lib/types/notification.types.ts` | `PushPermissionState`, `NotificationStatus`, `Notification`, `DailyLimit`, `UseNotificationsReturn` — Push permission states, notification/daily limit Row types from database.types.ts. |
 | health.types.ts | ✅ | `lib/types/health.types.ts` | `CycleConfig`, `CycleLog`, `CyclePhase`, `CycleMood`, `UseCycleReturn` — Cycle tracker types from database.types.ts Row types. |
 | relationship.types.ts | ✅ | `lib/types/relationship.types.ts` | `CouponCategory`, `CouponStatus`, `Coupon`, `CreateCouponData`, `UseCouponsReturn` — Love coupon types with full status enum and creation data shape. |
+| spiritual.types.ts | ✅ | `lib/types/spiritual.types.ts` | `PrayerLog`, `QuranLog`, `AzkarSession` (+ Insert/Update variants), `PrayerName`, `AzkarSessionType`, `PRAYER_NAMES`, `AZKAR_SESSION_TYPES` — Spiritual practice types derived from database.types.ts. |
 
 ## Services
 
