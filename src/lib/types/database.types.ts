@@ -678,6 +678,8 @@ export interface Database {
           paired_at: string | null
           google_calendar_refresh_token: string | null
           google_calendar_connected_at: string | null
+          google_drive_refresh_token: string | null
+          google_drive_connected_at: string | null
           created_at: string
           updated_at: string
         }
@@ -693,6 +695,8 @@ export interface Database {
           paired_at?: string | null
           google_calendar_refresh_token?: string | null
           google_calendar_connected_at?: string | null
+          google_drive_refresh_token?: string | null
+          google_drive_connected_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -708,6 +712,8 @@ export interface Database {
           paired_at?: string | null
           google_calendar_refresh_token?: string | null
           google_calendar_connected_at?: string | null
+          google_drive_refresh_token?: string | null
+          google_drive_connected_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -1113,9 +1119,151 @@ export interface Database {
           }
         ]
       }
+
+      // ── T1008: Snaps ──────────────────────────────────────────
+      snaps: {
+        Row: {
+          id: string
+          user_id: string
+          snap_date: string
+          photo_url: string | null
+          caption: string | null
+          reaction_emoji: string | null
+          window_opened_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          snap_date?: string
+          photo_url?: string | null
+          caption?: string | null
+          reaction_emoji?: string | null
+          window_opened_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          snap_date?: string
+          photo_url?: string | null
+          caption?: string | null
+          reaction_emoji?: string | null
+          window_opened_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snaps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      media_files: {
+        Row: {
+          id: string
+          uploader_id: string
+          source_table: string
+          source_column: string
+          source_row_id: string
+          storage_bucket: string
+          storage_path: string
+          google_drive_file_id: string | null
+          google_drive_folder: string | null
+          original_filename: string | null
+          content_type: string
+          file_size_bytes: number | null
+          compressed_size_bytes: number | null
+          width: number | null
+          height: number | null
+          status: string
+          exported_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          uploader_id: string
+          source_table: string
+          source_column: string
+          source_row_id: string
+          storage_bucket: string
+          storage_path: string
+          google_drive_file_id?: string | null
+          google_drive_folder?: string | null
+          original_filename?: string | null
+          content_type?: string
+          file_size_bytes?: number | null
+          compressed_size_bytes?: number | null
+          width?: number | null
+          height?: number | null
+          status?: string
+          exported_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          uploader_id?: string
+          source_table?: string
+          source_column?: string
+          source_row_id?: string
+          storage_bucket?: string
+          storage_path?: string
+          google_drive_file_id?: string | null
+          google_drive_folder?: string | null
+          original_filename?: string | null
+          content_type?: string
+          file_size_bytes?: number | null
+          compressed_size_bytes?: number | null
+          width?: number | null
+          height?: number | null
+          status?: string
+          exported_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_files_uploader_id_fkey"
+            columns: ["uploader_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      snap_schedule: {
+        Row: {
+          id: string
+          schedule_date: string
+          trigger_time: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          schedule_date: string
+          trigger_time: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          schedule_date?: string
+          trigger_time?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
+      generate_snap_schedule: {
+        Args: Record<string, never>
+        Returns: undefined
+      }
       pair_partners: {
         Args: {
           my_id: string

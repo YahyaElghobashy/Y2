@@ -176,6 +176,14 @@
 | ActivePurchaseCard | ✅ | `components/marketplace/ActivePurchaseCard.tsx` | `{ purchase, onAcknowledge, onComplete, onDecline, className? }` — Renders purchase cards differently by effect_type: task_order (description + deadline + acknowledge/complete), veto (movie/activity + Got it), wildcard (request + accept/decline), dnd_timer (SVG ring countdown), extra_ping (bonus message + dismiss). Target user sees action buttons. 24 tests passing. |
 | useActivePurchases | ✅ | `lib/hooks/use-active-purchases.ts` | Hook. Queries purchases WHERE target_id/buyer_id = user AND status IN (pending, active) with marketplace_items join. Realtime subscription. Actions: acknowledgePurchase (→active), completePurchase (→completed), declinePurchase (→declined). Optimistic updates. 15 tests passing. |
 
+## Media Module (TF07)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| uploadMedia | ✅ | `lib/media-upload.ts` | Utility. `uploadMedia({ file, userId, bucket, sourceTable, sourceColumn, sourceRowId, maxWidth?, maxHeight? })` → `{ url, mediaId }` or `{ error }`. Validates type (image/*) + size (<5MB), compresses to WebP via OffscreenCanvas, uploads to Supabase Storage, inserts media_files tracking row. 21 tests passing. |
+| media-export | ✅ | `supabase/functions/media-export/index.ts` | Edge Function. Daily cron: queries active media_files older than 7 days, downloads from Storage, uploads to Google Drive (Y2-Media/{table}/{YYYY-MM}/), updates status to 'exported', deletes Storage copy. Batch size 10, failure isolation per file. 8 tests passing. |
+| media-proxy | ✅ | `supabase/functions/media-proxy/index.ts` | Edge Function. On-demand proxy: `?id={media_file_id}&key={MEDIA_PROXY_KEY}`. Fetches from Google Drive via OAuth token refresh, streams with Cache-Control: max-age=2592000. 10 tests passing. |
+
 ## V2 Navigation (TF10, T115, T116, T117)
 
 | Component | Status | Path | Props |

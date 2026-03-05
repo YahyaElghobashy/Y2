@@ -69,11 +69,14 @@ export async function GET(request: NextRequest) {
 
     // Store refresh token using service role client (bypasses RLS)
     const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    // Store token for both Calendar and Drive (combined OAuth scope)
     const { error: updateError } = await adminClient
       .from("profiles")
       .update({
         google_calendar_refresh_token: refreshToken,
         google_calendar_connected_at: new Date().toISOString(),
+        google_drive_refresh_token: refreshToken,
+        google_drive_connected_at: new Date().toISOString(),
       })
       .eq("id", user.id)
 
