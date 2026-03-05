@@ -257,6 +257,9 @@
 | useRituals | ✅ | `lib/hooks/use-rituals.ts` | `useRituals() → { rituals, todayRituals, logs, isLoading, error, logRitual, isLoggedThisPeriod, partnerLoggedThisPeriod, createRitual, deleteRitual, uploadRitualPhoto }` — Ritual tracking hook with period key calculation (daily/weekly/monthly), optimistic log insert, CoYYns reward on log, Map-based period lookup. Realtime subscription on ritual_logs. Photo upload to `ritual-images` bucket. Auth-safe: inert state when user null. 19 tests passing. |
 | useSharedList | ✅ | `lib/hooks/use-shared-list.ts` | `useSharedList() → { lists, list, items, completedItems, isLoading, error, addItem, addSubItem, toggleComplete, deleteItem, reorderItems, createList, deleteList, selectList }` — Shared list hook with full CRUD, realtime subscription on list_items, optimistic updates with rollback. CoYYns reward on completing partner's item. 7-day auto-archive filter. Auth-safe: inert state when user null. 19 tests passing. |
 | useBounties | ✅ | `lib/hooks/use-bounties.ts` | `useBounties() → { activeBounties, pendingClaims, isLoading, error, createBounty, claimBounty, confirmClaim, denyClaim, refreshBounties }` — Standing bounties hook. createBounty: insert (reward > 0). claimBounty: insert claim. confirmClaim: RPC confirm_bounty_claim → pays claimer. denyClaim: update status=denied. Realtime on bounties + bounty_claims. Auth-safe. 13 tests passing. |
+| useSnap | ✅ | `lib/hooks/use-snap.ts` | `useSnap() → { todaySnap, partnerTodaySnap, snapFeed, isLoading, error, isWindowOpen, windowTimeRemaining, submitSnap, reactToSnap, loadMore, hasMore }` — Full snap data hook. submitSnap UPDATEs existing placeholder row (not INSERT). Uses uploadMedia with bucket "snap-photos", maxWidth 1200. Window detection from snap_schedule. Cairo timezone. Realtime on snaps table. 15 tests passing. |
+| useMood | ✅ | `lib/hooks/use-mood.ts` | `useMood() → { todayMood, partnerMood, isLoading, error, setMood }` — Mood tracking hook. Fetches mood_log for today (Cairo tz) for user + partner. setMood uses .upsert() with onConflict: 'user_id,mood_date'. Optimistic updates with rollback. Realtime subscription for partner mood changes. 15 tests passing. |
+| useGarden | ✅ | `lib/hooks/use-garden.ts` | `useGarden() → { gardenDays, recentFlowers, isLoading, error, recordOpened }` — Garden data hook. recordOpened upserts today's row (yahya_opened/yara_opened based on display_name). When both opened + no flower, picks random from 12 emojis. Race-safe: UPDATE WHERE flower_type IS NULL with retry fallback. Realtime on garden_days. 14 tests passing. |
 | useFoodJournal | ✅ | `lib/hooks/use-food-journal.ts` | `useFoodJournal() → { visits, isLoading, error, stats, addVisit, updateVisit, toggleBookmark, addRating, getMyRating, getPartnerRating, addPhotos, removePhoto, getPhotos, getPreferenceDot, getVisitById, filterByCuisine }` — Food journal data hook. Fetches food_visits + food_ratings + food_photos from Supabase. Derived stats (totalVisits, uniquePlaces, avgOverall, topCuisine, returnSpots, bookmarkedCount). getVisitById returns VisitWithRatings join. getPreferenceDot computes vibe masking per rating dimension. filterByCuisine filters visits by cuisine type array. Realtime subscription on food_visits. Auth-safe: inert state when user null. 17 tests passing. |
 
 ## Types
@@ -273,6 +276,8 @@
 | rituals.types.ts | ✅ | `lib/types/rituals.types.ts` | `Ritual`, `RitualInsert`, `RitualLog`, `RitualLogInsert`, `Cadence` — Ritual and ritual log types derived from database.types.ts. Cadence union type (daily/weekly/monthly). |
 | shared-list.types.ts | ✅ | `lib/types/shared-list.types.ts` | `SharedList`, `ListItem`, `ListType`, `UseSharedListReturn` — Shared list and list item types derived from database.types.ts. ListType union type. |
 | challenges.types.ts | ✅ | `lib/types/challenges.types.ts` | `Challenge`, `ChallengeInsert`, `ChallengeUpdate`, `ChallengeStatus`, `Bounty`, `BountyInsert`, `BountyUpdate`, `BountyClaim`, `BountyClaimInsert`, `BountyClaimStatus`, `CreateChallengeData`, `CreateBountyData`, `UseChallengesReturn`, `UseBountiesReturn` — V2 challenge + bounty types from database.types.ts. |
+| snap.types.ts | ✅ | `lib/types/snap.types.ts` | `Snap`, `SnapInsert`, `SnapSchedule`, `REACTION_EMOJIS` — Snap and snap schedule types derived from database.types.ts. Reaction emoji union type. |
+| mood.types.ts | ✅ | `lib/types/mood.types.ts` | `MoodLog`, `Mood`, `MOODS`, `MOOD_EMOJI` — Mood log type from database.types.ts. 6 mood values (good/calm/meh/low/frustrated/loving) with emoji map. |
 | food-journal.types.ts | ✅ | `lib/types/food-journal.types.ts` | `FoodVisit`, `FoodVisitInsert`, `FoodRating`, `FoodRatingInsert`, `FoodPhoto`, `FoodPhotoInsert`, `CuisineType`, `CUISINE_TYPES`, `CUISINE_LABELS`, `RATING_DIMENSIONS`, `RatingDimensionKey`, `PhotoType`, `PHOTO_TYPES`, `PHOTO_TYPE_LABELS`, `PreferenceDotColor`, `FoodStats`, `VisitWithRatings` — Food journal types from database.types.ts. 17 cuisine types, 9 rating dimensions, 5 photo types. |
 
 ## Services
@@ -324,6 +329,40 @@
 | GradientSlider | ✅ | `components/food/GradientSlider.tsx` | `{ value, onChange, min?, max?, step?, label?, description?, gradient?, className? }` — Reusable 1-10 slider with gradient track (4 variants: warm/cool/vibrant/muted), snap-to-integer, haptic feedback via navigator.vibrate, thumb with value tooltip. Copper-accented track fill. 11 tests passing. |
 | VibeCard | ✅ | `components/food/VibeCard.tsx` | `{ value, onChange, className? }` — Special vibe dimension card with animated gradient border, sparkle particle effects, glow shadow. Wraps GradientSlider with vibrant gradient. Decorative "vibe" aesthetic for the overall experience rating. |
 | RatingCarousel | ✅ | `components/food/RatingCarousel.tsx` | `{ onSubmit: (scores: Record<RatingDimensionKey, number>) => void, onBack: () => void, initialScores?, className? }` — 9-dimension swipe carousel for food ratings. Dot navigation with active indicator, per-dimension GradientSlider cards, VibeCard for vibe dimension, 3x3 summary grid with tap-to-edit, overall average display, submit button (disabled until all 9 scored). 16 tests passing. |
+| PreferenceDot | ✅ | `components/food/PreferenceDot.tsx` | `{ color: PreferenceDotColor, label?: string, showTooltip?, className? }` — 3-color preference indicator dot: match (green), close (amber), different (rose). Tap to show/hide tooltip with label. Proper aria-labels for accessibility. 10 tests passing. |
+| RatingReveal | ✅ | `components/food/RatingReveal.tsx` | `{ myScores, partnerScores, onClose, onReplay?, className? }` — Staggered 8+1 row animation revealing both partners' ratings per dimension. Vibe dimension gets special suspense phase (delayed reveal). Per-row match message (match/close/different). Overall score with vibe label. Close and replay controls. prefers-reduced-motion support (instant reveal). 12 tests passing. |
+
+## Snap Module (P9)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| CameraCapture | ✅ | `components/snap/CameraCapture.tsx` | `className?` — Full-screen camera component with states: camera/preview/uploading/done/error. getUserMedia with facingMode toggle, 300s countdown timer (mm:ss), capture → preview → "Use This"/"Retake" (one retake only). Optional caption (100 chars). Desktop fallback: file input. Cleanup stops MediaStream tracks on unmount. 11 tests passing. |
+| SnapCard | ✅ | `components/snap/SnapCard.tsx` | `{ snap, className? }` — Photo card with MediaImage, avatar overlay (32px), caption gradient scrim, timestamp, "Late" badge (created_at > window_opened_at + 300s). Tap to expand full-screen. 15 tests passing. |
+| SnapReaction | ✅ | `components/snap/SnapReaction.tsx` | `{ snap, onReact, className? }` — 5 emoji reaction buttons (❤️😂😍🔥🥺). One per snap, changeable. Updates partner's snap reaction_emoji. Scale animation on select. 11 tests passing. |
+| HomeSnapWidget | ✅ | `components/home/HomeSnapWidget.tsx` | `className?` — Conditional rendering from useSnap(): window open+not snapped → timer CTA → /snap/capture, already snapped → "Snapped!" → /snap, no window → null. 12 tests passing. |
+| SnapCapturePage | ✅ | `app/(main)/snap/capture/page.tsx` | Thin page wrapper for CameraCapture. |
+| SnapFeedPage | ✅ | `app/(main)/snap/page.tsx` | Client Component. Groups snaps by snap_date. Both snapped → side-by-side. One snapped → single centered. Date headers. 14-day initial load + infinite scroll. CoYYns reward when both snap same day. Empty state. 15 tests passing. |
+
+## Mood Module (P9)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| MoodPicker | ✅ | `components/mood/MoodPicker.tsx` | `className?` — 6 emoji mood buttons (44px circles): good/calm/meh/low/frustrated/loving. Copper bg on selected with scale pulse. Optional note input on first set. Uses useMood(). 13 tests passing. |
+| PartnerMoodIndicator | ✅ | `components/home/PartnerMoodIndicator.tsx` | `className?` — "[Partner] is feeling [emoji] today". Returns null if no partner mood. Tap shows note card via AnimatePresence. Uses useMood() + useAuth(). 12 tests passing. |
+
+## Garden Module (P9)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| SharedGarden | ✅ | `components/garden/SharedGarden.tsx` | `{ compact?: boolean, className? }` — CSS grid (8 cols, 36px cells) of flowers. Staggered grow-in animation. Blank = neither opened, 🌱 = partial, flower emoji = both opened. Compact: last 8 flowers (no heading). Full: all days with heading. Uses useGarden(). 14 tests passing. |
+| GardenPage | ✅ | `app/(main)/garden/page.tsx` | Page wrapper with PageTransition + SharedGarden (full mode). |
+
+## Shared Components
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| DaysTogetherCounter | ✅ | `components/shared/DaysTogetherCounter.tsx` | `{ variant?: "full" \| "compact", className? }` — Pure client computation from useAuth().profile.paired_at. Math.floor((now - paired_at) / 86_400_000). Full: card with "Day N together on Hayah", copper number. Compact: number + Heart icon. CountUp animation via Framer Motion animate() + sessionStorage guard. 13 tests passing. |
+| MediaImage | ✅ | `components/shared/MediaImage.tsx` | `{ mediaId?, fallbackUrl?, alt, className?, aspectRatio?, fill?, width?, height?, objectFit?, placeholder?, onLoad?, onError? }` — Tier-aware image component. Resolves mediaId via media_files: active→Storage URL, exported→proxy URL. Shimmer/blur loading placeholder, error state with retry button, lazy loading. Falls back to fallbackUrl when lookup fails or no mediaId. 17 tests passing. |
 
 ## Scripts / Infrastructure
 
