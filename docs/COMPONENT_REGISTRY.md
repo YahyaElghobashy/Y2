@@ -320,6 +320,7 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | RestaurantSearch | ✅ | `components/food/RestaurantSearch.tsx` | `{ onSelect: (data: { placeName, placeId, address, lat, lon }) => void, className? }` — Restaurant search with two modes: Nominatim API search (300ms debounce, proper User-Agent header, result list with AnimatePresence) and manual fallback (free-text place name + address). GPS auto-capture on mount. Result items show name + address. placeId formatted as `nominatim:{osm_type}:{osm_id}`. Loading spinner, no-results state, error handling. 15 tests passing. |
+| FoodPhotoCapture | ✅ | `components/food/FoodPhotoCapture.tsx` | `{ onNext: (photos: { file, type }[]) => void, onBack: () => void, className? }` — Photo capture step with 2 required slots (food_plate, partner_eating) and optional extras with type selector (5 types excluding required). File input with accept="image/*", preview via createObjectURL, remove with revokeObjectURL cleanup. Next disabled until both required photos captured. Back button navigation. 17 tests passing. |
 
 ## Scripts / Infrastructure
 
