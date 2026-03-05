@@ -315,6 +315,12 @@
 | url-metadata | ✅ | `supabase/functions/url-metadata/index.ts` | Edge function. POST `{ url }` → `{ title, description, image, price, currency }`. JWT auth, 5s timeout, regex OG extraction. |
 | 024_wishlist.sql | ✅ | `supabase/migrations/024_wishlist.sql` | Tables: wishlists + wishlist_items. RLS: owner CRUD, partner read + update claim/purchase. Auto-create trigger + backfill. |
 
+## Food Journal Module (P12)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| RestaurantSearch | ✅ | `components/food/RestaurantSearch.tsx` | `{ onSelect: (data: { placeName, placeId, address, lat, lon }) => void, className? }` — Restaurant search with two modes: Nominatim API search (300ms debounce, proper User-Agent header, result list with AnimatePresence) and manual fallback (free-text place name + address). GPS auto-capture on mount. Result items show name + address. placeId formatted as `nominatim:{osm_type}:{osm_id}`. Loading spinner, no-results state, error handling. 15 tests passing. |
+
 ## Scripts / Infrastructure
 
 | Script | Status | Path | Notes |
