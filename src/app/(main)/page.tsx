@@ -15,12 +15,31 @@ import { HomeCountdownWidget } from "@/components/home/HomeCountdownWidget"
 import { HomeCalendarPeek } from "@/components/home/HomeCalendarPeek"
 import { HomeRitualsWidget } from "@/components/home/HomeRitualsWidget"
 import { HomeLetterPrompt } from "@/components/home/HomeLetterPrompt"
+import { useActivePurchases } from "@/lib/hooks/use-active-purchases"
+import { ActivePurchaseCard } from "@/components/marketplace/ActivePurchaseCard"
 
 export default function Home() {
+  const { activePurchases, acknowledgePurchase, completePurchase, declinePurchase } = useActivePurchases()
+
   return (
     <PageTransition>
       <HomeGreeting />
       <MoodStrip className="mt-2" />
+
+      {/* Active Purchases */}
+      {activePurchases.length > 0 && (
+        <div className="flex flex-col gap-3 px-5 mt-4">
+          {activePurchases.map((purchase) => (
+            <ActivePurchaseCard
+              key={purchase.id}
+              purchase={purchase}
+              onAcknowledge={acknowledgePurchase}
+              onComplete={completePurchase}
+              onDecline={declinePurchase}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Quick Actions Grid */}
       <div className="grid grid-cols-2 gap-4 px-5 mt-2">

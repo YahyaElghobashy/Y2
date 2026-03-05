@@ -87,14 +87,14 @@ export default function RitualsPage() {
 
     // Auto-create the letter ritual if it doesn't exist
     if (!ritualId) {
-      ritualId = await createRitual({
+      ritualId = (await createRitual({
         title: LETTER_RITUAL_TITLE,
         description: "A monthly letter to your partner",
         icon: "💌",
         cadence: "monthly",
         is_shared: true,
         coyyns_reward: 10,
-      })
+      })) ?? undefined
     }
 
     if (!ritualId) return

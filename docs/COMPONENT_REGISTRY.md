@@ -173,6 +173,8 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | MarketplacePage | ✅ | `app/(main)/us/marketplace/page.tsx` | Client Component. Two-tab marketplace (Shop/Challenges). Shop tab: MarketplaceItemCards for purchasable items (Extra Notifications, Custom Theme, etc). Challenges tab: ChallengeCard list + create button. Wires BuyExtraPingModal + PurchaseConfirmModal + CreateChallengeForm. Uses useCoyyns() for balance-aware affordability. |
+| ActivePurchaseCard | ✅ | `components/marketplace/ActivePurchaseCard.tsx` | `{ purchase, onAcknowledge, onComplete, onDecline, className? }` — Renders purchase cards differently by effect_type: task_order (description + deadline + acknowledge/complete), veto (movie/activity + Got it), wildcard (request + accept/decline), dnd_timer (SVG ring countdown), extra_ping (bonus message + dismiss). Target user sees action buttons. 24 tests passing. |
+| useActivePurchases | ✅ | `lib/hooks/use-active-purchases.ts` | Hook. Queries purchases WHERE target_id/buyer_id = user AND status IN (pending, active) with marketplace_items join. Realtime subscription. Actions: acknowledgePurchase (→active), completePurchase (→completed), declinePurchase (→declined). Optimistic updates. 15 tests passing. |
 
 ## V2 Navigation (TF10, T115, T116, T117)
 
