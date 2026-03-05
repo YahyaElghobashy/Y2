@@ -279,6 +279,18 @@
 | avatar-upload | ✅ | `lib/avatar-upload.ts` | `uploadAvatar(file: File, userId: string) → { url } \| { error }` — Validates image type/size (5MB max), center-crops to 400x400 via OffscreenCanvas, exports as WebP 80% quality, uploads to Supabase Storage `avatars/${userId}.webp` with cache-busting URL. 13 tests passing. |
 | notification-router | ✅ | `lib/notification-router.ts` | `getRouteForNotification(type?, payload?) → string` — Maps notification types to target routes for SW click handler and in-app routing. Handles coupon_received/redeemed/approved (with coupon_id), ping, challenge_created/claimed, purchase_received, daily_bonus. Default → `/`. 11 tests passing. |
 
+## Vision Board Module (P10)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| VisionItemCard | ✅ | `components/vision-board/VisionItemCard.tsx` | `{ item: VisionItem, onToggleAchieved?, onRemove?, readOnly?, className? }` — 140x140px vision item card. MediaImage or text fallback. Achieved: copper ring-2 + animated checkmark badge. whileTap scale 0.98 when interactive. 16 tests passing. |
+| CategorySection | ✅ | `components/vision-board/CategorySection.tsx` | `{ category: CategoryWithItems, onAddItem?, onToggleAchieved?, onRemoveItem?, readOnly?, className? }` — Category header (icon+name+count) + horizontal scroll of VisionItemCards + "+" add button. readOnly hides add. 15 tests passing. |
+| AddVisionItemForm | ✅ | `components/vision-board/AddVisionItemForm.tsx` | `{ categoryId, categories, onSave, onClose }` — Bottom sheet (portal+AnimatePresence). Photo upload, title (required), description (300 chars), category dropdown. |
+| VisionBoardWizard | ✅ | `components/vision-board/VisionBoardWizard.tsx` | `{ onComplete }` — 4-step wizard: title+theme → category chips (8 suggested+custom) → hero banner upload → preview+"Start Adding Items". AnimatePresence step transitions. |
+| VisionBoardPage | ✅ | `app/(main)/2026/page.tsx` | Board switcher (layoutId animated), hero banner (16:9 MediaImage/gradient), category sections, eval prompt, wizard empty state. 26 tests passing. |
+| useVisionBoard | ✅ | `lib/hooks/use-vision-board.ts` | `useVisionBoard() → { myBoard, partnerBoard, categories, evaluations, activeBoard, switchBoard, currentBoard, hasEvaluatedThisMonth, createBoard, setHeroBanner, addCategory, removeCategory, reorderCategories, addItem, toggleAchieved, removeItem, submitEvaluation, getEvaluations }` — Full CRUD with realtime subscription on vision_items. uploadMedia for images. 24 tests passing. |
+| vision-board.types.ts | ✅ | `lib/types/vision-board.types.ts` | `VisionBoard`, `VisionCategory`, `VisionItem`, `MonthlyEvaluation`, `CategoryScore`, `CategoryWithItems`, `EvaluationWithScores`, `ActiveBoard` |
+
 ## Scripts / Infrastructure
 
 | Script | Status | Path | Notes |
