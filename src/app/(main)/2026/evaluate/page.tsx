@@ -74,11 +74,15 @@ export default function EvaluatePage() {
     }))
 
     await submitEvaluation({
+      boardId: myBoard.id,
       month: currentMonth,
-      year: currentYear,
-      overall_score: overallScore,
-      reflection: reflection.trim() || null,
-      category_scores: scores,
+      overallScore,
+      reflection: reflection.trim() || undefined,
+      categoryScores: scores.map((s) => ({
+        categoryId: s.category_id,
+        score: s.score,
+        note: s.note ?? undefined,
+      })),
     })
 
     setIsSubmitting(false)
