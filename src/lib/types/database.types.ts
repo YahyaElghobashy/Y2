@@ -1257,6 +1257,295 @@ export interface Database {
         }
         Relationships: []
       }
+
+      // ── T1011: Mood Log ──────────────────────────────────────
+      mood_log: {
+        Row: {
+          id: string
+          user_id: string
+          mood: string
+          note: string | null
+          mood_date: string
+          logged_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          mood: string
+          note?: string | null
+          mood_date?: string
+          logged_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          mood?: string
+          note?: string | null
+          mood_date?: string
+          logged_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mood_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      // ── T1101: Vision Board ──────────────────────────────────
+      vision_boards: {
+        Row: {
+          id: string
+          owner_id: string
+          year: number
+          title: string
+          theme: string | null
+          hero_media_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          year: number
+          title: string
+          theme?: string | null
+          hero_media_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          year?: number
+          title?: string
+          theme?: string | null
+          hero_media_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_boards_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vision_boards_hero_media_id_fkey"
+            columns: ["hero_media_id"]
+            isOneToOne: false
+            referencedRelation: "media_files"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      vision_categories: {
+        Row: {
+          id: string
+          board_id: string
+          name: string
+          icon: string
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          board_id: string
+          name: string
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          board_id?: string
+          name?: string
+          icon?: string
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_categories_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "vision_boards"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      vision_items: {
+        Row: {
+          id: string
+          category_id: string
+          title: string
+          description: string | null
+          media_id: string | null
+          is_achieved: boolean
+          achieved_at: string | null
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          category_id: string
+          title: string
+          description?: string | null
+          media_id?: string | null
+          is_achieved?: boolean
+          achieved_at?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          category_id?: string
+          title?: string
+          description?: string | null
+          media_id?: string | null
+          is_achieved?: boolean
+          achieved_at?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vision_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vision_items_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_files"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      monthly_evaluations: {
+        Row: {
+          id: string
+          board_id: string
+          evaluator_id: string
+          month: number
+          year: number
+          overall_score: number
+          reflection: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          board_id: string
+          evaluator_id: string
+          month: number
+          year: number
+          overall_score: number
+          reflection?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          board_id?: string
+          evaluator_id?: string
+          month?: number
+          year?: number
+          overall_score?: number
+          reflection?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_evaluations_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "vision_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      category_scores: {
+        Row: {
+          id: string
+          evaluation_id: string
+          category_id: string
+          score: number
+          note: string | null
+        }
+        Insert: {
+          id?: string
+          evaluation_id: string
+          category_id: string
+          score: number
+          note?: string | null
+        }
+        Update: {
+          id?: string
+          evaluation_id?: string
+          category_id?: string
+          score?: number
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_scores_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "category_scores_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vision_categories"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      // ── T1014: Garden Days ───────────────────────────────────
+      garden_days: {
+        Row: {
+          id: string
+          garden_date: string
+          yahya_opened: boolean
+          yara_opened: boolean
+          flower_type: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          garden_date: string
+          yahya_opened?: boolean
+          yara_opened?: boolean
+          flower_type?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          garden_date?: string
+          yahya_opened?: boolean
+          yara_opened?: boolean
+          flower_type?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
