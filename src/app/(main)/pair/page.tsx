@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 import { PageTransition } from "@/components/animations"
-import { InviteCodeDisplay } from "@/components/pairing/InviteCodeDisplay"
+import { QRCodeDisplay } from "@/components/pairing/QRCodeDisplay"
+import { QRCodeScanner } from "@/components/pairing/QRCodeScanner"
 import { PairPartnerForm } from "@/components/pairing/PairPartnerForm"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
@@ -19,6 +20,10 @@ export default function PairPage() {
       router.replace("/")
     }
   }, [isLoading, profile, router])
+
+  const handleScan = (code: string) => {
+    router.push(`/pair/${code}`)
+  }
 
   if (isLoading) {
     return (
@@ -51,12 +56,12 @@ export default function PairPage() {
               Find your partner
             </h1>
             <p className="text-center font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
-              Share your invite code or enter theirs to connect
+              Share your QR code or scan theirs to connect
             </p>
           </div>
 
-          {/* Invite Code Section */}
-          <InviteCodeDisplay code={profile?.invite_code ?? null} />
+          {/* QR Code Display */}
+          <QRCodeDisplay code={profile?.invite_code ?? null} />
 
           {/* Divider */}
           <div className="flex w-full items-center gap-4">
@@ -67,7 +72,19 @@ export default function PairPage() {
             <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
           </div>
 
-          {/* Pair Form */}
+          {/* QR Scanner */}
+          <QRCodeScanner onScan={handleScan} />
+
+          {/* Divider */}
+          <div className="flex w-full items-center gap-4">
+            <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
+            <span className="font-[family-name:var(--font-body)] text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+              or
+            </span>
+            <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
+          </div>
+
+          {/* Manual Code Entry */}
           <PairPartnerForm onPaired={() => router.replace("/")} />
         </div>
       </PageTransition>

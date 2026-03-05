@@ -219,9 +219,13 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| InviteCodeDisplay | ✅ | `components/pairing/InviteCodeDisplay.tsx` | `code: string | null, className?` — Shows user's 6-char invite code in 32px monospace copper text. Copy button (navigator.clipboard.writeText), Share button (navigator.share with clipboard fallback). Loading skeleton when code is null. "Your invite code" label. 9 tests passing. |
+| InviteCodeDisplay | ✅ | `components/pairing/InviteCodeDisplay.tsx` | `code: string | null, className?` — Shows user's 6-char invite code in 32px monospace copper text. Copy button copies pairing link (via generatePairingLink). Share button (navigator.share with clipboard fallback). Loading skeleton when code is null. 9 tests passing. |
 | PairPartnerForm | ✅ | `components/pairing/PairPartnerForm.tsx` | `onPaired: () => void` — Code entry form with 6-char uppercase input (auto-uppercase, alphanumeric filter, maxLength 6). Calls `supabase.rpc('pair_partners', { my_id, partner_code })`. States: idle, loading, success (confetti + partner name + "Enter Hayah" button), error (shake + message). 20 confetti particles (copper/gold). Calls `refreshProfile()` after success. 15 tests passing. |
-| PairPage | ✅ | `app/(main)/pair/page.tsx` | Full-screen pairing flow. Heart icon header, "Find your partner" title, InviteCodeDisplay, "or" divider, PairPartnerForm. Redirects to home if already paired. Loading skeleton. 8 tests passing. |
+| QRCodeDisplay | ✅ | `components/pairing/QRCodeDisplay.tsx` | `code: string | null, className?` — Renders invite code as QR code (200x200, copper #C4956A on cream #FBF8F4). Dynamic import of `qrcode` lib. Shows code text, Copy Link + Share buttons. Loading skeleton when null. 12 tests passing. |
+| QRCodeScanner | ✅ | `components/pairing/QRCodeScanner.tsx` | `onScan: (code: string) => void, className?` — "Scan QR Code" button opens fullscreen overlay. Camera via getUserMedia (environment facing). Primary: BarcodeDetector API, fallback: jsQR (dynamic import). Viewfinder with corner markers. Error state for denied camera. 9 tests passing. |
+| PairCodePage | ✅ | `app/(main)/pair/[code]/page.tsx` | Deep link handler. Unauthenticated → stores code in sessionStorage → redirects to login. Authenticated + unpaired → auto-calls pair_partners RPC. Authenticated + paired → shows "Already paired". Success/error/loading states. 14 tests passing. |
+| PairPage | ✅ | `app/(main)/pair/page.tsx` | Full-screen pairing flow. Heart icon header, QRCodeDisplay, "or" divider, QRCodeScanner, "or" divider, PairPartnerForm. Redirects to home if already paired. 8 tests passing. |
+| pairing-link | ✅ | `lib/pairing-link.ts` | `generatePairingLink(code) → URL`, `parsePairingCode(url) → code\|null`, `storePendingPairCode(code)`, `consumePendingPairCode() → code\|null`. SessionStorage bridge for unauthenticated deep link flow. 15 tests passing. |
 
 ## Auth Infrastructure
 
@@ -297,6 +301,19 @@
 | ScoreChart | ✅ | `components/vision-board/ScoreChart.tsx` | `{ data, onSelectMonth?, selectedMonth?, className? }` — Custom SVG line chart. 12-month x-axis, 1-10 y-axis. Copper line for self, gray dashed for partner. Clickable dots with selection. 15 tests passing. |
 | EvaluationHistory | ✅ | `components/vision-board/EvaluationHistory.tsx` | `{ evaluations, categoryNames?, className? }` — ScoreChart wrapper + selected month detail breakdown (overall score, category bars, reflection). AnimatePresence transitions. 15 tests passing. |
 | HomeEvaluationPrompt | ✅ | `components/home/HomeEvaluationPrompt.tsx` | `{ className? }` — Dashboard card. Shows from 28th of month if board exists, not evaluated, not dismissed within 3 days (localStorage). Links to /2026/evaluate. 17 tests passing. |
+
+## Wishlist Module (P14)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| WishlistItemCard | ✅ | `components/wishlist/WishlistItemCard.tsx` | `{ item, isOwnList, onClaim?, onUnclaim?, onMarkPurchased?, onDelete?, userId? }` — Card with image/emoji fallback, title, description, price badge, category chip, priority pill. Own list: edit/delete buttons. Partner list: ClaimBadge. CRITICAL: no claim indicators on own list. 18 tests passing. |
+| AddWishlistItemForm | ✅ | `components/wishlist/AddWishlistItemForm.tsx` | `{ open, onClose, onSubmit, extractUrlMetadata }` — Bottom sheet (portal+AnimatePresence). URL auto-fill on paste/blur. Fields: url, title*, price+currency, 9 category chips, 3 priority radio, description. Zod-like validation. 16 tests passing. |
+| ClaimBadge | ✅ | `components/wishlist/ClaimBadge.tsx` | `{ item, userId, onClaim, onUnclaim, onMarkPurchased }` — 3 states: unclaimed (Gift icon), claimed by me (Lock icon, accent-primary), purchased (Check icon, success). 7 tests passing. |
+| WishlistPage | ✅ | `app/(main)/us/wishlist/page.tsx` | Two tabs (My/Partner's Wishlist) with motion layoutId. Price total badge. Category + priority filters. Collapsible purchased section. FAB → AddWishlistItemForm (my tab only). 16 tests passing. |
+| useWishlist | ✅ | `lib/hooks/use-wishlist.ts` | `useWishlist() → { myItems (claim masked!), partnerItems, myTotal, partnerTotal, isLoading, addItem, removeItem, updateItem, claimItem, unclaimItem, markPurchased, extractUrlMetadata }` — CRITICAL: claimed_by always null on myItems. Realtime subscription. 31 tests passing. |
+| wishlist.types.ts | ✅ | `lib/types/wishlist.types.ts` | `Wishlist`, `WishlistItem`, `AddWishlistItemData`, `UrlMetadata`, `WISHLIST_CATEGORIES` (9), `WISHLIST_PRIORITIES` (3) with derived types. |
+| url-metadata | ✅ | `supabase/functions/url-metadata/index.ts` | Edge function. POST `{ url }` → `{ title, description, image, price, currency }`. JWT auth, 5s timeout, regex OG extraction. |
+| 024_wishlist.sql | ✅ | `supabase/migrations/024_wishlist.sql` | Tables: wishlists + wishlist_items. RLS: owner CRUD, partner read + update claim/purchase. Auto-create trigger + backfill. |
 
 ## Scripts / Infrastructure
 

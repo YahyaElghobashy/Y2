@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Copy, Share2, Check } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { generatePairingLink } from "@/lib/pairing-link"
 
 type InviteCodeDisplayProps = {
   code: string | null
@@ -28,9 +29,11 @@ export function InviteCodeDisplay({ code, className }: InviteCodeDisplayProps) {
     )
   }
 
+  const pairingLink = generatePairingLink(code)
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code)
+      await navigator.clipboard.writeText(pairingLink)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
@@ -42,8 +45,9 @@ export function InviteCodeDisplay({ code, className }: InviteCodeDisplayProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Hayah Invite Code",
+          title: "Join me on Hayah",
           text: `Join me on Hayah! Use my invite code: ${code}`,
+          url: pairingLink,
         })
       } catch {
         // User cancelled share

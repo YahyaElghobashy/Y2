@@ -4,6 +4,8 @@ import { updateSession } from "@/lib/supabase/middleware"
 const PROTECTED_PREFIXES = ["/", "/us", "/health", "/spirit", "/ops", "/settings"]
 
 function isProtectedRoute(pathname: string): boolean {
+  // Allow unauthenticated access to /pair deep links (handled by the page)
+  if (pathname.startsWith("/pair")) return false
   if (pathname === "/") return true
   return PROTECTED_PREFIXES.some(
     (prefix) => prefix !== "/" && (pathname === prefix || pathname.startsWith(prefix + "/"))
@@ -30,7 +32,12 @@ export async function middleware(request: NextRequest) {
 
     return response
   } catch {
-    // Fail-open: if getUser() throws, allow request through
+    // Fail-closed: redirect to login on auth error for protected routes
+    if (isProtectedRoute(pathname)) {
+      const url = new URL("/login", request.url)
+      url.searchParams.set("redirectTo", pathname)
+      return NextResponse.redirect(url)
+    }
     return NextResponse.next()
   }
 }
