@@ -91,6 +91,72 @@ export interface Database {
           }
         ]
       }
+      couple_prompts: {
+        Row: {
+          id: string
+          prompt_date: string
+          prompt_text: string
+          prompt_category: string
+          both_answered: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          prompt_date: string
+          prompt_text: string
+          prompt_category: string
+          both_answered?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          prompt_date?: string
+          prompt_text?: string
+          prompt_category?: string
+          both_answered?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
+      prompt_answers: {
+        Row: {
+          id: string
+          prompt_id: string
+          user_id: string
+          answer_text: string
+          submitted_at: string
+        }
+        Insert: {
+          id?: string
+          prompt_id: string
+          user_id: string
+          answer_text: string
+          submitted_at?: string
+        }
+        Update: {
+          id?: string
+          prompt_id?: string
+          user_id?: string
+          answer_text?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_answers_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "couple_prompts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompt_answers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       notifications: {
         Row: {
           id: string

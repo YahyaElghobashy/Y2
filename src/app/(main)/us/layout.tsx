@@ -8,6 +8,7 @@ const US_TABS = [
   { label: "Ping", href: "/us/ping" },
   { label: "List", href: "/us/list" },
   { label: "Watch", href: "/us/watch" },
+  { label: "Prompts", href: "/us/prompts" },
   { label: "Wishlist", href: "/us/wishlist" },
 ]
 
