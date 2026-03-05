@@ -1889,6 +1889,157 @@ export interface Database {
         ]
       }
 
+      // ── T1406: Spin the Wheel ───────────────────────────────────
+      wheel_presets: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          icon: string
+          items: unknown
+          is_shared: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          icon?: string
+          items: unknown
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          icon?: string
+          items?: unknown
+          is_shared?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wheel_presets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      wheel_sessions: {
+        Row: {
+          id: string
+          preset_id: string
+          started_by: string
+          mode: string
+          best_of_target: number | null
+          best_of_rounds: number
+          status: string
+          winner_label: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          preset_id: string
+          started_by: string
+          mode: string
+          best_of_target?: number | null
+          best_of_rounds?: number
+          status?: string
+          winner_label?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          preset_id?: string
+          started_by?: string
+          mode?: string
+          best_of_target?: number | null
+          best_of_rounds?: number
+          status?: string
+          winner_label?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wheel_sessions_preset_id_fkey"
+            columns: ["preset_id"]
+            isOneToOne: false
+            referencedRelation: "wheel_presets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wheel_sessions_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      wheel_spins: {
+        Row: {
+          id: string
+          session_id: string
+          spin_number: number
+          spun_by: string
+          result_label: string
+          result_index: number
+          remaining_items: unknown | null
+          eliminated_item: string | null
+          spin_duration_ms: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          spin_number: number
+          spun_by: string
+          result_label: string
+          result_index: number
+          remaining_items?: unknown | null
+          eliminated_item?: string | null
+          spin_duration_ms?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          spin_number?: number
+          spun_by?: string
+          result_label?: string
+          result_index?: number
+          remaining_items?: unknown | null
+          eliminated_item?: string | null
+          spin_duration_ms?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wheel_spins_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "wheel_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wheel_spins_spun_by_fkey"
+            columns: ["spun_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
       // ── T1501: Wishlists ─────────────────────────────────────────
       wishlists: {
         Row: {
