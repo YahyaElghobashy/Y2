@@ -1546,6 +1546,424 @@ export interface Database {
         }
         Relationships: []
       }
+
+      // ── T1301: Our Table — Food Journal ────────────────────────
+      food_visits: {
+        Row: {
+          id: string
+          user_id: string
+          place_name: string
+          place_id: string | null
+          lat: number | null
+          lng: number | null
+          cuisine_type: string
+          visit_date: string
+          visit_time: string | null
+          visit_number: number
+          is_bookmarked: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          place_name: string
+          place_id?: string | null
+          lat?: number | null
+          lng?: number | null
+          cuisine_type: string
+          visit_date?: string
+          visit_time?: string | null
+          visit_number?: number
+          is_bookmarked?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          place_name?: string
+          place_id?: string | null
+          lat?: number | null
+          lng?: number | null
+          cuisine_type?: string
+          visit_date?: string
+          visit_time?: string | null
+          visit_number?: number
+          is_bookmarked?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_visits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      food_ratings: {
+        Row: {
+          id: string
+          visit_id: string
+          user_id: string
+          location_score: number
+          parking_score: number
+          service_score: number
+          food_quality: number
+          quantity_score: number
+          price_score: number
+          cuisine_score: number
+          bathroom_score: number
+          vibe_score: number
+          overall_average: number
+          both_reviewed: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          visit_id: string
+          user_id: string
+          location_score: number
+          parking_score: number
+          service_score: number
+          food_quality: number
+          quantity_score: number
+          price_score: number
+          cuisine_score: number
+          bathroom_score: number
+          vibe_score: number
+          both_reviewed?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          visit_id?: string
+          user_id?: string
+          location_score?: number
+          parking_score?: number
+          service_score?: number
+          food_quality?: number
+          quantity_score?: number
+          price_score?: number
+          cuisine_score?: number
+          bathroom_score?: number
+          vibe_score?: number
+          both_reviewed?: boolean
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_ratings_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "food_visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      food_photos: {
+        Row: {
+          id: string
+          visit_id: string
+          user_id: string
+          photo_type: string
+          storage_path: string
+          media_file_id: string | null
+          display_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          visit_id: string
+          user_id: string
+          photo_type: string
+          storage_path: string
+          media_file_id?: string | null
+          display_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          visit_id?: string
+          user_id?: string
+          photo_type?: string
+          storage_path?: string
+          media_file_id?: string | null
+          display_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_photos_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "food_visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_photos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      // ── T1401: Watch Together ──────────────────────────────────
+      watch_items: {
+        Row: {
+          id: string
+          added_by: string
+          title: string
+          item_type: string
+          poster_url: string | null
+          poster_media_id: string | null
+          year: number | null
+          tmdb_id: number | null
+          status: string
+          watched_date: string | null
+          both_rated: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          added_by: string
+          title: string
+          item_type?: string
+          poster_url?: string | null
+          poster_media_id?: string | null
+          year?: number | null
+          tmdb_id?: number | null
+          status?: string
+          watched_date?: string | null
+          both_rated?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          added_by?: string
+          title?: string
+          item_type?: string
+          poster_url?: string | null
+          poster_media_id?: string | null
+          year?: number | null
+          tmdb_id?: number | null
+          status?: string
+          watched_date?: string | null
+          both_rated?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_items_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      watch_ratings: {
+        Row: {
+          id: string
+          item_id: string
+          user_id: string
+          score: number
+          reaction: string | null
+          submitted_at: string
+        }
+        Insert: {
+          id?: string
+          item_id: string
+          user_id: string
+          score: number
+          reaction?: string | null
+          submitted_at?: string
+        }
+        Update: {
+          id?: string
+          item_id?: string
+          user_id?: string
+          score?: number
+          reaction?: string | null
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watch_ratings_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "watch_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watch_ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+
+      // ── T1501: Wishlists ─────────────────────────────────────────
+      wishlists: {
+        Row: {
+          id: string
+          owner_id: string
+          name: string
+          is_default: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          name?: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          name?: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      wishlist_items: {
+        Row: {
+          id: string
+          wishlist_id: string
+          title: string
+          description: string | null
+          url: string | null
+          image_url: string | null
+          image_media_id: string | null
+          price: number | null
+          currency: string
+          category: string
+          priority: string
+          is_purchased: boolean
+          purchased_at: string | null
+          purchased_by: string | null
+          claimed_by: string | null
+          claimed_at: string | null
+          sort_order: number
+          added_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          wishlist_id: string
+          title: string
+          description?: string | null
+          url?: string | null
+          image_url?: string | null
+          image_media_id?: string | null
+          price?: number | null
+          currency?: string
+          category?: string
+          priority?: string
+          is_purchased?: boolean
+          purchased_at?: string | null
+          purchased_by?: string | null
+          claimed_by?: string | null
+          claimed_at?: string | null
+          sort_order?: number
+          added_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          wishlist_id?: string
+          title?: string
+          description?: string | null
+          url?: string | null
+          image_url?: string | null
+          image_media_id?: string | null
+          price?: number | null
+          currency?: string
+          category?: string
+          priority?: string
+          is_purchased?: boolean
+          purchased_at?: string | null
+          purchased_by?: string | null
+          claimed_by?: string | null
+          claimed_at?: string | null
+          sort_order?: number
+          added_by?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_items_wishlist_id_fkey"
+            columns: ["wishlist_id"]
+            isOneToOne: false
+            referencedRelation: "wishlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlist_items_image_media_id_fkey"
+            columns: ["image_media_id"]
+            isOneToOne: false
+            referencedRelation: "media_files"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlist_items_purchased_by_fkey"
+            columns: ["purchased_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlist_items_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlist_items_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {

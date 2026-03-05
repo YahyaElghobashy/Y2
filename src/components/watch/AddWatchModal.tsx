@@ -38,7 +38,7 @@ export function AddWatchModal({
   const [manualType, setManualType] = useState<WatchItemType>("movie")
   const [manualYear, setManualYear] = useState("")
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const handleQueryChange = useCallback(
     (value: string) => {
