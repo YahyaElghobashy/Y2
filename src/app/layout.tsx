@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display, DM_Sans, JetBrains_Mono } from "next/font/google"
+import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri } from "next/font/google"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
 import "./globals.css"
 
@@ -18,6 +18,13 @@ const dmSans = DM_Sans({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
+})
+
+const amiri = Amiri({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
   display: "swap",
 })
 
@@ -46,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable}`}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>

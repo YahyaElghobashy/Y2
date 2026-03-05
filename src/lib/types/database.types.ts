@@ -746,6 +746,8 @@ export interface Database {
           google_calendar_connected_at: string | null
           google_drive_refresh_token: string | null
           google_drive_connected_at: string | null
+          onboarding_step: string
+          onboarding_completed_at: string | null
           created_at: string
           updated_at: string
         }
@@ -763,6 +765,8 @@ export interface Database {
           google_calendar_connected_at?: string | null
           google_drive_refresh_token?: string | null
           google_drive_connected_at?: string | null
+          onboarding_step?: string
+          onboarding_completed_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -780,6 +784,8 @@ export interface Database {
           google_calendar_connected_at?: string | null
           google_drive_refresh_token?: string | null
           google_drive_connected_at?: string | null
+          onboarding_step?: string
+          onboarding_completed_at?: string | null
           created_at?: string
           updated_at?: string
         }

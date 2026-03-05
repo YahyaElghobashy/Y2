@@ -331,6 +331,12 @@
 | RatingCarousel | ✅ | `components/food/RatingCarousel.tsx` | `{ onSubmit: (scores: Record<RatingDimensionKey, number>) => void, onBack: () => void, initialScores?, className? }` — 9-dimension swipe carousel for food ratings. Dot navigation with active indicator, per-dimension GradientSlider cards, VibeCard for vibe dimension, 3x3 summary grid with tap-to-edit, overall average display, submit button (disabled until all 9 scored). 16 tests passing. |
 | PreferenceDot | ✅ | `components/food/PreferenceDot.tsx` | `{ color: PreferenceDotColor, label?: string, showTooltip?, className? }` — 3-color preference indicator dot: match (green), close (amber), different (rose). Tap to show/hide tooltip with label. Proper aria-labels for accessibility. 10 tests passing. |
 | RatingReveal | ✅ | `components/food/RatingReveal.tsx` | `{ myScores, partnerScores, onClose, onReplay?, className? }` — Staggered 8+1 row animation revealing both partners' ratings per dimension. Vibe dimension gets special suspense phase (delayed reveal). Per-row match message (match/close/different). Overall score with vibe label. Close and replay controls. prefers-reduced-motion support (instant reveal). 12 tests passing. |
+| FoodMap | ✅ | `components/food/FoodMap.tsx` | `{ visits, onPinTap?, className? }` — Leaflet map with OpenStreetMap tiles, warm CSS filter overlay, CircleMarker pins colored by cuisine type, FitBounds to auto-frame all pins. Handles empty state gracefully. |
+| MapPinCard | ✅ | `components/food/MapPinCard.tsx` | `{ visit, onClose, className? }` — Bottom sheet card triggered on map pin tap. AnimatePresence slide-up with backdrop. Displays place name, cuisine, score, visit count. Dismiss on backdrop click or close button. |
+| VisitListItem | ✅ | `components/food/VisitListItem.tsx` | `{ visit, onClick?, className? }` — Horizontal visit card with MapPin icon, cuisine pill, score badge, visit date. Compact row layout for list view. |
+| OurTablePage | ✅ | `app/(main)/our-table/page.tsx` | — Map/list toggle view, 3 filter types (cuisine dropdown, high score toggle, return spots toggle), FAB for new visit, MapPinCard on pin tap, VisitListItem cards in list mode, loading skeleton, empty state. 23 tests passing. |
+| VisitDetailPage | ✅ | `app/(main)/our-table/[visitId]/page.tsx` | — Photo gallery, rating bars per dimension, overall score badge, notes auto-save, return history with score trends, share card generation, rate CTA, replay reveal overlay. 24 tests passing. |
+| MiniMap | ✅ | `app/(main)/our-table/[visitId]/MiniMap.tsx` | `{ lat, lng, className? }` — Small Leaflet map with warm CSS filter, dragging disabled. Used in visit detail page for location context. |
 
 ## Snap Module (P9)
 
@@ -363,6 +369,38 @@
 |---|---|---|---|
 | DaysTogetherCounter | ✅ | `components/shared/DaysTogetherCounter.tsx` | `{ variant?: "full" \| "compact", className? }` — Pure client computation from useAuth().profile.paired_at. Math.floor((now - paired_at) / 86_400_000). Full: card with "Day N together on Hayah", copper number. Compact: number + Heart icon. CountUp animation via Framer Motion animate() + sessionStorage guard. 13 tests passing. |
 | MediaImage | ✅ | `components/shared/MediaImage.tsx` | `{ mediaId?, fallbackUrl?, alt, className?, aspectRatio?, fill?, width?, height?, objectFit?, placeholder?, onLoad?, onError? }` — Tier-aware image component. Resolves mediaId via media_files: active→Storage URL, exported→proxy URL. Shimmer/blur loading placeholder, error state with retry button, lazy loading. Falls back to fallbackUrl when lookup fails or no mediaId. 17 tests passing. |
+
+## Onboarding Module (P15)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| OnboardingShell | ✅ | `components/onboarding/OnboardingShell.tsx` | `{ stepIndex, totalSteps, currentStep, canSkip, onSkip, children }` — Animated gradient background (20s CSS keyframe cycle cream/copper/gold), 3px copper progress bar (Framer Motion animated width), optional skip button during tour steps. prefers-reduced-motion: static bg. |
+| StepTransition | ✅ | `components/onboarding/StepTransition.tsx` | `{ stepKey, direction, children }` — AnimatePresence mode="wait" wrapper with direction-aware slide (forward=up, back=down). 300ms ease-out. |
+| WelcomeStep | ✅ | `components/onboarding/steps/WelcomeStep.tsx` | `{ onContinue }` — Staggered 4.5s animation: Arabic "حَيَاة" (Amiri font, copper, scale+fade T=0.8s) → "Hayah" (T=1.8s) → tagline (T=2.5s) → philosophy (T=3.2s) → "Begin →" button (T=4.0s). useReducedMotion: instant text, 1s button delay. Double-click prevention. 11 tests passing. |
+| ProfileStep | ✅ | `components/onboarding/steps/ProfileStep.tsx` | `{ onContinue, onBack }` — Progressive reveal: greeting → name input (auto-focus, copper glow) → avatar (at name ≥ 2 chars) → Continue. Supabase Storage avatar upload. 16 tests passing. |
+| PairingStep | ✅ | `components/onboarding/steps/PairingStep.tsx` | `{ onContinue, onSkip }` — Two states: UNPAIRED (reuses InviteCodeDisplay, QRCodeDisplay, PairPartnerForm) and CELEBRATION. Realtime subscription on profiles for partner detection. "Continue alone" skip. 13 tests passing. |
+| PairingCelebration | ✅ | `components/onboarding/steps/PairingCelebration.tsx` | `{ userName, partnerName, onContinue }` — Names + heart + confetti animation, "Enter Your Space →" after 3s delay. Double-click prevention. 11 tests passing. |
+| SpotlightOverlay | ✅ | `components/onboarding/SpotlightOverlay.tsx` | `{ target, targetRect, currentIndex, totalTargets, onNext, onBack, onDismiss }` — Fixed z-[9999] overlay, SVG mask spotlight hole (rect/circle/pill), pulse ring, tooltip card with step dots/Next/Back. 14 tests passing. |
+
+### Onboarding Hooks
+
+| Hook | Status | Path | Returns |
+|---|---|---|---|
+| useOnboarding | ✅ | `lib/hooks/use-onboarding.ts` | `{ currentStep, stepIndex, totalSteps, direction, isComplete, canSkip, goNext, goBack, completeOnboarding, skipOnboarding, isLoading }` — 9-step state machine persisted to profiles.onboarding_step. 22 tests passing. |
+| useSpotlight | ✅ | `lib/hooks/use-spotlight.ts` | `{ isActive, currentIndex, totalTargets, currentTarget, targetRect, start, next, back, dismiss }` — DOM querySelector-based spotlight targeting with ResizeObserver, scroll lock, debounced resize. 13 tests passing. |
+
+### Onboarding Types
+
+| Type | Path | Exports |
+|---|---|---|
+| onboarding.types.ts | `lib/types/onboarding.types.ts` | `ONBOARDING_STEPS`, `OnboardingStep`, `TOUR_STEPS`, `StepDirection`, `UseOnboardingReturn` |
+| SpotlightTarget | `lib/hooks/use-spotlight.ts` | `SpotlightShape`, `SpotlightTarget`, `UseSpotlightReturn` |
+
+### Onboarding Routes
+
+| Route | Path | Notes |
+|---|---|---|
+| /onboarding | `app/(main)/onboarding/page.tsx` | Step router. Layout: fixed full-screen z-40. Guard in (main)/layout.tsx redirects if onboarding_completed_at is null. BottomNav hidden. |
 
 ## Scripts / Infrastructure
 

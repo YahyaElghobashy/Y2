@@ -55,6 +55,9 @@ const NAV_TABS: NavTab[] = [
 export function BottomNav() {
   const pathname = usePathname()
 
+  // Hide during onboarding flow
+  if (pathname.startsWith("/onboarding")) return null
+
   return (
     <nav
       className="fixed bottom-0 inset-x-0 z-50 bg-bg-elevated border-t border-border-subtle"

@@ -203,3 +203,22 @@ h1, h2, h3, h4, h5, h6 {
     background-position: 50% 50%, 50% 50%, 50% 50%;
   }
 }
+
+/* Onboarding ambient gradient — slightly warmer copper tint, 20s cycle */
+@keyframes onboarding-gradient {
+  0%   { background-color: #FBF7F4; }
+  33%  { background-color: rgba(251, 247, 244, 1); background-image: radial-gradient(ellipse at 30% 50%, rgba(184, 115, 51, 0.03) 0%, transparent 70%); }
+  66%  { background-color: rgba(251, 247, 244, 1); background-image: radial-gradient(ellipse at 70% 50%, rgba(218, 165, 32, 0.02) 0%, transparent 70%); }
+  100% { background-color: #FBF7F4; }
+}
+
+.animate-onboarding-gradient {
+  animation: onboarding-gradient 20s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-onboarding-gradient {
+    animation: none;
+    background-color: #FBF7F4;
+  }
+}

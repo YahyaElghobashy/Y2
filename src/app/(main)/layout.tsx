@@ -19,25 +19,41 @@ export default function AppLayout({
   const pathname = usePathname()
   const { newCoupon, showAnimation, onSaveForLater } = useNewCouponDetection()
 
-  // Redirect unpaired users to /pair (unless already there or setting up profile)
+  const isOnboarding = pathname.startsWith("/onboarding")
+
+  // Onboarding guard + unpaired redirect
   useEffect(() => {
-    if (isLoading || !user || !profile || profileNeedsSetup) return
+    if (isLoading || !user || !profile) return
+
+    // Let onboarding handle its own routing
+    if (isOnboarding) return
+
+    // Skip guards during profile setup overlay
+    if (profileNeedsSetup) return
+
+    // Redirect to onboarding if not completed
+    if (!profile.onboarding_completed_at) {
+      router.replace("/onboarding")
+      return
+    }
+
+    // Redirect unpaired users to /pair (unless already there)
     if (profile.pairing_status !== "paired" && pathname !== "/pair") {
       router.replace("/pair")
     }
-  }, [isLoading, user, profile, profileNeedsSetup, pathname, router])
+  }, [isLoading, user, profile, profileNeedsSetup, isOnboarding, pathname, router])
 
   return (
     <AppShell>
       {children}
-      {!isLoading && profileNeedsSetup && user && (
+      {!isLoading && profileNeedsSetup && user && !isOnboarding && (
         <ProfileSetupOverlay
           userId={user.id}
           userEmail={user.email ?? ""}
           onComplete={refreshProfile}
         />
       )}
-      <InstallPrompt />
+      {!isOnboarding && <InstallPrompt />}
       {showAnimation && newCoupon && (
         <CouponReceiveAnimation
           visible={showAnimation}
