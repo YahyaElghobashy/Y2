@@ -290,6 +290,11 @@
 | VisionBoardPage | ✅ | `app/(main)/2026/page.tsx` | Board switcher (layoutId animated), hero banner (16:9 MediaImage/gradient), category sections, eval prompt, wizard empty state. 26 tests passing. |
 | useVisionBoard | ✅ | `lib/hooks/use-vision-board.ts` | `useVisionBoard() → { myBoard, partnerBoard, categories, evaluations, activeBoard, switchBoard, currentBoard, hasEvaluatedThisMonth, createBoard, setHeroBanner, addCategory, removeCategory, reorderCategories, addItem, toggleAchieved, removeItem, submitEvaluation, getEvaluations }` — Full CRUD with realtime subscription on vision_items. uploadMedia for images. 24 tests passing. |
 | vision-board.types.ts | ✅ | `lib/types/vision-board.types.ts` | `VisionBoard`, `VisionCategory`, `VisionItem`, `MonthlyEvaluation`, `CategoryScore`, `CategoryWithItems`, `EvaluationWithScores`, `ActiveBoard` |
+| EvaluationSlider | ✅ | `components/vision-board/EvaluationSlider.tsx` | `{ label, value, onChange, icon?, min?, max?, showNote?, onNoteChange?, note?, className? }` — Custom 1-10 range slider with score labels (Needs work/Getting there/On track/Strong/Excellent). Optional note toggle. 21 tests passing. |
+| EvaluatePage | ✅ | `app/(main)/2026/evaluate/page.tsx` | Month header, per-category sliders with notes, category average, overall score, reflection textarea (1000 chars), already-evaluated guard, submit with router.push("/2026"). 20 tests passing. |
+| ScoreChart | ✅ | `components/vision-board/ScoreChart.tsx` | `{ data, onSelectMonth?, selectedMonth?, className? }` — Custom SVG line chart. 12-month x-axis, 1-10 y-axis. Copper line for self, gray dashed for partner. Clickable dots with selection. 15 tests passing. |
+| EvaluationHistory | ✅ | `components/vision-board/EvaluationHistory.tsx` | `{ evaluations, categoryNames?, className? }` — ScoreChart wrapper + selected month detail breakdown (overall score, category bars, reflection). AnimatePresence transitions. 15 tests passing. |
+| HomeEvaluationPrompt | ✅ | `components/home/HomeEvaluationPrompt.tsx` | `{ className? }` — Dashboard card. Shows from 28th of month if board exists, not evaluated, not dismissed within 3 days (localStorage). Links to /2026/evaluate. 17 tests passing. |
 
 ## Scripts / Infrastructure
 

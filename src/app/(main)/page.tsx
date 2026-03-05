@@ -15,6 +15,7 @@ import { HomeCountdownWidget } from "@/components/home/HomeCountdownWidget"
 import { HomeCalendarPeek } from "@/components/home/HomeCalendarPeek"
 import { HomeRitualsWidget } from "@/components/home/HomeRitualsWidget"
 import { HomeLetterPrompt } from "@/components/home/HomeLetterPrompt"
+import { HomeEvaluationPrompt } from "@/components/home/HomeEvaluationPrompt"
 import { useActivePurchases } from "@/lib/hooks/use-active-purchases"
 import { ActivePurchaseCard } from "@/components/marketplace/ActivePurchaseCard"
 
@@ -59,6 +60,7 @@ export default function Home() {
         <HomePrayerWidget />
         <HomeRitualsWidget />
         <HomeLetterPrompt />
+        <HomeEvaluationPrompt />
         <HomeCountdownWidget />
         <HomeCalendarPeek />
         <HomeCouponInbox />
