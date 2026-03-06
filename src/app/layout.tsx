@@ -56,7 +56,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable}`}>
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="text-text-primary font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
