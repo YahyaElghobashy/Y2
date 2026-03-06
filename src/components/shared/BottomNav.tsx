@@ -143,25 +143,33 @@ export function BottomNav() {
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Quick action bubbles — expand above mascot */}
+        {/* Quick action bubbles — arc layout above mascot */}
         <AnimatePresence>
           {expanded && (
             <motion.div
               className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex items-end gap-3"
-              initial={{ opacity: 0, y: 16, scale: 0.8 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.8 }}
-              transition={{ duration: 0.25, ease: EASE_OUT }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
               {QUICK_ACTIONS.map((action, i) => {
                 const Icon = action.icon
                 const isActionActive = pathname.startsWith(action.href)
+                // Arc: center items higher, edges lower
+                const arcOffsets = [-4, -10, -10, -4]
                 return (
                   <motion.div
                     key={action.href}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04, duration: 0.2 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.6 }}
+                    animate={{ opacity: 1, y: arcOffsets[i], scale: 1 }}
+                    exit={{ opacity: 0, y: 20, scale: 0.6 }}
+                    transition={{
+                      type: "spring",
+                      damping: 15,
+                      stiffness: 200,
+                      delay: i * 0.06,
+                    }}
                   >
                     <Link
                       href={action.href}
@@ -212,8 +220,19 @@ export function BottomNav() {
                       ? "border-[var(--color-accent-primary)]"
                       : "border-[var(--color-border-subtle)]"
                 )}
-                animate={expanded ? { rotate: [0, -8, 8, -4, 0] } : { rotate: 0 }}
-                transition={expanded ? { duration: 0.4, ease: "easeInOut" } : { duration: 0.2 }}
+                animate={
+                  expanded
+                    ? { rotate: [0, -8, 8, -4, 0], scale: [1, 1.05, 1] }
+                    : { rotate: 0, scale: 1 }
+                }
+                transition={
+                  expanded
+                    ? {
+                        rotate: { duration: 0.4, ease: "easeInOut" },
+                        scale: { duration: 2, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
+                      }
+                    : { duration: 0.2 }
+                }
               >
                 <Image
                   src="/mascot.png"
@@ -269,11 +288,25 @@ function NavItem({ tab, pathname }: { tab: NavTab; pathname: string }) {
             )}
           />
           {isActive && (
-            <motion.div
-              layoutId="bottomnav-indicator"
-              className="absolute -bottom-1.5 h-0.5 w-6 rounded-full bg-accent-primary"
-              transition={{ duration: 0.25, ease: EASE_OUT }}
-            />
+            <>
+              {/* Glow halo behind indicator */}
+              <motion.div
+                layoutId="bottomnav-glow"
+                className="absolute -bottom-1.5 h-2 w-8 rounded-full"
+                style={{
+                  background: "var(--accent-copper, #B87333)",
+                  filter: "blur(6px)",
+                }}
+                animate={{ opacity: [0.15, 0.3, 0.15] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                aria-hidden="true"
+              />
+              <motion.div
+                layoutId="bottomnav-indicator"
+                className="absolute -bottom-1.5 h-0.5 w-6 rounded-full bg-accent-primary"
+                transition={{ duration: 0.25, ease: EASE_OUT }}
+              />
+            </>
           )}
         </div>
         <span

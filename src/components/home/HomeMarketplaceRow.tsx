@@ -52,12 +52,16 @@ export function HomeMarketplaceRow({ className }: HomeMarketplaceRowProps) {
     <div className={cn(className)} data-testid="home-marketplace-row">
       {/* Section header */}
       <div className="flex items-center justify-between px-5 mb-3">
-        <h2 className="font-body text-[15px] font-semibold text-text-primary">
+        <h2
+          className="font-[family-name:var(--font-display)] text-[15px] font-bold italic"
+          style={{ color: "var(--text-primary, #2C2825)" }}
+        >
           Quick Buys
         </h2>
         <Link
           href="/us/marketplace"
-          className="font-body text-[13px] font-medium text-accent-primary"
+          className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+          style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="see-all-link"
         >
           See All &rarr;
@@ -67,9 +71,15 @@ export function HomeMarketplaceRow({ className }: HomeMarketplaceRowProps) {
       {/* Horizontal scroll container */}
       <div className="relative">
         {/* Left fade gradient */}
-        <div className="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-bg-primary to-transparent z-10 pointer-events-none" />
+        <div
+          className="absolute left-0 top-0 bottom-0 w-5 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to right, var(--bg-primary, #FBF8F4), transparent)" }}
+        />
         {/* Right fade gradient */}
-        <div className="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-l from-bg-primary to-transparent z-10 pointer-events-none" />
+        <div
+          className="absolute right-0 top-0 bottom-0 w-5 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to left, var(--bg-primary, #FBF8F4), transparent)" }}
+        />
 
         <div
           className="flex gap-3 overflow-x-auto px-5 pb-2 snap-x snap-mandatory"

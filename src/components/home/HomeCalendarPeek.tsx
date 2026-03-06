@@ -19,17 +19,27 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft overflow-hidden px-4 py-4",
+          "rounded-2xl overflow-hidden px-4 py-4",
           className
         )}
+        style={{
+          backgroundColor: "white",
+          border: "1px solid rgba(184,115,51,0.06)",
+          boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+        }}
         data-testid="home-calendar-peek"
       >
-        <p className="text-[14px] text-[var(--color-text-secondary)] text-center mb-3" data-testid="empty-message">
+        <p
+          className="text-[13px] font-[family-name:var(--font-body)] text-center mb-3"
+          style={{ color: "var(--text-secondary, #6B6560)" }}
+          data-testid="empty-message"
+        >
           No upcoming events. Plan something together?
         </p>
         <Link
           href="/us/calendar?action=create"
-          className="flex items-center justify-center gap-1.5 text-[13px] font-medium text-[var(--color-accent-primary)]"
+          className="flex items-center justify-center gap-1.5 text-[13px] font-medium"
+          style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="add-event-cta"
         >
           <CalendarPlus size={14} />
@@ -42,22 +52,29 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft overflow-hidden px-4 py-4",
+        "rounded-2xl overflow-hidden px-4 py-4",
         className
       )}
+      style={{
+        backgroundColor: "white",
+        border: "1px solid rgba(184,115,51,0.06)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
       data-testid="home-calendar-peek"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <span
-          className="text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--color-text-primary)]"
+          className="text-[15px] font-bold font-[family-name:var(--font-display)] italic"
+          style={{ color: "var(--text-primary, #2C2825)" }}
           data-testid="peek-header"
         >
           Coming Up
         </span>
         <Link
           href="/us/calendar"
-          className="text-[12px] font-medium text-[var(--color-accent-primary)]"
+          className="text-[13px] font-medium font-[family-name:var(--font-body)]"
+          style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="see-all-link"
         >
           See All
@@ -85,19 +102,19 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
               >
                 {/* Date badge */}
                 <div
-                  className="w-8 h-8 rounded-full flex flex-col items-center justify-center shrink-0"
+                  className="w-9 h-9 rounded-full flex flex-col items-center justify-center shrink-0"
                   style={{ backgroundColor: `${color}1A` }}
                   data-testid="date-badge"
                   data-color={color}
                 >
                   <span
-                    className="text-[11px] font-bold leading-none"
+                    className="text-[12px] font-bold leading-none font-[family-name:var(--font-display)]"
                     style={{ color }}
                   >
                     {dayNum}
                   </span>
                   <span
-                    className="text-[8px] leading-none mt-px"
+                    className="text-[8px] uppercase leading-none mt-px font-[family-name:var(--font-body)]"
                     style={{ color }}
                   >
                     {monthAbbr}
@@ -107,14 +124,16 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
                 {/* Title + time */}
                 <div className="flex-1 min-w-0">
                   <p
-                    className="text-[14px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)] truncate"
+                    className="text-[14px] font-medium font-[family-name:var(--font-body)] truncate"
+                    style={{ color: "var(--text-primary, #2C2825)" }}
                     data-testid="event-title"
                   >
                     {event.title}
                   </p>
                   {event.event_time && (
                     <p
-                      className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted)]"
+                      className="text-[11px] font-[family-name:var(--font-body)]"
+                      style={{ color: "var(--text-muted, #B5ADA4)" }}
                       data-testid="event-time"
                     >
                       {format(

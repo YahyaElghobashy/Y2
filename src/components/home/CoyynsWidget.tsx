@@ -21,22 +21,46 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
     <Link href="/us" className="block">
       <motion.div
         className={cn(
-          "bg-[var(--color-bg-elevated)] rounded-2xl shadow-soft p-4",
+          "texture-parchment rounded-2xl p-4 overflow-hidden",
           className
         )}
+        style={{
+          backgroundColor: "white",
+          border: "1px solid rgba(184,115,51,0.06)",
+          boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+        }}
         whileTap={{ scale: 0.99 }}
         transition={{ duration: 0.1 }}
       >
         {/* Header row */}
         <div className="flex items-center justify-between">
-          <span className="font-[family-name:var(--font-body)] text-[13px] font-medium text-[var(--color-text-secondary)]">
-            CoYYns
+          <div>
+            <span
+              className="font-[family-name:var(--font-display)] text-[15px] font-bold"
+              style={{ color: "var(--text-primary, #2C2825)" }}
+            >
+              🪙 CoYYns
+            </span>
+            <span
+              className="ms-2 font-[family-name:var(--font-mono)] text-[18px] font-bold tabular-nums"
+              style={{ color: "var(--accent-copper, #B87333)" }}
+            >
+              {(wallet?.balance ?? 0).toLocaleString()}
+            </span>
+          </div>
+          <span
+            className="text-[10px] font-bold uppercase tracking-widest rounded-full px-2 py-0.5"
+            style={{
+              backgroundColor: "rgba(184,115,51,0.08)",
+              color: "var(--accent-copper, #B87333)",
+            }}
+          >
+            Shared Wallet
           </span>
-          <CoyynsBadge balance={wallet?.balance} size="md" />
         </div>
 
         {/* Divider */}
-        <div className="border-t border-[var(--color-border-subtle)] my-3" />
+        <div className="my-3" style={{ borderTop: "1px solid rgba(184,115,51,0.08)" }} />
 
         {/* Transaction list / loading / empty */}
         {isLoading ? (
@@ -82,7 +106,8 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
               e.stopPropagation()
               router.push("/us/marketplace")
             }}
-            className="font-[family-name:var(--font-body)] text-[13px] font-medium text-accent-primary"
+            className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+            style={{ color: "var(--accent-copper, #B87333)" }}
           >
             Marketplace &rarr;
           </button>

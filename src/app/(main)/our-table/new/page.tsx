@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { RestaurantSearch } from "@/components/food/RestaurantSearch"
+import { RatingSlider } from "@/components/food/RatingSlider"
 import {
   CUISINE_TYPES,
   CUISINE_LABELS,
@@ -95,6 +96,31 @@ export default function NewVisitPage() {
       sessionStorage.setItem("newVisitForm", JSON.stringify(formRef.current))
     }
     setStep(2)
+  }
+
+  // Step 3: Full-screen immersive rating experience
+  if (step === 3) {
+    return (
+      <RatingSlider
+        question="How was the food?"
+        stepLabel="Step 3 of 3"
+        stepProgress={1}
+        initialScore={7}
+        onNext={(score) => {
+          // Store score and navigate (full submit flow built in future task)
+          if (typeof window !== "undefined") {
+            const stored = sessionStorage.getItem("newVisitForm")
+            if (stored) {
+              const data = JSON.parse(stored)
+              data.foodScore = score
+              sessionStorage.setItem("newVisitForm", JSON.stringify(data))
+            }
+          }
+          router.push("/our-table")
+        }}
+        onClose={() => setStep(2)}
+      />
+    )
   }
 
   return (
@@ -257,7 +283,7 @@ export default function NewVisitPage() {
           </motion.div>
         )}
 
-        {/* Step 2 & 3 placeholders — will be built in T1304 & T1305 */}
+        {/* Step 2: Photos placeholder — will be built in T1304 */}
         {step === 2 && (
           <motion.div
             data-testid="step-2"
@@ -269,25 +295,23 @@ export default function NewVisitPage() {
             <p className="text-[14px] text-[var(--text-muted)]">
               Photo capture — coming in T1304
             </p>
-            <button
-              data-testid="back-to-step-1"
-              onClick={() => setStep(1)}
-              className="mt-4 text-[13px] text-[var(--accent-primary,#C4956A)] font-medium"
-            >
-              Back to Step 1
-            </button>
+            <div className="flex gap-3 mt-4">
+              <button
+                data-testid="back-to-step-1"
+                onClick={() => setStep(1)}
+                className="text-[13px] text-[var(--accent-primary,#C4956A)] font-medium"
+              >
+                Back
+              </button>
+              <button
+                data-testid="skip-to-step-3"
+                onClick={() => setStep(3)}
+                className="text-[13px] text-[var(--accent-primary,#C4956A)] font-medium"
+              >
+                Skip to Rating →
+              </button>
+            </div>
           </motion.div>
-        )}
-
-        {step === 3 && (
-          <div
-            data-testid="step-3"
-            className="flex items-center justify-center py-16"
-          >
-            <p className="text-[14px] text-[var(--text-muted)]">
-              Rating carousel — coming in T1305
-            </p>
-          </div>
         )}
       </div>
     </PageTransition>

@@ -37,29 +37,47 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
 
   const categoryStyle = CATEGORY_COLORS[coupon.category] ?? CATEGORY_COLORS.general
   const statusColor = STATUS_COLORS[coupon.status] ?? STATUS_COLORS.active
+  const isReady = coupon.status === "active"
 
   return (
     <motion.button
       type="button"
       onClick={onPress}
-      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "relative w-full text-start rounded-[var(--radius-card)] border border-border-subtle bg-bg-elevated border-s-2 border-s-dashed border-s-accent-soft",
+        "relative w-full text-start rounded-xl perforated-edge overflow-hidden",
         compact ? "p-3" : "p-4",
         !onPress && "cursor-default",
         className
       )}
+      style={{
+        backgroundColor: "white",
+        border: "1px solid rgba(184,115,51,0.08)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
       disabled={!onPress}
       data-testid="coupon-card"
     >
+      {/* Ready badge */}
+      {isReady && (
+        <span
+          className="absolute top-3 end-3 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white"
+          style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+        >
+          Ready
+        </span>
+      )}
+
       {/* Surprise guard */}
       {isSurpriseHidden ? (
         <div className="flex flex-col items-center justify-center py-4" data-testid="coupon-surprise">
-          <p className="text-[14px] font-medium font-[var(--font-body)] text-text-secondary blur-sm select-none">
+          <p className="text-[14px] font-medium font-[var(--font-body)] text-[var(--text-secondary)] blur-sm select-none">
             Hidden Surprise
           </p>
-          <p className="mt-1 text-[12px] font-[var(--font-body)] text-accent-primary">
+          <p
+            className="mt-1 text-[12px] font-[var(--font-body)]"
+            style={{ color: "var(--accent-copper, #B87333)" }}
+          >
             Tap to reveal
           </p>
         </div>
@@ -77,7 +95,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             <div className="flex items-center gap-2">
               <h4
                 className={cn(
-                  "font-semibold font-[var(--font-body)] text-text-primary truncate",
+                  "font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] truncate",
                   compact ? "text-[14px]" : "text-[15px]"
                 )}
                 data-testid="coupon-title"
@@ -94,7 +112,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             {/* Description (not in compact mode) */}
             {!compact && coupon.description && (
               <p
-                className="text-[13px] font-[var(--font-body)] text-text-secondary line-clamp-2"
+                className="text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)] line-clamp-2"
                 data-testid="coupon-description"
               >
                 {coupon.description}
@@ -104,16 +122,16 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             {/* Footer: category + creator */}
             <div className="mt-1 flex items-center gap-2">
               <span
-                className={cn(
-                  "rounded-full px-2 py-0.5 text-[11px] font-medium font-[var(--font-body)]",
-                  categoryStyle.bg,
-                  categoryStyle.text
-                )}
+                className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight font-[family-name:var(--font-body)]"
+                style={{
+                  backgroundColor: "rgba(184,115,51,0.08)",
+                  color: "var(--accent-copper, #B87333)",
+                }}
                 data-testid="coupon-category"
               >
                 {coupon.category}
               </span>
-              <span className="text-[11px] font-[var(--font-body)] text-text-muted">
+              <span className="text-[11px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
                 by {creatorLabel}
               </span>
             </div>

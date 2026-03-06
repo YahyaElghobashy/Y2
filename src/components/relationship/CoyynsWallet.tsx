@@ -84,91 +84,108 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
   return (
     <motion.div
       className={cn(
-        "rounded-2xl bg-bg-elevated p-6 border border-border-subtle shadow-[0_2px_12px_rgba(44,40,37,0.06)]",
+        "texture-leather rounded-2xl overflow-hidden",
         className,
       )}
+      style={{
+        boxShadow: "0 4px 24px rgba(44,40,37,0.10), 0 1px 3px rgba(44,40,37,0.06)",
+      }}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: EASE_OUT }}
     >
       {isLoading ? (
-        <div className="flex flex-col items-center gap-4" data-testid="wallet-loading">
-          <ShimmerPlaceholder className="h-10 w-32" />
-          <ShimmerPlaceholder className="h-4 w-20" />
-          <div className="w-full border-t border-border-subtle" />
+        <div className="flex flex-col items-center gap-4 p-6" data-testid="wallet-loading">
+          <div className="h-10 w-32 rounded animate-skeleton-warm" style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }} />
+          <div className="h-4 w-20 rounded animate-skeleton-warm" style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }} />
+          <div className="w-full border-t border-[rgba(184,115,51,0.1)]" />
           <div className="flex w-full justify-between">
-            <ShimmerPlaceholder className="h-4 w-24" />
-            <ShimmerPlaceholder className="h-4 w-24" />
-          </div>
-          <ShimmerPlaceholder className="h-4 w-40" />
-          <div className="w-full border-t border-border-subtle" />
-          <div className="flex w-full gap-3">
-            <ShimmerPlaceholder className="h-10 flex-1" />
-            <ShimmerPlaceholder className="h-10 flex-1" />
+            <div className="h-4 w-24 rounded animate-skeleton-warm" style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }} />
+            <div className="h-4 w-24 rounded animate-skeleton-warm" style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }} />
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-0">
-          {/* Coin icon */}
-          <span className="text-[28px] leading-none" role="img" aria-label="CoYYns">
-            🪙
-          </span>
-
-          {/* Balance */}
-          <div className="mt-3 text-[40px] leading-none font-[family-name:var(--font-mono)] text-accent-primary font-normal">
-            <AnimatedBalance value={wallet?.balance ?? 0} />
-          </div>
-
-          {/* Label */}
-          <p className="mt-1.5 text-sm text-text-secondary font-[family-name:var(--font-body)] uppercase tracking-[0.12em]">
-            CoYYns
-          </p>
-
-          {/* Divider */}
-          <div className="mt-4 w-full border-t border-border-subtle" />
-
-          {/* Stats row */}
-          <div className="mt-4 flex w-full justify-between">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-[13px] text-text-muted font-[family-name:var(--font-body)]">Earned</span>
-              <span className="text-[13px] text-text-muted font-[family-name:var(--font-mono)]" data-testid="lifetime-earned">
-                {(wallet?.lifetime_earned ?? 0).toLocaleString()}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-[13px] text-text-muted font-[family-name:var(--font-body)]">Spent</span>
-              <span className="text-[13px] text-text-muted font-[family-name:var(--font-mono)]" data-testid="lifetime-spent">
-                {(wallet?.lifetime_spent ?? 0).toLocaleString()}
-              </span>
-            </div>
-          </div>
-
-          {/* Partner row */}
-          <p className="mt-3 text-[13px] text-text-secondary font-[family-name:var(--font-body)] italic" data-testid="partner-row">
-            {partnerName} has {partnerBalance.toLocaleString()} CoYYns
-          </p>
-
-          {/* Divider */}
-          <div className="mt-4 w-full border-t border-border-subtle" />
-
-          {/* Action buttons */}
-          <div className="mt-4 flex w-full gap-3">
-            <button
-              type="button"
-              onClick={onAdd}
-              className="flex-1 h-10 rounded-xl border border-accent-primary text-accent-primary text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
+        <>
+          {/* Hero section */}
+          <div
+            className="px-6 pt-6 pb-5 flex flex-col items-center"
+            style={{
+              background: "linear-gradient(135deg, var(--bg-warm-white, #FFFDF9) 0%, var(--bg-soft-cream, #F5EDE3) 100%)",
+            }}
+          >
+            {/* Balance */}
+            <div
+              className="text-[36px] leading-none font-[family-name:var(--font-mono)] font-normal tabular-nums"
+              style={{ color: "var(--accent-copper, #B87333)" }}
             >
-              + Add
-            </button>
-            <button
-              type="button"
-              onClick={onSpend}
-              className="flex-1 h-10 rounded-xl bg-accent-primary text-[var(--color-bg-elevated)] text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
+              <AnimatedBalance value={wallet?.balance ?? 0} />
+            </div>
+
+            {/* Label */}
+            <p
+              className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] font-[family-name:var(--font-body)]"
+              style={{ color: "var(--text-muted, #B5ADA4)" }}
             >
-              − Spend
-            </button>
+              CoYYns
+            </p>
+
+            {/* Subtitle */}
+            <p
+              className="mt-2 font-[family-name:var(--font-display)] text-[13px] italic"
+              style={{ color: "var(--text-secondary, #6B6560)" }}
+            >
+              Our shared joy pot
+            </p>
           </div>
-        </div>
+
+          {/* Stats + partner row */}
+          <div className="px-6 py-4 bg-white">
+            <div className="flex justify-between mb-3">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[12px] text-[var(--text-muted)] font-[family-name:var(--font-body)]">Earned</span>
+                <span className="text-[12px] font-[family-name:var(--font-mono)] font-medium" style={{ color: "var(--accent-copper, #B87333)" }} data-testid="lifetime-earned">
+                  {(wallet?.lifetime_earned ?? 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[12px] text-[var(--text-muted)] font-[family-name:var(--font-body)]">Spent</span>
+                <span className="text-[12px] font-[family-name:var(--font-mono)] font-medium" style={{ color: "var(--text-secondary, #6B6560)" }} data-testid="lifetime-spent">
+                  {(wallet?.lifetime_spent ?? 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[12px] text-[var(--text-secondary)] font-[family-name:var(--font-body)] italic" data-testid="partner-row">
+              {partnerName} has {partnerBalance.toLocaleString()} CoYYns
+            </p>
+
+            {/* Action buttons */}
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={onAdd}
+                className="flex-1 h-10 rounded-xl text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
+                style={{
+                  border: "1px solid var(--accent-copper, #B87333)",
+                  color: "var(--accent-copper, #B87333)",
+                }}
+              >
+                + Add
+              </button>
+              <button
+                type="button"
+                onClick={onSpend}
+                className="flex-1 h-10 rounded-xl text-sm font-medium font-[family-name:var(--font-body)] text-white transition-colors"
+                style={{
+                  backgroundColor: "var(--accent-copper, #B87333)",
+                  boxShadow: "0 2px 8px rgba(184,115,51,0.2)",
+                }}
+              >
+                − Spend
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </motion.div>
   )

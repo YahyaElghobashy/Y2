@@ -89,14 +89,14 @@ export function DaysTogetherCounter({
           ref={displayRef}
           data-testid="day-count"
           className="text-[14px] font-[family-name:var(--font-display)] font-semibold tabular-nums"
-          style={{ color: "var(--accent-primary)" }}
+          style={{ color: "var(--accent-copper, #B87333)" }}
         >
           {dayCount}
         </span>
         <Heart
           data-testid="heart-icon"
           size={14}
-          className="text-accent-primary"
+          style={{ color: "var(--accent-copper, #B87333)" }}
           strokeWidth={1.75}
         />
       </motion.div>
@@ -108,24 +108,29 @@ export function DaysTogetherCounter({
     <motion.div
       data-testid="days-together-counter"
       className={cn(
-        "rounded-2xl border border-border-subtle bg-bg-elevated p-5",
+        "rounded-2xl p-5",
         className,
       )}
+      style={{
+        backgroundColor: "white",
+        border: "1px solid rgba(184,115,51,0.06)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: EASE_OUT }}
     >
       <p
         data-testid="days-label"
-        className="text-[14px]"
-        style={{ color: "var(--text-muted)" }}
+        className="text-[14px] font-[family-name:var(--font-body)] italic"
+        style={{ color: "var(--text-secondary, #6B6560)" }}
       >
         Day{" "}
         <span
           ref={displayRef}
           data-testid="day-count"
-          className="text-[20px] font-[family-name:var(--font-display)] font-semibold tabular-nums"
-          style={{ color: "var(--accent-primary)" }}
+          className="text-[22px] font-[family-name:var(--font-display)] font-bold tabular-nums not-italic"
+          style={{ color: "var(--accent-copper, #B87333)" }}
         >
           {dayCount}
         </span>{" "}

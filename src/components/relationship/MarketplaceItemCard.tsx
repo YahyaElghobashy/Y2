@@ -50,26 +50,39 @@ export function MarketplaceItemCard({
     return (
       <div
         className={cn(
-          "relative w-[140px] shrink-0 rounded-2xl bg-bg-elevated p-3 border border-border-subtle shadow-[0_2px_12px_rgba(44,40,37,0.06)] flex flex-col items-center gap-2",
+          "relative w-[140px] shrink-0 rounded-xl bg-white p-3 flex flex-col items-center gap-2",
           className
         )}
+        style={{
+          border: "1px solid rgba(184,115,51,0.06)",
+          boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+        }}
         data-testid="marketplace-item-card"
       >
-        {/* Icon */}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft">
-          <span className="text-[32px] leading-none" role="img" aria-hidden="true">
+        {/* Icon in colored circle */}
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-full"
+          style={{ backgroundColor: "rgba(184,115,51,0.08)" }}
+        >
+          <span className="text-[28px] leading-none" role="img" aria-hidden="true">
             {item.icon}
           </span>
         </div>
 
         {/* Name */}
-        <p className="font-body text-[12px] font-semibold text-text-primary line-clamp-2 text-center w-full">
+        <p className="font-[family-name:var(--font-body)] text-[12px] font-semibold text-[var(--text-primary)] line-clamp-2 text-center w-full">
           {item.name}
         </p>
 
-        {/* Price badge */}
-        <span className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-[12px] font-medium text-accent-primary">
-          {item.price} &#x1FA99;
+        {/* Copper price pill */}
+        <span
+          className="rounded-full px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-bold"
+          style={{
+            backgroundColor: "rgba(184,115,51,0.1)",
+            color: "var(--accent-copper, #B87333)",
+          }}
+        >
+          {item.price} 🪙
         </span>
 
         {/* Buy button */}
@@ -77,12 +90,11 @@ export function MarketplaceItemCard({
           type="button"
           onClick={handleBuy}
           disabled={buyState !== "idle"}
-          className={cn(
-            "h-8 w-full rounded-lg text-[12px] font-medium font-body transition-colors",
-            canAfford
-              ? "bg-accent-primary text-bg-elevated"
-              : "bg-bg-secondary text-text-muted opacity-50 cursor-not-allowed"
-          )}
+          className="h-8 w-full rounded-lg text-[12px] font-medium font-[family-name:var(--font-body)] transition-colors text-white"
+          style={{
+            backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
+            opacity: canAfford ? 1 : 0.5,
+          }}
           animate={buyState === "pressing" ? { scale: 0.95 } : { scale: 1 }}
           transition={{ duration: 0.1, ease: EASE_OUT }}
           data-testid="buy-button"
@@ -94,14 +106,15 @@ export function MarketplaceItemCard({
         <AnimatePresence>
           {buyState === "success" && (
             <motion.div
-              className="absolute inset-0 rounded-2xl bg-accent-primary/20 flex items-center justify-center"
+              className="absolute inset-0 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: "rgba(184,115,51,0.15)" }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2, ease: EASE_OUT }}
               data-testid="buy-success-overlay"
             >
-              <Check size={24} className="text-accent-primary" />
+              <Check size={24} style={{ color: "var(--accent-copper, #B87333)" }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -110,7 +123,8 @@ export function MarketplaceItemCard({
         <AnimatePresence>
           {showTooltip && !canAfford && (
             <motion.div
-              className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text-primary px-2 py-1 text-[11px] font-body text-bg-elevated shadow-md"
+              className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-[family-name:var(--font-body)] text-white shadow-md"
+              style={{ backgroundColor: "var(--text-primary, #2C2825)" }}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 4 }}
@@ -125,70 +139,83 @@ export function MarketplaceItemCard({
     )
   }
 
-  // ── Vertical variant ──────────────────────────────────
+  // ── Vertical variant (grid card for marketplace page) ──────────────────
   return (
     <div
       className={cn(
-        "relative rounded-2xl bg-bg-elevated p-5 border border-border-subtle shadow-[0_2px_12px_rgba(44,40,37,0.06)]",
+        "relative rounded-xl bg-white p-4 flex flex-col items-center gap-2",
         className
       )}
+      style={{
+        border: "1px solid rgba(184,115,51,0.06)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
       data-testid="marketplace-item-card"
     >
-      <div className="flex items-center gap-3">
-        {/* Icon */}
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-          <span className="text-[20px]" role="img" aria-hidden="true">
-            {item.icon}
-          </span>
-        </div>
-
-        {/* Text */}
-        <div className="min-w-0 flex-1">
-          <h3 className="font-body text-[15px] font-semibold text-text-primary line-clamp-1">
-            {item.name}
-          </h3>
-          <p className="font-body text-[13px] text-text-secondary line-clamp-2">
-            {item.description}
-          </p>
-        </div>
-
-        {/* Price + Buy */}
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="rounded-full bg-accent-soft px-3 py-1 font-mono text-[14px] font-medium text-accent-primary">
-            {item.price} &#x1FA99;
-          </span>
-
-          <motion.button
-            type="button"
-            onClick={handleBuy}
-            disabled={buyState !== "idle"}
-            className={cn(
-              "h-10 px-4 rounded-xl text-[13px] font-medium font-body transition-colors",
-              canAfford
-                ? "bg-accent-primary text-bg-elevated"
-                : "bg-bg-secondary text-text-muted opacity-50 cursor-not-allowed"
-            )}
-            animate={buyState === "pressing" ? { scale: 0.95 } : { scale: 1 }}
-            transition={{ duration: 0.1, ease: EASE_OUT }}
-            data-testid="buy-button"
-          >
-            Buy
-          </motion.button>
-        </div>
+      {/* Icon in colored circle */}
+      <div
+        className="flex h-14 w-14 items-center justify-center rounded-full"
+        style={{ backgroundColor: "rgba(184,115,51,0.08)" }}
+      >
+        <span className="text-[32px]" role="img" aria-hidden="true">
+          {item.icon}
+        </span>
       </div>
+
+      {/* Name */}
+      <h3 className="font-[family-name:var(--font-display)] text-[13px] font-bold text-[var(--text-primary)] line-clamp-2 text-center w-full">
+        {item.name}
+      </h3>
+
+      {/* Description */}
+      {item.description && (
+        <p className="font-[family-name:var(--font-body)] text-[11px] text-[var(--text-secondary)] line-clamp-2 text-center">
+          {item.description}
+        </p>
+      )}
+
+      {/* Copper price pill */}
+      <span
+        className="rounded-full px-3 py-1 font-[family-name:var(--font-mono)] text-[12px] font-bold"
+        style={{
+          backgroundColor: "rgba(184,115,51,0.1)",
+          color: "var(--accent-copper, #B87333)",
+        }}
+      >
+        {item.price} 🪙
+      </span>
+
+      {/* Buy button */}
+      <motion.button
+        type="button"
+        onClick={handleBuy}
+        disabled={buyState !== "idle"}
+        className="h-9 w-full rounded-lg text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors text-white"
+        style={{
+          backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
+          opacity: canAfford ? 1 : 0.5,
+          boxShadow: canAfford ? "0 2px 8px rgba(184,115,51,0.2)" : "none",
+        }}
+        animate={buyState === "pressing" ? { scale: 0.95 } : { scale: 1 }}
+        transition={{ duration: 0.1, ease: EASE_OUT }}
+        data-testid="buy-button"
+      >
+        Buy
+      </motion.button>
 
       {/* Success overlay */}
       <AnimatePresence>
         {buyState === "success" && (
           <motion.div
-            className="absolute inset-0 rounded-2xl bg-accent-primary/20 flex items-center justify-center"
+            className="absolute inset-0 rounded-xl flex items-center justify-center"
+            style={{ backgroundColor: "rgba(184,115,51,0.15)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: EASE_OUT }}
             data-testid="buy-success-overlay"
           >
-            <Check size={24} className="text-accent-primary" />
+            <Check size={24} style={{ color: "var(--accent-copper, #B87333)" }} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -197,7 +224,8 @@ export function MarketplaceItemCard({
       <AnimatePresence>
         {showTooltip && !canAfford && (
           <motion.div
-            className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text-primary px-2 py-1 text-[11px] font-body text-bg-elevated shadow-md"
+            className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-[family-name:var(--font-body)] text-white shadow-md"
+            style={{ backgroundColor: "var(--text-primary, #2C2825)" }}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}

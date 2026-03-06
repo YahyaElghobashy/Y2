@@ -44,30 +44,34 @@ export function ChallengeCard({
 
   return (
     <motion.div
-      className={cn(
-        "rounded-2xl bg-[var(--color-bg-elevated)] p-5 border border-[var(--color-border-subtle)] shadow-[0_2px_12px_rgba(44,40,37,0.06)]",
-        className
-      )}
-      whileHover={{ scale: 1.02, boxShadow: "0 4px 24px rgba(44,40,37,0.10)" }}
+      className={cn("rounded-xl bg-white p-5", className)}
+      style={{
+        border: "2px dashed var(--accent-copper, #B87333)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2, ease: EASE_OUT }}
     >
       {/* Header: icon + title + badge */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-soft)]">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+            style={{ backgroundColor: "rgba(184,115,51,0.1)" }}
+          >
             <Trophy
-              className="h-[18px] w-[18px] text-[var(--color-accent-primary)]"
+              className="h-[18px] w-[18px]"
+              style={{ color: "var(--accent-copper, #B87333)" }}
               strokeWidth={1.75}
             />
           </div>
-          <h3 className="pt-1.5 font-[family-name:var(--font-body)] text-[15px] font-semibold text-[var(--color-text-primary)]">
+          <h3 className="pt-1.5 font-[family-name:var(--font-display)] text-[15px] font-bold text-[var(--text-primary)]">
             {title}
           </h3>
         </div>
 
         <span
-          className="shrink-0 rounded-lg px-2.5 py-1 font-[family-name:var(--font-body)] text-[12px] font-medium"
+          className="shrink-0 rounded-full px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-bold uppercase tracking-tight"
           style={{ backgroundColor: statusConfig.bg, color: statusConfig.text }}
           data-testid="status-badge"
         >
@@ -76,9 +80,17 @@ export function ChallengeCard({
       </div>
 
       {/* Stakes */}
-      <p className="mt-3 font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
-        {stakes}
-      </p>
+      <div
+        className="mt-3 rounded-lg px-3 py-2"
+        style={{ backgroundColor: "rgba(184,115,51,0.05)" }}
+      >
+        <p
+          className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+          style={{ color: "var(--accent-copper, #B87333)" }}
+        >
+          🎯 {stakes}
+        </p>
+      </div>
 
       {/* Participants */}
       <div className="mt-3 flex items-center gap-2">
@@ -86,14 +98,15 @@ export function ChallengeCard({
           {participants.map((participant) => (
             <div
               key={participant.name}
-              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[var(--color-bg-elevated)] bg-[var(--color-accent-soft)] font-[family-name:var(--font-body)] text-[11px] font-semibold text-[var(--color-accent-primary)]"
+              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white font-[family-name:var(--font-body)] text-[11px] font-semibold text-white"
+              style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
               title={participant.name}
             >
               {participant.initial}
             </div>
           ))}
         </div>
-        <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-muted)]">
+        <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--text-muted)]">
           {participants.map((p) => p.name).join(" & ")}
         </span>
       </div>
@@ -105,7 +118,11 @@ export function ChallengeCard({
             onClick={onAccept}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.15, ease: EASE_OUT }}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[var(--color-accent-primary)] px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-white"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-white"
+            style={{
+              backgroundColor: "var(--accent-copper, #B87333)",
+              boxShadow: "0 2px 8px rgba(184,115,51,0.2)",
+            }}
           >
             <Check className="h-4 w-4" strokeWidth={2} />
             Accept
@@ -114,7 +131,11 @@ export function ChallengeCard({
             onClick={onDecline}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.15, ease: EASE_OUT }}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--color-text-secondary)]"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--text-secondary)]"
+            style={{
+              border: "1px solid rgba(44,40,37,0.1)",
+              backgroundColor: "var(--bg-warm-white, #FFFDF9)",
+            }}
           >
             <X className="h-4 w-4" strokeWidth={2} />
             Decline

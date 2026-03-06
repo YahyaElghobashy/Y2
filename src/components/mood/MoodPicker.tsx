@@ -48,20 +48,39 @@ export function MoodPicker({ className }: MoodPickerProps) {
                 type="button"
                 data-testid={`mood-button-${mood}`}
                 whileTap={{ scale: 0.9 }}
-                animate={isSelected ? { scale: [1, 1.15, 1] } : {}}
+                animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
                 transition={{ duration: 0.3 }}
                 onClick={() => handleMoodSelect(mood)}
                 className={cn(
-                  "h-11 w-11 rounded-full flex items-center justify-center text-lg",
-                  "transition-colors duration-200",
+                  "rounded-full flex items-center justify-center",
+                  "transition-all duration-200",
                   isSelected
-                    ? "bg-[var(--color-accent-primary)]"
-                    : "bg-[var(--color-bg-secondary)]"
+                    ? "h-[62px] w-[62px] text-[28px]"
+                    : "h-[54px] w-[54px] text-[24px]"
                 )}
+                style={{
+                  backgroundColor: isSelected
+                    ? "rgba(184,115,51,0.08)"
+                    : "var(--bg-soft-cream, #F5EDE3)",
+                  border: isSelected
+                    ? "2px solid var(--accent-copper, #B87333)"
+                    : "2px solid transparent",
+                  boxShadow: isSelected
+                    ? "0 2px 12px rgba(184,115,51,0.15)"
+                    : "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+                }}
               >
                 {MOOD_EMOJI[mood]}
               </motion.button>
-              <span className="text-[10px] text-[var(--color-text-muted)] font-[family-name:var(--font-body)]">
+              <span
+                className="text-[10px] font-[family-name:var(--font-body)]"
+                style={{
+                  color: isSelected
+                    ? "var(--accent-copper, #B87333)"
+                    : "var(--text-muted, #B5ADA4)",
+                  fontWeight: isSelected ? 600 : 400,
+                }}
+              >
                 {MOOD_LABELS[mood]}
               </span>
             </div>

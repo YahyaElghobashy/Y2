@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { PageTransition } from "@/components/animations"
+import { TimeAwareBackground } from "@/components/ui/TimeAwareBackground"
 import { HomeGreeting } from "@/components/home/HomeGreeting"
 import { MoodPicker } from "@/components/mood/MoodPicker"
 import { PartnerMoodIndicator } from "@/components/home/PartnerMoodIndicator"
@@ -22,6 +23,8 @@ import { DaysTogetherCounter } from "@/components/shared/DaysTogetherCounter"
 import { HomeLetterPrompt } from "@/components/home/HomeLetterPrompt"
 import { HomeEvaluationPrompt } from "@/components/home/HomeEvaluationPrompt"
 import { HomeCountdownWidget } from "@/components/home/HomeCountdownWidget"
+import { GradientDivider } from "@/components/ui/GradientDivider"
+import { AnnouncementBanner } from "@/components/shared/AnnouncementBanner"
 import { useGarden } from "@/lib/hooks/use-garden"
 
 export default function Home() {
@@ -35,7 +38,18 @@ export default function Home() {
   }, [])
 
   return (
+    <TimeAwareBackground>
     <PageTransition>
+      {/* 0. Announcement Banner */}
+      <AnnouncementBanner
+        messages={[
+          "Welcome to Hayah — your shared companion",
+          "Tap the mascot for quick actions",
+          "New: Rituals & Prayer widgets available",
+        ]}
+        className="px-5 pt-3"
+      />
+
       {/* 1. Greeting + MoodPicker */}
       <HomeGreeting />
       <MoodPicker className="mt-3 px-5" />
@@ -48,6 +62,9 @@ export default function Home() {
       {/* 3. MoodStrip */}
       <MoodStrip className="mt-2" />
 
+      {/* Divider: Mood → Snap */}
+      <GradientDivider className="mt-4 mx-5" />
+
       {/* 4. HomeSnapWidget */}
       <HomeSnapWidget className="mx-5 mt-3" />
 
@@ -55,6 +72,9 @@ export default function Home() {
       <div className="px-5 mt-4">
         <CoyynsWidget />
       </div>
+
+      {/* Divider: CoYYns → Marketplace */}
+      <GradientDivider className="mt-4 mx-5" glow />
 
       {/* 6. HomeMarketplaceRow */}
       <HomeMarketplaceRow className="mt-4" />
@@ -73,6 +93,9 @@ export default function Home() {
           ))}
         </div>
       )}
+
+      {/* Divider: Marketplace → Widgets */}
+      <GradientDivider className="mt-4 mx-5" />
 
       {/* 8–15: Widget Slots */}
       <div className="flex flex-col gap-4 px-5 mt-4 pb-8">
@@ -106,5 +129,6 @@ export default function Home() {
         <HomeCountdownWidget />
       </div>
     </PageTransition>
+    </TimeAwareBackground>
   )
 }

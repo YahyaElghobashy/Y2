@@ -23,23 +23,40 @@ export function CategorySection({
   readOnly = false,
   className,
 }: CategorySectionProps) {
+  const achievedCount = category.items.filter((i) => i.is_achieved).length
+
   return (
     <div className={cn("", className)} data-testid={`category-section-${category.id}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-[20px]">{category.icon}</span>
-          <h3 className="text-[16px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)]">
+      {/* Shelf-style header */}
+      <div className="flex items-center gap-3 px-6 mb-4">
+        <span className="text-[22px]">{category.icon}</span>
+        <div className="flex-1">
+          <h3
+            className="text-[13px] font-bold uppercase tracking-[0.15em] font-[family-name:var(--font-display)]"
+            style={{ color: "var(--accent-copper, #B87333)" }}
+          >
             {category.name}
           </h3>
         </div>
-        <span className="text-[12px] text-[var(--color-text-muted,#B5ADA4)]">
-          {category.items.length} {category.items.length === 1 ? "item" : "items"}
+        <span
+          className="text-[11px] font-medium"
+          style={{ color: "var(--text-muted, #B5ADA4)" }}
+        >
+          {achievedCount}/{category.items.length}
         </span>
       </div>
 
-      {/* Horizontal scroll of items */}
-      <div className="flex gap-3 overflow-x-auto px-5 pb-2 scrollbar-hide">
+      {/* Shelf line */}
+      <div
+        className="mx-6 mb-4 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, var(--accent-copper, #B87333) 0%, rgba(184,115,51,0.1) 100%)",
+        }}
+      />
+
+      {/* Horizontal scroll of polaroid items */}
+      <div className="flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-hide">
         {category.items.map((item) => (
           <VisionItemCard
             key={item.id}
@@ -50,23 +67,31 @@ export function CategorySection({
           />
         ))}
 
-        {/* Add button */}
+        {/* Add button — polaroid-style dashed */}
         {!readOnly && (
           <motion.button
             className={cn(
-              "w-[140px] h-[140px] flex-shrink-0 rounded-2xl",
-              "border-2 border-dashed border-[var(--color-border-subtle,#E8E2DA)]",
+              "w-[150px] flex-shrink-0 rounded-sm",
               "flex flex-col items-center justify-center gap-2",
-              "text-[var(--color-text-muted,#B5ADA4)]",
-              "hover:border-[var(--accent-primary,#C4956A)] hover:text-[var(--accent-primary,#C4956A)]",
               "transition-colors"
             )}
-            whileTap={{ scale: 0.98 }}
+            style={{
+              padding: "8px 8px 32px 8px",
+              border: "2px dashed rgba(184,115,51,0.25)",
+              color: "var(--text-muted, #B5ADA4)",
+              aspectRatio: "auto",
+              minHeight: "180px",
+            }}
+            whileTap={{ scale: 0.97 }}
+            whileHover={{
+              borderColor: "rgba(184,115,51,0.5)",
+              color: "var(--accent-copper, #B87333)",
+            }}
             onClick={() => onAddItem?.(category.id)}
             data-testid={`add-item-${category.id}`}
           >
             <Plus size={24} />
-            <span className="text-[12px] font-medium">Add</span>
+            <span className="text-[12px] font-medium">Add Vision</span>
           </motion.button>
         )}
       </div>

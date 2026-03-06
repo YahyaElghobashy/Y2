@@ -75,141 +75,175 @@ export default function VisionBoardPage() {
 
   return (
     <PageTransition>
-      <PageHeader title="2026" />
+      <div className="texture-cork min-h-screen pb-8">
+        <PageHeader title="2026 Vision Board" />
 
-      {/* Board switcher */}
-      <div className="flex gap-2 px-5 mt-2 mb-4">
-        {boardTabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={cn(
-              "relative px-4 py-2 rounded-xl text-[13px] font-medium transition-colors",
-              "font-[family-name:var(--font-body)]"
-            )}
-            onClick={() => switchBoard(tab.key)}
-            data-testid={`board-tab-${tab.key}`}
+        {/* Board switcher pills */}
+        <div className="px-4 pb-4">
+          <div
+            className="flex h-10 flex-1 items-center justify-center rounded-xl p-1 gap-1"
+            style={{ backgroundColor: "rgba(44,40,37,0.05)" }}
           >
-            {activeBoard === tab.key && (
-              <motion.div
-                className="absolute inset-0 rounded-xl bg-[var(--accent-primary,#C4956A)]"
-                layoutId="board-tab-indicator"
-                transition={{ duration: 0.25, ease: EASE_OUT }}
-              />
-            )}
-            <span
-              className={cn(
-                "relative z-10",
-                activeBoard === tab.key
-                  ? "text-white"
-                  : "text-[var(--color-text-secondary,#8C8279)]"
-              )}
-            >
-              {tab.label}
-            </span>
-          </button>
-        ))}
-      </div>
+            {boardTabs.map((tab) => (
+              <button
+                key={tab.key}
+                className={cn(
+                  "relative flex-1 h-full flex items-center justify-center rounded-lg px-2 text-sm font-semibold transition-all"
+                )}
+                onClick={() => switchBoard(tab.key)}
+                data-testid={`board-tab-${tab.key}`}
+              >
+                {activeBoard === tab.key && (
+                  <motion.div
+                    className="absolute inset-0 rounded-lg"
+                    style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+                    layoutId="board-tab-indicator"
+                    transition={{ duration: 0.25, ease: EASE_OUT }}
+                  />
+                )}
+                <span
+                  className={cn(
+                    "relative z-10 truncate",
+                    activeBoard === tab.key
+                      ? "text-white"
+                      : "text-[var(--text-secondary)]"
+                  )}
+                >
+                  {tab.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* Hero banner */}
-      {currentBoard && (
-        <div className="px-5 mb-5">
-          <div className="relative w-full aspect-video rounded-2xl overflow-hidden">
+        {/* Full-bleed hero banner */}
+        {currentBoard && (
+          <div className="relative h-[40vh] w-full overflow-hidden mb-6">
             {currentBoard.hero_media_id ? (
               <MediaImage
                 mediaId={currentBoard.hero_media_id}
                 alt={currentBoard.title}
                 fill
                 objectFit="cover"
-                className="w-full h-full"
+                className="w-full h-full mix-blend-overlay"
               />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[var(--accent-soft,#E8D5C0)] to-[var(--color-bg-secondary,#F5F0E8)]" />
-            )}
-
-            {/* Title overlay */}
-            <div className="absolute inset-x-0 bottom-0 px-4 pb-4 pt-12 bg-gradient-to-t from-black/50 to-transparent">
-              <h2 className="text-[24px] font-bold font-[family-name:var(--font-display)] text-white">
-                {currentBoard.title}
+            ) : null}
+            {/* Gradient overlay */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: currentBoard.hero_media_id
+                  ? "rgba(0,0,0,0.2)"
+                  : "linear-gradient(135deg, var(--accent-copper, #B87333) 0%, var(--bg-warm-white, #FFFDF9) 50%, var(--gold, #DAA520) 100%)",
+              }}
+            />
+            {/* Title */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+              <h2
+                className="font-[family-name:var(--font-display)] text-[32px] leading-tight text-white font-bold mb-2"
+                style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
+              >
+                {currentBoard.title || "My 2026 Vision"}
               </h2>
               {currentBoard.theme && (
-                <p className="text-[14px] italic text-white/80 mt-0.5">
+                <p
+                  className="font-[family-name:var(--font-display)] italic text-white/90 text-lg"
+                  style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
+                >
                   {currentBoard.theme}
                 </p>
               )}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Monthly evaluation prompt */}
-      {!isPartnerView && myBoard && !hasEvaluatedThisMonth && (
-        <Link href="/2026/evaluate" className="block px-5 mb-5">
+        {/* Monthly evaluation prompt */}
+        {!isPartnerView && myBoard && !hasEvaluatedThisMonth && (
+          <Link href="/2026/evaluate" className="block px-6 mb-6">
+            <div
+              className="rounded-xl p-6"
+              style={{
+                backgroundColor: "rgba(184,115,51,0.08)",
+                border: "1px solid rgba(184,115,51,0.15)",
+              }}
+              data-testid="eval-prompt"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="p-2 rounded-lg"
+                  style={{ backgroundColor: "rgba(184,115,51,0.15)" }}
+                >
+                  <CalendarCheck size={20} style={{ color: "var(--accent-copper, #B87333)" }} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[var(--text-primary)]">
+                    Time for your monthly check-in
+                  </h4>
+                  <p className="text-xs text-[var(--text-muted)] italic">
+                    &ldquo;Progress is quiet but powerful&rdquo;
+                  </p>
+                </div>
+              </div>
+              <motion.button
+                className="w-full py-3 rounded-xl text-white font-bold shadow-lg"
+                style={{
+                  backgroundColor: "var(--accent-copper, #B87333)",
+                  boxShadow: "0 4px 14px rgba(184,115,51,0.2)",
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Evaluate Now
+              </motion.button>
+            </div>
+          </Link>
+        )}
+
+        {/* Categories */}
+        <AnimatePresence mode="wait">
           <motion.div
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-2xl",
-              "bg-[var(--accent-soft,#E8D5C0)]/30 border border-[var(--accent-primary,#C4956A)]/20"
-            )}
-            whileTap={{ scale: 0.99 }}
-            data-testid="eval-prompt"
+            key={activeBoard}
+            className="space-y-8"
+            initial={{ opacity: 0, x: activeBoard === "mine" ? -20 : 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: activeBoard === "mine" ? 20 : -20 }}
+            transition={{ duration: 0.25, ease: EASE_OUT }}
           >
-            <CalendarCheck size={20} className="text-[var(--accent-primary,#C4956A)]" />
-            <div>
-              <p className="text-[13px] font-medium text-[var(--color-text-primary,#2C2825)]">
-                Monthly reflection due
-              </p>
-              <p className="text-[11px] text-[var(--color-text-muted,#B5ADA4)]">
-                How did this month go for your vision?
-              </p>
-            </div>
+            {categories.length > 0 ? (
+              categories.map((cat) => (
+                <CategorySection
+                  key={cat.id}
+                  category={cat}
+                  onAddItem={(catId) => setAddItemCategoryId(catId)}
+                  onToggleAchieved={toggleAchieved}
+                  onRemoveItem={removeItem}
+                  readOnly={isPartnerView}
+                />
+              ))
+            ) : currentBoard ? (
+              <div className="flex flex-col items-center justify-center py-12 px-5">
+                <Sparkles size={40} strokeWidth={1.25} className="text-[var(--text-muted)] mb-3" />
+                <p className="text-[14px] text-[var(--text-muted)] text-center">
+                  {isPartnerView
+                    ? `${partnerName} hasn't added categories yet`
+                    : "Add categories to start building your vision"}
+                </p>
+              </div>
+            ) : null}
           </motion.div>
-        </Link>
-      )}
+        </AnimatePresence>
 
-      {/* Categories */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeBoard}
-          className="flex flex-col gap-6 pb-8"
-          initial={{ opacity: 0, x: activeBoard === "mine" ? -20 : 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: activeBoard === "mine" ? 20 : -20 }}
-          transition={{ duration: 0.25, ease: EASE_OUT }}
-        >
-          {categories.length > 0 ? (
-            categories.map((cat) => (
-              <CategorySection
-                key={cat.id}
-                category={cat}
-                onAddItem={(catId) => setAddItemCategoryId(catId)}
-                onToggleAchieved={toggleAchieved}
-                onRemoveItem={removeItem}
-                readOnly={isPartnerView}
-              />
-            ))
-          ) : currentBoard ? (
-            <div className="flex flex-col items-center justify-center py-12 px-5">
-              <Sparkles size={40} strokeWidth={1.25} className="text-[var(--color-text-muted,#B5ADA4)] mb-3" />
-              <p className="text-[14px] text-[var(--color-text-muted,#B5ADA4)] text-center">
-                {isPartnerView
-                  ? `${partnerName} hasn't added categories yet`
-                  : "Add categories to start building your vision"}
-              </p>
-            </div>
-          ) : null}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Add item bottom sheet */}
-      {addItemCategoryId && (
-        <AddVisionItemForm
-          categoryId={addItemCategoryId}
-          categories={categories}
-          onSave={async (categoryId, data) => {
-            await addItem(categoryId, data)
-          }}
-          onClose={() => setAddItemCategoryId(null)}
-        />
-      )}
+        {/* Add item bottom sheet */}
+        {addItemCategoryId && (
+          <AddVisionItemForm
+            categoryId={addItemCategoryId}
+            categories={categories}
+            onSave={async (categoryId, data) => {
+              await addItem(categoryId, data)
+            }}
+            onClose={() => setAddItemCategoryId(null)}
+          />
+        )}
+      </div>
     </PageTransition>
   )
 }

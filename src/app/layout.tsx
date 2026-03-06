@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri } from "next/font/google"
+import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri, Caveat } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
 import "./globals.css"
@@ -29,6 +29,13 @@ const amiri = Amiri({
   display: "swap",
 })
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-handwritten",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   title: "Hayah",
   description: "Our shared life, in one place.",
@@ -54,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable} ${caveat.variable}`}>
       <head>
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />

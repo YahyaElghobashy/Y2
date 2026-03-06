@@ -178,14 +178,15 @@ export const stagger = {
 | Modal open | `scaleIn` variant |
 | Notification | Slide in from top, `0.3s`, auto-dismiss with fade |
 
-### Things That NEVER Happen
-- No bounce effects anywhere
-- No spring overshoot
-- No rotation animations
-- No scale above 1.05
+### Relaxed Animation Rules
+- **Bounce/spring effects**: Allowed for micro-interactions and entrance animations. Use `type: "spring"` with `damping: 12-15`, `stiffness: 150-200`.
+- **Rotation animations**: Allowed for decorative elements, ambient effects, and mascot interactions.
+- **Infinite looping**: Allowed for ambient backgrounds (gradient blobs), glow pulses, shimmer effects. Keep subtle (low opacity, long duration 15-25s).
+- **Long durations**: Allowed for ambient/atmospheric animations (>500ms ok for non-interactive elements like background blobs, wordmark reveals).
+- **Scale limit**: Relaxed to **1.15** for brand emphasis elements (e.g., wordmark "YY" letters). General UI stays at 1.05 max.
 - No parallax scrolling
-- No auto-playing animations that loop forever
-- No animation duration above 500ms
+- Default easing remains `[0.25, 0.1, 0.25, 1]` for general UI transitions
+- Spring presets for bouncy interactions: `{ damping: 12-15, stiffness: 150-200 }`
 
 ---
 

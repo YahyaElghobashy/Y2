@@ -113,6 +113,25 @@ export default function OurTablePage() {
     )
   }
 
+  // ── Summary stats ──────────────────────────────────────────
+  const uniquePlaces = useMemo(() => {
+    const names = new Set(visits.map((v) => v.place_id ?? v.place_name))
+    return names.size
+  }, [visits])
+
+  const uniqueCuisines = useMemo(() => {
+    const cuisines = new Set(visits.map((v) => v.cuisine_type))
+    return cuisines.size
+  }, [visits])
+
+  const avgScore = useMemo(() => {
+    const scores = visits
+      .map((v) => getOverallScore(v.id))
+      .filter((s): s is number => s !== null)
+    if (scores.length === 0) return null
+    return scores.reduce((a, b) => a + b, 0) / scores.length
+  }, [visits, getOverallScore])
+
   if (isLoading) {
     return (
       <PageTransition className="px-5 pb-24 pt-4">
@@ -120,7 +139,8 @@ export default function OurTablePage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-16 animate-pulse rounded-2xl bg-[var(--bg-secondary)]"
+              className="h-16 animate-skeleton-warm rounded-2xl"
+              style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }}
             />
           ))}
         </div>
@@ -146,14 +166,17 @@ export default function OurTablePage() {
     <PageTransition className="flex flex-col pb-24">
       {/* View toggle */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <div className="relative flex rounded-xl bg-[var(--bg-secondary)] p-1">
+        <div
+          className="relative flex rounded-xl p-1"
+          style={{ backgroundColor: "rgba(44,40,37,0.05)" }}
+        >
           <button
             data-testid="toggle-map"
             onClick={() => setViewMode("map")}
             className={cn(
-              "relative z-10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors",
+              "relative z-10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors",
               viewMode === "map"
-                ? "text-[var(--text-primary)]"
+                ? "text-white"
                 : "text-[var(--text-muted)]"
             )}
           >
@@ -164,20 +187,21 @@ export default function OurTablePage() {
             data-testid="toggle-list"
             onClick={() => setViewMode("list")}
             className={cn(
-              "relative z-10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors",
+              "relative z-10 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors",
               viewMode === "list"
-                ? "text-[var(--text-primary)]"
+                ? "text-white"
                 : "text-[var(--text-muted)]"
             )}
           >
             <List size={14} />
             List
           </button>
-          {/* Animated underline */}
+          {/* Animated indicator */}
           <motion.div
             layoutId="view-toggle-indicator"
-            className="absolute top-1 bottom-1 rounded-lg bg-[var(--bg-primary)] shadow-sm"
+            className="absolute top-1 bottom-1 rounded-lg"
             style={{
+              backgroundColor: "var(--accent-copper, #B87333)",
               width: "calc(50% - 4px)",
               left: viewMode === "map" ? 4 : "calc(50%)",
             }}
@@ -194,18 +218,56 @@ export default function OurTablePage() {
         </span>
       </div>
 
+      {/* Summary stats bar */}
+      {visits.length > 0 && (
+        <div
+          className="mx-5 mb-3 flex items-center justify-between rounded-xl px-4 py-3"
+          style={{
+            backgroundColor: "white",
+            border: "1px solid rgba(184,115,51,0.06)",
+            boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+          }}
+          data-testid="food-summary-stats"
+        >
+          <div>
+            <span
+              className="text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: "var(--accent-copper, #B87333)" }}
+            >
+              Summary
+            </span>
+            <p className="text-[12px] text-[var(--text-secondary)] font-medium">
+              {uniquePlaces} place{uniquePlaces !== 1 ? "s" : ""} · {uniqueCuisines} cuisine{uniqueCuisines !== 1 ? "s" : ""}
+            </p>
+          </div>
+          {avgScore !== null && (
+            <div className="text-end">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                Avg Score
+              </span>
+              <p
+                className="font-[family-name:var(--font-display)] font-bold text-[18px]"
+                style={{ color: "var(--accent-copper, #B87333)" }}
+              >
+                {avgScore.toFixed(1)}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex items-center gap-2 px-5 pb-3 overflow-x-auto scrollbar-hide">
         {/* Score filter */}
         <button
           data-testid="filter-high-score"
           onClick={() => setShowHighScores((v) => !v)}
-          className={cn(
-            "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors",
-            showHighScores
-              ? "border-[var(--accent-primary,#C4956A)] bg-[var(--accent-primary,#C4956A)]/10 text-[var(--accent-primary,#C4956A)]"
-              : "border-[var(--border-subtle)] text-[var(--text-muted)]"
-          )}
+          className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
+          style={{
+            borderColor: showHighScores ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
+            backgroundColor: showHighScores ? "rgba(184,115,51,0.08)" : "transparent",
+            color: showHighScores ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
+          }}
         >
           8+
         </button>
@@ -214,12 +276,12 @@ export default function OurTablePage() {
         <button
           data-testid="filter-return"
           onClick={() => setShowReturnOnly((v) => !v)}
-          className={cn(
-            "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors",
-            showReturnOnly
-              ? "border-[var(--accent-primary,#C4956A)] bg-[var(--accent-primary,#C4956A)]/10 text-[var(--accent-primary,#C4956A)]"
-              : "border-[var(--border-subtle)] text-[var(--text-muted)]"
-          )}
+          className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
+          style={{
+            borderColor: showReturnOnly ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
+            backgroundColor: showReturnOnly ? "rgba(184,115,51,0.08)" : "transparent",
+            color: showReturnOnly ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
+          }}
         >
           Returned
         </button>
@@ -233,12 +295,12 @@ export default function OurTablePage() {
             key={cuisine}
             data-testid={`filter-cuisine-${cuisine}`}
             onClick={() => toggleCuisineFilter(cuisine)}
-            className={cn(
-              "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors",
-              cuisineFilter.includes(cuisine)
-                ? "border-[var(--accent-primary,#C4956A)] bg-[var(--accent-primary,#C4956A)]/10 text-[var(--accent-primary,#C4956A)]"
-                : "border-[var(--border-subtle)] text-[var(--text-muted)]"
-            )}
+            className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
+            style={{
+              borderColor: cuisineFilter.includes(cuisine) ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
+              backgroundColor: cuisineFilter.includes(cuisine) ? "rgba(184,115,51,0.08)" : "transparent",
+              color: cuisineFilter.includes(cuisine) ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
+            }}
           >
             {CUISINE_LABELS[cuisine]}
           </button>
@@ -261,17 +323,24 @@ export default function OurTablePage() {
               No visits match your filters
             </p>
           ) : (
-            filteredVisits.map((visit) => (
-              <VisitListItem
-                key={visit.id}
-                id={visit.id}
-                placeName={visit.place_name}
-                cuisineType={visit.cuisine_type as CuisineType}
-                visitDate={visit.visit_date}
-                overallScore={getOverallScore(visit.id)}
-                visitNumber={getVisitNumber(visit)}
-              />
-            ))
+            <>
+              <h2
+                className="font-[family-name:var(--font-display)] text-[18px] font-bold italic text-[var(--text-primary)] mb-1"
+              >
+                Recent Discoveries
+              </h2>
+              {filteredVisits.map((visit) => (
+                <VisitListItem
+                  key={visit.id}
+                  id={visit.id}
+                  placeName={visit.place_name}
+                  cuisineType={visit.cuisine_type as CuisineType}
+                  visitDate={visit.visit_date}
+                  overallScore={getOverallScore(visit.id)}
+                  visitNumber={getVisitNumber(visit)}
+                />
+              ))}
+            </>
           )}
         </div>
       )}
@@ -281,10 +350,14 @@ export default function OurTablePage() {
         <motion.div
           whileTap={{ scale: 0.9 }}
           transition={{ duration: 0.15, ease: EASE_OUT }}
-          className="fixed bottom-24 end-5 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-primary,#C4956A)] text-white shadow-lg"
+          className="fixed bottom-24 end-5 z-30 flex h-14 w-14 items-center justify-center rounded-full text-white"
+          style={{
+            backgroundColor: "var(--accent-copper, #B87333)",
+            boxShadow: "0 4px 14px rgba(184,115,51,0.3)",
+          }}
           aria-label="Add visit"
         >
-          <Plus size={22} />
+          <Plus size={24} />
         </motion.div>
       </Link>
     </PageTransition>

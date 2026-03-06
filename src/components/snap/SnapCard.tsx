@@ -59,15 +59,30 @@ export function SnapCard({
   )
 
   return (
-    <div data-testid="snap-card" className={cn("flex flex-col", className)}>
+    <motion.div
+      data-testid="snap-card"
+      className={cn("flex flex-col", className)}
+      initial={{ scale: 0.95, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ type: "spring", damping: 20, stiffness: 200 }}
+    >
       <div className="relative aspect-square overflow-hidden rounded-xl bg-[var(--color-bg-secondary)]">
         {snap.photo_url ? (
-          <MediaImage
-            fallbackUrl={snap.photo_url}
-            alt={`${authorName}'s snap`}
-            fill
-            objectFit="cover"
-          />
+          <>
+            <MediaImage
+              fallbackUrl={snap.photo_url}
+              alt={`${authorName}'s snap`}
+              fill
+              objectFit="cover"
+            />
+            {/* Soft inner shadow at top */}
+            <div
+              className="absolute inset-x-0 top-0 h-12 z-[5] pointer-events-none"
+              style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08), transparent)" }}
+              aria-hidden="true"
+            />
+          </>
         ) : (
           <div
             data-testid="snap-no-photo"
@@ -124,6 +139,6 @@ export function SnapCard({
           onReact={onReact}
         />
       )}
-    </div>
+    </motion.div>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { BottomNav } from "@/components/shared/BottomNav"
-import { HayahGradient } from "@/components/animations/HayahGradient"
+import { SectionBackground } from "@/components/animations/SectionBackground"
 
 type AppShellProps = {
   children: React.ReactNode
@@ -10,7 +10,7 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   return (
     <div className="relative min-h-[100dvh]">
-      <HayahGradient />
+      <SectionBackground />
       <main className="relative z-10 pb-24">
         {children}
       </main>

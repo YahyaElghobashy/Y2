@@ -21,11 +21,19 @@ export function SharedGarden({ compact = false, className }: SharedGardenProps) 
       <div
         data-testid="shared-garden"
         className={cn(
-          "rounded-2xl border border-border-subtle bg-bg-elevated p-5 text-center",
+          "rounded-2xl p-5 text-center",
           className,
         )}
+        style={{
+          backgroundColor: "white",
+          border: "1px solid rgba(184,115,51,0.06)",
+          boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+        }}
       >
-        <p className="text-sm text-[var(--color-text-muted)] font-[family-name:var(--font-body)]">
+        <p
+          className="text-sm font-[family-name:var(--font-body)]"
+          style={{ color: "var(--text-muted, #B5ADA4)" }}
+        >
           Open the app together to grow your garden
         </p>
       </div>
@@ -37,10 +45,15 @@ export function SharedGarden({ compact = false, className }: SharedGardenProps) 
       data-testid="shared-garden"
       className={cn(
         compact
-          ? "rounded-2xl border border-border-subtle bg-bg-elevated p-4"
+          ? "rounded-2xl p-4"
           : "p-4",
         className,
       )}
+      style={compact ? {
+        backgroundColor: "white",
+        border: "1px solid rgba(184,115,51,0.06)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      } : undefined}
     >
       {!compact && (
         <h2

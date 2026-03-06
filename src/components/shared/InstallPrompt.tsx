@@ -95,31 +95,50 @@ export function InstallPrompt() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-20 inset-x-4 z-40 flex items-center gap-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-3 shadow-lg"
+            className="fixed bottom-20 inset-x-4 z-40 flex items-center gap-3 rounded-2xl p-4"
+            style={{
+              backgroundColor: "white",
+              border: "1px solid rgba(184,115,51,0.1)",
+              boxShadow: "0 8px 32px rgba(44,40,37,0.12), 0 2px 8px rgba(44,40,37,0.06)",
+            }}
             data-testid="install-banner"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent-soft)]">
-              <Download size={20} className="text-[var(--color-accent-primary)]" />
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+              style={{ backgroundColor: "rgba(184,115,51,0.1)" }}
+            >
+              <Download size={20} style={{ color: "var(--accent-copper, #B87333)" }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--color-text-primary)]">
+              <p
+                className="font-[family-name:var(--font-display)] text-[15px] font-bold"
+                style={{ color: "var(--text-primary, #2C2825)" }}
+              >
                 Install Hayah
               </p>
-              <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-muted)]">
+              <p
+                className="font-[family-name:var(--font-body)] text-[12px]"
+                style={{ color: "var(--text-secondary, #6B6560)" }}
+              >
                 Add to home screen for the best experience
               </p>
             </div>
             <Button
               size="sm"
               onClick={handleInstall}
-              className="shrink-0 bg-[var(--color-accent-primary)] text-white text-[13px] rounded-xl"
+              className="shrink-0 text-white text-[13px] font-bold rounded-full"
+              style={{
+                backgroundColor: "var(--accent-copper, #B87333)",
+                boxShadow: "0 2px 8px rgba(184,115,51,0.2)",
+              }}
               data-testid="install-btn"
             >
               Install
             </Button>
             <button
               onClick={dismiss}
-              className="shrink-0 p-1 text-[var(--color-text-muted)]"
+              className="shrink-0 p-1"
+              style={{ color: "var(--text-muted, #B5ADA4)" }}
               aria-label="Dismiss"
               data-testid="dismiss-install-btn"
             >

@@ -87,20 +87,20 @@ export function CoyynsHistory({
             key={tx.id}
             role="listitem"
             className={cn(
-              "flex items-center bg-[var(--bg-elevated)]",
+              "flex items-center bg-white",
               compact ? "py-2 px-3" : "py-3 px-4",
-              !isLast && "border-b border-[var(--border-subtle)]"
+              !isLast && "border-b border-[rgba(184,115,51,0.06)]"
             )}
           >
             {/* Direction icon */}
             <div
-              className="flex shrink-0 items-center justify-center rounded-lg"
+              className="flex shrink-0 items-center justify-center rounded-full"
               style={{
                 width: 32,
                 height: 32,
                 backgroundColor: isEarn
-                  ? "rgba(124,182,124,0.10)"
-                  : "rgba(194,112,112,0.10)",
+                  ? "rgba(124,182,124,0.12)"
+                  : "rgba(194,112,112,0.12)",
               }}
             >
               {isEarn ? (
@@ -129,7 +129,7 @@ export function CoyynsHistory({
                 {tx.description ?? ""}
               </span>
               {(!compact || !transactionsProp) && (
-                <span className="text-[12px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
+                <span className="text-[11px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
                   {tx.category}
                   {" \u00B7 "}
                   {formatRelativeTime(tx.created_at)}
@@ -140,7 +140,7 @@ export function CoyynsHistory({
             {/* Amount */}
             <span
               className={cn(
-                "shrink-0 font-[family-name:var(--font-mono)] font-semibold tabular-nums",
+                "shrink-0 font-[family-name:var(--font-mono)] font-bold tabular-nums",
                 compact ? "ms-2 text-[13px]" : "ms-3 text-[14px]",
                 isEarn ? "text-[var(--success)]" : "text-[var(--error)]"
               )}

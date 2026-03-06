@@ -86,7 +86,8 @@ export default function MarketplacePage() {
                 {isActive && (
                   <motion.div
                     layoutId="marketplace-tab-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-accent-primary"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                    style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
                     transition={{ duration: 0.25, ease: EASE_OUT }}
                   />
                 )}
@@ -125,7 +126,7 @@ export default function MarketplacePage() {
                   subtitle="Check back soon for new items"
                 />
               ) : (
-                <StaggerList className="flex flex-col gap-3">
+                <StaggerList className="grid grid-cols-2 gap-3">
                   {items.map((item) => (
                     <MarketplaceItemCard
                       key={item.id}

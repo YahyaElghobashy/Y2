@@ -1,7 +1,9 @@
 "use client"
 
 import { format } from "date-fns"
+import { motion } from "framer-motion"
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { WordReveal } from "@/components/animations/WordReveal"
 import { cn } from "@/lib/utils"
 
 type HomeGreetingProps = {
@@ -23,13 +25,33 @@ export function HomeGreeting({ className }: HomeGreetingProps) {
   const dateString = format(now, "EEEE, MMMM d")
 
   return (
-    <div className={cn("px-5 pt-4 pb-4", className)}>
-      <h1 className="font-[family-name:var(--font-display)] text-[28px] font-bold leading-[1.2] text-[var(--color-text-primary)]">
-        {greeting}, {name}
+    <div className={cn("px-5 pt-4 pb-2", className)}>
+      <h1
+        className="font-[family-name:var(--font-display)] text-[28px] font-bold leading-[1.2] italic"
+        style={{ color: "var(--text-primary, #2C2825)" }}
+      >
+        <WordReveal text={`${greeting}, ${name}`} stagger={0.06} />
       </h1>
-      <p className="mt-1 font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+
+      {/* Decorative copper underline */}
+      <motion.div
+        className="mt-1.5 h-[2px] w-10 rounded-full"
+        style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+        initial={{ scaleX: 0, originX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ delay: 0.5, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        aria-hidden="true"
+      />
+
+      <motion.p
+        className="mt-1 font-[family-name:var(--font-body)] text-[13px]"
+        style={{ color: "var(--text-secondary, #6B6560)" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.3 }}
+      >
         {dateString}
-      </p>
+      </motion.p>
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { MapPin } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { CUISINE_LABELS, type CuisineType } from "@/lib/types/food-journal.types"
 
@@ -36,30 +36,36 @@ export function VisitListItem({
         data-testid={`visit-item-${id}`}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.15, ease: EASE_OUT }}
-        className="flex items-center gap-3 rounded-2xl bg-[var(--bg-secondary)] p-3"
+        className="flex items-center gap-4 rounded-xl bg-white p-3"
+        style={{
+          border: "1px solid rgba(184,115,51,0.06)",
+          boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+        }}
       >
-        {/* Map pin + visit count */}
-        <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--accent-soft,#E8D5C0)]/30">
-          <MapPin size={20} className="text-[var(--accent-primary,#C4956A)]" />
-          {visitNumber > 1 && (
-            <span
-              data-testid={`visit-count-badge-${id}`}
-              className="absolute -top-1 -end-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--accent-primary,#C4956A)] text-[9px] font-bold text-white"
-            >
-              {visitNumber}
-            </span>
-          )}
-        </div>
-
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-medium text-[var(--text-primary)] truncate">
-            {placeName}
-          </p>
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-2 mb-1">
+            <p className="text-[14px] font-bold text-[var(--text-primary)] truncate">
+              {placeName}
+            </p>
+            {visitNumber > 1 && (
+              <span
+                data-testid={`visit-count-badge-${id}`}
+                className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[9px] font-bold text-white"
+                style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+              >
+                ×{visitNumber}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <span
               data-testid={`cuisine-pill-${id}`}
-              className="rounded-full bg-[var(--bg-primary)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]"
+              className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight"
+              style={{
+                backgroundColor: "rgba(184,115,51,0.08)",
+                color: "var(--accent-copper, #B87333)",
+              }}
             >
               {CUISINE_LABELS[cuisineType] ?? cuisineType}
             </span>
@@ -74,15 +80,21 @@ export function VisitListItem({
           <div
             data-testid={`score-badge-${id}`}
             className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-xl text-[14px] font-bold font-[family-name:var(--font-display)]",
-              overallScore >= 8
-                ? "bg-[var(--accent-primary,#C4956A)] text-white"
-                : "bg-[var(--bg-primary)] text-[var(--text-primary)]"
+              "flex-shrink-0 font-[family-name:var(--font-display)] font-bold",
+              overallScore >= 8 ? "text-[18px]" : "text-[16px]"
             )}
+            style={{ color: "var(--accent-copper, #B87333)" }}
           >
             {overallScore.toFixed(1)}
           </div>
         )}
+
+        {/* Arrow */}
+        <ChevronRight
+          size={16}
+          className="flex-shrink-0"
+          style={{ color: "var(--text-muted, #B5ADA4)" }}
+        />
       </motion.div>
     </Link>
   )

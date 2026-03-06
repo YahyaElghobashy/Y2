@@ -6,6 +6,7 @@ import { z } from "zod"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
+import { HayahWordmark } from "@/components/animations/HayahWordmark"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -58,23 +59,20 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <div className="text-center mb-10">
-          <h1 className="font-display text-[32px] font-bold text-text-primary leading-tight">
-            Hayah
-          </h1>
-          <p className="text-text-secondary text-[15px] mt-1 font-body">
-            حياة
-          </p>
-        </div>
+        <HayahWordmark />
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.1, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             <Input
               type="email"
               placeholder="Email"
               autoComplete="email"
               className={cn(
-                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted",
+                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted focus-visible:ring-[var(--accent-glow)] focus-visible:border-[var(--accent-copper)]",
                 errors.email && "border-error focus-visible:ring-error/20"
               )}
               {...register("email")}
@@ -84,15 +82,19 @@ export default function LoginPage() {
                 {errors.email.message}
               </p>
             )}
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.2, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             <Input
               type="password"
               placeholder="Password"
               autoComplete="current-password"
               className={cn(
-                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted",
+                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted focus-visible:ring-[var(--accent-glow)] focus-visible:border-[var(--accent-copper)]",
                 errors.password && "border-error focus-visible:ring-error/20"
               )}
               {...register("password")}
@@ -102,7 +104,7 @@ export default function LoginPage() {
                 {errors.password.message}
               </p>
             )}
-          </div>
+          </motion.div>
 
           {errors.root && (
             <p className="text-[var(--error)] text-[13px] text-center font-body">

@@ -15,7 +15,10 @@ type ChipData = {
 
 function SkeletonChip() {
   return (
-    <div className="h-8 w-20 rounded-full bg-[var(--color-bg-secondary)] animate-pulse shrink-0" />
+    <div
+      className="h-8 w-20 rounded-full animate-skeleton-warm shrink-0"
+      style={{ backgroundColor: "var(--bg-soft-cream, #F5EDE3)" }}
+    />
   )
 }
 
@@ -32,13 +35,18 @@ function MoodChip({ icon, label, onClick }: MoodChipProps) {
       onClick={onClick}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 shrink-0",
-        "bg-[var(--color-bg-secondary)] border border-[var(--color-border-subtle)]",
-        "font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-primary)]",
+        "font-[family-name:var(--font-body)] text-[12px]",
         "active:scale-[0.97] transition-transform duration-150"
       )}
+      style={{
+        backgroundColor: "white",
+        border: "1px solid rgba(184,115,51,0.08)",
+        color: "var(--text-primary, #2C2825)",
+        boxShadow: "var(--shadow-warm-sm, 0 1px 3px rgba(44,40,37,0.06))",
+      }}
     >
       {icon}
-      <span>{label}</span>
+      <span className="font-medium">{label}</span>
     </button>
   )
 }
@@ -63,22 +71,22 @@ export function MoodStrip({ className }: MoodStripProps) {
 
   const chips: ChipData[] = [
     {
-      icon: <Coins size={16} strokeWidth={1.75} className="text-[var(--color-accent-primary)]" />,
+      icon: <Coins size={16} strokeWidth={1.75} style={{ color: "var(--accent-copper, #B87333)" }} />,
       label: balance.toLocaleString(),
       href: "/us/coyyns",
     },
     {
-      icon: <Gift size={16} strokeWidth={1.75} className="text-[var(--color-accent-primary)]" />,
+      icon: <Gift size={16} strokeWidth={1.75} style={{ color: "var(--accent-copper, #B87333)" }} />,
       label: `${activeCoupons}`,
       href: "/us/coupons",
     },
     {
-      icon: <CalendarDays size={16} strokeWidth={1.75} className="text-[var(--color-accent-primary)]" />,
+      icon: <CalendarDays size={16} strokeWidth={1.75} style={{ color: "var(--accent-copper, #B87333)" }} />,
       label: "\u2014",
       href: "/us/calendar",
     },
     {
-      icon: <Bell size={16} strokeWidth={1.75} className="text-[var(--color-accent-primary)]" />,
+      icon: <Bell size={16} strokeWidth={1.75} style={{ color: "var(--accent-copper, #B87333)" }} />,
       label: `${remainingSends}/2`,
       href: "/us/ping",
     },

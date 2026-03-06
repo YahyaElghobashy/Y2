@@ -1,17 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 const CONFETTI_COLORS = [
-  "#C4956A", // copper
-  "#B87333", // deep copper
-  "#D4A574", // light copper
+  "#B87333", // copper
   "#DAA520", // gold
-  "#E8C4B8", // rose
+  "#F4A8B8", // rose
+  "#D4A574", // light copper
+  "#E8C4B8", // warm rose
 ]
 
 type PairingCelebrationProps = {
@@ -21,12 +21,16 @@ type PairingCelebrationProps = {
 }
 
 function ConfettiParticle({ index }: { index: number }) {
-  const angle = (index / 25) * 360
-  const distance = 60 + (index % 5) * 25
-  const x = Math.cos((angle * Math.PI) / 180) * distance
-  const y = Math.sin((angle * Math.PI) / 180) * distance
-  const rotation = Math.random() * 360
-  const size = 4 + (index % 4) * 2
+  const { x, y, rotation, size } = useMemo(() => {
+    const angle = (index / 25) * 360
+    const distance = 80 + (index % 5) * 30
+    return {
+      x: Math.cos((angle * Math.PI) / 180) * distance,
+      y: Math.sin((angle * Math.PI) / 180) * distance - 20,
+      rotation: (index * 47) % 360,
+      size: 4 + (index % 4) * 2,
+    }
+  }, [index])
 
   return (
     <motion.div
@@ -39,14 +43,18 @@ function ConfettiParticle({ index }: { index: number }) {
         top: "50%",
       }}
       initial={{ x: 0, y: 0, opacity: 1, scale: 0, rotate: 0 }}
-      animate={{ x, y: y - 15, opacity: 0, scale: 1, rotate: rotation }}
-      transition={{ duration: 1.0, ease: EASE_OUT, delay: 0.6 }}
+      animate={{ x, y, opacity: 0, scale: 1, rotate: rotation }}
+      transition={{ duration: 1.2, ease: EASE_OUT, delay: 0.6 }}
       aria-hidden
     />
   )
 }
 
-export function PairingCelebration({ userName, partnerName, onContinue }: PairingCelebrationProps) {
+export function PairingCelebration({
+  userName,
+  partnerName,
+  onContinue,
+}: PairingCelebrationProps) {
   const [showButton, setShowButton] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -66,87 +74,179 @@ export function PairingCelebration({ userName, partnerName, onContinue }: Pairin
   }
 
   return (
-    <div className="flex flex-col items-center gap-6 text-center" data-testid="pairing-celebration">
-      {/* Copper glow */}
+    <div
+      className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, var(--bg-warm-white, #FFFDF9) 0%, var(--bg-soft-cream, #F5EDE3) 100%)",
+      }}
+      data-testid="pairing-celebration"
+    >
+      {/* Copper glow background */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.15, 0] }}
-        transition={{ duration: 2, ease: "easeInOut" }}
+        animate={{ opacity: [0, 0.15, 0.08] }}
+        transition={{ duration: 2.5, ease: "easeInOut" }}
         style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(196, 149, 106, 0.2) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(184,115,51,0.15) 0%, transparent 70%)",
         }}
         aria-hidden
       />
 
-      {/* Names + Heart */}
-      <div className="relative flex items-center gap-4">
-        {/* User name from left */}
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center px-6 text-center">
+        {/* CONNECTION ESTABLISHED */}
         <motion.span
-          className="font-[family-name:var(--font-display)] text-[20px] font-bold text-[var(--color-text-primary)]"
-          initial={{ opacity: 0, x: -40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.2 }}
-          data-testid="celebration-user-name"
+          className="mb-2 text-xs font-bold tracking-[0.2em] uppercase text-[var(--text-muted)]"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4, ease: EASE_OUT }}
         >
-          {userName}
+          Connection Established
         </motion.span>
 
-        {/* Heart */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: [0, 1, 1.4, 1] }}
-          transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.5 }}
+        {/* Names + Heart */}
+        <div className="relative flex items-center justify-center gap-4 mb-8">
+          {/* User name from left */}
+          <motion.h1
+            className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--text-primary)]"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.3 }}
+            data-testid="celebration-user-name"
+          >
+            {userName}
+          </motion.h1>
+
+          {/* Pulsing heart with concentric rings */}
+          <motion.div
+            className="relative flex items-center justify-center"
+            initial={{ scale: 0 }}
+            animate={{ scale: [0, 1, 1.3, 1] }}
+            transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.6 }}
+          >
+            {/* Ring 1 */}
+            <motion.div
+              className="absolute rounded-full"
+              style={{
+                width: 64,
+                height: 64,
+                border: "2px solid var(--accent-copper, #B87333)",
+              }}
+              initial={{ scale: 1, opacity: 0 }}
+              animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
+              transition={{
+                duration: 1.5,
+                ease: "easeOut",
+                delay: 1.0,
+                repeat: 2,
+                repeatDelay: 0.5,
+              }}
+              aria-hidden
+            />
+            {/* Ring 2 */}
+            <motion.div
+              className="absolute rounded-full"
+              style={{
+                width: 64,
+                height: 64,
+                border: "1px solid var(--accent-copper, #B87333)",
+              }}
+              initial={{ scale: 1, opacity: 0 }}
+              animate={{ scale: [1, 3], opacity: [0.25, 0] }}
+              transition={{
+                duration: 1.5,
+                ease: "easeOut",
+                delay: 1.3,
+                repeat: 2,
+                repeatDelay: 0.5,
+              }}
+              aria-hidden
+            />
+            <Heart
+              size={48}
+              className="fill-[var(--accent-copper,#B87333)] text-[var(--accent-copper,#B87333)]"
+              data-testid="celebration-heart"
+            />
+          </motion.div>
+
+          {/* Partner name from right */}
+          <motion.h1
+            className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--text-primary)]"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.3 }}
+            data-testid="celebration-partner-name"
+          >
+            {partnerName}
+          </motion.h1>
+
+          {/* Confetti burst */}
+          {Array.from({ length: 25 }).map((_, i) => (
+            <ConfettiParticle key={i} index={i} />
+          ))}
+        </div>
+
+        {/* Subtitle */}
+        <motion.p
+          className="font-[family-name:var(--font-display)] text-xl italic font-normal text-[var(--text-primary)] opacity-80 max-w-md leading-relaxed"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5, duration: 0.4, ease: EASE_OUT }}
+          data-testid="celebration-subtitle"
         >
-          <Heart
-            size={28}
-            className="fill-[var(--color-accent-primary)] text-[var(--color-accent-primary)]"
-            data-testid="celebration-heart"
+          You&apos;re connected. This is yours now.
+        </motion.p>
+
+        {/* Decorative divider */}
+        <motion.div
+          className="mt-12 mb-12 flex gap-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.0, duration: 0.4 }}
+        >
+          <div
+            className="h-1 w-8 rounded-full opacity-20"
+            style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+          />
+          <div
+            className="h-1 w-12 rounded-full"
+            style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+          />
+          <div
+            className="h-1 w-8 rounded-full opacity-20"
+            style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
           />
         </motion.div>
 
-        {/* Partner name from right */}
-        <motion.span
-          className="font-[family-name:var(--font-display)] text-[20px] font-bold text-[var(--color-text-primary)]"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.2 }}
-          data-testid="celebration-partner-name"
-        >
-          {partnerName}
-        </motion.span>
-
-        {/* Confetti burst */}
-        {Array.from({ length: 25 }).map((_, i) => (
-          <ConfettiParticle key={i} index={i} />
-        ))}
+        {/* CTA */}
+        <div className="w-full max-w-xs">
+          {showButton && (
+            <motion.button
+              className="group relative w-full overflow-hidden rounded-xl py-4 px-8 font-[family-name:var(--font-body)] text-[16px] font-bold text-white shadow-lg disabled:opacity-50"
+              style={{
+                backgroundColor: "var(--accent-copper, #B87333)",
+                boxShadow: "0 4px 14px rgba(184,115,51,0.3)",
+              }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.3, ease: EASE_OUT }}
+              onClick={handleContinue}
+              disabled={isSubmitting}
+              data-testid="celebration-continue-btn"
+            >
+              <span className="relative flex items-center justify-center gap-2">
+                {isSubmitting ? "..." : "Enter Your Space"}
+                {!isSubmitting && <span>→</span>}
+              </span>
+            </motion.button>
+          )}
+        </div>
       </div>
-
-      {/* Subtitle */}
-      <motion.p
-        className="font-[family-name:var(--font-body)] text-[15px] text-[var(--color-text-secondary)]"
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.4, ease: EASE_OUT }}
-        data-testid="celebration-subtitle"
-      >
-        Your space is ready.
-      </motion.p>
-
-      {/* Continue button */}
-      {showButton && (
-        <motion.button
-          className="mt-2 rounded-xl bg-[var(--color-accent-primary)] px-8 py-3.5 font-[family-name:var(--font-body)] text-[15px] font-medium text-white shadow-[0_0_16px_rgba(196,149,106,0.3)] disabled:opacity-50"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: EASE_OUT }}
-          onClick={handleContinue}
-          disabled={isSubmitting}
-          data-testid="celebration-continue-btn"
-        >
-          Enter Your Space &rarr;
-        </motion.button>
-      )}
     </div>
   )
 }

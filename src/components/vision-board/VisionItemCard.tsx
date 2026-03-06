@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -16,6 +17,16 @@ type VisionItemCardProps = {
   className?: string
 }
 
+/** Deterministic rotation from item ID so it's consistent across renders */
+function getRotation(id: string): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i)
+    hash |= 0
+  }
+  return ((hash % 5) - 2) // -2 to +2 degrees
+}
+
 export function VisionItemCard({
   item,
   onToggleAchieved,
@@ -23,15 +34,17 @@ export function VisionItemCard({
   readOnly = false,
   className,
 }: VisionItemCardProps) {
+  const rotation = useMemo(() => getRotation(item.id), [item.id])
+
   return (
     <motion.div
       className={cn(
-        "relative w-[140px] h-[140px] flex-shrink-0 rounded-2xl overflow-hidden",
-        "bg-[var(--color-bg-secondary,#F5F0E8)]",
-        item.is_achieved && "ring-2 ring-[var(--accent-primary,#C4956A)]",
+        "relative w-[150px] flex-shrink-0",
         className
       )}
-      whileTap={!readOnly ? { scale: 0.98 } : undefined}
+      style={{ rotate: `${rotation}deg` }}
+      whileTap={!readOnly ? { scale: 0.97 } : undefined}
+      whileHover={{ scale: 1.03, rotate: "0deg" }}
       transition={{ duration: 0.2, ease: EASE_OUT }}
       onClick={() => !readOnly && onToggleAchieved?.(item.id)}
       role={!readOnly ? "button" : undefined}
@@ -39,42 +52,67 @@ export function VisionItemCard({
       data-testid={`vision-item-card-${item.id}`}
       layout
     >
-      {/* Image or text */}
-      {item.media_id ? (
-        <MediaImage
-          mediaId={item.media_id}
-          alt={item.title}
-          className="absolute inset-0 w-full h-full object-cover"
-          fill
-          objectFit="cover"
-        />
-      ) : null}
-
-      {/* Title overlay */}
+      {/* Polaroid frame */}
       <div
-        className={cn(
-          "absolute inset-x-0 bottom-0 px-2 pb-2 pt-8",
-          item.media_id
-            ? "bg-gradient-to-t from-black/60 to-transparent"
-            : "flex items-center justify-center inset-0 pt-2"
-        )}
+        className="rounded-sm overflow-hidden"
+        style={{
+          padding: "8px 8px 32px 8px",
+          backgroundColor: item.is_achieved
+            ? "rgba(218,165,32,0.08)"
+            : "white",
+          border: item.is_achieved
+            ? "2px solid var(--gold, #DAA520)"
+            : "1px solid rgba(44,40,37,0.06)",
+          boxShadow: item.is_achieved
+            ? "0 4px 14px rgba(218,165,32,0.15), 0 2px 6px rgba(44,40,37,0.08)"
+            : "0 2px 8px rgba(44,40,37,0.08), 0 1px 3px rgba(44,40,37,0.04)",
+        }}
       >
-        <p
-          className={cn(
-            "text-[12px] font-medium leading-tight line-clamp-3",
-            item.media_id
-              ? "text-white"
-              : "text-[var(--color-text-primary,#2C2825)] text-center text-[13px]"
-          )}
+        {/* Image area */}
+        <div
+          className="relative w-full overflow-hidden rounded-sm"
+          style={{
+            aspectRatio: "1",
+            backgroundColor: "var(--bg-soft-cream, #F5EDE3)",
+          }}
         >
-          {item.title}
-        </p>
+          {item.media_id ? (
+            <MediaImage
+              mediaId={item.media_id}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              fill
+              objectFit="cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center p-3">
+              <p
+                className="text-[13px] font-medium leading-tight text-center text-[var(--text-primary,#2C2825)]"
+              >
+                {item.title}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Caption area (below image, inside polaroid border) */}
+        {item.media_id && (
+          <p
+            className="mt-2 text-[11px] font-[family-name:var(--font-handwritten)] text-[var(--text-secondary,#6B6560)] leading-tight line-clamp-2 text-center"
+          >
+            {item.title}
+          </p>
+        )}
       </div>
 
       {/* Achieved checkmark badge */}
       {item.is_achieved && (
         <motion.div
-          className="absolute top-2 end-2 w-6 h-6 rounded-full bg-[var(--accent-primary,#C4956A)] flex items-center justify-center"
+          className="absolute -top-2 -end-2 w-7 h-7 rounded-full flex items-center justify-center z-10"
+          style={{
+            backgroundColor: "var(--gold, #DAA520)",
+            boxShadow: "0 2px 8px rgba(218,165,32,0.3)",
+          }}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.3, ease: EASE_OUT }}
