@@ -74,7 +74,7 @@ export function HorizontalTabBar({
             role="tab"
             aria-selected={isActive}
             className={cn(
-              "relative shrink-0 px-4 py-2 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
+              "relative shrink-0 px-4 pt-2 pb-3 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
               isActive
                 ? "text-[var(--color-accent-primary)]"
                 : "text-[var(--color-text-secondary)]"

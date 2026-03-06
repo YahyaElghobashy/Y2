@@ -4,13 +4,15 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useCycle } from "@/lib/hooks/use-cycle"
+import { useAuth } from "@/lib/providers/AuthProvider"
 import { CycleInsightCard } from "@/components/health/CycleInsightCard"
 
 export function HomeCycleWidget({ className }: { className?: string }) {
+  const { profile } = useAuth()
   const { config, currentDay, phase, isLoading } = useCycle()
 
-  // Don't render for non-owners or when no config exists
-  if (isLoading || !config || !phase) return null
+  // Only show for admin (Yahya) with active config
+  if (isLoading || !config || !phase || profile?.role !== "admin") return null
 
   const phaseLabel = phase === "active" ? "Active" : "Break"
 

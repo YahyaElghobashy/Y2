@@ -38,6 +38,28 @@ export function AzkarCounter({ className }: AzkarCounterProps) {
     )
   }
 
+  if (error && !session) {
+    return (
+      <div className={cn("px-6 py-4", className)} data-testid="azkar-counter-error">
+        <h3 className="text-[16px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+          Azkar
+        </h3>
+        <div className="flex flex-col items-center gap-2 rounded-xl bg-[var(--color-bg-secondary,#F5F0E8)] p-4">
+          <p className="text-[13px] text-[var(--color-text-muted,#B5ADA4)]">
+            Could not load azkar data
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="text-[13px] font-medium text-[var(--color-accent-primary,#C4956A)]"
+          >
+            Tap to reload
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const count = session?.count ?? 0
   const target = session?.target ?? 33
 

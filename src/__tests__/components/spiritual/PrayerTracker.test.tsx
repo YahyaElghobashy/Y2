@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 // ── usePrayer mock ────────────────────────────────────────────
 
 const mockTogglePrayer = vi.fn()
-const mockUsePrayer = vi.fn(() => ({
+const mockUsePrayer: any = vi.fn(() => ({
   today: {
     id: "row-1",
     user_id: "user-1",

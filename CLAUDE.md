@@ -10,6 +10,7 @@ Before writing any code, read the relevant docs:
 |---|---|
 | Any UI work | `docs/DESIGN_SYSTEM.md` |
 | Creating components | `docs/DESIGN_SYSTEM.md` + `docs/COMPONENT_REGISTRY.md` |
+| Design inspiration / styles | `.claude/skills/ui-ux-pro-max/` (see section below) |
 | Backend / data | `docs/API_CONTRACTS.md` |
 | Any code | `docs/CODING_STANDARDS.md` |
 | Understanding the app | `docs/ARCHITECTURE.md` |
@@ -47,6 +48,34 @@ Before writing any code, read the relevant docs:
     - **Integration**: Mocked dependencies receive correct calls (Supabase `.from()` with right table, `.insert()` with correct fields, hooks called with correct args)
     - **Backend** (edge functions): All code paths tested — CORS, validation, auth, every switch branch, DB constraint compliance (inserted values match CHECK constraints), notification payloads
     - ⛔ A test file with only "renders without crashing" assertions is **incomplete** and does not count as validated
+
+## Design Intelligence — UI UX Pro Max
+
+The project has the **UI UX Pro Max** skill installed at `.claude/skills/ui-ux-pro-max/`. Use it for design inspiration, style references, and UI/UX best practices when building or refining components.
+
+### What's available
+
+| Resource | Path | Contents |
+|---|---|---|
+| Skill guide | `.claude/skills/ui-ux-pro-max/SKILL.md` | Full usage instructions and capabilities |
+| Styles | `data/styles.csv` | 50+ UI styles (glassmorphism, neumorphism, bento grids, etc.) |
+| Color palettes | `data/colors.csv` | 97 curated color palettes |
+| Typography | `data/typography.csv` | 57 font pairings |
+| UX guidelines | `data/ux-guidelines.csv` | 99 UX best practices |
+| Charts | `data/charts.csv` | 25 chart type references |
+| Stack-specific | `data/stacks/nextjs.csv`, `shadcn.csv`, `react.csv` | Framework-specific patterns |
+| Landing pages | `data/landing.csv` | Landing page design patterns |
+| Icons | `data/icons.csv` | Icon usage guidelines |
+
+### When to reference
+
+- **Choosing a visual style** for a new page or component — check `styles.csv`
+- **Picking colors** beyond the existing design tokens — check `colors.csv` for palette inspiration
+- **Font pairing decisions** — check `typography.csv`
+- **UX patterns** (empty states, loading, onboarding, etc.) — check `ux-guidelines.csv`
+- **Next.js / shadcn-specific patterns** — check `data/stacks/nextjs.csv` and `data/stacks/shadcn.csv`
+
+> **Note:** Always adapt suggestions to fit Y2's existing design system (`docs/DESIGN_SYSTEM.md`) and tokens (`lib/theme.ts`). The skill is for inspiration — Y2's design system is the source of truth.
 
 ## Tech Stack Quick Reference
 

@@ -16,3 +16,4 @@ orchestrator/reports/*.json
 __pycache__/
 *.pyc
 *.pyo
+.vercel

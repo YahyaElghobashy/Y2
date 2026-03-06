@@ -12,7 +12,7 @@ const { useMarketplace } = vi.hoisted(() => ({
     ],
     purchases: [],
     isLoading: false,
-    error: null,
+    error: null as string | null,
     createPurchase: vi.fn(),
     refreshItems: vi.fn(),
     refreshPurchases: vi.fn(),

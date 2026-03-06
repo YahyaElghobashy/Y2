@@ -8,7 +8,7 @@ const mockReset = vi.fn()
 const mockSwitchType = vi.fn()
 const mockSetTarget = vi.fn()
 
-const mockUseAzkar = vi.fn(() => ({
+const mockUseAzkar: any = vi.fn(() => ({
   session: {
     id: "s-1",
     user_id: "user-1",

@@ -9,7 +9,7 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="relative min-h-[100dvh] bg-bg-primary">
+    <div className="relative min-h-[100dvh]">
       <HayahGradient />
       <main className="relative z-10 pb-24">
         {children}

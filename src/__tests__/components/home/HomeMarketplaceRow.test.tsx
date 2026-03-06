@@ -1,14 +1,14 @@
 import React from "react"
 import { render, screen, fireEvent, act } from "@testing-library/react"
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
 // ── Mocks ──────────────────────────────────────────────
 const { useMarketplace } = vi.hoisted(() => ({
   useMarketplace: vi.fn(() => ({
-    items: [],
-    purchases: [],
+    items: [] as Record<string, unknown>[],
+    purchases: [] as Record<string, unknown>[],
     isLoading: true,
-    error: null,
+    error: null as string | null,
     createPurchase: vi.fn(),
     refreshItems: vi.fn(),
     refreshPurchases: vi.fn(),

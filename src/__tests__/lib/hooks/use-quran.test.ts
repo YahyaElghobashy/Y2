@@ -2,7 +2,7 @@ import { renderHook, act, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 const mockUser = { id: "user-1", email: "test@test.com" }
-const mockUseAuth = vi.fn(() => ({ user: mockUser, partner: null }))
+const mockUseAuth: any = vi.fn(() => ({ user: mockUser, partner: null }))
 
 vi.mock("@/lib/providers/AuthProvider", () => ({
   useAuth: () => mockUseAuth(),

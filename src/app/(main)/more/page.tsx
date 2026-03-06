@@ -34,18 +34,72 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function MorePage() {
-  const { user, profile, partner, signOut, refreshProfile } = useAuth()
+  const { user, profile, partner, isLoading, signOut, refreshProfile } = useAuth()
   const router = useRouter()
   const [editingProfile, setEditingProfile] = useState(false)
   const [unpairOpen, setUnpairOpen] = useState(false)
   const [unpairing, setUnpairing] = useState(false)
 
-  if (!profile) {
+  if (isLoading) {
     return (
       <PageTransition>
         <PageHeader title="More" />
         <div className="px-5 py-6">
           <LoadingSkeleton variant="card" count={3} />
+        </div>
+      </PageTransition>
+    )
+  }
+
+  if (!profile) {
+    return (
+      <PageTransition>
+        <PageHeader title="More" />
+        <div className="flex flex-col gap-6 px-5 py-6">
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-6 text-center">
+            <UserCircle size={48} strokeWidth={1.25} className="text-[var(--color-text-muted)]" />
+            <p className="font-[family-name:var(--font-display)] text-[17px] font-semibold text-[var(--color-text-primary)]">
+              Could not load profile
+            </p>
+            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]">
+              {user?.email ?? "Please try again"}
+            </p>
+            <button
+              type="button"
+              onClick={() => refreshProfile()}
+              className="mt-2 rounded-xl bg-[var(--color-accent-soft)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-accent-primary)] transition-colors active:opacity-80"
+            >
+              Retry
+            </button>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                type="button"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-red-50 text-[15px] font-medium text-red-600 transition-colors active:bg-red-100"
+              >
+                <LogOut size={18} strokeWidth={1.5} />
+                Log Out
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Log out?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You&apos;ll need to sign in again to access your account.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => signOut()}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                >
+                  Log Out
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </PageTransition>
     )

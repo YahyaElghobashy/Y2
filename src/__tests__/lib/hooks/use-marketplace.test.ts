@@ -6,8 +6,8 @@ const mockSpendCoyyns = vi.fn()
 
 const { useAuth } = vi.hoisted(() => ({
   useAuth: vi.fn(() => ({
-    user: { id: "user-1" },
-    partner: { id: "partner-1" },
+    user: { id: "user-1" } as { id: string } | null,
+    partner: { id: "partner-1" } as { id: string } | null,
     profile: null,
     isLoading: false,
     profileNeedsSetup: false,

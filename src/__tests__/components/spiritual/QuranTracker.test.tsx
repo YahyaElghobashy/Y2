@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 const mockLogPages = vi.fn()
-const mockUseQuran = vi.fn(() => ({
+const mockUseQuran: any = vi.fn(() => ({
   today: {
     id: "row-1",
     user_id: "user-1",

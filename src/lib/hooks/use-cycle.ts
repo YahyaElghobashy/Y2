@@ -31,7 +31,7 @@ export function useCycle(): UseCycleReturn {
   const [error, setError] = useState<string | null>(null)
 
   const fetchData = useCallback(async () => {
-    if (!profile) {
+    if (!profile || profile.role !== "admin") {
       setIsLoading(false)
       return
     }
@@ -218,8 +218,8 @@ export function useCycle(): UseCycleReturn {
     } as const
   }, [config])
 
-  // No profile — return null state
-  if (!profile) {
+  // No profile or non-admin — return null state (cycle tracking is admin-only)
+  if (!profile || profile.role !== "admin") {
     return NULL_RETURN
   }
 

@@ -119,10 +119,23 @@ describe("middleware", () => {
     expect(result).toBe(mockResponse)
   })
 
-  it("fails open on network error", async () => {
+  it("fails closed on network error for protected routes", async () => {
     mockUpdateSession.mockRejectedValue(new Error("Network error"))
 
     const request = createMockRequest("/")
+    const result = await middleware(request)
+
+    expect(mockRedirect).toHaveBeenCalledOnce()
+    const redirectUrl = mockRedirect.mock.calls[0][0] as URL
+    expect(redirectUrl.pathname).toBe("/login")
+    expect(redirectUrl.searchParams.get("redirectTo")).toBe("/")
+    expect(result).toBeDefined()
+  })
+
+  it("fails open on network error for non-protected routes", async () => {
+    mockUpdateSession.mockRejectedValue(new Error("Network error"))
+
+    const request = createMockRequest("/login")
     await middleware(request)
 
     expect(mockNext).toHaveBeenCalled()

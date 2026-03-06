@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 // ── Mocks ─────────────────────────────────────────────────────
 
 const mockUser = { id: "user-1", email: "test@test.com" }
-const mockUseAuth = vi.fn(() => ({ user: mockUser, partner: null }))
+const mockUseAuth: any = vi.fn(() => ({ user: mockUser, partner: null }))
 
 vi.mock("@/lib/providers/AuthProvider", () => ({
   useAuth: () => mockUseAuth(),
@@ -16,7 +16,7 @@ const mockSelect = vi.fn(() => ({ maybeSingle: mockMaybeSingle, single: mockSing
 const mockEq2 = vi.fn(() => ({ select: mockSelect, maybeSingle: mockMaybeSingle }))
 const mockEq = vi.fn(() => ({ eq: mockEq2 }))
 const mockUpsertSelect = vi.fn(() => ({ single: mockSingle }))
-const mockUpsert = vi.fn(() => ({ select: mockUpsertSelect, then: vi.fn((cb: (r: { error: null }) => void) => cb({ error: null })) }))
+const mockUpsert: any = vi.fn(() => ({ select: mockUpsertSelect, then: vi.fn((cb: (r: { error: null }) => void) => cb({ error: null })) }))
 const mockFrom = vi.fn(() => ({
   select: vi.fn(() => ({ eq: mockEq })),
   upsert: mockUpsert,
@@ -273,10 +273,10 @@ describe("usePrayer", () => {
       mockMaybeSingle.mockResolvedValue({ data: todayRow, error: null })
       mockUpsert.mockReturnValue({
         select: mockUpsertSelect,
-        then: (cb: (r: { error: null }) => void) => {
+        then: vi.fn((cb: (r: { error: null }) => void) => {
           cb({ error: null })
           return { catch: vi.fn() }
-        },
+        }),
       })
 
       const { result } = renderHook(() => usePrayer())

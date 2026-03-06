@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react"
 // ── Mocks ──
 
 let mockCycleReturn = {
-  config: { id: "c1", owner_id: "u1", pill_start_date: "2026-02-01", days_on: 21, days_off: 7, pms_warning_days: 3, notes: null, created_at: "", updated_at: "" },
+  config: { id: "c1", owner_id: "u1", pill_start_date: "2026-02-01", days_on: 21, days_off: 7, pms_warning_days: 3, notes: null, created_at: "", updated_at: "" } as { id: string; owner_id: string; pill_start_date: string; days_on: number; days_off: number; pms_warning_days: number; notes: null; created_at: string; updated_at: string } | null,
   currentDay: 5,
   phase: "active" as "active" | "break" | null,
   daysUntilBreak: 16,
@@ -40,7 +40,7 @@ vi.mock("@/lib/providers/AuthProvider", () => ({
 vi.mock("framer-motion", () => ({
   motion: {
     div: React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>>(
-      ({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }, ref) => {
+      ({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown> & { children?: React.ReactNode }, ref: React.Ref<HTMLDivElement>) => {
         void initial; void animate; void exit; void transition; void whileHover; void whileTap
         return <div ref={ref} {...props}>{children}</div>
       }

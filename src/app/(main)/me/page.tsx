@@ -5,29 +5,32 @@ import { HeartPulse, Sun, Repeat, ChevronRight } from "lucide-react"
 import { motion } from "framer-motion"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
-
-const SECTIONS = [
-  {
-    icon: HeartPulse,
-    title: "Body",
-    subtitle: "Cycle tracking & wellness",
-    href: "/me/body",
-  },
-  {
-    icon: Sun,
-    title: "Soul",
-    subtitle: "Prayer & spiritual practice",
-    href: "/me/soul",
-  },
-  {
-    icon: Repeat,
-    title: "Rituals",
-    subtitle: "Daily habits & practices",
-    href: "/me/rituals",
-  },
-] as const
+import { useAuth } from "@/lib/providers/AuthProvider"
 
 export default function MePage() {
+  const { profile } = useAuth()
+  const isAdmin = profile?.role === "admin"
+
+  const SECTIONS = [
+    {
+      icon: HeartPulse,
+      title: "Body",
+      subtitle: isAdmin ? "Cycle tracking & wellness" : "Wellness & fitness",
+      href: "/me/body",
+    },
+    {
+      icon: Sun,
+      title: "Soul",
+      subtitle: "Prayer & spiritual practice",
+      href: "/me/soul",
+    },
+    {
+      icon: Repeat,
+      title: "Rituals",
+      subtitle: "Daily habits & practices",
+      href: "/me/rituals",
+    },
+  ] as const
   return (
     <PageTransition>
       <PageHeader title="Me" />

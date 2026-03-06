@@ -37,7 +37,7 @@ vi.mock("@/lib/hooks/use-notifications", () => ({
 vi.mock("framer-motion", () => ({
   motion: {
     div: React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>>(
-      ({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }, ref) => {
+      ({ children, initial, animate, exit, transition, whileHover, whileTap, ...props }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown> & { children?: React.ReactNode }, ref: React.Ref<HTMLDivElement>) => {
         void initial; void animate; void exit; void transition; void whileHover; void whileTap
         return <div ref={ref} {...props}>{children}</div>
       }

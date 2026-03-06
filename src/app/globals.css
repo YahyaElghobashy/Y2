@@ -175,32 +175,34 @@ h1, h2, h3, h4, h5, h6 {
 /* Hayah Ambient Flowing Gradient — warm mineral drift behind all content.
    Direct background-position animation for universal browser support. */
 
-@keyframes hayah-drift {
-  0%   { background-position: 0% 50%, 100% 50%, 50% 50%; }
-  25%  { background-position: 100% 25%, 0% 75%, 25% 75%; }
-  50%  { background-position: 50% 100%, 50% 0%, 75% 25%; }
-  75%  { background-position: 0% 75%, 100% 25%, 50% 75%; }
-  100% { background-position: 0% 50%, 100% 50%, 50% 50%; }
-}
+@layer base {
+  @keyframes hayah-drift {
+    0%   { background-position: 0% 50%, 100% 50%, 50% 50%; }
+    25%  { background-position: 100% 25%, 0% 75%, 25% 75%; }
+    50%  { background-position: 50% 100%, 50% 0%, 75% 25%; }
+    75%  { background-position: 0% 75%, 100% 25%, 50% 75%; }
+    100% { background-position: 0% 50%, 100% 50%, 50% 50%; }
+  }
 
-.hayah-gradient {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(ellipse 65% 55% at 25% 35%, rgba(225, 205, 180, 0.18) 0%, transparent 70%),
-    radial-gradient(ellipse 75% 65% at 75% 65%, rgba(196, 149, 106, 0.12) 0%, transparent 70%),
-    radial-gradient(ellipse 55% 45% at 50% 50%, rgba(196, 149, 106, 0.08) 0%, transparent 70%);
-  background-size: 250% 250%, 250% 250%, 200% 200%;
-  animation: hayah-drift 30s ease-in-out infinite;
-  will-change: background-position;
-}
-
-@media (prefers-reduced-motion: reduce) {
   .hayah-gradient {
-    animation: none;
-    background-position: 50% 50%, 50% 50%, 50% 50%;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(ellipse 65% 55% at 25% 35%, rgba(225, 205, 180, 0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 75% 65% at 75% 65%, rgba(196, 149, 106, 0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 45% at 50% 50%, rgba(196, 149, 106, 0.10) 0%, transparent 70%);
+    background-size: 250% 250%, 250% 250%, 200% 200%;
+    animation: hayah-drift 30s ease-in-out infinite;
+    will-change: background-position;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hayah-gradient {
+      animation: none;
+      background-position: 50% 50%, 50% 50%, 50% 50%;
+    }
   }
 }
 

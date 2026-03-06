@@ -124,6 +124,51 @@ export function useNotifications(): UseNotificationsReturn {
     }
   }, [user, supabase])
 
+  // Realtime subscription for notification changes
+  useEffect(() => {
+    if (!user) return
+
+    const channelName = `notifications_${user.id}`
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${user.id}`,
+        },
+        (payload: { new: Notification }) => {
+          setNotifications((prev) => {
+            if (prev.some((n) => n.id === payload.new.id)) return prev
+            return [payload.new, ...prev]
+          })
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `sender_id=eq.${user.id}`,
+        },
+        (payload: { new: Notification }) => {
+          setNotifications((prev) => {
+            if (prev.some((n) => n.id === payload.new.id)) return prev
+            return [payload.new, ...prev]
+          })
+        }
+      )
+
+    channel.subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, supabase])
+
   const purchaseBonusSend = useCallback(async () => {
     if (!user) return
 
@@ -216,8 +261,8 @@ export function useNotifications(): UseNotificationsReturn {
           )
         )
 
-        await supabase.functions.invoke("send-push-notification", {
-          body: { notificationId: insertedRow.id },
+        await supabase.functions.invoke("send-notification", {
+          body: { notification_id: insertedRow.id, recipient_id: partner.id },
         })
 
         await refreshLimits()

@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 // ── Mock hook return values ──
 
 const defaultCoyynsReturn = {
-  wallet: { id: "w-1", user_id: "u-1", balance: 250, lifetime_earned: 500, lifetime_spent: 250, created_at: "", updated_at: "" },
+  wallet: { id: "w-1", user_id: "u-1", balance: 250, lifetime_earned: 500, lifetime_spent: 250, created_at: "", updated_at: "" } as { id: string; user_id: string; balance: number; lifetime_earned: number; lifetime_spent: number; created_at: string; updated_at: string } | null,
   partnerWallet: null,
   transactions: [],
   isLoading: false,

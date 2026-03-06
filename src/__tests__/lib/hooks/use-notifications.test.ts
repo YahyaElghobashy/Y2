@@ -86,9 +86,17 @@ const mockFrom = vi.fn((table: string) => {
   return chain
 })
 
+const mockSubscribe = vi.fn()
+const mockOn = vi.fn().mockReturnThis()
+const mockChannel = { on: mockOn, subscribe: mockSubscribe }
+const mockChannelFn = vi.fn().mockReturnValue(mockChannel)
+const mockRemoveChannel = vi.fn()
+
 const mockSupabase = {
   from: mockFrom,
   functions: { invoke: mockFunctionsInvoke },
+  channel: mockChannelFn,
+  removeChannel: mockRemoveChannel,
 }
 
 vi.mock("@/lib/supabase/client", () => ({
@@ -234,8 +242,8 @@ describe("useNotifications", () => {
         body: "Body",
       })
     )
-    expect(mockFunctionsInvoke).toHaveBeenCalledWith("send-push-notification", {
-      body: { notificationId: "notif-new" },
+    expect(mockFunctionsInvoke).toHaveBeenCalledWith("send-notification", {
+      body: { notification_id: "notif-new", recipient_id: "user-2" },
     })
   })
 
@@ -319,5 +327,43 @@ describe("useNotifications", () => {
     const calledTables = mockFrom.mock.calls.map((call) => call[0])
     expect(calledTables).toContain("daily_send_limits")
     expect(calledTables).not.toContain("notifications")
+  })
+
+  it("subscribes to realtime notifications channel on mount", async () => {
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(mockChannelFn).toHaveBeenCalledWith(`notifications_${MOCK_USER.id}`)
+    expect(mockOn).toHaveBeenCalled()
+    expect(mockSubscribe).toHaveBeenCalled()
+  })
+
+  it("cleans up realtime channel on unmount", async () => {
+    const { result, unmount } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    unmount()
+
+    expect(mockRemoveChannel).toHaveBeenCalledWith(mockChannel)
+  })
+
+  it("does not subscribe to realtime when user is null", async () => {
+    mockAuthReturn.user = null
+
+    mockChannelFn.mockClear()
+
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(mockChannelFn).not.toHaveBeenCalled()
   })
 })

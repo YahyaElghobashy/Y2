@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // --- Mocks ---
 const mockUpdate = vi.fn()
-const mockEq = vi.fn(() => ({ eq: vi.fn() }))
+const mockEq = vi.fn((..._args: unknown[]) => ({ eq: vi.fn() }))
 const mockSpendCoyyns = vi.fn()
 const mockChannel = vi.fn()
 const mockSubscribe = vi.fn()
