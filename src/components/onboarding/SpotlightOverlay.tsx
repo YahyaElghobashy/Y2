@@ -17,6 +17,8 @@ type SpotlightOverlayProps = {
   onNext: () => void
   onBack: () => void
   onDismiss: () => void
+  lastButtonText?: string
+  lastButtonClassName?: string
 }
 
 function getHoleParams(
@@ -94,6 +96,8 @@ export function SpotlightOverlay({
   onNext,
   onBack,
   onDismiss,
+  lastButtonText,
+  lastButtonClassName,
 }: SpotlightOverlayProps) {
   const padding = target?.padding ?? 8
   const shape = target?.shape ?? "rect"
@@ -222,10 +226,13 @@ export function SpotlightOverlay({
               )}
               <button
                 onClick={isLast ? onDismiss : onNext}
-                className="rounded-lg bg-[var(--color-accent-primary)] px-4 py-1.5 font-[family-name:var(--font-body)] text-[13px] font-medium text-white"
+                className={cn(
+                  "rounded-lg bg-[var(--color-accent-primary)] px-4 py-1.5 font-[family-name:var(--font-body)] text-[13px] font-medium text-white",
+                  isLast && lastButtonClassName
+                )}
                 data-testid="spotlight-next-btn"
               >
-                {isLast ? "Done" : "Next"}
+                {isLast ? (lastButtonText ?? "Done") : "Next"}
               </button>
             </div>
           </div>

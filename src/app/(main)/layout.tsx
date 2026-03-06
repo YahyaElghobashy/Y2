@@ -33,7 +33,10 @@ export default function AppLayout({
 
     // Redirect to onboarding if not completed
     if (!profile.onboarding_completed_at) {
-      router.replace("/onboarding")
+      // Forward deep link code param to onboarding (e.g. ?code=ABC123)
+      const urlParams = new URLSearchParams(window.location.search)
+      const code = urlParams.get("code")
+      router.replace(code ? `/onboarding?code=${code}` : "/onboarding")
       return
     }
 
@@ -54,7 +57,7 @@ export default function AppLayout({
         />
       )}
       {!isOnboarding && <InstallPrompt />}
-      {showAnimation && newCoupon && (
+      {!isOnboarding && showAnimation && newCoupon && (
         <CouponReceiveAnimation
           visible={showAnimation}
           couponTitle={newCoupon.title}

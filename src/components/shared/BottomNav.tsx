@@ -18,7 +18,7 @@ type NavTab = {
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-const NAV_TABS: NavTab[] = [
+export const NAV_TABS: NavTab[] = [
   {
     label: "Home",
     href: "/",
@@ -78,6 +78,7 @@ export function BottomNav() {
               href={tab.href}
               className="flex-1"
               aria-current={isActive ? "page" : undefined}
+              data-testid={`nav-tab-${tab.label.toLowerCase()}`}
             >
               <motion.div
                 whileTap={{ scale: 0.95 }}

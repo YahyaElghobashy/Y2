@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useOnboarding } from "@/lib/hooks/use-onboarding"
 import { useAuth } from "@/lib/providers/AuthProvider"
@@ -9,11 +9,24 @@ import { StepTransition } from "@/components/onboarding/StepTransition"
 import { WelcomeStep } from "@/components/onboarding/steps/WelcomeStep"
 import { ProfileStep } from "@/components/onboarding/steps/ProfileStep"
 import { PairingStep } from "@/components/onboarding/steps/PairingStep"
+import { TourHomeStep } from "@/components/onboarding/steps/TourHomeStep"
+import { TourUsStep } from "@/components/onboarding/steps/TourUsStep"
+import { Tour2026Step } from "@/components/onboarding/steps/Tour2026Step"
+import { TourMeStep } from "@/components/onboarding/steps/TourMeStep"
+import { TourMoreStep } from "@/components/onboarding/steps/TourMoreStep"
+import { ReadyStep } from "@/components/onboarding/steps/ReadyStep"
+import { AlertCircle } from "lucide-react"
 
 export default function OnboardingPage() {
   const router = useRouter()
   const { isLoading: authLoading } = useAuth()
   const onboarding = useOnboarding()
+
+  // Deep link code forwarding (e.g. /onboarding?code=ABC123)
+  const [initialCode] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+    return new URLSearchParams(window.location.search).get("code")
+  })
 
   // Redirect to home if onboarding is complete
   useEffect(() => {
@@ -48,30 +61,46 @@ export default function OnboardingPage() {
           <PairingStep
             onContinue={onboarding.goNext}
             onSkip={onboarding.goNext}
+            initialCode={initialCode}
           />
         )
       case "tour_home":
-      case "tour_us":
-      case "tour_2026":
-      case "tour_me":
-      case "tour_more":
-        // Tour steps will be implemented in Phase 15 Part 2 (T1607-T1611)
-        // For now, auto-advance through tour to ready
         return (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <p className="text-[var(--color-text-secondary)] text-[14px] font-[family-name:var(--font-body)]">
-              Tour step: {onboarding.currentStep}
-            </p>
-            <button
-              onClick={onboarding.goNext}
-              className="rounded-xl bg-[var(--color-accent-primary)] px-6 py-3 text-white font-[family-name:var(--font-body)] text-[15px] font-medium"
-            >
-              Next &rarr;
-            </button>
-          </div>
+          <TourHomeStep
+            onNext={onboarding.goNext}
+            onBack={onboarding.goBack}
+          />
+        )
+      case "tour_us":
+        return (
+          <TourUsStep
+            onNext={onboarding.goNext}
+            onBack={onboarding.goBack}
+          />
+        )
+      case "tour_2026":
+        return (
+          <Tour2026Step
+            onNext={onboarding.goNext}
+            onBack={onboarding.goBack}
+          />
+        )
+      case "tour_me":
+        return (
+          <TourMeStep
+            onNext={onboarding.goNext}
+            onBack={onboarding.goBack}
+          />
+        )
+      case "tour_more":
+        return (
+          <TourMoreStep
+            onNext={onboarding.goNext}
+            onBack={onboarding.goBack}
+          />
         )
       case "ready":
-        return null
+        return <ReadyStep onComplete={onboarding.completeOnboarding} />
       default:
         return null
     }
@@ -85,6 +114,25 @@ export default function OnboardingPage() {
       canSkip={onboarding.canSkip}
       onSkip={onboarding.skipOnboarding}
     >
+      {/* Error banner */}
+      {onboarding.error && (
+        <div
+          className="mx-4 mb-4 flex items-center gap-2 rounded-xl bg-[var(--color-error-bg,rgba(220,38,38,0.08))] px-4 py-3"
+          data-testid="onboarding-error-banner"
+        >
+          <AlertCircle size={16} className="shrink-0 text-[var(--error)]" />
+          <p className="flex-1 font-[family-name:var(--font-body)] text-[13px] text-[var(--error)]">
+            {onboarding.error}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="font-[family-name:var(--font-body)] text-[13px] font-medium text-[var(--color-accent-primary)] underline"
+            data-testid="onboarding-error-retry"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       <StepTransition
         stepKey={onboarding.currentStep}
         direction={onboarding.direction}

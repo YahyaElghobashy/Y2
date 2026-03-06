@@ -15,11 +15,12 @@ const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 type PairingStepProps = {
   onContinue: () => Promise<void>
   onSkip: () => Promise<void>
+  initialCode?: string | null
 }
 
 type PairingState = "unpaired" | "celebration"
 
-export function PairingStep({ onContinue, onSkip }: PairingStepProps) {
+export function PairingStep({ onContinue, onSkip, initialCode }: PairingStepProps) {
   const { user, profile, partner, refreshProfile } = useAuth()
   const supabase = getSupabaseBrowserClient()
 
@@ -115,7 +116,7 @@ export function PairingStep({ onContinue, onSkip }: PairingStepProps) {
       </div>
 
       {/* Manual code entry */}
-      <PairPartnerForm onPaired={handlePaired} />
+      <PairPartnerForm onPaired={handlePaired} initialCode={initialCode ?? undefined} />
 
       {/* Continue alone option */}
       <motion.button

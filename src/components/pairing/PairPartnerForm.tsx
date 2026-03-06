@@ -12,6 +12,7 @@ import { useAuth } from "@/lib/providers/AuthProvider"
 type PairPartnerFormProps = {
   onPaired: () => void
   className?: string
+  initialCode?: string
 }
 
 type PairState = "idle" | "loading" | "success" | "error"
@@ -55,12 +56,12 @@ function ConfettiParticle({ index }: { index: number }) {
   )
 }
 
-export function PairPartnerForm({ onPaired, className }: PairPartnerFormProps) {
+export function PairPartnerForm({ onPaired, className, initialCode }: PairPartnerFormProps) {
   const { user, refreshProfile } = useAuth()
   const supabase = getSupabaseBrowserClient()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const [code, setCode] = useState("")
+  const [code, setCode] = useState(initialCode ?? "")
   const [state, setState] = useState<PairState>("idle")
   const [error, setError] = useState<string | null>(null)
   const [partnerName, setPartnerName] = useState<string | null>(null)
