@@ -98,7 +98,7 @@ export default function Home() {
       <GradientDivider className="mt-4 mx-5" />
 
       {/* 8–15: Widget Slots */}
-      <div className="flex flex-col gap-4 px-5 mt-4 pb-8">
+      <div className="flex flex-col gap-3 px-5 mt-4 pb-8">
         {/* 8. HomeCouponInbox */}
         <HomeCouponInbox />
 
@@ -118,6 +118,7 @@ export default function Home() {
         <HomePrayerWidget />
 
         {/* 14. SharedGarden preview (last 8 flowers, compact) */}
+        <h3 className="font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary,#8C8279)]">Our Garden</h3>
         <SharedGarden compact />
 
         {/* 15. DaysTogetherCounter */}

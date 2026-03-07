@@ -129,16 +129,19 @@ export function SnapCard({
             </span>
           </div>
         )}
-      </div>
 
-      {/* Reaction row — only for partner's snaps */}
-      {!isOwn && onReact && (
-        <SnapReaction
-          snapId={snap.id}
-          currentReaction={snap.reaction_emoji}
-          onReact={onReact}
-        />
-      )}
+        {/* Reaction overlay — only for partner's snaps */}
+        {!isOwn && onReact && (
+          <div className="absolute bottom-2 end-2 z-20">
+            <SnapReaction
+              snapId={snap.id}
+              currentReaction={snap.reaction_emoji}
+              onReact={onReact}
+              className="backdrop-blur-sm rounded-full bg-black/30 px-1.5 py-0.5"
+            />
+          </div>
+        )}
+      </div>
     </motion.div>
   )
 }

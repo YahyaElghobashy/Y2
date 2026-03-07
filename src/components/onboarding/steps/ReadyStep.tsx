@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { Avatar } from "@/components/shared/Avatar"
+import { Heart, Sparkles, Star, Calendar, Gift } from "lucide-react"
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
@@ -131,7 +132,7 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
 
       {/* Welcome heading */}
       <motion.h2
-        className="font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)]"
+        className="font-display text-[22px] font-bold text-[var(--color-text-primary)]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.2 }}
@@ -142,7 +143,7 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
 
       {/* Subtitle */}
       <motion.p
-        className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]"
+        className="font-serif italic text-[14px] text-[var(--color-text-secondary)]"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.5 }}
@@ -153,10 +154,29 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
           : "Your space is ready."}
       </motion.p>
 
+      {/* Feature icons */}
+      <motion.div
+        className="flex items-center justify-center gap-4"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.7 }}
+        data-testid="ready-feature-icons"
+      >
+        {[Heart, Sparkles, Star, Calendar, Gift].map((Icon, i) => (
+          <div
+            key={i}
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: "rgba(184,115,51,0.1)" }}
+          >
+            <Icon size={18} style={{ color: "var(--accent-copper, #B87333)" }} />
+          </div>
+        ))}
+      </motion.div>
+
       {/* Launch button */}
       {showButton && (
         <motion.button
-          className="mt-2 rounded-xl bg-[var(--color-accent-primary)] px-8 py-3.5 font-[family-name:var(--font-body)] text-[15px] font-medium text-white shadow-[0_0_16px_rgba(196,149,106,0.3)] disabled:opacity-50"
+          className="mt-2 rounded-xl bg-[var(--color-accent-primary)] px-8 py-3.5 font-body text-[15px] font-medium text-white shadow-[0_0_16px_rgba(196,149,106,0.3)] disabled:opacity-50"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: EASE_OUT }}

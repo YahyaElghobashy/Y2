@@ -64,8 +64,8 @@ export function VisionItemCard({
             ? "2px solid var(--gold, #DAA520)"
             : "1px solid rgba(44,40,37,0.06)",
           boxShadow: item.is_achieved
-            ? "0 4px 14px rgba(218,165,32,0.15), 0 2px 6px rgba(44,40,37,0.08)"
-            : "0 2px 8px rgba(44,40,37,0.08), 0 1px 3px rgba(44,40,37,0.04)",
+            ? "0 4px 14px rgba(218,165,32,0.15), var(--shadow-warm-md, 0 2px 6px rgba(44,40,37,0.08))"
+            : "var(--shadow-warm-md, 0 2px 8px rgba(44,40,37,0.08), 0 1px 3px rgba(44,40,37,0.04))",
         }}
       >
         {/* Image area */}
@@ -98,7 +98,7 @@ export function VisionItemCard({
         {/* Caption area (below image, inside polaroid border) */}
         {item.media_id && (
           <p
-            className="mt-2 text-[11px] font-[family-name:var(--font-handwritten)] text-[var(--text-secondary,#6B6560)] leading-tight line-clamp-2 text-center"
+            className="mt-2 text-[11px] font-handwritten text-[var(--text-secondary,#6B6560)] leading-tight line-clamp-2 text-center"
           >
             {item.title}
           </p>

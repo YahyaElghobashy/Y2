@@ -328,6 +328,14 @@ export function CameraCapture() {
           </div>
         )}
 
+        {/* Rule-of-thirds grid */}
+        <div className="absolute inset-0 pointer-events-none z-[2]" aria-hidden="true">
+          <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20" />
+          <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/20" />
+          <div className="absolute top-1/3 left-0 right-0 h-px bg-white/20" />
+          <div className="absolute top-2/3 left-0 right-0 h-px bg-white/20" />
+        </div>
+
         {/* Top bar overlay */}
         <div className="absolute top-0 inset-x-0 p-4 flex items-start justify-between">
           {/* Camera toggle */}
@@ -359,7 +367,7 @@ export function CameraCapture() {
       <div className="bg-black py-6 flex items-center justify-center">
         <button
           onClick={captureFrame}
-          className="h-[72px] w-[72px] rounded-full border-4 border-white bg-white/20 active:bg-white/40 transition-colors"
+          className="h-[72px] w-[72px] rounded-full border-4 border-[var(--accent-copper,#B87333)] bg-[var(--accent-copper,#B87333)]/20 active:bg-[var(--accent-copper,#B87333)]/40 transition-colors"
           aria-label="Take photo"
         />
       </div>

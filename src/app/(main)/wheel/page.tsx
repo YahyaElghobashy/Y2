@@ -139,22 +139,22 @@ export default function WheelPresetsPage() {
     <div>
       <PageHeader title="Spin the Wheel" />
 
-      <div data-testid="wheel-presets-page" className="flex flex-col gap-5 px-5 py-5">
+      <div data-testid="wheel-presets-page" className="flex flex-col gap-5 px-5 py-5 pb-24">
         {/* Stats bar */}
         {sessionHistory.length > 0 && (
           <div data-testid="wheel-stats" className="flex items-center justify-center gap-6 rounded-xl bg-[var(--accent-soft,#E8D5C0)] py-2.5">
             <div className="text-center">
-              <p className="text-[16px] font-bold text-[var(--accent-primary,#C4956A)]">
+              <p className="font-display text-[16px] font-bold text-[var(--accent-copper,#B87333)]">
                 {sessionHistory.length}
               </p>
-              <p className="text-[11px] text-[var(--text-muted)]">Sessions</p>
+              <p className="font-nav text-[10px] uppercase tracking-widest text-[var(--text-muted)]">Sessions</p>
             </div>
-            <div className="h-6 w-px bg-[var(--accent-primary,#C4956A)] opacity-30" />
+            <div className="h-6 w-px bg-[var(--accent-copper,#B87333)] opacity-30" />
             <div className="text-center">
-              <p className="text-[16px] font-bold text-[var(--accent-primary,#C4956A)]">
+              <p className="font-display text-[16px] font-bold text-[var(--accent-copper,#B87333)]">
                 {totalSpins}
               </p>
-              <p className="text-[11px] text-[var(--text-muted)]">Total Rounds</p>
+              <p className="font-nav text-[10px] uppercase tracking-widest text-[var(--text-muted)]">Total Rounds</p>
             </div>
           </div>
         )}
@@ -166,7 +166,7 @@ export default function WheelPresetsPage() {
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.15, ease: EASE_OUT }}
             onClick={() => setShowForm(true)}
-            className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-subtle)] py-3 text-[13px] font-medium text-[var(--text-muted)]"
+            className="flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[var(--accent-copper,#B87333)] py-4 font-nav text-[13px] font-medium text-[var(--accent-copper,#B87333)]"
           >
             <Plus size={16} />
             Create New Wheel
@@ -207,7 +207,7 @@ export default function WheelPresetsPage() {
         {/* Session history */}
         {sessionHistory.length > 0 && (
           <div>
-            <h2 className="mb-3 font-display text-[16px] font-semibold text-[var(--text-primary)]">
+            <h2 className="mb-3 font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary)]">
               Past Sessions
             </h2>
             <div data-testid="session-history" className="flex flex-col gap-2">

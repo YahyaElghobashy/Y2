@@ -23,6 +23,7 @@
 | Toggle | 📋 | `components/ui/toggle.tsx` | |
 | Tabs | 📋 | `components/ui/tabs.tsx` | |
 | Toast | 📋 | `components/ui/toast.tsx` | |
+| GradientDivider | ✅ | `components/ui/GradientDivider.tsx` | `className?, glow?: boolean` — Decorative gradient line divider using warm mineral palette. Optional glow effect via box-shadow. Renders as a styled `<hr>`. |
 
 ## Animation Wrappers
 
@@ -53,6 +54,7 @@
 | CoyynsBadge | ✅ | `components/shared/CoyynsBadge.tsx` | `balance?: number, size?: "sm" \| "md", className?` — Inline CoYYns balance pill badge. Shows coin icon + formatted balance in a soft rounded-full pill (accent-soft bg). If `balance` prop provided, displays directly without hook call; if omitted, reads from `useCoyyns()` automatically. Size variants: sm (~24px) and md (~28px, default). Loading state: pulse placeholder. Null balance fallback: "—". Hover: scale(1.02) via Framer Motion. Display-only, not interactive. 14 tests passing. |
 | DailyBonusToast | ✅ | `components/shared/DailyBonusToast.tsx` | `className?` — "+5 Daily bonus!" toast notification. Shows when `useDailyBonus().justClaimed` is true. Framer Motion slide-down (y:-40→0) with coin pulse animation (scale 1→1.2→1). Auto-dismisses after 3000ms via setTimeout. Fixed positioning with safe-area-inset-top. Uses bg-bg-elevated, border-border-subtle, text-text-primary design tokens. 6 tests passing. |
 | InstallPrompt | ✅ | `components/shared/InstallPrompt.tsx` | — Captures `beforeinstallprompt` for Chromium install, iOS share sheet instructions fallback. 3s delayed show, 30-day localStorage dismiss cooldown. Subtle banner above BottomNav. 13 tests passing. |
+| PillTabBar | ✅ | `components/shared/PillTabBar.tsx` | `tabs: { key, label }[], activeKey: string, onTabChange: (key) => void, className?` — Animated pill-shaped tab bar with Framer Motion `layoutId` indicator. Copper-filled active pill slides between tabs. Replaces underline-style tabs in several pages. |
 | LoadingPulse | 📋 | `components/shared/LoadingPulse.tsx` | — |
 | UserGreeting | 📋 | `components/shared/UserGreeting.tsx` | — |
 
@@ -72,6 +74,7 @@
 | HomeCountdownWidget | ✅ | `components/home/HomeCountdownWidget.tsx` | `className?` — Milestone countdown widget. Uses `useCalendar().milestones` to show nearest milestone with title, formatted date, and days-until count. Gold accent (#DAA520) border + Star icon. "Today!" for same-day, singular/plural "day(s)". Returns null when loading or no milestones. Links to `/us/calendar?date=YYYY-MM-DD`. 12 tests passing. |
 | HomeCalendarPeek | ✅ | `components/home/HomeCalendarPeek.tsx` | `className?` — Upcoming events peek widget. Uses `useCalendar().upcomingEvents`, shows next 3 events with category-colored date badges, titles, formatted times. "Coming Up" + "See All" header. Empty state with "Add Event" CTA. Returns null when loading. 17 tests passing. |
 | HomePrayerWidget | ✅ | `components/home/HomePrayerWidget.tsx` | `className?` — Mini prayer dashboard widget for home. 5 mini circles (w-5 h-5), copper fill for completed prayers, "X/5 prayers today" summary text. Wrapped in `Link` to `/me/soul` with `motion.div whileTap`. Returns null when loading or no data. Uses `usePrayer()` hook. 11 tests passing. |
+| StatusIndicatorCard | ✅ | `components/home/StatusIndicatorCard.tsx` | `icon: ReactNode, label: string, value: string \| number, accentColor?: string, className?` — Reusable at-a-glance status card with `border-l-4` accent, circular icon container, label/value pair. Used across home dashboard widgets for consistent metric display. |
 
 ## Relationship Module
 
@@ -107,6 +110,7 @@
 | CouponWalletPage | ✅ | `app/(main)/us/coupons/page.tsx` | Client Component. 3 pill tabs (For Me/I Made/History) with Framer Motion layoutId. "For Me": receivedCoupons filtered active+pending. "I Made": myCoupons with "Needs Your Attention" section for pendingApprovals (copper-left border). "History": CouponHistory component. Pull-to-refresh (touch handlers, 60px threshold). Loading skeleton. 10 tests passing. |
 | CouponDetailPage | ✅ | `app/(main)/us/coupons/[id]/page.tsx` | Client Component. Dynamic route. States: loading/error/404. Photo (16:9 next/image), emoji+title+description, category+status badges, creator info, expiry countdown (formatDistanceToNow). Role-based actions: recipient+active→Redeem, creator+pending→Approve/Deny. REDEEMED stamp overlay. RedeemConfirmModal integration. Reveal button for creator surprise coupons. 12 tests passing. |
 | CreateCouponPage | ✅ | `app/(main)/create-coupon/page.tsx` | Client Component. 4-step wizard orchestrator. Step 1: emoji+title+description+category (RHF+Zod). Step 2: expiry toggle+date, surprise toggle. Step 3: photo upload (OffscreenCanvas resize, 5MB max). Step 4: preview+send (paper-airplane animation). Uploads to Supabase Storage coupon-images bucket. Step indicator (4 dots). AnimatePresence transitions. 8 tests passing. |
+| StackedPreviewCard | ✅ | `components/coupons/StackedPreviewCard.tsx` | `coupons: Coupon[], className?` — Three stacked coupon preview cards with CSS depth/offset effect. Shows top coupon front with two behind at slight rotation/offset to convey stack. Used in coupon wallet overview. |
 
 ## Health Module
 
@@ -155,6 +159,8 @@
 |---|---|---|---|
 | EventCategoryBadge | ✅ | `components/calendar/EventCategoryBadge.tsx` | `category: EventCategory, variant: "dot" \| "pill", className?` — Category badge with two variants. Dot: 8px colored circle. Pill: rounded label with 10% opacity background. Colors from `calendar-constants.ts`. `aria-label` on dots. 18 tests passing. |
 | GoogleCalendarConnect | ✅ | `components/calendar/GoogleCalendarConnect.tsx` | `className?` — Google Calendar connect/disconnect toggle. Uses `useAuth()` for profile data, checks `google_calendar_connected_at`. Connect: redirects to Google OAuth. Disconnect: nulls token columns via `disconnectGoogleCalendar()`. 10 tests passing. |
+| EventDotCalendar | ✅ | `components/calendar/EventDotCalendar.tsx` | `events: CalendarEvent[], selectedDate?: Date, onDateSelect?: (date: Date) => void, className?` — Month grid calendar with colored event dots per day. Weekday headers, today highlight (copper ring), date selection. Up to 3 category-colored dots per cell. Month/year navigation. |
+| EventCard | ✅ | `components/calendar/EventCard.tsx` | `event: CalendarEvent, className?` — Event detail card with colored category badge (via EventCategoryBadge), time display, title, and optional description. Soft border, rounded corners, tap interaction. |
 
 ## Settings Module
 
@@ -355,6 +361,7 @@
 | HomeSnapWidget | ✅ | `components/home/HomeSnapWidget.tsx` | `className?` — Conditional rendering from useSnap(): window open+not snapped → timer CTA → /snap/capture, already snapped → "Snapped!" → /snap, no window → null. 12 tests passing. |
 | SnapCapturePage | ✅ | `app/(main)/snap/capture/page.tsx` | Thin page wrapper for CameraCapture. |
 | SnapFeedPage | ✅ | `app/(main)/snap/page.tsx` | Client Component. Groups snaps by snap_date. Both snapped → side-by-side. One snapped → single centered. Date headers. 14-day initial load + infinite scroll. CoYYns reward when both snap same day. Empty state. 15 tests passing. |
+| CameraModeSelector | ✅ | `components/snap/CameraModeSelector.tsx` | `modes: string[], activeMode: string, onModeChange: (mode: string) => void, className?` — Horizontal mode picker (e.g. Photo/Video/Boomerang). Animated copper dot indicator via Framer Motion `layoutId` slides beneath the active mode label. |
 
 ## Mood Module (P9)
 
@@ -416,6 +423,19 @@
 | Route | Path | Notes |
 |---|---|---|
 | /onboarding | `app/(main)/onboarding/page.tsx` | Step router. Layout: fixed full-screen z-40. Guard in (main)/layout.tsx redirects if onboarding_completed_at is null. BottomNav hidden. |
+
+## Ping Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| ChatBubble | ✅ | `components/ping/ChatBubble.tsx` | `message: string, isSent: boolean, timestamp?: string, className?` — Sent/received chat bubble with directional styling (sent: copper bg, right-aligned; received: elevated bg, left-aligned). Rounded corners with tail direction. Framer Motion entrance animation (fade + slide from direction). |
+| PingLimitDots | ✅ | `components/ping/PingLimitDots.tsx` | `remaining: number, total: number, className?` — Visual copper dot indicator showing remaining ping sends. Filled dots for remaining, outline dots for used. Horizontal flex row. |
+
+## Wheel Module
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| EliminationPills | ✅ | `components/wheel/EliminationPills.tsx` | `options: { label, eliminated }[], onEliminate?: (label) => void, className?` — Animated flex-wrap pills for active vs eliminated options. Active pills: solid copper bg. Eliminated: muted/strikethrough with Framer Motion exit (scale + opacity out). `AnimatePresence` for smooth removal transitions. |
 
 ## Scripts / Infrastructure
 

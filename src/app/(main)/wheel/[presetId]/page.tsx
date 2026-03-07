@@ -162,7 +162,7 @@ export default function WheelSessionPage() {
 
   // Active session — live wheel
   return (
-    <div data-testid="session-live" className="flex flex-col gap-4 px-5 py-5">
+    <div data-testid="session-live" className="flex flex-col gap-4 px-5 py-5 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-[16px] font-semibold text-[var(--text-primary)]">
@@ -171,7 +171,7 @@ export default function WheelSessionPage() {
         <button
           data-testid="abandon-btn"
           onClick={handleAbandon}
-          className="rounded-lg bg-[var(--bg-secondary)] p-1.5 text-[var(--text-muted)]"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--bg-secondary)] text-[var(--text-muted)]"
         >
           <X size={16} />
         </button>
@@ -221,24 +221,26 @@ export default function WheelSessionPage() {
           <button
             data-testid="toggle-log"
             onClick={() => setShowLog(!showLog)}
-            className="flex w-full items-center justify-between rounded-xl bg-[var(--bg-secondary)] px-3 py-2 text-[12px] font-medium text-[var(--text-secondary)]"
+            className="flex w-full items-center justify-between rounded-xl bg-[var(--bg-secondary)] px-3 py-2 font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary)]"
           >
             <span>Spin Log ({currentSpins.length})</span>
             {showLog ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
           {showLog && (
-            <div data-testid="spin-log" className="mt-2 flex flex-col gap-1">
+            <div data-testid="spin-log" className="mt-2 flex flex-col gap-1.5">
               {currentSpins.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-center justify-between rounded-lg bg-[var(--bg-elevated,#FFFFFF)] px-3 py-1.5 text-[12px]"
+                  className="flex items-center gap-3 rounded-lg bg-[var(--bg-elevated,#FFFFFF)] px-3 py-2 text-[12px]"
                 >
-                  <span className="text-[var(--text-muted)]">#{s.spin_number}</span>
-                  <span className="font-medium text-[var(--text-primary)]">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft,#E8D5C0)] font-display text-[11px] font-bold text-[var(--accent-copper,#B87333)]">
+                    {s.spin_number}
+                  </span>
+                  <span className="flex-1 font-medium text-[var(--text-primary)]">
                     {s.result_label}
                   </span>
                   {s.eliminated_item && (
-                    <span className="text-red-400 line-through">{s.eliminated_item}</span>
+                    <span className="text-[11px] text-red-400 line-through">{s.eliminated_item}</span>
                   )}
                 </div>
               ))}

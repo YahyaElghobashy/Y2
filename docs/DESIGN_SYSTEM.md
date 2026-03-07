@@ -49,6 +49,18 @@ All colors are CSS custom properties defined in `app/globals.css` and mirrored a
 --gradient-hero: linear-gradient(180deg, #F5F0E8 0%, #FBF8F4 40%, #FFFFFF 100%);
 ```
 
+### V2 Copper Accent Tokens
+
+Added during the UI redesign to reinforce the warm mineral identity with a distinct copper accent system.
+
+| Token | Value | Usage |
+|---|---|---|
+| `--accent-copper` | `#B87333` | Primary copper accent — active indicators, selected states, brand emphasis. Deeper and warmer than `--accent-primary`. |
+| `--accent-soft` | `#E8D5C0` | Soft copper highlight — pill backgrounds, hover fills, muted accent areas. (Shared with core palette.) |
+| `--bg-parchment` | `#E5D9CB` | Warm parchment background — onboarding screens, auth pages, special surface treatment. Slightly darker/warmer than `--bg-secondary`. |
+
+> **Usage note:** `--accent-copper` is the V2 brand copper used in the bottom nav indicator, pill tab bars, and interactive highlights. `--accent-primary` (#C4956A) remains the default for buttons and links. Use copper for UI chrome (nav, tabs, badges) and primary for semantic actions (CTAs, links, form accents).
+
 ---
 
 ## Typography
@@ -59,9 +71,18 @@ All colors are CSS custom properties defined in `app/globals.css` and mirrored a
 --font-display: 'Playfair Display', Georgia, serif;
 --font-body: 'DM Sans', system-ui, sans-serif;
 --font-mono: 'JetBrains Mono', monospace;
+--font-serif: 'Lora', Georgia, serif;
+--font-nav: 'Plus Jakarta Sans', system-ui, sans-serif;
 ```
 
 Load via `next/font/google` in `app/layout.tsx`. Never use `@import` or `<link>`.
+
+### V2 Accent Fonts
+
+| Font | Tailwind Class | Usage |
+|---|---|---|
+| Lora | `font-serif` | Italic serif accents — pull quotes, letter headings, decorative emphasis. Use sparingly for warmth. |
+| Plus Jakarta Sans | `font-nav` | Navigation labels, tab bars, bottom nav text, small caps UI labels. Geometric and clean. |
 
 ### Type Scale
 

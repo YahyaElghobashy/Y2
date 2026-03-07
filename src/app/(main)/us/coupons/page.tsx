@@ -2,14 +2,16 @@
 
 import { useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { Gift } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PageTransition } from "@/components/animations"
 import { StaggerList } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
+import { PillTabBar } from "@/components/shared/PillTabBar"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { StackedPreviewCard } from "@/components/coupons/StackedPreviewCard"
 import { CouponCard } from "@/components/relationship/CouponCard"
 import { CouponHistory } from "@/components/coupons/CouponHistory"
 import { useCoupons } from "@/lib/hooks/use-coupons"
@@ -22,7 +24,6 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"]
 
-const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 const PULL_THRESHOLD = 60
 
 export default function CouponWalletPage() {
@@ -80,35 +81,25 @@ export default function CouponWalletPage() {
         </div>
       )}
 
+      {/* Stacked preview for gifts waiting */}
+      {forMeSorted.length > 0 && activeTab === "for-me" && (
+        <div className="px-5 pb-4">
+          <StackedPreviewCard
+            count={forMeSorted.length}
+            label="gifts waiting"
+            onClick={() => {}}
+          />
+        </div>
+      )}
+
       {/* Pill tab bar */}
-      <div className="flex gap-2 px-5 pb-4" role="tablist" data-testid="tab-bar">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id
-          return (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "relative rounded-full px-4 py-2 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
-                isActive
-                  ? "text-white"
-                  : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
-              )}
-              data-testid={`tab-${tab.id}`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="coupon-wallet-tab"
-                  className="absolute inset-0 rounded-full bg-[var(--accent-primary)]"
-                  transition={{ duration: 0.25, ease: EASE_OUT }}
-                />
-              )}
-              <span className="relative z-10">{tab.label}</span>
-            </button>
-          )
-        })}
+      <div className="px-5 pb-4" data-testid="tab-bar">
+        <PillTabBar
+          tabs={TABS.map((t) => ({ id: t.id, label: t.label }))}
+          activeTab={activeTab}
+          onTabChange={(id) => setActiveTab(id as TabId)}
+          layoutId="coupon-wallet-tab"
+        />
       </div>
 
       {/* Tab content */}
@@ -207,7 +198,7 @@ function IMadeTab({ pendingApprovals, activeCoupons, onPress }: IMadeTabProps) {
       {/* Pending approvals section */}
       {pendingApprovals.length > 0 && (
         <div data-testid="pending-section">
-          <h3 className="mb-2 text-[13px] font-semibold font-[family-name:var(--font-body)] text-[var(--accent-primary)]">
+          <h3 className="mb-2 text-[11px] font-semibold font-nav uppercase tracking-widest text-[var(--accent-primary)]">
             Needs Your Attention
           </h3>
           <StaggerList className="flex flex-col gap-3">

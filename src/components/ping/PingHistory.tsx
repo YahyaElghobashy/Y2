@@ -1,12 +1,13 @@
 "use client"
 
 import { useMemo } from "react"
-import { Bell, Check, CheckCheck } from "lucide-react"
+import { Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { useNotifications } from "@/lib/hooks/use-notifications"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
+import { ChatBubble } from "@/components/ping/ChatBubble"
 import {
   formatDistanceToNowStrict,
   isToday,
@@ -43,24 +44,6 @@ function groupByDate(notifications: Notification[]): DateGroup[] {
   }))
 }
 
-function StatusIcon({ status }: { status: string }) {
-  if (status === "delivered") {
-    return <CheckCheck size={12} className="text-[var(--info)]" data-testid="status-delivered" />
-  }
-  return <Check size={12} className="text-text-muted" data-testid="status-sent" />
-}
-
-function RelativeTime({ dateStr }: { dateStr: string }) {
-  const label = formatDistanceToNowStrict(new Date(dateStr), {
-    addSuffix: true,
-  })
-  return (
-    <span className="text-[11px] font-[var(--font-body)] text-text-muted">
-      {label}
-    </span>
-  )
-}
-
 export function PingHistory({ className }: { className?: string }) {
   const { user } = useAuth()
   const { notifications, isLoading } = useNotifications()
@@ -91,51 +74,35 @@ export function PingHistory({ className }: { className?: string }) {
       {groups.map((group) => (
         <div key={group.label}>
           {/* Date header */}
-          <div className="flex justify-center mb-3">
+          <div className="mb-3 flex justify-center">
             <span
-              className="text-[11px] font-[var(--font-body)] text-text-muted bg-[var(--bg-secondary)] rounded-full px-3 py-0.5"
+              className="rounded-full bg-[var(--bg-secondary)] px-3 py-0.5 font-nav text-[11px] text-[var(--text-muted)]"
               data-testid="date-header"
             >
               {group.label}
             </span>
           </div>
 
-          {/* Pings */}
+          {/* Pings as ChatBubbles */}
           <div className="flex flex-col gap-2">
             {group.pings.map((ping) => {
               const isSent = ping.sender_id === user?.id
+              const displayMessage =
+                ping.title && ping.title !== "Ping"
+                  ? `${ping.title}\n${ping.body}`
+                  : ping.body
 
               return (
-                <div
+                <ChatBubble
                   key={ping.id}
-                  className={cn(
-                    "flex",
-                    isSent ? "justify-end" : "justify-start"
+                  message={displayMessage}
+                  timestamp={formatDistanceToNowStrict(
+                    new Date(ping.created_at),
+                    { addSuffix: true }
                   )}
-                  data-testid={isSent ? "ping-sent" : "ping-received"}
-                >
-                  <div
-                    className={cn(
-                      "max-w-[75%] rounded-2xl px-4 py-2.5",
-                      isSent
-                        ? "rounded-br-sm bg-[var(--accent-soft)]"
-                        : "rounded-bl-sm bg-[var(--bg-elevated)]"
-                    )}
-                  >
-                    {ping.title && ping.title !== "Ping" && (
-                      <p className="text-[13px] font-semibold font-[var(--font-body)] text-text-primary mb-0.5">
-                        {ping.emoji ? `${ping.emoji} ` : ""}{ping.title}
-                      </p>
-                    )}
-                    <p className="text-[14px] font-[var(--font-body)] text-text-primary">
-                      {ping.body}
-                    </p>
-                    <div className="flex items-center justify-end gap-1 mt-1">
-                      <RelativeTime dateStr={ping.created_at} />
-                      {isSent && <StatusIcon status={ping.status} />}
-                    </div>
-                  </div>
-                </div>
+                  direction={isSent ? "sent" : "received"}
+                  emoji={ping.emoji || undefined}
+                />
               )
             })}
           </div>

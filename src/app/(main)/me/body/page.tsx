@@ -57,19 +57,19 @@ export default function BodyPage() {
           config ? (
             <>
               {/* Hero: Cycle Day Widget */}
-              <div className="flex justify-center">
+              <div className="flex justify-center rounded-2xl border-l-4 border-l-[#F4A8B8] bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-[var(--shadow-soft)]">
                 <CycleDayWidget />
               </div>
 
               {/* Insight Card */}
-              <CycleInsightCard />
+              <div className="rounded-2xl border-l-4 border-l-[#F4A8B8] bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-[var(--shadow-soft)]"><CycleInsightCard /></div>
 
               {/* Expandable Calendar */}
               <div className="flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={() => setCalendarOpen((prev) => !prev)}
-                  className="flex items-center justify-between py-2 text-[14px] font-medium font-[var(--font-body)] text-text-secondary"
+                  className="flex items-center justify-between py-2 text-[14px] font-medium font-serif italic text-text-secondary"
                 >
                   <span>{calendarOpen ? "Hide Calendar" : "View Calendar"}</span>
                   {calendarOpen ? (

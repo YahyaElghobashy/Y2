@@ -16,6 +16,18 @@ type MarketplaceItemCardProps = {
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
+const EFFECT_BG_COLORS: Record<string, string> = {
+  extra_ping: "#FFF3E0",
+  veto: "#E8F5E8",
+  task_order: "#FADCE3",
+  dnd_timer: "#E3F2FD",
+  wildcard: "#F3E5F5",
+}
+
+function getEffectBgColor(effectType: string): string {
+  return EFFECT_BG_COLORS[effectType] ?? "rgba(184,115,51,0.08)"
+}
+
 export function MarketplaceItemCard({
   item,
   balance,
@@ -62,7 +74,7 @@ export function MarketplaceItemCard({
         {/* Icon in colored circle */}
         <div
           className="flex h-12 w-12 items-center justify-center rounded-full"
-          style={{ backgroundColor: "rgba(184,115,51,0.08)" }}
+          style={{ backgroundColor: getEffectBgColor(item.effect_type) }}
         >
           <span className="text-[28px] leading-none" role="img" aria-hidden="true">
             {item.icon}
@@ -70,13 +82,13 @@ export function MarketplaceItemCard({
         </div>
 
         {/* Name */}
-        <p className="font-[family-name:var(--font-body)] text-[12px] font-semibold text-[var(--text-primary)] line-clamp-2 text-center w-full">
+        <p className="font-body text-[12px] font-semibold text-[var(--text-primary)] line-clamp-2 text-center w-full">
           {item.name}
         </p>
 
         {/* Copper price pill */}
         <span
-          className="rounded-full px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-bold"
+          className="rounded-full px-2 py-0.5 font-mono text-[11px] font-bold"
           style={{
             backgroundColor: "rgba(184,115,51,0.1)",
             color: "var(--accent-copper, #B87333)",
@@ -90,16 +102,16 @@ export function MarketplaceItemCard({
           type="button"
           onClick={handleBuy}
           disabled={buyState !== "idle"}
-          className="h-8 w-full rounded-lg text-[12px] font-medium font-[family-name:var(--font-body)] transition-colors text-white"
+          className="h-8 w-full rounded-lg text-[12px] font-medium font-body transition-colors"
           style={{
-            backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
-            opacity: canAfford ? 1 : 0.5,
+            backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--bg-parchment, #E5D9CB)",
+            color: canAfford ? "#FFFFFF" : "var(--text-muted, #B5ADA4)",
           }}
           animate={buyState === "pressing" ? { scale: 0.95 } : { scale: 1 }}
           transition={{ duration: 0.1, ease: EASE_OUT }}
           data-testid="buy-button"
         >
-          Buy
+          {canAfford ? "Buy" : `Need ${deficit} more`}
         </motion.button>
 
         {/* Success overlay */}
@@ -123,7 +135,7 @@ export function MarketplaceItemCard({
         <AnimatePresence>
           {showTooltip && !canAfford && (
             <motion.div
-              className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-[family-name:var(--font-body)] text-white shadow-md"
+              className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-body text-white shadow-md"
               style={{ backgroundColor: "var(--text-primary, #2C2825)" }}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
@@ -155,7 +167,7 @@ export function MarketplaceItemCard({
       {/* Icon in colored circle */}
       <div
         className="flex h-14 w-14 items-center justify-center rounded-full"
-        style={{ backgroundColor: "rgba(184,115,51,0.08)" }}
+        style={{ backgroundColor: getEffectBgColor(item.effect_type) }}
       >
         <span className="text-[32px]" role="img" aria-hidden="true">
           {item.icon}
@@ -163,20 +175,20 @@ export function MarketplaceItemCard({
       </div>
 
       {/* Name */}
-      <h3 className="font-[family-name:var(--font-display)] text-[13px] font-bold text-[var(--text-primary)] line-clamp-2 text-center w-full">
+      <h3 className="font-display text-[13px] font-bold text-[var(--text-primary)] line-clamp-2 text-center w-full">
         {item.name}
       </h3>
 
       {/* Description */}
       {item.description && (
-        <p className="font-[family-name:var(--font-body)] text-[11px] text-[var(--text-secondary)] line-clamp-2 text-center">
+        <p className="font-body text-[11px] text-[var(--text-secondary)] line-clamp-2 text-center">
           {item.description}
         </p>
       )}
 
       {/* Copper price pill */}
       <span
-        className="rounded-full px-3 py-1 font-[family-name:var(--font-mono)] text-[12px] font-bold"
+        className="rounded-full px-3 py-1 font-mono text-[12px] font-bold"
         style={{
           backgroundColor: "rgba(184,115,51,0.1)",
           color: "var(--accent-copper, #B87333)",
@@ -190,17 +202,17 @@ export function MarketplaceItemCard({
         type="button"
         onClick={handleBuy}
         disabled={buyState !== "idle"}
-        className="h-9 w-full rounded-lg text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors text-white"
+        className="h-9 w-full rounded-lg text-[13px] font-medium font-body transition-colors"
         style={{
-          backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
-          opacity: canAfford ? 1 : 0.5,
+          backgroundColor: canAfford ? "var(--accent-copper, #B87333)" : "var(--bg-parchment, #E5D9CB)",
+          color: canAfford ? "#FFFFFF" : "var(--text-muted, #B5ADA4)",
           boxShadow: canAfford ? "0 2px 8px rgba(184,115,51,0.2)" : "none",
         }}
         animate={buyState === "pressing" ? { scale: 0.95 } : { scale: 1 }}
         transition={{ duration: 0.1, ease: EASE_OUT }}
         data-testid="buy-button"
       >
-        Buy
+        {canAfford ? "Buy" : `Need ${deficit} more`}
       </motion.button>
 
       {/* Success overlay */}
@@ -224,7 +236,7 @@ export function MarketplaceItemCard({
       <AnimatePresence>
         {showTooltip && !canAfford && (
           <motion.div
-            className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-[family-name:var(--font-body)] text-white shadow-md"
+            className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2 py-1 text-[11px] font-body text-white shadow-md"
             style={{ backgroundColor: "var(--text-primary, #2C2825)" }}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}

@@ -102,7 +102,7 @@ export function RatingSlider({
         </motion.div>
 
         {/* Question — serif italic */}
-        <h1 className="font-[family-name:var(--font-display)] text-4xl font-medium italic tracking-tight text-[var(--text-primary)] mb-6">
+        <h1 className="font-display text-4xl font-medium italic tracking-tight text-[var(--text-primary)] mb-6">
           {question}
         </h1>
 
@@ -110,7 +110,7 @@ export function RatingSlider({
         <div className="relative flex items-center justify-center mb-12">
           <motion.span
             key={score}
-            className="text-8xl font-extrabold tracking-tighter text-[var(--text-primary)]"
+            className="text-[72px] font-extrabold tracking-tighter text-[var(--text-primary)]"
             initial={{ scale: 0.95, opacity: 0.7 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.15 }}
@@ -141,7 +141,7 @@ export function RatingSlider({
             step={0.5}
           />
           {/* Labels */}
-          <div className="flex w-full justify-between px-1 mt-4 text-xs font-bold tracking-widest uppercase text-[var(--text-muted)]">
+          <div className="flex w-full justify-between px-1 mt-4 font-nav text-[11px] font-bold tracking-widest uppercase text-[var(--text-muted)]">
             <span>Average</span>
             <span>Good</span>
             <span>Divine</span>

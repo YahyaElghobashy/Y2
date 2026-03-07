@@ -80,10 +80,13 @@ export function VisitListItem({
           <div
             data-testid={`score-badge-${id}`}
             className={cn(
-              "flex-shrink-0 font-[family-name:var(--font-display)] font-bold",
-              overallScore >= 8 ? "text-[18px]" : "text-[16px]"
+              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-display text-[13px] font-bold",
+              overallScore >= 8
+                ? "bg-[var(--accent-copper,#B87333)] text-white"
+                : overallScore >= 6
+                  ? "bg-[#DAA520] text-white"
+                  : "bg-[var(--bg-secondary)] text-[var(--text-muted)]"
             )}
-            style={{ color: "var(--accent-copper, #B87333)" }}
           >
             {overallScore.toFixed(1)}
           </div>

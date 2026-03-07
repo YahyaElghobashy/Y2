@@ -7,6 +7,7 @@ import { SendLimitIndicator } from "@/components/relationship/SendLimitIndicator
 import { NotificationBuilder } from "@/components/relationship/NotificationBuilder"
 import { CustomPingComposer } from "@/components/ping/CustomPingComposer"
 import { PingHistory } from "@/components/ping/PingHistory"
+import { PingLimitDots } from "@/components/ping/PingLimitDots"
 import { BuyExtraPingModal } from "@/components/ping/BuyExtraPingModal"
 
 export function PingTabContent() {
@@ -19,11 +20,17 @@ export function PingTabContent() {
     <div className="flex flex-col gap-5" data-testid="ping-tab-content">
       <PushPermissionPrompt />
 
-      <SendLimitIndicator
-        remainingSends={remainingSends}
-        bonusSends={bonusSends}
-        onBuyMore={() => setShowBuyModal(true)}
-      />
+      <div className="flex items-center justify-between">
+        <SendLimitIndicator
+          remainingSends={remainingSends}
+          bonusSends={bonusSends}
+          onBuyMore={() => setShowBuyModal(true)}
+        />
+        <PingLimitDots
+          total={2}
+          remaining={remainingSends}
+        />
+      </div>
 
       <NotificationBuilder onBuyMore={() => setShowBuyModal(true)} />
 
