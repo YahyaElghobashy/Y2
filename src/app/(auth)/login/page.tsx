@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
+import { HayahWordmark } from "@/components/animations/HayahWordmark"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -59,23 +60,7 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        {/* Header with Arabic text */}
-        <div className="text-center mb-10">
-          <motion.p
-            className="font-arabic text-[28px] text-[var(--accent-copper,#B87333)] mb-2"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            حياة
-          </motion.p>
-          <h1 className="font-display text-[24px] font-bold text-[var(--text-primary,#2C2825)]">
-            Welcome back
-          </h1>
-          <p className="font-serif italic text-[14px] text-[var(--text-secondary,#8C8279)] mt-1">
-            Your shared life awaits
-          </p>
-        </div>
+        <HayahWordmark />
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
           <motion.div
