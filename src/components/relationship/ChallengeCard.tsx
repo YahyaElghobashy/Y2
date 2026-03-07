@@ -65,13 +65,13 @@ export function ChallengeCard({
               strokeWidth={1.75}
             />
           </div>
-          <h3 className="pt-1.5 font-[family-name:var(--font-display)] text-[15px] font-bold text-[var(--text-primary)]">
+          <h3 className="pt-1.5 font-display text-[15px] font-bold text-[var(--text-primary)]">
             {title}
           </h3>
         </div>
 
         <span
-          className="shrink-0 rounded-full px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-bold uppercase tracking-tight"
+          className="shrink-0 rounded-full px-2.5 py-1 font-body text-[11px] font-bold uppercase tracking-tight"
           style={{ backgroundColor: statusConfig.bg, color: statusConfig.text }}
           data-testid="status-badge"
         >
@@ -85,7 +85,7 @@ export function ChallengeCard({
         style={{ backgroundColor: "rgba(184,115,51,0.05)" }}
       >
         <p
-          className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+          className="font-body text-[13px] font-medium"
           style={{ color: "var(--accent-copper, #B87333)" }}
         >
           🎯 {stakes}
@@ -98,7 +98,7 @@ export function ChallengeCard({
           {participants.map((participant) => (
             <div
               key={participant.name}
-              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white font-[family-name:var(--font-body)] text-[11px] font-semibold text-white"
+              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white font-body text-[11px] font-semibold text-white"
               style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
               title={participant.name}
             >
@@ -106,7 +106,7 @@ export function ChallengeCard({
             </div>
           ))}
         </div>
-        <span className="font-[family-name:var(--font-body)] text-[12px] text-[var(--text-muted)]">
+        <span className="font-body text-[12px] text-[var(--text-muted)]">
           {participants.map((p) => p.name).join(" & ")}
         </span>
       </div>
@@ -118,7 +118,7 @@ export function ChallengeCard({
             onClick={onAccept}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.15, ease: EASE_OUT }}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-white"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-body text-[14px] font-medium text-white"
             style={{
               backgroundColor: "var(--accent-copper, #B87333)",
               boxShadow: "0 2px 8px rgba(184,115,51,0.2)",
@@ -131,7 +131,7 @@ export function ChallengeCard({
             onClick={onDecline}
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.15, ease: EASE_OUT }}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--text-secondary)]"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 font-body text-[14px] font-medium text-[var(--text-secondary)]"
             style={{
               border: "1px solid rgba(44,40,37,0.1)",
               backgroundColor: "var(--bg-warm-white, #FFFDF9)",

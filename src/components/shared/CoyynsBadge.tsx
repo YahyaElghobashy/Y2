@@ -29,7 +29,7 @@ function CoyynsBadgeDisplay({
   return (
     <motion.div
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-accent-soft",
+        "inline-flex items-center gap-1 rounded-full bg-[var(--accent-soft,#E8D5C0)]/50",
         isSm ? "px-2 py-0.5" : "px-3 py-1",
         className,
       )}

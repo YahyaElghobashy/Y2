@@ -52,10 +52,10 @@ export default function PairPage() {
                 <Heart size={28} className="text-[var(--color-accent-primary)]" />
               </div>
             </motion.div>
-            <h1 className="font-[family-name:var(--font-display)] text-[26px] font-bold text-[var(--color-text-primary)]">
+            <h1 className="font-display text-[26px] font-bold text-[var(--color-text-primary)]">
               Find your partner
             </h1>
-            <p className="text-center font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+            <p className="text-center font-body text-[14px] text-[var(--color-text-secondary)]">
               Share your QR code or scan theirs to connect
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function PairPage() {
           {/* Divider */}
           <div className="flex w-full items-center gap-4">
             <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
-            <span className="font-[family-name:var(--font-body)] text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+            <span className="font-body text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
               or
             </span>
             <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
@@ -78,7 +78,7 @@ export default function PairPage() {
           {/* Divider */}
           <div className="flex w-full items-center gap-4">
             <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
-            <span className="font-[family-name:var(--font-body)] text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+            <span className="font-body text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
               or
             </span>
             <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />

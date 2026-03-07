@@ -126,7 +126,7 @@ export function RedeemConfirmModal({
           >
             {/* Header */}
             <div className="flex items-center justify-between">
-              <h2 className="text-[20px] font-semibold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+              <h2 className="text-[20px] font-semibold font-display text-[var(--text-primary)]">
                 {mode === "redeem" && "Redeem Coupon"}
                 {mode === "approve" && "Approve Redemption"}
                 {mode === "deny" && "Deny Coupon"}
@@ -146,11 +146,11 @@ export function RedeemConfirmModal({
             <div className="mt-4 flex items-center gap-3 rounded-xl bg-[var(--bg-secondary)] p-3">
               {coupon.emoji && <span className="text-[32px]">{coupon.emoji}</span>}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-semibold font-[family-name:var(--font-body)] text-[var(--text-primary)]">
+                <p className="truncate text-[15px] font-semibold font-body text-[var(--text-primary)]">
                   {coupon.title}
                 </p>
                 {coupon.description && (
-                  <p className="truncate text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+                  <p className="truncate text-[13px] font-body text-[var(--text-secondary)]">
                     {coupon.description}
                   </p>
                 )}
@@ -161,7 +161,7 @@ export function RedeemConfirmModal({
             <div className="mt-5">
               {mode === "redeem" && (
                 <>
-                  <p className="text-[14px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]" data-testid="modal-message">
+                  <p className="text-[14px] font-body text-[var(--text-secondary)]" data-testid="modal-message">
                     Are you sure you want to redeem this coupon? Your partner will need to approve it.
                   </p>
                   <div className="mt-6 flex flex-col gap-3">
@@ -169,7 +169,7 @@ export function RedeemConfirmModal({
                       type="button"
                       onClick={handleRedeem}
                       disabled={isSubmitting}
-                      className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white transition-colors disabled:opacity-50"
+                      className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white transition-colors disabled:opacity-50"
                       data-testid="modal-confirm"
                     >
                       {isSubmitting ? "Requesting..." : "Redeem"}
@@ -177,7 +177,7 @@ export function RedeemConfirmModal({
                     <button
                       type="button"
                       onClick={onClose}
-                      className="h-10 w-full text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+                      className="h-10 w-full text-[14px] font-medium font-body text-[var(--text-secondary)]"
                       data-testid="modal-cancel"
                     >
                       Cancel
@@ -188,7 +188,7 @@ export function RedeemConfirmModal({
 
               {mode === "approve" && (
                 <>
-                  <p className="text-[14px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]" data-testid="modal-message">
+                  <p className="text-[14px] font-body text-[var(--text-secondary)]" data-testid="modal-message">
                     Your partner wants to redeem this coupon. Do you approve?
                   </p>
                   <div className="mt-6 flex gap-3">
@@ -196,7 +196,7 @@ export function RedeemConfirmModal({
                       type="button"
                       onClick={handleApprove}
                       disabled={isSubmitting}
-                      className="h-12 flex-1 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white transition-colors disabled:opacity-50"
+                      className="h-12 flex-1 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white transition-colors disabled:opacity-50"
                       data-testid="modal-confirm"
                     >
                       {isSubmitting ? "Approving..." : "Approve"}
@@ -204,7 +204,7 @@ export function RedeemConfirmModal({
                     <button
                       type="button"
                       onClick={onClose}
-                      className="h-12 flex-1 rounded-xl border border-[var(--border-subtle)] text-[15px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)] transition-colors"
+                      className="h-12 flex-1 rounded-xl border border-[var(--border-subtle)] text-[15px] font-medium font-body text-[var(--text-secondary)] transition-colors"
                       data-testid="modal-cancel"
                     >
                       Cancel
@@ -215,7 +215,7 @@ export function RedeemConfirmModal({
 
               {mode === "deny" && (
                 <>
-                  <p className="text-[14px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]" data-testid="modal-message">
+                  <p className="text-[14px] font-body text-[var(--text-secondary)]" data-testid="modal-message">
                     Add a reason for denying this coupon (optional).
                   </p>
                   <textarea
@@ -224,7 +224,7 @@ export function RedeemConfirmModal({
                     placeholder="Reason (optional)"
                     value={denyReason}
                     onChange={(e) => setDenyReason(e.target.value)}
-                    className="mt-3 w-full resize-none rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-[family-name:var(--font-body)] text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]"
+                    className="mt-3 w-full resize-none rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-body text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]"
                     data-testid="deny-reason"
                   />
                   <div className="mt-1 text-end text-[12px] text-[var(--text-muted)]">
@@ -235,7 +235,7 @@ export function RedeemConfirmModal({
                       type="button"
                       onClick={handleDeny}
                       disabled={isSubmitting}
-                      className="h-12 w-full rounded-xl bg-[var(--error)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white transition-colors disabled:opacity-50"
+                      className="h-12 w-full rounded-xl bg-[var(--error)] text-[15px] font-medium font-body text-white transition-colors disabled:opacity-50"
                       data-testid="modal-confirm"
                     >
                       {isSubmitting ? "Denying..." : "Deny Coupon"}
@@ -243,7 +243,7 @@ export function RedeemConfirmModal({
                     <button
                       type="button"
                       onClick={onClose}
-                      className="h-10 w-full text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+                      className="h-10 w-full text-[14px] font-medium font-body text-[var(--text-secondary)]"
                       data-testid="modal-cancel"
                     >
                       Cancel

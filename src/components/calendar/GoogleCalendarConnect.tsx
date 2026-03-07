@@ -45,10 +45,10 @@ export function GoogleCalendarConnect({ className }: GoogleCalendarConnectProps)
       <div className="flex items-center gap-3">
         <Calendar size={20} strokeWidth={1.5} className="text-[var(--color-text-secondary)]" />
         <div>
-          <p className="text-[15px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)]">
+          <p className="text-[15px] font-body text-[var(--color-text-primary)]">
             Google Calendar
           </p>
-          <p className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted)]">
+          <p className="text-[12px] font-body text-[var(--color-text-muted)]">
             {isConnected ? "Connected" : "Sync events to Google"}
           </p>
         </div>

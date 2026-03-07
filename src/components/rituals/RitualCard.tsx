@@ -58,7 +58,7 @@ export function RitualCard({
       <div className="flex-1 min-w-0">
         <p
           data-testid={`ritual-title-${ritual.id}`}
-          className="font-[family-name:var(--font-body)] text-[14px] font-semibold text-[var(--text-primary)] truncate"
+          className="font-body text-[14px] font-semibold text-[var(--text-primary)] truncate"
         >
           {ritual.title}
         </p>

@@ -122,14 +122,14 @@ export function CoyynsHistory({
             <div className={cn("flex min-w-0 flex-1 flex-col", compact ? "ms-2" : "ms-3")}>
               <span
                 className={cn(
-                  "truncate font-[family-name:var(--font-body)] text-[var(--text-primary)]",
+                  "truncate font-body text-[var(--text-primary)]",
                   compact ? "text-[13px]" : "text-[14px]"
                 )}
               >
                 {tx.description ?? ""}
               </span>
               {(!compact || !transactionsProp) && (
-                <span className="text-[11px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
+                <span className="text-[11px] font-body text-[var(--text-muted)]">
                   {tx.category}
                   {" \u00B7 "}
                   {formatRelativeTime(tx.created_at)}
@@ -140,7 +140,7 @@ export function CoyynsHistory({
             {/* Amount */}
             <span
               className={cn(
-                "shrink-0 font-[family-name:var(--font-mono)] font-bold tabular-nums",
+                "shrink-0 font-mono font-bold tabular-nums",
                 compact ? "ms-2 text-[13px]" : "ms-3 text-[14px]",
                 isEarn ? "text-[var(--success)]" : "text-[var(--error)]"
               )}

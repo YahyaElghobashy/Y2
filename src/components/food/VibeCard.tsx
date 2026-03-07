@@ -45,7 +45,7 @@ export function VibeCard({
       <div className="relative z-10 flex flex-col items-center gap-4">
         <Sparkles size={28} strokeWidth={1.5} className="text-white/80" />
 
-        <h3 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-white">
+        <h3 className="text-[20px] font-bold font-display text-white">
           Vibe
         </h3>
 

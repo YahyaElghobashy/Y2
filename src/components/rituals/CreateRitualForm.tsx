@@ -86,7 +86,7 @@ export function CreateRitualForm({ open, onClose, onSubmit }: CreateRitualFormPr
           >
             {/* Header */}
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-[family-name:var(--font-display)] text-[18px] font-semibold text-[var(--text-primary)]">
+              <h2 className="font-display text-[18px] font-semibold text-[var(--text-primary)]">
                 New Ritual
               </h2>
               <button

@@ -35,7 +35,7 @@ function MoodChip({ icon, label, onClick }: MoodChipProps) {
       onClick={onClick}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 shrink-0",
-        "font-[family-name:var(--font-body)] text-[12px]",
+        "font-body text-[12px]",
         "active:scale-[0.97] transition-transform duration-150"
       )}
       style={{

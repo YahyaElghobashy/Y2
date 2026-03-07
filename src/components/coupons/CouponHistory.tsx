@@ -136,7 +136,7 @@ export function CouponHistory({ className }: CouponHistoryProps) {
         <div key={group.label}>
           {/* Month divider */}
           <div
-            className="sticky top-0 z-10 bg-[var(--bg-primary)] px-1 py-2 text-[13px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+            className="sticky top-0 z-10 bg-[var(--bg-primary)] px-1 py-2 text-[13px] font-medium font-body text-[var(--text-secondary)]"
             data-testid="month-divider"
           >
             {group.label}
@@ -151,7 +151,7 @@ export function CouponHistory({ className }: CouponHistoryProps) {
                   onPress={() => router.push(`/us/coupons/${coupon.id}`)}
                 />
                 <span
-                  className="ps-1 text-[12px] font-[family-name:var(--font-body)] text-[var(--text-muted)]"
+                  className="ps-1 text-[12px] font-body text-[var(--text-muted)]"
                   data-testid="activity-label"
                 >
                   {getActivityLabel(coupon)}

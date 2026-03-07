@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { HeartPulse, Sun, Repeat, ChevronRight } from "lucide-react"
 import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { useAuth } from "@/lib/providers/AuthProvider"
@@ -46,16 +47,20 @@ export default function MePage() {
             >
               <Link
                 href={section.href}
-                className="flex items-center gap-4 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-4 shadow-[var(--shadow-soft)] active:bg-[var(--color-bg-secondary)] transition-colors"
+                className={cn(
+                  "flex items-center gap-4 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-4 shadow-[var(--shadow-soft)] active:bg-[var(--color-bg-secondary)] transition-colors",
+                  section.title === "Body" && "border-l-4 border-l-[#F4A8B8]",
+                  section.title === "Soul" && "border-l-4 border-l-[#A8B5A0]",
+                )}
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-accent-soft)]">
                   <Icon size={24} strokeWidth={1.5} className="text-[var(--color-accent-primary)]" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-[family-name:var(--font-display)] text-[17px] font-semibold text-[var(--color-text-primary)]">
+                  <p className="font-display text-[17px] font-semibold text-[var(--color-text-primary)]">
                     {section.title}
                   </p>
-                  <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]">
+                  <p className="font-serif italic text-[13px] text-[var(--color-text-secondary)]">
                     {section.subtitle}
                   </p>
                 </div>

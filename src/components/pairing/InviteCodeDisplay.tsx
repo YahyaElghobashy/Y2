@@ -60,11 +60,11 @@ export function InviteCodeDisplay({ code, className }: InviteCodeDisplayProps) {
   return (
     <div className={className}>
       <div className="flex flex-col items-center gap-4">
-        <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+        <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
           Your invite code
         </p>
         <motion.p
-          className="font-[family-name:var(--font-mono)] text-[32px] font-bold tracking-[0.3em] text-[var(--color-accent-primary)]"
+          className="font-mono text-[32px] font-bold tracking-[0.3em] text-[var(--color-accent-primary)]"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
@@ -77,7 +77,7 @@ export function InviteCodeDisplay({ code, className }: InviteCodeDisplayProps) {
             variant="outline"
             size="sm"
             onClick={handleCopy}
-            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-[family-name:var(--font-body)]"
+            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-body"
             data-testid="copy-code-btn"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -87,7 +87,7 @@ export function InviteCodeDisplay({ code, className }: InviteCodeDisplayProps) {
             variant="outline"
             size="sm"
             onClick={handleShare}
-            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-[family-name:var(--font-body)]"
+            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-body"
             data-testid="share-code-btn"
           >
             <Share2 size={16} />

@@ -95,7 +95,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             <div className="flex items-center gap-2">
               <h4
                 className={cn(
-                  "font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] truncate",
+                  "font-bold font-display text-[var(--text-primary)] truncate",
                   compact ? "text-[14px]" : "text-[15px]"
                 )}
                 data-testid="coupon-title"
@@ -112,7 +112,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             {/* Description (not in compact mode) */}
             {!compact && coupon.description && (
               <p
-                className="text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)] line-clamp-2"
+                className="text-[13px] font-body text-[var(--text-secondary)] line-clamp-2"
                 data-testid="coupon-description"
               >
                 {coupon.description}
@@ -122,7 +122,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
             {/* Footer: category + creator */}
             <div className="mt-1 flex items-center gap-2">
               <span
-                className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight font-[family-name:var(--font-body)]"
+                className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight font-body"
                 style={{
                   backgroundColor: "rgba(184,115,51,0.08)",
                   color: "var(--accent-copper, #B87333)",
@@ -131,7 +131,7 @@ export function CouponCard({ coupon, onPress, compact = false, className }: Coup
               >
                 {coupon.category}
               </span>
-              <span className="text-[11px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
+              <span className="text-[11px] font-body text-[var(--text-muted)]">
                 by {creatorLabel}
               </span>
             </div>

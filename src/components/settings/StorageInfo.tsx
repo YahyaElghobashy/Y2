@@ -40,7 +40,7 @@ export function StorageInfo() {
       <div className="flex items-center px-4 py-3.5 border-b border-[var(--color-border-subtle)]">
         <Database size={20} strokeWidth={1.5} className="text-[var(--color-text-secondary)] shrink-0" />
         <div className="flex-1 min-w-0 ms-3">
-          <span className="text-[15px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)]">
+          <span className="text-[15px] font-body text-[var(--color-text-primary)]">
             Storage
           </span>
           <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
@@ -59,7 +59,7 @@ export function StorageInfo() {
     <div className="flex items-center px-4 py-3.5 border-b border-[var(--color-border-subtle)]">
       <Database size={20} strokeWidth={1.5} className="text-[var(--color-text-secondary)] shrink-0" />
       <div className="flex-1 min-w-0 ms-3">
-        <span className="text-[15px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)]">
+        <span className="text-[15px] font-body text-[var(--color-text-primary)]">
           Storage
         </span>
         <div className="flex items-center gap-2 mt-1.5">
@@ -69,7 +69,7 @@ export function StorageInfo() {
               style={{ width: `${percent}%` }}
             />
           </div>
-          <span className="font-[family-name:var(--font-mono)] text-[11px] text-[var(--color-text-muted)] shrink-0">
+          <span className="font-mono text-[11px] text-[var(--color-text-muted)] shrink-0">
             {usage != null ? formatBytes(usage) : "..."}{" "}
             {quota != null ? `/ ${formatBytes(quota)}` : ""}
           </span>

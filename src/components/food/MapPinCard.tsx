@@ -67,7 +67,7 @@ export function MapPinCard({
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-[15px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] truncate">
+                  <h3 className="text-[15px] font-bold font-display text-[var(--text-primary)] truncate">
                     {placeName}
                   </h3>
                   {visitNumber > 1 && (
@@ -99,7 +99,7 @@ export function MapPinCard({
               {overallScore !== null && (
                 <div className="flex-shrink-0 text-end">
                   <p
-                    className="font-[family-name:var(--font-display)] font-bold text-[20px]"
+                    className="font-display font-bold text-[20px]"
                     style={{ color: "var(--accent-copper, #B87333)" }}
                   >
                     {overallScore.toFixed(1)}

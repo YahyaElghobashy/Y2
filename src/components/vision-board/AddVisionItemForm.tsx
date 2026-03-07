@@ -82,7 +82,7 @@ export function AddVisionItemForm({
 
           {/* Header */}
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-[18px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)]">
+            <h3 className="text-[18px] font-semibold font-display text-[var(--color-text-primary,#2C2825)]">
               Add Vision Item
             </h3>
             <button onClick={onClose} className="p-1">
@@ -187,7 +187,7 @@ export function AddVisionItemForm({
           <motion.button
             className={cn(
               "w-full py-3 rounded-xl text-[15px] font-semibold",
-              "font-[family-name:var(--font-body)]",
+              "font-body",
               isValid
                 ? "bg-[var(--accent-primary,#C4956A)] text-white"
                 : "bg-[var(--color-bg-secondary,#F5F0E8)] text-[var(--color-text-muted,#B5ADA4)]"

@@ -50,7 +50,7 @@ export function GradientSlider({
       <div className="relative h-6 mb-1">
         <span
           data-testid="slider-score"
-          className="absolute -translate-x-1/2 text-[18px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary,#C4956A)]"
+          className="absolute -translate-x-1/2 text-[18px] font-bold font-display text-[var(--accent-primary,#C4956A)]"
           style={{ left: `calc(${pct}% + ${(50 - pct) * 0.2}px)` }}
         >
           {value}

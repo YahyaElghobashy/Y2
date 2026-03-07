@@ -29,13 +29,13 @@ export function FeelingGenerousCTA({ className }: FeelingGenerousCTAProps) {
           </div>
           <div className="min-w-0 flex-1">
             <p
-              className="text-[18px] font-bold font-[family-name:var(--font-handwritten)]"
+              className="text-[18px] font-bold font-handwritten"
               style={{ color: "var(--accent-copper, #B87333)" }}
             >
               Feeling generous?
             </p>
             <p
-              className="text-[13px] font-[family-name:var(--font-body)]"
+              className="text-[13px] font-body"
               style={{ color: "var(--text-secondary, #6B6560)" }}
             >
               Create a love coupon for your partner

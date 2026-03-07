@@ -30,10 +30,10 @@ export function HomeLetterPrompt({ className }: { className?: string }) {
         <div className="flex items-center gap-3">
           <span className="text-[28px]">💌</span>
           <div>
-            <p className="text-[14px] font-medium font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)]">
+            <p className="text-[14px] font-medium font-display text-[var(--color-text-primary,#2C2825)]">
               It&apos;s letter day!
             </p>
-            <p className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted,#B5AFA7)]">
+            <p className="text-[12px] font-body text-[var(--color-text-muted,#B5AFA7)]">
               Write a note to {partnerName}
             </p>
           </div>

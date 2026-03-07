@@ -104,7 +104,7 @@ export default function EvaluatePage() {
         <PageHeader title="Evaluate" backHref="/2026" />
         <div className="flex flex-col items-center justify-center py-16 px-5 text-center">
           <span className="text-[40px] mb-3">✅</span>
-          <h2 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+          <h2 className="text-[20px] font-bold font-display text-[var(--color-text-primary,#2C2825)] mb-2">
             Already evaluated
           </h2>
           <p className="text-[14px] text-[var(--color-text-secondary,#8C8279)]">
@@ -122,7 +122,7 @@ export default function EvaluatePage() {
       <div className="px-5 pb-8">
         {/* Month header */}
         <div className="mb-6" data-testid="eval-month-header">
-          <h2 className="text-[22px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)]">
+          <h2 className="text-[22px] font-bold font-display text-[var(--color-text-primary,#2C2825)]">
             {monthName} {currentYear}
           </h2>
           <p className="text-[13px] text-[var(--color-text-secondary,#8C8279)] mt-1">

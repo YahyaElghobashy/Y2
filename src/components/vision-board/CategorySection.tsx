@@ -32,7 +32,7 @@ export function CategorySection({
         <span className="text-[22px]">{category.icon}</span>
         <div className="flex-1">
           <h3
-            className="text-[13px] font-bold uppercase tracking-[0.15em] font-[family-name:var(--font-display)]"
+            className="text-[13px] font-bold uppercase tracking-[0.15em] font-display"
             style={{ color: "var(--accent-copper, #B87333)" }}
           >
             {category.name}

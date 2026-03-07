@@ -67,7 +67,7 @@ export function RedeemStampAnimation({ visible, onComplete, className }: RedeemS
               style={{ transform: "rotate(-5deg)" }}
             >
               <span
-                className="block text-[28px] font-bold uppercase tracking-[0.15em] font-[family-name:var(--font-display)] text-[#B85C4A]"
+                className="block text-[28px] font-bold uppercase tracking-[0.15em] font-display text-[#B85C4A]"
                 data-testid="redeemed-text"
               >
                 REDEEMED
@@ -97,7 +97,7 @@ export function RedeemStampAnimation({ visible, onComplete, className }: RedeemS
                   style={{ transform: "rotate(-5deg)" }}
                 >
                   <span
-                    className="block text-[28px] font-bold uppercase tracking-[0.15em] font-[family-name:var(--font-display)] text-[#B85C4A]"
+                    className="block text-[28px] font-bold uppercase tracking-[0.15em] font-display text-[#B85C4A]"
                     data-testid="redeemed-text"
                     style={{ textShadow: "0 1px 2px rgba(184,92,74,0.3)" }}
                   >

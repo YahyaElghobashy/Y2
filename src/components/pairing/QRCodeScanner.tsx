@@ -125,7 +125,7 @@ export function QRCodeScanner({ onScan, className }: QRCodeScannerProps) {
       <Button
         variant="outline"
         onClick={() => setIsOpen(true)}
-        className="w-full gap-2 rounded-xl border-[var(--color-border-subtle)] py-3 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--color-text-secondary)]"
+        className="w-full gap-2 rounded-xl border-[var(--color-border-subtle)] py-3 font-body text-[14px] font-medium text-[var(--color-text-secondary)]"
         data-testid="scan-qr-btn"
       >
         <Camera size={18} />
@@ -152,7 +152,7 @@ export function QRCodeScanner({ onScan, className }: QRCodeScannerProps) {
             </button>
 
             {/* Title */}
-            <p className="mb-6 font-[family-name:var(--font-body)] text-[16px] font-medium text-white">
+            <p className="mb-6 font-body text-[16px] font-medium text-white">
               Scan partner&apos;s QR code
             </p>
 
@@ -183,7 +183,7 @@ export function QRCodeScanner({ onScan, className }: QRCodeScannerProps) {
             {/* Error */}
             {error && (
               <motion.p
-                className="mt-4 max-w-[280px] text-center font-[family-name:var(--font-body)] text-[13px] text-red-400"
+                className="mt-4 max-w-[280px] text-center font-body text-[13px] text-red-400"
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 data-testid="scanner-error"

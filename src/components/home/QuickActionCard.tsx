@@ -35,11 +35,11 @@ export function QuickActionCard({
           </span>
         </div>
 
-        <p className="mt-3 truncate font-[family-name:var(--font-body)] text-[15px] font-semibold text-[var(--color-text-primary)]">
+        <p className="mt-3 truncate font-body text-[15px] font-semibold text-[var(--color-text-primary)]">
           {label}
         </p>
 
-        <p className="mt-0.5 truncate font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-secondary)]">
+        <p className="mt-0.5 truncate font-body text-[12px] text-[var(--color-text-secondary)]">
           {description}
         </p>
       </motion.div>

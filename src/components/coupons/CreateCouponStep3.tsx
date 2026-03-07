@@ -54,7 +54,7 @@ export function CreateCouponStep3({ data, onNext, onBack }: CreateCouponStep3Pro
 
   return (
     <div className="flex flex-col gap-6" data-testid="step3-form">
-      <h2 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+      <h2 className="text-[20px] font-bold font-display text-[var(--text-primary)]">
         Add a photo?
       </h2>
 
@@ -84,14 +84,14 @@ export function CreateCouponStep3({ data, onNext, onBack }: CreateCouponStep3Pro
           data-testid="upload-area"
         >
           <Camera size={32} className="text-[var(--text-muted)]" />
-          <span className="text-[14px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+          <span className="text-[14px] font-body text-[var(--text-secondary)]">
             Tap to add a photo
           </span>
         </button>
       )}
 
       {error && (
-        <p className="text-[var(--error)] text-[12px] font-[family-name:var(--font-body)]" data-testid="file-error">
+        <p className="text-[var(--error)] text-[12px] font-body" data-testid="file-error">
           {error}
         </p>
       )}
@@ -111,7 +111,7 @@ export function CreateCouponStep3({ data, onNext, onBack }: CreateCouponStep3Pro
         <button
           type="button"
           onClick={imageFile ? handleNext : handleSkip}
-          className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white"
+          className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white"
           data-testid="next-button"
         >
           {imageFile ? "Next" : "Skip"}
@@ -119,7 +119,7 @@ export function CreateCouponStep3({ data, onNext, onBack }: CreateCouponStep3Pro
         <button
           type="button"
           onClick={onBack}
-          className="h-10 w-full text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+          className="h-10 w-full text-[14px] font-medium font-body text-[var(--text-secondary)]"
           data-testid="back-button"
         >
           Back

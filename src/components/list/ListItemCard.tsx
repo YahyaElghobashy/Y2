@@ -68,7 +68,7 @@ export function ListItemCard({
         <span
           data-testid={`title-${item.id}`}
           className={cn(
-            "flex-1 font-[family-name:var(--font-body)] text-[14px]",
+            "flex-1 font-body text-[14px]",
             item.is_completed
               ? "text-[var(--text-muted)] line-through"
               : "text-[var(--text-primary)]"

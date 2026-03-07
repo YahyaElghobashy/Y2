@@ -129,7 +129,7 @@ export function ProfileStep({ onContinue, onBack }: ProfileStepProps) {
 
       {/* Greeting */}
       <motion.p
-        className="font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)]"
+        className="font-display text-[22px] font-bold text-[var(--color-text-primary)]"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: EASE_OUT }}
@@ -153,7 +153,7 @@ export function ProfileStep({ onContinue, onBack }: ProfileStepProps) {
           placeholder="Your name"
           className={cn(
             "h-12 w-full rounded-none border-0 border-b-2 bg-transparent px-2 text-center",
-            "font-[family-name:var(--font-body)] text-[18px] text-[var(--color-text-primary)]",
+            "font-body text-[18px] text-[var(--color-text-primary)]",
             "placeholder:text-[var(--color-text-muted)]",
             "outline-none transition-colors duration-200",
             "border-[var(--color-border-subtle)]",
@@ -203,7 +203,7 @@ export function ProfileStep({ onContinue, onBack }: ProfileStepProps) {
               onChange={handleFileChange}
               data-testid="profile-avatar-input"
             />
-            <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-muted)]">
+            <p className="font-body text-[12px] text-[var(--color-text-muted)]">
               Optional
             </p>
             {fileError && (
@@ -225,7 +225,7 @@ export function ProfileStep({ onContinue, onBack }: ProfileStepProps) {
       {/* Continue button */}
       <motion.button
         className={cn(
-          "mt-2 w-full max-w-xs rounded-xl px-8 py-3.5 font-[family-name:var(--font-body)] text-[15px] font-medium transition-all duration-200",
+          "mt-2 w-full max-w-xs rounded-xl px-8 py-3.5 font-body text-[15px] font-medium transition-all duration-200",
           isNameValid
             ? "bg-[var(--color-accent-primary)] text-white"
             : "bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)] opacity-40"

@@ -110,7 +110,7 @@ export function CouponReceiveAnimation({
 
             {/* Title */}
             <motion.h3
-              className="text-[18px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-1"
+              className="text-[18px] font-semibold font-display text-[var(--color-text-primary,#2C2825)] mb-1"
               data-testid="coupon-title"
               initial={prefersReduced ? {} : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}

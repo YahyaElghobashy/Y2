@@ -58,8 +58,7 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
       <div className="relative z-10 flex max-w-lg w-full flex-col items-center text-center space-y-2">
         {/* Arabic text */}
         <motion.h1
-          className="font-[family-name:var(--font-amiri)] text-[84px] leading-none font-normal"
-          style={{ color: "var(--accent-copper, #B87333)" }}
+          className="font-arabic text-[72px] leading-none font-bold text-[var(--accent-copper,#B87333)]"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
@@ -74,7 +73,7 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
 
         {/* English */}
         <motion.h2
-          className="font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--text-primary)]"
+          className="font-display text-4xl font-bold tracking-tight text-[var(--text-primary)]"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -89,7 +88,7 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
 
         {/* Tagline */}
         <motion.p
-          className="pt-4 font-[family-name:var(--font-body)] text-xl italic font-light text-[var(--text-secondary)]"
+          className="pt-4 font-serif italic text-[16px] text-[var(--text-secondary)]"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -104,7 +103,7 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
 
         {/* Subtitle */}
         <motion.p
-          className="font-[family-name:var(--font-body)] text-sm text-[var(--text-muted)] max-w-[280px] mx-auto leading-relaxed"
+          className="font-body text-sm text-[var(--text-muted)] max-w-[280px] mx-auto leading-relaxed"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
@@ -123,7 +122,7 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
         <div className="pt-12 w-full max-w-xs">
           {showButton && (
             <motion.button
-              className="group w-full rounded-full py-4 px-8 font-[family-name:var(--font-body)] text-[15px] font-semibold text-white shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              className="group w-full rounded-full py-4 px-8 font-body text-[15px] font-semibold text-white shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
               style={{
                 backgroundColor: "var(--accent-copper, #B87333)",
                 boxShadow: "0 4px 14px rgba(184,115,51,0.25)",

@@ -16,7 +16,12 @@ export function PageHeader({ title, backHref, rightAction, className }: PageHead
   const hasSlots = backHref || rightAction
 
   return (
-    <header className={cn("flex items-center px-6 py-3", className)}>
+    <header
+      className={cn(
+        "sticky top-0 z-30 flex items-center px-5 py-3 bg-[var(--bg-primary,#FBF8F4)]/95 backdrop-blur-sm",
+        className
+      )}
+    >
       {hasSlots ? (
         <>
           <div className="min-w-[40px] flex items-center">
@@ -29,14 +34,14 @@ export function PageHeader({ title, backHref, rightAction, className }: PageHead
                   <ChevronLeft
                     size={24}
                     strokeWidth={1.75}
-                    className="text-text-secondary"
+                    className="text-[var(--accent-copper,#B87333)]"
                   />
                 </motion.div>
               </Link>
             )}
           </div>
 
-          <h1 className="flex-1 text-center text-xl font-bold font-display text-text-primary truncate">
+          <h1 className="flex-1 text-center text-[18px] font-bold font-nav text-[var(--text-primary,#2C2825)] truncate">
             {title}
           </h1>
 
@@ -45,7 +50,7 @@ export function PageHeader({ title, backHref, rightAction, className }: PageHead
           </div>
         </>
       ) : (
-        <h1 className="text-xl font-bold font-display text-text-primary truncate">
+        <h1 className="text-[18px] font-bold font-nav text-[var(--text-primary,#2C2825)] truncate">
           {title}
         </h1>
       )}

@@ -174,7 +174,7 @@ export function SpotlightOverlay({
         >
           {/* Step label */}
           <p
-            className="mb-1 font-[family-name:var(--font-body)] text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]"
+            className="mb-1 font-body text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]"
             data-testid="spotlight-step-label"
           >
             Step {currentIndex + 1} of {totalTargets}
@@ -182,7 +182,7 @@ export function SpotlightOverlay({
 
           {/* Title */}
           <h3
-            className="mb-1 font-[family-name:var(--font-display)] text-[18px] font-bold text-[var(--color-text-primary)]"
+            className="mb-1 font-display text-[18px] font-bold text-[var(--color-text-primary)]"
             data-testid="spotlight-title"
           >
             {target.title}
@@ -190,7 +190,7 @@ export function SpotlightOverlay({
 
           {/* Description */}
           <p
-            className="mb-4 font-[family-name:var(--font-body)] text-[14px] leading-relaxed text-[var(--color-text-secondary)]"
+            className="mb-4 font-body text-[14px] leading-relaxed text-[var(--color-text-secondary)]"
             data-testid="spotlight-description"
           >
             {target.description}
@@ -218,7 +218,7 @@ export function SpotlightOverlay({
               {!isFirst && (
                 <button
                   onClick={onBack}
-                  className="rounded-lg px-3 py-1.5 font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]"
+                  className="rounded-lg px-3 py-1.5 font-body text-[13px] text-[var(--color-text-secondary)]"
                   data-testid="spotlight-back-btn"
                 >
                   Back
@@ -227,7 +227,7 @@ export function SpotlightOverlay({
               <button
                 onClick={isLast ? onDismiss : onNext}
                 className={cn(
-                  "rounded-lg bg-[var(--color-accent-primary)] px-4 py-1.5 font-[family-name:var(--font-body)] text-[13px] font-medium text-white",
+                  "rounded-lg bg-[var(--color-accent-primary)] px-4 py-1.5 font-body text-[13px] font-medium text-white",
                   isLast && lastButtonClassName
                 )}
                 data-testid="spotlight-next-btn"

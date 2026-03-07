@@ -56,7 +56,7 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
 
   return (
     <div className="flex flex-col gap-6" data-testid="step4-form">
-      <h2 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+      <h2 className="text-[20px] font-bold font-display text-[var(--text-primary)]">
         Looking good!
       </h2>
 
@@ -85,11 +85,11 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
             <div className="flex items-start gap-3">
               {data.emoji && <span className="text-[40px] leading-none">{data.emoji}</span>}
               <div className="min-w-0 flex-1">
-                <h3 className="text-[15px] font-semibold font-[family-name:var(--font-body)] text-[var(--text-primary)]">
+                <h3 className="text-[15px] font-semibold font-body text-[var(--text-primary)]">
                   {data.title}
                 </h3>
                 {data.description && (
-                  <p className="mt-1 text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)] line-clamp-2">
+                  <p className="mt-1 text-[13px] font-body text-[var(--text-secondary)] line-clamp-2">
                     {data.description}
                   </p>
                 )}
@@ -100,7 +100,7 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[11px] font-medium font-[family-name:var(--font-body)]",
+                  "rounded-full px-2 py-0.5 text-[11px] font-medium font-body",
                   categoryStyle.bg,
                   categoryStyle.text
                 )}
@@ -108,12 +108,12 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
                 {data.category}
               </span>
               {data.isSurprise && (
-                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium font-[family-name:var(--font-body)] text-purple-700" data-testid="surprise-badge">
+                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium font-body text-purple-700" data-testid="surprise-badge">
                   Surprise
                 </span>
               )}
               {data.hasExpiry && data.expiryDate && (
-                <span className="text-[11px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
+                <span className="text-[11px] font-body text-[var(--text-muted)]">
                   Expires {data.expiryDate}
                 </span>
               )}
@@ -145,7 +145,7 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
           type="button"
           onClick={handleSend}
           disabled={isSending}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white transition-colors disabled:opacity-50"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white transition-colors disabled:opacity-50"
           data-testid="send-button"
         >
           {isSending ? (
@@ -161,7 +161,7 @@ export function CreateCouponStep4({ data, onSend, onBack }: CreateCouponStep4Pro
           <button
             type="button"
             onClick={onBack}
-            className="h-10 w-full text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+            className="h-10 w-full text-[14px] font-medium font-body text-[var(--text-secondary)]"
             data-testid="back-button"
           >
             Back

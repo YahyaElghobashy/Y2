@@ -31,7 +31,7 @@ export function SharedGarden({ compact = false, className }: SharedGardenProps) 
         }}
       >
         <p
-          className="text-sm font-[family-name:var(--font-body)]"
+          className="text-sm font-body"
           style={{ color: "var(--text-muted, #B5ADA4)" }}
         >
           Open the app together to grow your garden
@@ -57,7 +57,7 @@ export function SharedGarden({ compact = false, className }: SharedGardenProps) 
     >
       {!compact && (
         <h2
-          className="text-base font-semibold mb-3 font-[family-name:var(--font-display)]"
+          className="text-base font-semibold mb-3 font-display"
           style={{ color: "var(--text-primary)" }}
         >
           Our Garden

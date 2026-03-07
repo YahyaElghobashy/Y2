@@ -65,10 +65,10 @@ export default function MorePage() {
         <div className="flex flex-col gap-6 px-5 py-6">
           <div className="flex flex-col items-center gap-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-6 text-center">
             <UserCircle size={48} strokeWidth={1.25} className="text-[var(--color-text-muted)]" />
-            <p className="font-[family-name:var(--font-display)] text-[17px] font-semibold text-[var(--color-text-primary)]">
+            <p className="font-display text-[17px] font-semibold text-[var(--color-text-primary)]">
               Could not load profile
             </p>
-            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]">
+            <p className="font-body text-[13px] text-[var(--color-text-secondary)]">
               {user?.email ?? "Please try again"}
             </p>
             <button
@@ -125,14 +125,20 @@ export default function MorePage() {
             size="lg"
           />
           <div className="flex-1">
-            <p className="font-[family-name:var(--font-display)] text-[17px] font-semibold text-[var(--color-text-primary)]">
+            <p className="font-display text-[17px] font-semibold text-[var(--color-text-primary)]">
               {profile.display_name || "User"}
             </p>
-            <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]">
+            <p className="font-body text-[13px] text-[var(--color-text-secondary)]">
               {profile.email || user?.email || ""}
             </p>
+            {partner && (
+              <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--accent-copper,#B87333)]">
+                <Heart size={12} strokeWidth={1.75} className="fill-current" />
+                <span className="font-medium">Paired with {partner.display_name}</span>
+              </p>
+            )}
             {profile.role && (
-              <span className="inline-block mt-1 font-[family-name:var(--font-mono)] text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-2 py-0.5 rounded-md uppercase tracking-wide">
+              <span className="inline-block mt-1 font-mono text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-2 py-0.5 rounded-md uppercase tracking-wide">
                 {profile.role}
               </span>
             )}
@@ -155,7 +161,7 @@ export default function MorePage() {
 
         {/* Account Section */}
         <div>
-          <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          <p className="mb-2 font-nav text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]">
             Account
           </p>
           <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
@@ -176,7 +182,7 @@ export default function MorePage() {
 
         {/* Preferences Section */}
         <div>
-          <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          <p className="mb-2 font-nav text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]">
             Preferences
           </p>
           <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
@@ -192,7 +198,7 @@ export default function MorePage() {
               icon={<Palette size={20} strokeWidth={1.5} />}
               label="Theme"
               rightElement={
-                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
+                <span className="font-body text-[13px] text-[var(--color-text-muted)]">
                   Light
                 </span>
               }
@@ -202,7 +208,7 @@ export default function MorePage() {
               label="Language"
               subtitle="English"
               rightElement={
-                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
+                <span className="font-body text-[13px] text-[var(--color-text-muted)]">
                   Coming soon
                 </span>
               }
@@ -212,7 +218,7 @@ export default function MorePage() {
 
         {/* Data & Storage Section */}
         <div>
-          <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          <p className="mb-2 font-nav text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]">
             Data &amp; Storage
           </p>
           <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
@@ -227,7 +233,7 @@ export default function MorePage() {
               icon={<Download size={20} strokeWidth={1.5} />}
               label="Export My Data"
               rightElement={
-                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
+                <span className="font-body text-[13px] text-[var(--color-text-muted)]">
                   Coming soon
                 </span>
               }
@@ -237,7 +243,7 @@ export default function MorePage() {
 
         {/* About Section */}
         <div>
-          <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+          <p className="mb-2 font-nav text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]">
             About
           </p>
           <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
@@ -250,16 +256,20 @@ export default function MorePage() {
               icon={<Info size={20} strokeWidth={1.5} />}
               label="Version"
               rightElement={
-                <span className="font-[family-name:var(--font-mono)] text-[13px] text-[var(--color-text-muted)]">
+                <span className="font-mono text-[13px] text-[var(--color-text-muted)]">
                   {process.env.APP_VERSION ?? "0.1.0"}
                 </span>
               }
             />
-            <SettingsRow
-              icon={<Heart size={20} strokeWidth={1.5} />}
-              label="Made with love for Yara"
-              subtitle="Always and forever"
-            />
+            <div className="px-4 py-3 text-center">
+              <Heart size={16} strokeWidth={1.75} className="mx-auto mb-1 text-[var(--accent-copper,#B87333)]" />
+              <p className="font-serif italic text-[13px] text-[var(--color-text-secondary)]">
+                Made with love for Yara
+              </p>
+              <p className="font-mono text-[11px] text-[var(--color-text-muted)] mt-0.5">
+                v{process.env.APP_VERSION ?? "0.1.0"}
+              </p>
+            </div>
           </div>
         </div>
 

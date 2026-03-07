@@ -163,7 +163,7 @@ export function AddWishlistItemForm({
           >
             {/* Header */}
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-[family-name:var(--font-display)] text-[20px] font-bold text-[var(--color-text-primary)]">
+              <h2 className="font-display text-[20px] font-bold text-[var(--color-text-primary)]">
                 Add Item
               </h2>
               <motion.button
@@ -179,7 +179,7 @@ export function AddWishlistItemForm({
             <div className="flex flex-col gap-4">
               {/* URL Input */}
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                   Product URL (optional)
                 </label>
                 <div className="relative">
@@ -189,7 +189,7 @@ export function AddWishlistItemForm({
                     onChange={(e) => setUrl(e.target.value)}
                     onBlur={handleUrlBlur}
                     placeholder="Paste a link to auto-fill..."
-                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 ps-9 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-[family-name:var(--font-body)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
+                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 ps-9 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
                     data-testid="wishlist-url-input"
                   />
                   <LinkIcon size={16} className="absolute start-3 top-3 text-[var(--color-text-muted)]" />
@@ -201,7 +201,7 @@ export function AddWishlistItemForm({
 
               {/* Title */}
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                   Title *
                 </label>
                 <input
@@ -209,7 +209,7 @@ export function AddWishlistItemForm({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="What do you want?"
-                  className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-[family-name:var(--font-body)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
+                  className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
                   data-testid="wishlist-title-input"
                 />
               </div>
@@ -217,7 +217,7 @@ export function AddWishlistItemForm({
               {/* Price + Currency */}
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                  <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                     Price
                   </label>
                   <input
@@ -227,18 +227,18 @@ export function AddWishlistItemForm({
                     placeholder="0.00"
                     min="0"
                     step="0.01"
-                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-[family-name:var(--font-body)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
+                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
                     data-testid="wishlist-price-input"
                   />
                 </div>
                 <div className="w-24">
-                  <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                  <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                     Currency
                   </label>
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] font-[family-name:var(--font-body)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
+                    className="w-full rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
                     data-testid="wishlist-currency-select"
                   >
                     {CURRENCIES.map((c) => (
@@ -252,7 +252,7 @@ export function AddWishlistItemForm({
 
               {/* Category chips */}
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                   Category
                 </label>
                 <div className="flex flex-wrap gap-2" data-testid="wishlist-category-chips">
@@ -277,7 +277,7 @@ export function AddWishlistItemForm({
 
               {/* Priority radio */}
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                   Priority
                 </label>
                 <div className="flex gap-2" data-testid="wishlist-priority-radio">
@@ -302,7 +302,7 @@ export function AddWishlistItemForm({
 
               {/* Description */}
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+                <label className="mb-1.5 block text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
                   Notes (optional)
                 </label>
                 <textarea
@@ -311,14 +311,14 @@ export function AddWishlistItemForm({
                   placeholder="Size, color, any details..."
                   rows={3}
                   maxLength={500}
-                  className="w-full resize-none rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-[family-name:var(--font-body)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
+                  className="w-full resize-none rounded-[10px] border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2.5 text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] font-body focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-glow)]"
                   data-testid="wishlist-description-input"
                 />
               </div>
 
               {/* Error */}
               {error && (
-                <p className="text-[13px] text-[var(--color-error)] font-[family-name:var(--font-body)]" data-testid="wishlist-form-error">
+                <p className="text-[13px] text-[var(--color-error)] font-body" data-testid="wishlist-form-error">
                   {error}
                 </p>
               )}
@@ -330,7 +330,7 @@ export function AddWishlistItemForm({
                 onClick={handleSubmit}
                 disabled={isSubmitting || !title.trim()}
                 className={cn(
-                  "w-full rounded-xl py-3 text-[15px] font-semibold font-[family-name:var(--font-body)]",
+                  "w-full rounded-xl py-3 text-[15px] font-semibold font-body",
                   "bg-[var(--color-accent-primary)] text-white",
                   "disabled:opacity-50 disabled:cursor-not-allowed"
                 )}

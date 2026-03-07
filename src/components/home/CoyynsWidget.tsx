@@ -36,13 +36,13 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
         <div className="flex items-center justify-between">
           <div>
             <span
-              className="font-[family-name:var(--font-display)] text-[15px] font-bold"
+              className="font-display text-[15px] font-bold"
               style={{ color: "var(--text-primary, #2C2825)" }}
             >
               🪙 CoYYns
             </span>
             <span
-              className="ms-2 font-[family-name:var(--font-mono)] text-[18px] font-bold tabular-nums"
+              className="ms-2 font-mono text-[18px] font-bold tabular-nums"
               style={{ color: "var(--accent-copper, #B87333)" }}
             >
               {(wallet?.balance ?? 0).toLocaleString()}
@@ -66,7 +66,7 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
         {isLoading ? (
           <LoadingSkeleton variant="list-item" count={3} />
         ) : recentTransactions.length === 0 ? (
-          <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)] text-center py-3">
+          <p className="font-body text-[13px] text-[var(--color-text-muted)] text-center py-3">
             Start earning CoYYns together
           </p>
         ) : (
@@ -78,12 +78,12 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
 
               return (
                 <div key={tx.id} className="flex items-center justify-between">
-                  <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-primary)] truncate max-w-[160px]">
+                  <span className="font-body text-[13px] text-[var(--color-text-primary)] truncate max-w-[160px]">
                     {prefix} {tx.description ?? "Transaction"}
                   </span>
                   <span
                     className={cn(
-                      "font-[family-name:var(--font-mono)] text-[12px] shrink-0 ms-2",
+                      "font-mono text-[12px] shrink-0 ms-2",
                       isEarn
                         ? "text-accent-primary"
                         : "text-[var(--color-text-secondary)]"
@@ -106,7 +106,7 @@ export function CoyynsWidget({ className }: CoyynsWidgetProps) {
               e.stopPropagation()
               router.push("/us/marketplace")
             }}
-            className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+            className="font-body text-[13px] font-medium"
             style={{ color: "var(--accent-copper, #B87333)" }}
           >
             Marketplace &rarr;

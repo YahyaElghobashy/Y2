@@ -52,13 +52,13 @@ export function LetterCard({
           <span className="text-[28px] leading-none mt-0.5">💌</span>
           <div className="flex-1 min-w-0">
             <p
-              className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-[family-name:var(--font-display)]"
+              className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-display"
               data-testid="letter-date"
             >
               {formattedDate}
             </p>
             <p
-              className="text-[14px] text-[var(--color-text-primary,#2C2825)] font-[family-name:var(--font-display)] mt-1 truncate"
+              className="text-[14px] text-[var(--color-text-primary,#2C2825)] font-display mt-1 truncate"
               data-testid="letter-preview"
             >
               {preview}
@@ -101,7 +101,7 @@ export function LetterCard({
               style={{ boxShadow: "0 8px 40px rgba(44, 40, 37, 0.15)" }}
             >
               <p
-                className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-[family-name:var(--font-display)] mb-4"
+                className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-display mb-4"
                 data-testid="expanded-date"
               >
                 {formattedDate}
@@ -117,13 +117,13 @@ export function LetterCard({
               )}
 
               <div
-                className="text-[15px] leading-relaxed text-[var(--color-text-primary,#2C2825)] font-[family-name:var(--font-display)] whitespace-pre-wrap"
+                className="text-[15px] leading-relaxed text-[var(--color-text-primary,#2C2825)] font-display whitespace-pre-wrap"
                 data-testid="expanded-content"
               >
                 {content}
               </div>
 
-              <p className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-[family-name:var(--font-display)] mt-4 text-end">
+              <p className="text-[13px] italic text-[var(--color-text-muted,#B5AFA7)] font-display mt-4 text-end">
                 — {authorName}
               </p>
 

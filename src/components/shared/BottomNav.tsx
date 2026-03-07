@@ -182,7 +182,7 @@ export function BottomNav() {
                       data-testid={`quick-action-${action.label.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       <Icon size={22} strokeWidth={1.75} />
-                      <span className="text-[11px] font-medium font-[family-name:var(--font-body)] whitespace-nowrap">
+                      <span className="text-[11px] font-medium font-nav whitespace-nowrap">
                         {action.label}
                       </span>
                     </Link>
@@ -311,8 +311,8 @@ function NavItem({ tab, pathname }: { tab: NavTab; pathname: string }) {
         </div>
         <span
           className={cn(
-            "text-[11px] font-medium leading-none font-body",
-            isActive ? "text-accent-primary" : "text-text-secondary"
+            "text-[11px] leading-none font-nav",
+            isActive ? "font-semibold text-accent-primary" : "font-medium text-text-secondary"
           )}
         >
           {tab.label}

@@ -56,7 +56,7 @@ export function PermissionBanner({
       <div className="flex-1 min-w-0">
         <p
           className={cn(
-            "font-[family-name:var(--font-body)] text-[14px] font-semibold",
+            "font-body text-[14px] font-semibold",
             styles.title
           )}
         >
@@ -64,7 +64,7 @@ export function PermissionBanner({
         </p>
         <p
           className={cn(
-            "font-[family-name:var(--font-body)] text-[13px] mt-0.5",
+            "font-body text-[13px] mt-0.5",
             styles.description
           )}
         >

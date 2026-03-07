@@ -84,7 +84,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
       <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)] px-5">
         <div className="flex flex-col items-center gap-4" data-testid="pair-code-loading">
           <Loader2 size={32} className="animate-spin text-[var(--color-accent-primary)]" />
-          <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--color-text-secondary)]">
+          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
             {state === "pairing" ? "Pairing you with your partner..." : "Loading..."}
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
           {/* Names + Heart */}
           <div className="flex items-center justify-center gap-4 mb-8">
             <motion.h1
-              className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
+              className="font-display text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -160,7 +160,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
             </motion.div>
 
             <motion.h1
-              className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
+              className="font-display text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -171,7 +171,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
 
           {/* Subtitle */}
           <motion.p
-            className="font-[family-name:var(--font-display)] text-xl italic text-[var(--color-text-primary)] opacity-80 max-w-md leading-relaxed"
+            className="font-display text-xl italic text-[var(--color-text-primary)] opacity-80 max-w-md leading-relaxed"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.4 }}
@@ -199,7 +199,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
           >
             <Button
               onClick={() => router.replace("/")}
-              className="h-14 rounded-xl px-8 font-[family-name:var(--font-body)] text-[16px] font-bold text-white"
+              className="h-14 rounded-xl px-8 font-body text-[16px] font-bold text-white"
               style={{
                 backgroundColor: "var(--accent-copper, #B87333)",
                 boxShadow: "0 4px 14px rgba(184,115,51,0.3)",
@@ -223,16 +223,16 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
             <Heart size={28} className="text-[var(--color-accent-primary)]" />
           </div>
           <div className="text-center">
-            <h3 className="mb-2 font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)]">
+            <h3 className="mb-2 font-display text-[22px] font-bold text-[var(--color-text-primary)]">
               Already paired
             </h3>
-            <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--color-text-secondary)]">
+            <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
               You&apos;re already connected with your partner.
             </p>
           </div>
           <Button
             onClick={() => router.replace("/")}
-            className="h-12 rounded-xl bg-[var(--color-accent-primary)] px-8 font-[family-name:var(--font-body)] text-[15px] font-medium text-white"
+            className="h-12 rounded-xl bg-[var(--color-accent-primary)] px-8 font-body text-[15px] font-medium text-white"
             data-testid="pair-go-home-btn"
           >
             Go Home
@@ -250,10 +250,10 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
           <AlertCircle size={28} className="text-[var(--error)]" />
         </div>
         <div className="text-center">
-          <h3 className="mb-2 font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)]">
+          <h3 className="mb-2 font-display text-[22px] font-bold text-[var(--color-text-primary)]">
             Pairing failed
           </h3>
-          <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--color-text-secondary)]">
+          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
             {error}
           </p>
         </div>
@@ -261,7 +261,7 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
           <Button
             variant="outline"
             onClick={() => router.replace("/pair")}
-            className="h-12 rounded-xl border-[var(--color-border-subtle)] px-6 font-[family-name:var(--font-body)] text-[15px] font-medium"
+            className="h-12 rounded-xl border-[var(--color-border-subtle)] px-6 font-body text-[15px] font-medium"
             data-testid="pair-try-manual-btn"
           >
             Enter Code Manually

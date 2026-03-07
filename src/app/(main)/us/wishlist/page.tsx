@@ -108,7 +108,7 @@ export default function WishlistPage() {
         <button
           onClick={() => setActiveTab("mine")}
           className={cn(
-            "relative flex-1 rounded-lg py-2 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
+            "relative flex-1 rounded-lg py-2 text-[13px] font-medium font-body transition-colors",
             activeTab === "mine"
               ? "text-[var(--color-accent-primary)]"
               : "text-[var(--color-text-secondary)]"
@@ -127,7 +127,7 @@ export default function WishlistPage() {
         <button
           onClick={() => setActiveTab("partner")}
           className={cn(
-            "relative flex-1 rounded-lg py-2 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
+            "relative flex-1 rounded-lg py-2 text-[13px] font-medium font-body transition-colors",
             activeTab === "partner"
               ? "text-[var(--color-accent-primary)]"
               : "text-[var(--color-text-secondary)]"
@@ -148,10 +148,10 @@ export default function WishlistPage() {
       {/* Total badge */}
       {currentTotal > 0 && (
         <div className="flex items-center justify-between rounded-xl bg-[var(--color-accent-soft)] px-4 py-2.5" data-testid="wishlist-total">
-          <span className="text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+          <span className="text-[13px] font-medium text-[var(--color-text-secondary)] font-body">
             {activeTab === "mine" ? "My total" : `${partnerName}'s total`}
           </span>
-          <span className="text-[15px] font-bold text-[var(--color-accent-primary)] font-[family-name:var(--font-body)]">
+          <span className="text-[15px] font-bold text-[var(--color-accent-primary)] font-body">
             {currentTotal.toLocaleString()}
           </span>
         </div>
@@ -162,7 +162,7 @@ export default function WishlistPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value as WishlistCategory | "all")}
-          className="shrink-0 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-[12px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)] focus:outline-none"
+          className="shrink-0 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-[12px] font-medium text-[var(--color-text-secondary)] font-body focus:outline-none"
           data-testid="category-filter"
         >
           <option value="all">All Categories</option>
@@ -175,7 +175,7 @@ export default function WishlistPage() {
         <select
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value as WishlistPriority | "all")}
-          className="shrink-0 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-[12px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)] focus:outline-none"
+          className="shrink-0 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-[12px] font-medium text-[var(--color-text-secondary)] font-body focus:outline-none"
           data-testid="priority-filter"
         >
           <option value="all">All Priorities</option>
@@ -202,7 +202,7 @@ export default function WishlistPage() {
               <span className="text-4xl">
                 {activeTab === "mine" ? "\uD83C\uDF81" : "\uD83D\uDC9D"}
               </span>
-              <p className="text-[14px] text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]">
+              <p className="text-[14px] text-[var(--color-text-secondary)] font-body">
                 {activeTab === "mine"
                   ? "Your wishlist is empty. Add something!"
                   : `${partnerName} hasn't added anything yet.`}
@@ -228,7 +228,7 @@ export default function WishlistPage() {
             <div className="mt-2">
               <button
                 onClick={() => setShowPurchased(!showPurchased)}
-                className="flex w-full items-center justify-between rounded-xl bg-[var(--color-bg-secondary)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-text-secondary)] font-[family-name:var(--font-body)]"
+                className="flex w-full items-center justify-between rounded-xl bg-[var(--color-bg-secondary)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-text-secondary)] font-body"
                 data-testid="purchased-toggle"
               >
                 <span>Purchased ({purchasedItems.length})</span>

@@ -20,6 +20,7 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         warm: "bg-[var(--accent-copper,#B87333)] text-white font-semibold shadow-[0_2px_8px_rgba(184,115,51,0.25)] hover:brightness-110 active:scale-[0.97] transition-all",
+        copper: "bg-gradient-to-r from-[#B87333] to-[#D4A574] text-white rounded-full font-semibold shadow-[0_4px_14px_rgba(184,115,51,0.25)] hover:brightness-110 active:scale-[0.97] transition-all",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -30,6 +31,7 @@ const buttonVariants = cva(
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
+        pill: "h-12 px-8 text-[15px] rounded-full",
       },
     },
     defaultVariants: {

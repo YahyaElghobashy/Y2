@@ -231,7 +231,7 @@ export default function OurTablePage() {
         >
           <div>
             <span
-              className="text-[10px] font-bold uppercase tracking-widest"
+              className="font-nav text-[10px] uppercase tracking-widest"
               style={{ color: "var(--accent-copper, #B87333)" }}
             >
               Summary
@@ -242,12 +242,11 @@ export default function OurTablePage() {
           </div>
           {avgScore !== null && (
             <div className="text-end">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+              <span className="font-nav text-[10px] uppercase tracking-widest text-[var(--text-muted)]">
                 Avg Score
               </span>
               <p
-                className="font-[family-name:var(--font-display)] font-bold text-[18px]"
-                style={{ color: "var(--accent-copper, #B87333)" }}
+                className="font-display font-bold text-[22px] text-[var(--accent-copper,#B87333)]"
               >
                 {avgScore.toFixed(1)}
               </p>
@@ -262,12 +261,12 @@ export default function OurTablePage() {
         <button
           data-testid="filter-high-score"
           onClick={() => setShowHighScores((v) => !v)}
-          className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
-          style={{
-            borderColor: showHighScores ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
-            backgroundColor: showHighScores ? "rgba(184,115,51,0.08)" : "transparent",
-            color: showHighScores ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
-          }}
+          className={cn(
+            "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+            showHighScores
+              ? "bg-[var(--accent-copper,#B87333)] text-white"
+              : "border border-[var(--border-subtle)] text-[var(--text-muted)]"
+          )}
         >
           8+
         </button>
@@ -276,12 +275,12 @@ export default function OurTablePage() {
         <button
           data-testid="filter-return"
           onClick={() => setShowReturnOnly((v) => !v)}
-          className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
-          style={{
-            borderColor: showReturnOnly ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
-            backgroundColor: showReturnOnly ? "rgba(184,115,51,0.08)" : "transparent",
-            color: showReturnOnly ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
-          }}
+          className={cn(
+            "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+            showReturnOnly
+              ? "bg-[var(--accent-copper,#B87333)] text-white"
+              : "border border-[var(--border-subtle)] text-[var(--text-muted)]"
+          )}
         >
           Returned
         </button>
@@ -295,12 +294,12 @@ export default function OurTablePage() {
             key={cuisine}
             data-testid={`filter-cuisine-${cuisine}`}
             onClick={() => toggleCuisineFilter(cuisine)}
-            className="flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium border transition-colors"
-            style={{
-              borderColor: cuisineFilter.includes(cuisine) ? "var(--accent-copper, #B87333)" : "var(--border-subtle, #E8E2DA)",
-              backgroundColor: cuisineFilter.includes(cuisine) ? "rgba(184,115,51,0.08)" : "transparent",
-              color: cuisineFilter.includes(cuisine) ? "var(--accent-copper, #B87333)" : "var(--text-muted, #B5ADA4)",
-            }}
+            className={cn(
+              "flex-shrink-0 rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+              cuisineFilter.includes(cuisine)
+                ? "bg-[var(--accent-copper,#B87333)] text-white"
+                : "border border-[var(--border-subtle)] text-[var(--text-muted)]"
+            )}
           >
             {CUISINE_LABELS[cuisine]}
           </button>
@@ -325,7 +324,7 @@ export default function OurTablePage() {
           ) : (
             <>
               <h2
-                className="font-[family-name:var(--font-display)] text-[18px] font-bold italic text-[var(--text-primary)] mb-1"
+                className="font-display text-[18px] font-bold italic text-[var(--text-primary)] mb-1"
               >
                 Recent Discoveries
               </h2>

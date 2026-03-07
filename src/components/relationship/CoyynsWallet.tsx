@@ -66,13 +66,13 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
         transition={{ duration: 0.35, ease: EASE_OUT }}
       >
         <div className="flex flex-col items-center gap-2 py-4">
-          <p className="text-[13px] text-text-secondary font-[family-name:var(--font-body)]">
+          <p className="text-[13px] text-text-secondary font-body">
             Couldn&apos;t load wallet
           </p>
           <button
             type="button"
             onClick={() => refreshWallet()}
-            className="text-[13px] text-accent-primary font-medium font-[family-name:var(--font-body)]"
+            className="text-[13px] text-accent-primary font-medium font-body"
           >
             Retry
           </button>
@@ -84,7 +84,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
   return (
     <motion.div
       className={cn(
-        "texture-leather rounded-2xl overflow-hidden",
+        "texture-leather rounded-2xl overflow-hidden shimmer-overlay",
         className,
       )}
       style={{
@@ -115,7 +115,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
           >
             {/* Balance */}
             <div
-              className="text-[36px] leading-none font-[family-name:var(--font-mono)] font-normal tabular-nums"
+              className="text-[32px] leading-none font-display font-normal tabular-nums"
               style={{ color: "var(--accent-copper, #B87333)" }}
             >
               <AnimatedBalance value={wallet?.balance ?? 0} />
@@ -123,7 +123,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
 
             {/* Label */}
             <p
-              className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] font-[family-name:var(--font-body)]"
+              className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] font-body"
               style={{ color: "var(--text-muted, #B5ADA4)" }}
             >
               CoYYns
@@ -131,7 +131,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
 
             {/* Subtitle */}
             <p
-              className="mt-2 font-[family-name:var(--font-display)] text-[13px] italic"
+              className="mt-2 font-serif text-[13px] italic"
               style={{ color: "var(--text-secondary, #6B6560)" }}
             >
               Our shared joy pot
@@ -142,20 +142,20 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
           <div className="px-6 py-4 bg-white">
             <div className="flex justify-between mb-3">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[12px] text-[var(--text-muted)] font-[family-name:var(--font-body)]">Earned</span>
-                <span className="text-[12px] font-[family-name:var(--font-mono)] font-medium" style={{ color: "var(--accent-copper, #B87333)" }} data-testid="lifetime-earned">
+                <span className="text-[12px] text-[var(--text-muted)] font-body">Earned</span>
+                <span className="text-[12px] font-mono font-medium" style={{ color: "var(--accent-copper, #B87333)" }} data-testid="lifetime-earned">
                   {(wallet?.lifetime_earned ?? 0).toLocaleString()}
                 </span>
               </div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[12px] text-[var(--text-muted)] font-[family-name:var(--font-body)]">Spent</span>
-                <span className="text-[12px] font-[family-name:var(--font-mono)] font-medium" style={{ color: "var(--text-secondary, #6B6560)" }} data-testid="lifetime-spent">
+                <span className="text-[12px] text-[var(--text-muted)] font-body">Spent</span>
+                <span className="text-[12px] font-mono font-medium" style={{ color: "var(--text-secondary, #6B6560)" }} data-testid="lifetime-spent">
                   {(wallet?.lifetime_spent ?? 0).toLocaleString()}
                 </span>
               </div>
             </div>
 
-            <p className="text-[12px] text-[var(--text-secondary)] font-[family-name:var(--font-body)] italic" data-testid="partner-row">
+            <p className="text-[12px] text-[var(--text-secondary)] font-body italic" data-testid="partner-row">
               {partnerName} has {partnerBalance.toLocaleString()} CoYYns
             </p>
 
@@ -164,7 +164,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
               <button
                 type="button"
                 onClick={onAdd}
-                className="flex-1 h-10 rounded-xl text-sm font-medium font-[family-name:var(--font-body)] transition-colors"
+                className="flex-1 h-10 rounded-xl text-sm font-medium font-body transition-colors"
                 style={{
                   border: "1px solid var(--accent-copper, #B87333)",
                   color: "var(--accent-copper, #B87333)",
@@ -175,7 +175,7 @@ export function CoyynsWallet({ onAdd, onSpend, className }: CoyynsWalletProps) {
               <button
                 type="button"
                 onClick={onSpend}
-                className="flex-1 h-10 rounded-xl text-sm font-medium font-[family-name:var(--font-body)] text-white transition-colors"
+                className="flex-1 h-10 rounded-xl text-sm font-medium font-body text-white transition-colors"
                 style={{
                   backgroundColor: "var(--accent-copper, #B87333)",
                   boxShadow: "0 2px 8px rgba(184,115,51,0.2)",

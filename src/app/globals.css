@@ -88,12 +88,22 @@
     --shadow-glow-copper: 0 0 20px rgba(184, 115, 51, 0.15);
     --shadow-glow-copper-strong: 0 0 30px rgba(184, 115, 51, 0.25);
 
+    /* Pink accent (Stitch) */
+    --color-pink-primary: #ec1349;
+    --color-pink-soft: rgba(236, 19, 73, 0.08);
+    --color-pink-hover: #d41042;
+
+    /* Copper gradient token */
+    --gradient-copper: linear-gradient(135deg, #B87333, #D4A574);
+
     /* Fonts */
     --font-display: 'Playfair Display', serif;
     --font-body: 'DM Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
     --font-arabic: 'Amiri', serif;
     --font-handwritten: 'Caveat', cursive;
+    --font-serif: 'Lora', serif;
+    --font-nav: 'Plus Jakarta Sans', sans-serif;
 }
 
 :root {
@@ -154,6 +164,9 @@
     --dusk-blue: #7EC8E3;
     --preference-me: #E85D75;
     --preference-partner: #7EC8E3;
+    --pink-primary: #ec1349;
+    --pink-soft: rgba(236, 19, 73, 0.08);
+    --pink-hover: #d41042;
 }
 
 .dark {
@@ -380,6 +393,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Font utility classes */
 .font-handwritten { font-family: var(--font-handwritten, 'Caveat', cursive); }
 .font-arabic { font-family: var(--font-arabic, 'Amiri', serif); }
+.font-serif { font-family: var(--font-serif, 'Lora', serif); }
+.font-nav { font-family: var(--font-nav, 'Plus Jakarta Sans', sans-serif); }
 
 /* Warm shadow utility classes */
 .shadow-warm-sm { box-shadow: var(--shadow-warm-sm); }
@@ -389,6 +404,98 @@ h1, h2, h3, h4, h5, h6 {
 .shadow-warm-inner { box-shadow: var(--shadow-warm-inner); }
 .shadow-glow-copper { box-shadow: var(--shadow-glow-copper); }
 .shadow-glow-copper-strong { box-shadow: var(--shadow-glow-copper-strong); }
+
+/* ─── Stitch UI Patterns ─── */
+
+/* TU04: Underline input variant — bottom-border-only with copper focus */
+.input-underline {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--border-subtle, rgba(44, 40, 37, 0.08));
+  border-radius: 0;
+  padding: 12px 0;
+  outline: none;
+  transition: border-color 0.3s ease;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text-primary, #2C2825);
+}
+.input-underline::placeholder {
+  color: var(--text-muted, #B5ADA4);
+}
+.input-underline:focus {
+  border-bottom-color: var(--accent-copper, #B87333);
+  box-shadow: none;
+}
+
+/* TU05: Pill tab group — rounded segmented control */
+.pill-tab-group {
+  display: flex;
+  background: rgba(44, 40, 37, 0.05);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+.pill-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-nav, 'Plus Jakarta Sans', sans-serif);
+  color: var(--text-secondary, #8C8279);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pill-tab:hover {
+  color: var(--text-primary, #2C2825);
+}
+.pill-tab-active {
+  background: var(--accent-copper, #B87333);
+  color: white;
+}
+
+/* TU06: Lined-paper textarea — horizontal ruled lines */
+.textarea-lined {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(184, 115, 51, 0.08) 27px,
+    rgba(184, 115, 51, 0.08) 28px
+  );
+  line-height: 28px;
+  font-family: var(--font-handwritten, 'Caveat', cursive);
+  padding: 12px 16px;
+  border: 1px solid var(--border-subtle, rgba(44, 40, 37, 0.08));
+  border-radius: 12px;
+  resize: none;
+}
+.textarea-lined:focus {
+  outline: none;
+  border-color: var(--accent-copper, #B87333);
+}
+
+/* TU07: Chat bubble patterns */
+.chat-bubble-sent {
+  background: var(--accent-copper, #B87333);
+  color: white;
+  border-radius: 16px;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+  padding: 10px 14px;
+  max-width: 80%;
+}
+.chat-bubble-received {
+  background: var(--bg-soft-cream, #F5EDE3);
+  color: var(--text-primary, #2C2825);
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  margin-right: auto;
+  padding: 10px 14px;
+  max-width: 80%;
+}
 
 /* Shimmer animation for banners and loading effects */
 @keyframes shimmer-slide {

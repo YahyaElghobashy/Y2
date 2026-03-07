@@ -175,7 +175,7 @@ export default function RitualsPage() {
             <div className="flex items-center gap-3">
               <span className="text-[28px]">💌</span>
               <div>
-                <p className="text-[14px] font-semibold text-[var(--color-text-primary,#2C2825)] font-[family-name:var(--font-display)]">
+                <p className="text-[14px] font-semibold text-[var(--color-text-primary,#2C2825)] font-display">
                   Write a letter to {partnerName}
                 </p>
                 <p className="text-[12px] text-[var(--color-text-muted,#B5AFA7)]">
@@ -189,7 +189,7 @@ export default function RitualsPage() {
         {/* Past letters */}
         {letterLogs.length > 0 && (
           <div data-testid="letter-history">
-            <h3 className="mb-2 font-[family-name:var(--font-body)] text-[13px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <h3 className="mb-2 font-body text-[13px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Letters
             </h3>
             <div className="flex flex-col gap-2">
@@ -208,7 +208,7 @@ export default function RitualsPage() {
 
         {grouped.map(([cadence, items]) => (
           <div key={cadence} data-testid={`cadence-group-${cadence}`}>
-            <h3 className="mb-2 font-[family-name:var(--font-body)] text-[13px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <h3 className="mb-2 font-body text-[13px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               {cadence}
             </h3>
             <StaggerList className="flex flex-col gap-2">

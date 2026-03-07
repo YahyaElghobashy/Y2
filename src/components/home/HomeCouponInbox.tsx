@@ -51,10 +51,10 @@ export function HomeCouponInbox({ className }: HomeCouponInboxProps) {
           <div className="flex items-center gap-3">
             {topCoupon.emoji && <span className="text-[32px]">{topCoupon.emoji}</span>}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-semibold font-[family-name:var(--font-body)] text-[var(--text-primary)]">
+              <p className="truncate text-[14px] font-semibold font-body text-[var(--text-primary)]">
                 {topCoupon.title}
               </p>
-              <p className="text-[12px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+              <p className="text-[12px] font-body text-[var(--text-secondary)]">
                 {activeCoupons.length === 1
                   ? "1 coupon"
                   : `${activeCoupons.length} coupons`}

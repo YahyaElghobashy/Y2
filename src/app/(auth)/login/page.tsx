@@ -6,7 +6,7 @@ import { z } from "zod"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
-import { HayahWordmark } from "@/components/animations/HayahWordmark"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -52,81 +52,131 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center px-5">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center px-5">
       <motion.div
         className="w-full max-w-sm"
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        <HayahWordmark />
-
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-          <motion.div
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.1, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        {/* Header with Arabic text */}
+        <div className="text-center mb-10">
+          <motion.p
+            className="font-arabic text-[28px] text-[var(--accent-copper,#B87333)] mb-2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
           >
+            حياة
+          </motion.p>
+          <h1 className="font-display text-[24px] font-bold text-[var(--text-primary,#2C2825)]">
+            Welcome back
+          </h1>
+          <p className="font-serif italic text-[14px] text-[var(--text-secondary,#8C8279)] mt-1">
+            Your shared life awaits
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <label className="text-[12px] font-nav font-medium text-[var(--text-secondary,#8C8279)] uppercase tracking-wider mb-1.5 block">
+              Email
+            </label>
             <Input
               type="email"
-              placeholder="Email"
+              variant="underline"
+              placeholder="you@example.com"
               autoComplete="email"
               className={cn(
-                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted focus-visible:ring-[var(--accent-glow)] focus-visible:border-[var(--accent-copper)]",
-                errors.email && "border-error focus-visible:ring-error/20"
+                errors.email && "border-b-[var(--error,#C27070)]"
               )}
               {...register("email")}
             />
             {errors.email && (
-              <p className="text-[var(--error)] text-[12px] mt-1.5 ps-1 font-body">
+              <p className="text-[var(--error)] text-[12px] mt-1.5 font-body">
                 {errors.email.message}
               </p>
             )}
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.2, duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
           >
+            <label className="text-[12px] font-nav font-medium text-[var(--text-secondary,#8C8279)] uppercase tracking-wider mb-1.5 block">
+              Password
+            </label>
             <Input
               type="password"
-              placeholder="Password"
+              variant="underline"
+              placeholder="Your password"
               autoComplete="current-password"
               className={cn(
-                "h-12 rounded-[10px] bg-bg-elevated border-border-subtle px-4 text-[15px] font-body placeholder:text-text-muted focus-visible:ring-[var(--accent-glow)] focus-visible:border-[var(--accent-copper)]",
-                errors.password && "border-error focus-visible:ring-error/20"
+                errors.password && "border-b-[var(--error,#C27070)]"
               )}
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-[var(--error)] text-[12px] mt-1.5 ps-1 font-body">
+              <p className="text-[var(--error)] text-[12px] mt-1.5 font-body">
                 {errors.password.message}
               </p>
             )}
           </motion.div>
 
           {errors.root && (
-            <p className="text-[var(--error)] text-[13px] text-center font-body">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-[var(--error)] text-[13px] text-center font-body"
+            >
               {errors.root.message}
-            </p>
+            </motion.p>
           )}
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="h-12 rounded-xl bg-accent-primary text-white font-body font-medium text-[15px] hover:bg-[var(--accent-hover)] transition-colors mt-2"
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
+            className="mt-2"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              "Sign In"
-            )}
-          </Button>
+            <Button
+              type="submit"
+              variant="copper"
+              size="pill"
+              disabled={isSubmitting}
+              className="w-full"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </motion.div>
         </form>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center text-[13px] text-[var(--text-secondary,#8C8279)] mt-6"
+        >
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            className="text-[var(--accent-copper,#B87333)] font-semibold hover:underline"
+          >
+            Sign Up
+          </Link>
+        </motion.p>
       </motion.div>
     </div>
   )

@@ -53,7 +53,7 @@ export function OnboardingShell({
       {/* Skip button (tour steps only) */}
       {canSkip && isTourStep && (
         <motion.button
-          className="absolute bottom-8 end-5 z-10 font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)] opacity-50"
+          className="absolute bottom-8 end-5 z-10 font-body text-[13px] text-[var(--color-text-secondary)] opacity-50"
           onClick={onSkip}
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.5 }}

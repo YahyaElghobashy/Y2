@@ -27,7 +27,7 @@ export function HomeGreeting({ className }: HomeGreetingProps) {
   return (
     <div className={cn("px-5 pt-4 pb-2", className)}>
       <h1
-        className="font-[family-name:var(--font-display)] text-[28px] font-bold leading-[1.2] italic"
+        className="font-nav text-[20px] font-bold leading-[1.2]"
         style={{ color: "var(--text-primary, #2C2825)" }}
       >
         <WordReveal text={`${greeting}, ${name}`} stagger={0.06} />
@@ -44,7 +44,7 @@ export function HomeGreeting({ className }: HomeGreetingProps) {
       />
 
       <motion.p
-        className="mt-1 font-[family-name:var(--font-body)] text-[13px]"
+        className="mt-1 font-serif italic text-[14px]"
         style={{ color: "var(--text-secondary, #6B6560)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

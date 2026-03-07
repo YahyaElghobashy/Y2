@@ -121,12 +121,12 @@ export default function OnboardingPage() {
           data-testid="onboarding-error-banner"
         >
           <AlertCircle size={16} className="shrink-0 text-[var(--error)]" />
-          <p className="flex-1 font-[family-name:var(--font-body)] text-[13px] text-[var(--error)]">
+          <p className="flex-1 font-body text-[13px] text-[var(--error)]">
             {onboarding.error}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="font-[family-name:var(--font-body)] text-[13px] font-medium text-[var(--color-accent-primary)] underline"
+            className="font-body text-[13px] font-medium text-[var(--color-accent-primary)] underline"
             data-testid="onboarding-error-retry"
           >
             Retry

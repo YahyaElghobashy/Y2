@@ -76,7 +76,7 @@ export function RelationshipTabs() {
                 }
               />
               <span
-                className={`font-[family-name:var(--font-body)] text-[13px] font-medium ${
+                className={`font-body text-[13px] font-medium ${
                   isActive
                     ? "text-[var(--accent-primary)]"
                     : "text-[var(--text-secondary)]"
@@ -122,7 +122,7 @@ export function RelationshipTabs() {
                 })()}
                 <Link
                   href="/us/marketplace"
-                  className="flex items-center gap-2 py-3 px-1 font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--accent-primary)]"
+                  className="flex items-center gap-2 py-3 px-1 font-body text-[14px] font-medium text-[var(--accent-primary)]"
                   data-testid="marketplace-link"
                 >
                   <ShoppingBag size={16} />

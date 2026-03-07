@@ -111,7 +111,7 @@ export function PairingCelebration({
         <div className="relative flex items-center justify-center gap-4 mb-8">
           {/* User name from left */}
           <motion.h1
-            className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--text-primary)]"
+            className="font-display text-5xl font-bold tracking-tight text-[var(--text-primary)]"
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.3 }}
@@ -174,7 +174,7 @@ export function PairingCelebration({
 
           {/* Partner name from right */}
           <motion.h1
-            className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--text-primary)]"
+            className="font-display text-5xl font-bold tracking-tight text-[var(--text-primary)]"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.3 }}
@@ -191,7 +191,7 @@ export function PairingCelebration({
 
         {/* Subtitle */}
         <motion.p
-          className="font-[family-name:var(--font-display)] text-xl italic font-normal text-[var(--text-primary)] opacity-80 max-w-md leading-relaxed"
+          className="font-display text-xl italic font-normal text-[var(--text-primary)] opacity-80 max-w-md leading-relaxed"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.4, ease: EASE_OUT }}
@@ -225,7 +225,7 @@ export function PairingCelebration({
         <div className="w-full max-w-xs">
           {showButton && (
             <motion.button
-              className="group relative w-full overflow-hidden rounded-xl py-4 px-8 font-[family-name:var(--font-body)] text-[16px] font-bold text-white shadow-lg disabled:opacity-50"
+              className="group relative w-full overflow-hidden rounded-xl py-4 px-8 font-body text-[16px] font-bold text-white shadow-lg disabled:opacity-50"
               style={{
                 backgroundColor: "var(--accent-copper, #B87333)",
                 boxShadow: "0 4px 14px rgba(184,115,51,0.3)",

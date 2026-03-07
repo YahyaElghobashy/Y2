@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { FadeIn } from "@/components/animations"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type EmptyStateProps = {
@@ -14,8 +15,6 @@ type EmptyStateProps = {
   onAction?: () => void
   className?: string
 }
-
-const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 export function EmptyState({
   icon,
@@ -35,18 +34,16 @@ export function EmptyState({
         className
       )}
     >
-      <div className="mb-4 text-[var(--text-muted)]">{icon}</div>
+      <div className="mb-4 w-16 h-16 rounded-full bg-[var(--accent-soft,#E8D5C0)]/50 flex items-center justify-center text-[var(--accent-copper,#B87333)]">
+        {icon}
+      </div>
 
-      <h3
-        className="mb-1 text-center font-[family-name:var(--font-body)] text-[18px] font-semibold text-[var(--text-primary)]"
-      >
+      <h3 className="mb-1 text-center font-display text-[18px] font-semibold text-[var(--text-primary,#2C2825)]">
         {title}
       </h3>
 
       {subtitle && (
-        <p
-          className="mb-6 max-w-[240px] text-center font-[family-name:var(--font-body)] text-[14px] text-[var(--text-secondary)]"
-        >
+        <p className="mb-6 max-w-[240px] text-center font-serif italic text-[14px] text-[var(--text-secondary,#8C8279)]">
           {subtitle}
         </p>
       )}
@@ -56,25 +53,19 @@ export function EmptyState({
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2, ease: EASE_OUT }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <Link
-              href={actionHref}
-              className="inline-block rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-soft"
-            >
-              {actionLabel}
-            </Link>
+            <Button variant="copper" asChild>
+              <Link href={actionHref}>{actionLabel}</Link>
+            </Button>
           </motion.div>
         ) : (
-          <motion.button
+          <Button
+            variant="copper"
             onClick={onAction}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2, ease: EASE_OUT }}
-            className="rounded-lg bg-[var(--accent-primary)] px-6 py-2.5 text-[14px] font-medium text-white hover:shadow-soft"
           >
             {actionLabel}
-          </motion.button>
+          </Button>
         ))}
     </FadeIn>
   )

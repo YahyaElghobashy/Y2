@@ -46,7 +46,7 @@ export function EvaluationHistory({
 
   return (
     <div className={cn("", className)} data-testid="evaluation-history">
-      <h3 className="text-[16px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] px-5 mb-3">
+      <h3 className="text-[16px] font-semibold font-display text-[var(--color-text-primary,#2C2825)] px-5 mb-3">
         Progress Over Time
       </h3>
 

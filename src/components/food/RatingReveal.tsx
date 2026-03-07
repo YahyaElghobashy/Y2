@@ -120,7 +120,7 @@ export function RatingReveal({
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4">
-        <h2 className="text-[18px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+        <h2 className="text-[18px] font-bold font-display text-[var(--text-primary)]">
           Rating Reveal
         </h2>
         <button
@@ -237,7 +237,7 @@ export function RatingReveal({
                 </div>
               </div>
 
-              <h3 className="text-center text-[14px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)] mb-3">
+              <h3 className="text-center text-[14px] font-bold font-display text-[var(--text-primary)] mb-3">
                 Vibe
               </h3>
 
@@ -252,7 +252,7 @@ export function RatingReveal({
                   <div className="flex items-center gap-6">
                     <div className="text-center">
                       <span className="text-[10px] text-[var(--text-muted)]">You</span>
-                      <p className="text-[22px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary,#C4956A)]">
+                      <p className="text-[22px] font-bold font-display text-[var(--accent-primary,#C4956A)]">
                         {getScore(myRating, "vibe_score")}
                       </p>
                     </div>
@@ -266,7 +266,7 @@ export function RatingReveal({
                     />
                     <div className="text-center">
                       <span className="text-[10px] text-[var(--text-muted)]">Partner</span>
-                      <p className="text-[22px] font-bold font-[family-name:var(--font-display)] text-[#B5ADA4]">
+                      <p className="text-[22px] font-bold font-display text-[#B5ADA4]">
                         {getScore(partnerRating, "vibe_score")}
                       </p>
                     </div>
@@ -302,7 +302,7 @@ export function RatingReveal({
                 <span className="text-[11px] text-[var(--text-muted)]">Your Overall</span>
                 <p
                   data-testid="my-overall"
-                  className="text-[28px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary,#C4956A)]"
+                  className="text-[28px] font-bold font-display text-[var(--accent-primary,#C4956A)]"
                 >
                   {myRating.overall_average?.toFixed(1) ?? "—"}
                 </p>
@@ -311,7 +311,7 @@ export function RatingReveal({
                 <span className="text-[11px] text-[var(--text-muted)]">Partner Overall</span>
                 <p
                   data-testid="partner-overall"
-                  className="text-[28px] font-bold font-[family-name:var(--font-display)] text-[#B5ADA4]"
+                  className="text-[28px] font-bold font-display text-[#B5ADA4]"
                 >
                   {partnerRating.overall_average?.toFixed(1) ?? "—"}
                 </p>

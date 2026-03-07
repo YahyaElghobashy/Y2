@@ -87,7 +87,7 @@ export default function NotificationsPage() {
         {/* Push Toggle */}
         <FadeIn>
           <div>
-            <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+            <p className="mb-2 font-body text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
               Push Notifications
             </p>
             <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
@@ -158,7 +158,7 @@ export default function NotificationsPage() {
         {error && (
           <FadeIn>
             <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-              <p className="font-[family-name:var(--font-body)] text-[13px] text-red-700">
+              <p className="font-body text-[13px] text-red-700">
                 {error}
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function NotificationsPage() {
         {/* Registered Devices */}
         <FadeIn delay={0.2}>
           <div>
-            <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+            <p className="mb-2 font-body text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
               Registered Devices
             </p>
 
@@ -179,10 +179,10 @@ export default function NotificationsPage() {
                   strokeWidth={1.25}
                   className="text-[var(--color-text-muted)]"
                 />
-                <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+                <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
                   No devices registered
                 </p>
-                <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-muted)]">
+                <p className="font-body text-[12px] text-[var(--color-text-muted)]">
                   Enable push notifications to register this device
                 </p>
               </div>
@@ -205,16 +205,16 @@ export default function NotificationsPage() {
                         />
                         <div className="flex-1 min-w-0 ms-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-primary)]">
+                            <span className="font-body text-[14px] text-[var(--color-text-primary)]">
                               {device.device_name || getDeviceLabel(sub)}
                             </span>
                             {isCurrentDevice && (
-                              <span className="font-[family-name:var(--font-mono)] text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-1.5 py-0.5 rounded-md uppercase tracking-wide">
+                              <span className="font-mono text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-1.5 py-0.5 rounded-md uppercase tracking-wide">
                                 This device
                               </span>
                             )}
                           </div>
-                          <p className="font-[family-name:var(--font-body)] text-[12px] text-[var(--color-text-muted)] mt-0.5">
+                          <p className="font-body text-[12px] text-[var(--color-text-muted)] mt-0.5">
                             Registered {formatDate(device.created_at)}
                           </p>
                         </div>

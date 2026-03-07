@@ -25,7 +25,7 @@ export function HomeRitualsWidget({ className }: HomeRitualsWidgetProps) {
     >
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
-        <p className="font-[family-name:var(--font-body)] text-[14px] font-semibold text-[var(--text-primary)]">
+        <p className="font-body text-[14px] font-semibold text-[var(--text-primary)]">
           Rituals
         </p>
         <Link

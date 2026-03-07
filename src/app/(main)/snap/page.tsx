@@ -142,14 +142,15 @@ export default function SnapFeedPage() {
             {grouped.map(([date, { user: userSnap, partner: partnerSnap }]) => (
               <div key={date} data-testid="snap-date-group">
                 {/* Date header */}
-                <h2 className="mb-3 font-[family-name:var(--font-display)] text-[16px] font-semibold text-[var(--color-text-primary)]">
+                <h2 className="mb-3 flex items-center gap-1.5 font-display text-[15px] font-semibold text-[var(--color-text-primary)]">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent-copper,#B87333)]" />
                   {formatSnapDate(date)}
                 </h2>
 
                 {/* Snap cards */}
                 {userSnap && partnerSnap ? (
                   // Side-by-side layout
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <SnapCard
                       snap={userSnap}
                       authorName={userName}

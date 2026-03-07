@@ -44,7 +44,7 @@ export function DailyAyah({ className }: DailyAyahProps) {
         <div className="p-6 text-center space-y-6">
           {/* Arabic text */}
           <p
-            className="font-[family-name:var(--font-amiri)] text-2xl leading-relaxed text-[var(--text-primary)]"
+            className="font-arabic text-2xl leading-relaxed text-[var(--text-primary)]"
             dir="rtl"
             data-testid="ayah-arabic"
           >
@@ -54,7 +54,7 @@ export function DailyAyah({ className }: DailyAyahProps) {
           {/* Translation + reference */}
           <div className="space-y-2">
             <p
-              className="font-[family-name:var(--font-body)] text-[var(--text-secondary)] italic leading-snug"
+              className="font-body text-[var(--text-secondary)] italic leading-snug"
               data-testid="ayah-translation"
             >
               &ldquo;{DAILY_VERSE.translation}&rdquo;

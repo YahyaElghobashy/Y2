@@ -124,7 +124,7 @@ export function WishlistItemCard({
         {/* Content */}
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)] font-[family-name:var(--font-body)] line-clamp-1">
+            <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)] font-body line-clamp-1">
               {item.title}
             </h3>
 
@@ -156,7 +156,7 @@ export function WishlistItemCard({
           </div>
 
           {item.description && (
-            <p className="text-[13px] text-[var(--color-text-secondary)] font-[family-name:var(--font-body)] line-clamp-2">
+            <p className="text-[13px] text-[var(--color-text-secondary)] font-body line-clamp-2">
               {item.description}
             </p>
           )}
@@ -186,7 +186,7 @@ export function WishlistItemCard({
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[12px] text-[var(--color-info)] font-[family-name:var(--font-body)]"
+                className="flex items-center gap-1 text-[12px] text-[var(--color-info)] font-body"
                 data-testid="wishlist-link"
               >
                 <ExternalLink size={12} />

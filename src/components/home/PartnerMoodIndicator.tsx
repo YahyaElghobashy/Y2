@@ -44,7 +44,7 @@ export function PartnerMoodIndicator({ className }: PartnerMoodIndicatorProps) {
             : undefined
         }
         className={cn(
-          "text-[14px] text-[var(--color-text-muted)] font-[family-name:var(--font-body)]",
+          "text-[14px] text-[var(--color-text-muted)] font-body",
           hasNote ? "cursor-pointer" : "cursor-default"
         )}
       >
@@ -62,7 +62,7 @@ export function PartnerMoodIndicator({ className }: PartnerMoodIndicatorProps) {
             className={cn(
               "bg-[var(--color-bg-elevated)] rounded-xl p-3",
               "text-sm text-[var(--color-text-primary)]",
-              "font-[family-name:var(--font-body)]"
+              "font-body"
             )}
           >
             {partnerMood.note}

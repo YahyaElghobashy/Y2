@@ -43,13 +43,13 @@ export function HomeCountdownWidget({ className }: { className?: string }) {
             </div>
             <div>
               <p
-                className="text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--color-text-primary)]"
+                className="text-[14px] font-medium font-body text-[var(--color-text-primary)]"
                 data-testid="countdown-title"
               >
                 {next.title}
               </p>
               <p
-                className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted)]"
+                className="text-[12px] font-body text-[var(--color-text-muted)]"
                 data-testid="countdown-date"
               >
                 {formattedDate}
@@ -64,7 +64,7 @@ export function HomeCountdownWidget({ className }: { className?: string }) {
               </span>
             ) : (
               <>
-                <span className="text-[20px] font-bold text-[#DAA520] font-[family-name:var(--font-mono)]">
+                <span className="text-[20px] font-bold text-[#DAA520] font-mono">
                   {daysUntil}
                 </span>
                 <span className="text-[12px] text-[var(--color-text-secondary)] ms-1">

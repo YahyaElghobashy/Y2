@@ -52,7 +52,7 @@ export function QuickAddInput({
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="flex-1 bg-transparent font-[family-name:var(--font-body)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"
+        className="flex-1 bg-transparent font-body text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"
       />
       <motion.button
         data-testid="quick-add-button"

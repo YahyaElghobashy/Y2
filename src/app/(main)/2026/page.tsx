@@ -134,20 +134,20 @@ export default function VisionBoardPage() {
               style={{
                 background: currentBoard.hero_media_id
                   ? "rgba(0,0,0,0.2)"
-                  : "linear-gradient(135deg, var(--accent-copper, #B87333) 0%, var(--bg-warm-white, #FFFDF9) 50%, var(--gold, #DAA520) 100%)",
+                  : "linear-gradient(135deg, #B87333 0%, #D4A574 40%, #DAA520 100%)",
               }}
             />
             {/* Title */}
             <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
               <h2
-                className="font-[family-name:var(--font-display)] text-[32px] leading-tight text-white font-bold mb-2"
+                className="font-display text-[32px] leading-tight text-white font-bold mb-2"
                 style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
               >
                 {currentBoard.title || "My 2026 Vision"}
               </h2>
               {currentBoard.theme && (
                 <p
-                  className="font-[family-name:var(--font-display)] italic text-white/90 text-lg"
+                  className="font-serif italic text-white/90 text-lg"
                   style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
                 >
                   {currentBoard.theme}
@@ -179,7 +179,7 @@ export default function VisionBoardPage() {
                   <h4 className="font-bold text-[var(--text-primary)]">
                     Time for your monthly check-in
                   </h4>
-                  <p className="text-xs text-[var(--text-muted)] italic">
+                  <p className="text-xs text-[var(--text-muted)] font-serif italic">
                     &ldquo;Progress is quiet but powerful&rdquo;
                   </p>
                 </div>

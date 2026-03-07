@@ -76,7 +76,7 @@ export default function CouponDetailPage() {
         <PageHeader title="Coupon" backHref="/us/coupons" />
         <div className="flex flex-col items-center justify-center gap-3 px-5 py-12" data-testid="error-state">
           <AlertCircle size={48} strokeWidth={1.25} className="text-[var(--error)]" />
-          <p className="text-[15px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+          <p className="text-[15px] font-body text-[var(--text-secondary)]">
             Something went wrong
           </p>
           <button
@@ -142,7 +142,7 @@ export default function CouponDetailPage() {
           {coupon.emoji && <span className="text-[40px] leading-none">{coupon.emoji}</span>}
           <div className="min-w-0 flex-1">
             <h2
-              className="text-[22px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]"
+              className="text-[22px] font-bold font-display text-[var(--text-primary)]"
               data-testid="detail-title"
             >
               {coupon.title}
@@ -153,7 +153,7 @@ export default function CouponDetailPage() {
         {/* Description */}
         {coupon.description && (
           <p
-            className="mt-3 text-[15px] font-[family-name:var(--font-body)] text-[var(--text-secondary)] leading-relaxed"
+            className="mt-3 text-[15px] font-body text-[var(--text-secondary)] leading-relaxed"
             data-testid="detail-description"
           >
             {coupon.description}
@@ -164,7 +164,7 @@ export default function CouponDetailPage() {
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span
             className={cn(
-              "rounded-full px-3 py-1 text-[12px] font-medium font-[family-name:var(--font-body)]",
+              "rounded-full px-3 py-1 text-[12px] font-medium font-body",
               categoryStyle.bg,
               categoryStyle.text
             )}
@@ -174,14 +174,14 @@ export default function CouponDetailPage() {
           </span>
           <span className="flex items-center gap-1.5 rounded-full bg-[var(--bg-secondary)] px-3 py-1" data-testid="detail-status">
             <span className={cn("inline-block h-2 w-2 rounded-full", statusInfo.color)} />
-            <span className="text-[12px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+            <span className="text-[12px] font-medium font-body text-[var(--text-secondary)]">
               {statusInfo.label}
             </span>
           </span>
         </div>
 
         {/* Creator info */}
-        <p className="mt-3 text-[13px] font-[family-name:var(--font-body)] text-[var(--text-muted)]">
+        <p className="mt-3 text-[13px] font-body text-[var(--text-muted)]">
           {isCreator ? "Created by you" : "From your partner"}
         </p>
 
@@ -191,7 +191,7 @@ export default function CouponDetailPage() {
             <Clock size={14} className={isExpired ? "text-[var(--error)]" : "text-[var(--text-muted)]"} />
             <span
               className={cn(
-                "text-[13px] font-[family-name:var(--font-body)]",
+                "text-[13px] font-body",
                 isExpired ? "text-[var(--error)]" : "text-[var(--text-muted)]"
               )}
             >
@@ -209,7 +209,7 @@ export default function CouponDetailPage() {
             data-testid="reveal-button"
           >
             <Eye size={16} className="text-[var(--accent-primary)]" />
-            <span className="text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--accent-primary)]">
+            <span className="text-[14px] font-medium font-body text-[var(--accent-primary)]">
               Reveal to partner
             </span>
           </motion.button>
@@ -236,7 +236,7 @@ export default function CouponDetailPage() {
           <motion.button
             onClick={() => setModalMode("redeem")}
             whileTap={{ scale: 0.98 }}
-            className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white"
+            className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white"
             data-testid="redeem-button"
           >
             Redeem This Coupon
@@ -250,7 +250,7 @@ export default function CouponDetailPage() {
             <motion.button
               onClick={() => setModalMode("approve")}
               whileTap={{ scale: 0.98 }}
-              className="h-12 flex-1 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white"
+              className="h-12 flex-1 rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white"
               data-testid="approve-button"
             >
               Approve
@@ -258,7 +258,7 @@ export default function CouponDetailPage() {
             <motion.button
               onClick={() => setModalMode("deny")}
               whileTap={{ scale: 0.98 }}
-              className="h-12 flex-1 rounded-xl border border-[var(--border-subtle)] text-[15px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+              className="h-12 flex-1 rounded-xl border border-[var(--border-subtle)] text-[15px] font-medium font-body text-[var(--text-secondary)]"
               data-testid="deny-button"
             >
               Deny

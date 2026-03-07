@@ -35,7 +35,7 @@ export function CreateCouponStep2({ data, onNext, onBack }: CreateCouponStep2Pro
 
   return (
     <div className="flex flex-col gap-6" data-testid="step2-form">
-      <h2 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+      <h2 className="text-[20px] font-bold font-display text-[var(--text-primary)]">
         Any rules?
       </h2>
 
@@ -54,7 +54,7 @@ export function CreateCouponStep2({ data, onNext, onBack }: CreateCouponStep2Pro
             min={minDate}
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
-            className="w-full rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-[family-name:var(--font-body)] text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]"
+            className="w-full rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-body text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]"
             data-testid="expiry-date"
           />
         )}
@@ -74,7 +74,7 @@ export function CreateCouponStep2({ data, onNext, onBack }: CreateCouponStep2Pro
         <button
           type="button"
           onClick={handleNext}
-          className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white"
+          className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white"
           data-testid="next-button"
         >
           Next
@@ -82,7 +82,7 @@ export function CreateCouponStep2({ data, onNext, onBack }: CreateCouponStep2Pro
         <button
           type="button"
           onClick={onBack}
-          className="h-10 w-full text-[14px] font-medium font-[family-name:var(--font-body)] text-[var(--text-secondary)]"
+          className="h-10 w-full text-[14px] font-medium font-body text-[var(--text-secondary)]"
           data-testid="back-button"
         >
           Back
@@ -109,10 +109,10 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between rounded-xl bg-[var(--bg-secondary)] p-4">
       <div>
-        <p className="text-[15px] font-medium font-[family-name:var(--font-body)] text-[var(--text-primary)]">
+        <p className="text-[15px] font-medium font-body text-[var(--text-primary)]">
           {label}
         </p>
-        <p className="text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+        <p className="text-[13px] font-body text-[var(--text-secondary)]">
           {description}
         </p>
       </div>

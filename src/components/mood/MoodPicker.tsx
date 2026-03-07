@@ -73,7 +73,7 @@ export function MoodPicker({ className }: MoodPickerProps) {
                 {MOOD_EMOJI[mood]}
               </motion.button>
               <span
-                className="text-[10px] font-[family-name:var(--font-body)]"
+                className="text-[10px] font-body"
                 style={{
                   color: isSelected
                     ? "var(--accent-copper, #B87333)"
@@ -114,7 +114,7 @@ export function MoodPicker({ className }: MoodPickerProps) {
               "bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]",
               "placeholder:text-[var(--color-text-muted)]",
               "border border-[var(--color-border-subtle)]",
-              "font-[family-name:var(--font-body)]",
+              "font-body",
               "focus:outline-none focus:ring-1 focus:ring-[var(--color-accent-primary)]"
             )}
           />

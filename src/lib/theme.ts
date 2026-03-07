@@ -39,6 +39,11 @@ export const colors = {
     error: "#C75050",
     warning: "#D4A040",
   },
+  pink: {
+    primary: "#ec1349",
+    soft: "rgba(236, 19, 73, 0.08)",
+    hover: "#d41042",
+  },
   border: {
     subtle: "rgba(44, 40, 37, 0.08)",
   },
@@ -47,6 +52,7 @@ export const colors = {
 export const gradients = {
   warm: "linear-gradient(135deg, #F5F0E8, #FBF8F4)",
   accent: "linear-gradient(135deg, #C4956A, #D4A574)",
+  copper: "linear-gradient(135deg, #B87333, #D4A574)",
 
   // Time-aware backgrounds
   heroLight: "linear-gradient(180deg, #FBF7F4 0%, #F5EDE3 100%)",
@@ -94,6 +100,8 @@ export const fonts = {
   mono: "'JetBrains Mono', monospace",
   arabic: "'Amiri', serif",
   handwritten: "'Caveat', cursive",
+  serif: "'Lora', serif",
+  nav: "'Plus Jakarta Sans', sans-serif",
 } as const
 
 export const animation = {

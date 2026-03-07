@@ -30,7 +30,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
         data-testid="home-calendar-peek"
       >
         <p
-          className="text-[13px] font-[family-name:var(--font-body)] text-center mb-3"
+          className="text-[13px] font-body text-center mb-3"
           style={{ color: "var(--text-secondary, #6B6560)" }}
           data-testid="empty-message"
         >
@@ -65,7 +65,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <span
-          className="text-[15px] font-bold font-[family-name:var(--font-display)] italic"
+          className="text-[15px] font-bold font-display italic"
           style={{ color: "var(--text-primary, #2C2825)" }}
           data-testid="peek-header"
         >
@@ -73,7 +73,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
         </span>
         <Link
           href="/us/calendar"
-          className="text-[13px] font-medium font-[family-name:var(--font-body)]"
+          className="text-[13px] font-medium font-body"
           style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="see-all-link"
         >
@@ -108,13 +108,13 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
                   data-color={color}
                 >
                   <span
-                    className="text-[12px] font-bold leading-none font-[family-name:var(--font-display)]"
+                    className="text-[12px] font-bold leading-none font-display"
                     style={{ color }}
                   >
                     {dayNum}
                   </span>
                   <span
-                    className="text-[8px] uppercase leading-none mt-px font-[family-name:var(--font-body)]"
+                    className="text-[8px] uppercase leading-none mt-px font-body"
                     style={{ color }}
                   >
                     {monthAbbr}
@@ -124,7 +124,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
                 {/* Title + time */}
                 <div className="flex-1 min-w-0">
                   <p
-                    className="text-[14px] font-medium font-[family-name:var(--font-body)] truncate"
+                    className="text-[14px] font-medium font-body truncate"
                     style={{ color: "var(--text-primary, #2C2825)" }}
                     data-testid="event-title"
                   >
@@ -132,7 +132,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
                   </p>
                   {event.event_time && (
                     <p
-                      className="text-[11px] font-[family-name:var(--font-body)]"
+                      className="text-[11px] font-body"
                       style={{ color: "var(--text-muted, #B5ADA4)" }}
                       data-testid="event-time"
                     >

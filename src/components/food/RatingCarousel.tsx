@@ -106,7 +106,7 @@ export function RatingCarousel({ onSubmit, onBack }: RatingCarouselProps) {
         transition={{ duration: 0.3, ease: EASE_OUT }}
         className="flex flex-col gap-6"
       >
-        <h3 className="text-center text-[18px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+        <h3 className="text-center text-[18px] font-bold font-display text-[var(--text-primary)]">
           Your Ratings
         </h3>
 
@@ -122,7 +122,7 @@ export function RatingCarousel({ onSubmit, onBack }: RatingCarouselProps) {
               >
                 <Icon size={16} className="text-[var(--accent-primary,#C4956A)]" />
                 <span className="text-[11px] text-[var(--text-muted)]">{dim.label}</span>
-                <span className="text-[18px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+                <span className="text-[18px] font-bold font-display text-[var(--text-primary)]">
                   {ratings[dim.key]}
                 </span>
               </div>
@@ -133,7 +133,7 @@ export function RatingCarousel({ onSubmit, onBack }: RatingCarouselProps) {
         {/* Overall */}
         <div data-testid="overall-score" className="flex flex-col items-center gap-1">
           <span className="text-[13px] text-[var(--text-secondary)]">Overall</span>
-          <span className="text-[32px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary,#C4956A)]">
+          <span className="text-[32px] font-bold font-display text-[var(--accent-primary,#C4956A)]">
             {overallAverage}
           </span>
         </div>
@@ -195,7 +195,7 @@ export function RatingCarousel({ onSubmit, onBack }: RatingCarouselProps) {
                 )
               })()}
 
-              <h3 className="text-[18px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+              <h3 className="text-[18px] font-bold font-display text-[var(--text-primary)]">
                 {currentDim.label}
               </h3>
 

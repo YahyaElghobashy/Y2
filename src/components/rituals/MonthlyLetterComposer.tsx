@@ -99,7 +99,7 @@ export function MonthlyLetterComposer({
             </button>
 
             <h2
-              className="text-[16px] font-semibold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)]"
+              className="text-[16px] font-semibold font-display text-[var(--color-text-primary,#2C2825)]"
               data-testid="composer-title"
             >
               Monthly Letter
@@ -125,7 +125,7 @@ export function MonthlyLetterComposer({
           {/* Letter body */}
           <div className="flex-1 overflow-y-auto px-6 py-4">
             <p
-              className="mb-3 text-[16px] italic text-[var(--color-text-muted,#B5AFA7)] font-[family-name:var(--font-display)]"
+              className="mb-3 text-[16px] italic text-[var(--color-text-muted,#B5AFA7)] font-display"
               data-testid="letter-greeting"
             >
               Dear {partnerName},
@@ -139,7 +139,7 @@ export function MonthlyLetterComposer({
               className={cn(
                 "w-full min-h-[300px] resize-none border-none bg-transparent outline-none",
                 "text-[16px] leading-relaxed text-[var(--color-text-primary,#2C2825)]",
-                "font-[family-name:var(--font-display)]",
+                "font-display",
                 "placeholder:text-[var(--color-text-muted,#B5AFA7)] placeholder:italic"
               )}
               data-testid="letter-textarea"
@@ -188,7 +188,7 @@ export function MonthlyLetterComposer({
             <div className="flex-1" />
 
             <span
-              className="text-[12px] text-[var(--color-text-muted,#B5AFA7)] font-[family-name:var(--font-mono)]"
+              className="text-[12px] text-[var(--color-text-muted,#B5AFA7)] font-mono"
               data-testid="char-count"
             >
               {content.length}

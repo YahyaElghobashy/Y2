@@ -144,7 +144,7 @@ export function PrayerTracker({ className }: PrayerTrackerProps) {
               </div>
               <span
                 className={cn(
-                  "font-[family-name:var(--font-amiri)] text-sm",
+                  "font-arabic text-sm",
                   completed
                     ? "text-[var(--text-primary)]"
                     : "text-[var(--text-muted)]"

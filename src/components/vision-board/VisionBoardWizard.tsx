@@ -115,7 +115,7 @@ export function VisionBoardWizard({ onComplete }: VisionBoardWizardProps) {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25, ease: EASE_OUT }}
           >
-            <h2 className="text-[24px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+            <h2 className="text-[24px] font-bold font-display text-[var(--color-text-primary,#2C2825)] mb-2">
               What&apos;s your year about?
             </h2>
             <p className="text-[14px] text-[var(--color-text-secondary,#8C8279)] mb-6">
@@ -175,7 +175,7 @@ export function VisionBoardWizard({ onComplete }: VisionBoardWizardProps) {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25, ease: EASE_OUT }}
           >
-            <h2 className="text-[24px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+            <h2 className="text-[24px] font-bold font-display text-[var(--color-text-primary,#2C2825)] mb-2">
               Pick your focus areas
             </h2>
             <p className="text-[14px] text-[var(--color-text-secondary,#8C8279)] mb-6">
@@ -248,7 +248,7 @@ export function VisionBoardWizard({ onComplete }: VisionBoardWizardProps) {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.25, ease: EASE_OUT }}
           >
-            <h2 className="text-[24px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+            <h2 className="text-[24px] font-bold font-display text-[var(--color-text-primary,#2C2825)] mb-2">
               Add a banner image?
             </h2>
             <p className="text-[14px] text-[var(--color-text-secondary,#8C8279)] mb-6">
@@ -291,7 +291,7 @@ export function VisionBoardWizard({ onComplete }: VisionBoardWizardProps) {
           >
             <div className="flex flex-col items-center text-center">
               <Sparkles size={48} strokeWidth={1.25} className="text-[var(--accent-primary,#C4956A)] mb-4" />
-              <h2 className="text-[24px] font-bold font-[family-name:var(--font-display)] text-[var(--color-text-primary,#2C2825)] mb-2">
+              <h2 className="text-[24px] font-bold font-display text-[var(--color-text-primary,#2C2825)] mb-2">
                 You&apos;re set!
               </h2>
               <p className="text-[14px] text-[var(--color-text-secondary,#8C8279)] mb-6">

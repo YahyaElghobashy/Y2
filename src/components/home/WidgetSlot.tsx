@@ -13,7 +13,7 @@ export function WidgetSlot({ label = "Widget coming soon", className }: WidgetSl
         className
       )}
     >
-      <p className="font-[family-name:var(--font-body)] text-[14px] font-medium text-[var(--color-text-muted)]">
+      <p className="font-body text-[14px] font-medium text-[var(--color-text-muted)]">
         {label}
       </p>
     </div>

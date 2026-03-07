@@ -88,7 +88,7 @@ export function DaysTogetherCounter({
         <span
           ref={displayRef}
           data-testid="day-count"
-          className="text-[14px] font-[family-name:var(--font-display)] font-semibold tabular-nums"
+          className="text-[14px] font-display font-semibold tabular-nums"
           style={{ color: "var(--accent-copper, #B87333)" }}
         >
           {dayCount}
@@ -122,14 +122,20 @@ export function DaysTogetherCounter({
     >
       <p
         data-testid="days-label"
-        className="text-[14px] font-[family-name:var(--font-body)] italic"
+        className="text-[14px] font-serif italic"
         style={{ color: "var(--text-secondary, #6B6560)" }}
       >
         Day{" "}
+        <Heart
+          size={14}
+          className="inline mx-1"
+          style={{ color: "var(--accent-copper, #B87333)" }}
+          strokeWidth={1.75}
+        />{" "}
         <span
           ref={displayRef}
           data-testid="day-count"
-          className="text-[22px] font-[family-name:var(--font-display)] font-bold tabular-nums not-italic"
+          className="text-[20px] font-display font-bold tabular-nums not-italic"
           style={{ color: "var(--accent-copper, #B87333)" }}
         >
           {dayCount}

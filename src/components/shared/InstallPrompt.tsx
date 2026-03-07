@@ -111,13 +111,13 @@ export function InstallPrompt() {
             </div>
             <div className="flex-1 min-w-0">
               <p
-                className="font-[family-name:var(--font-display)] text-[15px] font-bold"
+                className="font-display text-[15px] font-bold"
                 style={{ color: "var(--text-primary, #2C2825)" }}
               >
                 Install Hayah
               </p>
               <p
-                className="font-[family-name:var(--font-body)] text-[12px]"
+                className="font-body text-[12px]"
                 style={{ color: "var(--text-secondary, #6B6560)" }}
               >
                 Add to home screen for the best experience
@@ -167,7 +167,7 @@ export function InstallPrompt() {
               onClick={(e) => e.stopPropagation()}
               data-testid="ios-instructions"
             >
-              <h3 className="mb-4 font-[family-name:var(--font-display)] text-[18px] font-semibold text-[var(--color-text-primary)]">
+              <h3 className="mb-4 font-display text-[18px] font-semibold text-[var(--color-text-primary)]">
                 Install Hayah on iOS
               </h3>
               <div className="flex flex-col gap-3">
@@ -175,7 +175,7 @@ export function InstallPrompt() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-soft)]">
                     <Share size={16} className="text-[var(--color-accent-primary)]" />
                   </div>
-                  <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+                  <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
                     Tap the Share button in Safari
                   </p>
                 </div>
@@ -183,7 +183,7 @@ export function InstallPrompt() {
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-accent-soft)]">
                     <Download size={16} className="text-[var(--color-accent-primary)]" />
                   </div>
-                  <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+                  <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
                     Select &quot;Add to Home Screen&quot;
                   </p>
                 </div>

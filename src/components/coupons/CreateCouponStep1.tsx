@@ -78,13 +78,13 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6" data-testid="step1-form">
-      <h2 className="text-[20px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+      <h2 className="text-[20px] font-bold font-display text-[var(--text-primary)]">
         What&apos;s the gift?
       </h2>
 
       {/* Emoji picker */}
       <div>
-        <p className="mb-2 text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+        <p className="mb-2 text-[13px] font-body text-[var(--text-secondary)]">
           Pick an emoji
         </p>
         <div className="flex flex-wrap gap-2" data-testid="emoji-picker">
@@ -112,14 +112,14 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
           type="text"
           placeholder={PLACEHOLDER_SUGGESTIONS[placeholderIndex]}
           className={cn(
-            "w-full rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-[family-name:var(--font-body)] text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]",
+            "w-full rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-body text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]",
             errors.title && "border-[var(--error)]"
           )}
           {...register("title")}
           data-testid="title-input"
         />
         {errors.title && (
-          <p className="text-[var(--error)] text-[12px] font-[family-name:var(--font-body)]">
+          <p className="text-[var(--error)] text-[12px] font-body">
             {errors.title.message}
           </p>
         )}
@@ -130,12 +130,12 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
         <textarea
           rows={3}
           placeholder="Add details or conditions (optional)"
-          className="w-full resize-none rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-[family-name:var(--font-body)] text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]"
+          className="w-full resize-none rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-[15px] font-body text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-primary)] placeholder:text-[var(--text-muted)]"
           {...register("description")}
           data-testid="description-input"
         />
         {errors.description && (
-          <p className="text-[var(--error)] text-[12px] font-[family-name:var(--font-body)]">
+          <p className="text-[var(--error)] text-[12px] font-body">
             {errors.description.message}
           </p>
         )}
@@ -143,7 +143,7 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
 
       {/* Category pills */}
       <div>
-        <p className="mb-2 text-[13px] font-[family-name:var(--font-body)] text-[var(--text-secondary)]">
+        <p className="mb-2 text-[13px] font-body text-[var(--text-secondary)]">
           Category
         </p>
         <div className="flex flex-wrap gap-2" data-testid="category-picker">
@@ -153,7 +153,7 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
               type="button"
               onClick={() => setSelectedCategory(cat.id)}
               className={cn(
-                "rounded-full px-4 py-2 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
+                "rounded-full px-4 py-2 text-[13px] font-medium font-body transition-colors",
                 selectedCategory === cat.id
                   ? "bg-[var(--accent-primary)] text-white"
                   : "bg-[var(--bg-secondary)] text-[var(--text-secondary)]"
@@ -169,7 +169,7 @@ export function CreateCouponStep1({ data, onNext }: CreateCouponStep1Props) {
       <button
         type="submit"
         disabled={!isValid}
-        className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-[family-name:var(--font-body)] text-white transition-colors disabled:opacity-50"
+        className="h-12 w-full rounded-xl bg-[var(--accent-primary)] text-[15px] font-medium font-body text-white transition-colors disabled:opacity-50"
         data-testid="next-button"
       >
         Next

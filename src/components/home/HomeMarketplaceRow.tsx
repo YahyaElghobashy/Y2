@@ -53,14 +53,14 @@ export function HomeMarketplaceRow({ className }: HomeMarketplaceRowProps) {
       {/* Section header */}
       <div className="flex items-center justify-between px-5 mb-3">
         <h2
-          className="font-[family-name:var(--font-display)] text-[15px] font-bold italic"
+          className="font-display text-[15px] font-bold italic"
           style={{ color: "var(--text-primary, #2C2825)" }}
         >
           Quick Buys
         </h2>
         <Link
           href="/us/marketplace"
-          className="font-[family-name:var(--font-body)] text-[13px] font-medium"
+          className="font-body text-[13px] font-medium"
           style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="see-all-link"
         >

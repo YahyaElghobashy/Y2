@@ -56,7 +56,7 @@ export function AnnouncementBanner({ messages, className }: AnnouncementBannerPr
           <AnimatePresence mode="wait">
             <motion.p
               key={currentIndex}
-              className="font-[family-name:var(--font-body)] text-[12px] truncate"
+              className="font-body text-[12px] truncate"
               style={{ color: "var(--accent-copper, #B87333)" }}
               initial={{ y: 14, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

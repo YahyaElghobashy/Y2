@@ -85,12 +85,12 @@ export function PairingStep({ onContinue, onSkip, initialCode }: PairingStepProp
         transition={{ duration: 0.3, ease: EASE_OUT }}
       >
         <h2
-          className="font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)]"
+          className="font-display text-[22px] font-bold text-[var(--color-text-primary)]"
           data-testid="pairing-heading"
         >
           Find your partner
         </h2>
-        <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+        <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
           Share your code or enter theirs to connect
         </p>
       </motion.div>
@@ -109,7 +109,7 @@ export function PairingStep({ onContinue, onSkip, initialCode }: PairingStepProp
       {/* Divider */}
       <div className="flex w-full max-w-xs items-center gap-4">
         <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
-        <span className="font-[family-name:var(--font-body)] text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+        <span className="font-body text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
           or
         </span>
         <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
@@ -120,7 +120,7 @@ export function PairingStep({ onContinue, onSkip, initialCode }: PairingStepProp
 
       {/* Continue alone option */}
       <motion.button
-        className="mt-2 font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)] opacity-40"
+        className="mt-2 font-body text-[13px] text-[var(--color-text-muted)] opacity-40"
         onClick={onSkip}
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.4 }}

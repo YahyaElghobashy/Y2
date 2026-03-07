@@ -27,7 +27,7 @@ export function PresetCard({
       transition={{ duration: 0.15, ease: EASE_OUT }}
       onClick={() => onPlay(preset.id)}
       className={cn(
-        "relative cursor-pointer rounded-2xl bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-sm",
+        "relative cursor-pointer rounded-2xl bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-warm-md",
         className
       )}
     >

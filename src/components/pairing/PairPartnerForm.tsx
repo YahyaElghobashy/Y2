@@ -140,10 +140,10 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-          <h3 className="font-[family-name:var(--font-display)] text-[22px] font-bold text-[var(--color-text-primary)] mb-2">
+          <h3 className="font-display text-[22px] font-bold text-[var(--color-text-primary)] mb-2">
             You&apos;re paired!
           </h3>
-          <p className="font-[family-name:var(--font-body)] text-[15px] text-[var(--color-text-secondary)]">
+          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
             Connected with {partnerName}
           </p>
         </motion.div>
@@ -154,7 +154,7 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
         >
           <Button
             onClick={onPaired}
-            className="h-12 px-8 rounded-xl bg-[var(--color-accent-primary)] text-white font-[family-name:var(--font-body)] font-medium text-[15px]"
+            className="h-12 px-8 rounded-xl bg-[var(--color-accent-primary)] text-white font-body font-medium text-[15px]"
             data-testid="enter-hayah-btn"
           >
             Enter Hayah
@@ -167,7 +167,7 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
   return (
     <div className={className}>
       <div className="flex flex-col items-center gap-4">
-        <p className="font-[family-name:var(--font-body)] text-[14px] text-[var(--color-text-secondary)]">
+        <p className="font-body text-[14px] text-[var(--color-text-secondary)]">
           Have a code?
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 w-full max-w-xs">
@@ -187,7 +187,7 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
               onChange={handleCodeChange}
               placeholder="XXXXXX"
               className={cn(
-                "h-14 rounded-xl text-center font-[family-name:var(--font-mono)] text-[24px] tracking-[0.3em] font-bold",
+                "h-14 rounded-xl text-center font-mono text-[24px] tracking-[0.3em] font-bold",
                 "bg-[var(--color-bg-elevated)] border-[var(--color-border-subtle)]",
                 "placeholder:text-[var(--color-text-muted)] placeholder:tracking-[0.3em]",
                 error && "border-[var(--error)]"
@@ -206,7 +206,7 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
                 data-testid="pair-error"
               >
                 <AlertCircle size={14} />
-                <span className="font-[family-name:var(--font-body)] text-[13px]">{error}</span>
+                <span className="font-body text-[13px]">{error}</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -214,7 +214,7 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
           <Button
             type="submit"
             disabled={code.length !== 6 || state === "loading"}
-            className="w-full h-12 gap-2 rounded-xl bg-[var(--color-accent-primary)] text-white font-[family-name:var(--font-body)] font-medium text-[15px] disabled:opacity-50"
+            className="w-full h-12 gap-2 rounded-xl bg-[var(--color-accent-primary)] text-white font-body font-medium text-[15px] disabled:opacity-50"
             data-testid="pair-submit-btn"
           >
             <Link2 size={18} />

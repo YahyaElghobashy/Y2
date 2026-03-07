@@ -340,7 +340,7 @@ export default function VisitDetailPage() {
         {myRating && (
           <div data-testid="rating-section" className="mb-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[14px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+              <h3 className="text-[14px] font-bold font-display text-[var(--text-primary)]">
                 Ratings
               </h3>
               {bothReviewed && (
@@ -403,7 +403,7 @@ export default function VisitDetailPage() {
               <div className="flex flex-col items-center">
                 <span className="text-[11px] text-[var(--text-muted)]">Overall</span>
                 <div className="mt-1 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-primary,#C4956A)] text-white">
-                  <span className="text-[24px] font-bold font-[family-name:var(--font-display)]">
+                  <span className="text-[24px] font-bold font-display">
                     {myRating.overall_average?.toFixed(1) ?? "—"}
                   </span>
                 </div>
@@ -415,7 +415,7 @@ export default function VisitDetailPage() {
         {/* Return History */}
         {returnHistory.length > 1 && (
           <div data-testid="return-history" className="mb-5">
-            <h3 className="mb-3 text-[14px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+            <h3 className="mb-3 text-[14px] font-bold font-display text-[var(--text-primary)]">
               Visit History
             </h3>
             <div className="flex flex-col gap-2">
@@ -444,7 +444,7 @@ export default function VisitDetailPage() {
                       })}
                     </span>
                     {score != null && (
-                      <span className="text-[13px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+                      <span className="text-[13px] font-bold font-display text-[var(--text-primary)]">
                         {score.toFixed(1)}
                       </span>
                     )}
@@ -464,7 +464,7 @@ export default function VisitDetailPage() {
 
         {/* Notes */}
         <div data-testid="notes-section" className="mb-5">
-          <h3 className="mb-2 text-[14px] font-bold font-[family-name:var(--font-display)] text-[var(--text-primary)]">
+          <h3 className="mb-2 text-[14px] font-bold font-display text-[var(--text-primary)]">
             Notes
           </h3>
           <textarea

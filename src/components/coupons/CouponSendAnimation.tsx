@@ -73,7 +73,7 @@ export function CouponSendAnimation({ visible, onComplete, className }: CouponSe
               transition={{ duration: 0 }}
             >
               <span
-                className="block text-[32px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary)]"
+                className="block text-[32px] font-bold font-display text-[var(--accent-primary)]"
                 data-testid="sent-confirm"
               >
                 Sent!
@@ -148,7 +148,7 @@ export function CouponSendAnimation({ visible, onComplete, className }: CouponSe
                 transition={{ duration: 0.3, delay: 1.5 }}
               >
                 <span
-                  className="block text-[32px] font-bold font-[family-name:var(--font-display)] text-[var(--accent-primary)]"
+                  className="block text-[32px] font-bold font-display text-[var(--accent-primary)]"
                   data-testid="sent-confirm"
                 >
                   Sent!

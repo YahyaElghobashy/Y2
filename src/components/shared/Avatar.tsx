@@ -64,7 +64,7 @@ export function Avatar({ src, name, size = "md", className }: AvatarProps) {
       ) : (
         <div
           className={cn(
-            "flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] font-semibold text-[var(--color-accent-primary)]",
+            "flex h-full w-full items-center justify-center font-display font-semibold text-[var(--color-accent-primary)]",
             textSizeClass,
           )}
         >

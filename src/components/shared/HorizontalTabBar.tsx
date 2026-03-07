@@ -53,7 +53,7 @@ export function HorizontalTabBar({
     <div
       ref={scrollRef}
       className={cn(
-        "sticky top-0 z-10 flex gap-1 overflow-x-auto bg-[var(--color-bg-primary)] px-5 pb-2 scrollbar-hide",
+        "sticky top-0 z-10 flex gap-1 overflow-x-auto bg-[var(--color-bg-primary)]/95 backdrop-blur-sm px-5 pb-2 scrollbar-hide",
         className
       )}
       role="tablist"
@@ -74,9 +74,9 @@ export function HorizontalTabBar({
             role="tab"
             aria-selected={isActive}
             className={cn(
-              "relative shrink-0 px-4 pt-2 pb-3 text-[13px] font-medium font-[family-name:var(--font-body)] transition-colors",
+              "relative shrink-0 px-4 pt-2 pb-3 text-[13px] font-medium font-nav transition-colors",
               isActive
-                ? "text-[var(--color-accent-primary)]"
+                ? "text-[var(--accent-copper,#B87333)]"
                 : "text-[var(--color-text-secondary)]"
             )}
             data-testid={`tab-${tab.label.toLowerCase()}`}
@@ -85,7 +85,7 @@ export function HorizontalTabBar({
             {isActive && (
               <motion.div
                 layoutId={layoutId}
-                className="absolute bottom-0 inset-x-2 h-0.5 rounded-full bg-[var(--color-accent-primary)]"
+                className="absolute bottom-0 inset-x-2 h-[2px] rounded-full bg-[var(--accent-copper,#B87333)]"
                 transition={{ duration: 0.25, ease: EASE_OUT }}
               />
             )}

@@ -45,7 +45,7 @@ export function HomeSnapWidget({ className }: HomeSnapWidgetProps) {
           </div>
           <div className="flex-1">
             <p
-              className="text-sm font-semibold font-[family-name:var(--font-display)]"
+              className="text-sm font-semibold font-display"
               style={{ color: "var(--text-primary)" }}
             >
               Snap Time!
@@ -53,7 +53,7 @@ export function HomeSnapWidget({ className }: HomeSnapWidgetProps) {
             {windowTimeRemaining !== null && (
               <p
                 data-testid="snap-timer"
-                className="text-xs font-[family-name:var(--font-mono)] tabular-nums"
+                className="text-xs font-mono tabular-nums"
                 style={{ color: "var(--text-muted)" }}
               >
                 {formatTimer(windowTimeRemaining)} remaining
@@ -85,7 +85,7 @@ export function HomeSnapWidget({ className }: HomeSnapWidgetProps) {
             <Check size={16} className="text-emerald-500" />
           </div>
           <p
-            className="text-sm font-[family-name:var(--font-body)]"
+            className="text-sm font-body"
             style={{ color: "var(--text-muted)" }}
           >
             Snapped!

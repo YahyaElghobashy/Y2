@@ -110,7 +110,7 @@ export function QRCodeDisplay({ code, className }: QRCodeDisplayProps) {
 
         {/* Code display */}
         <p
-          className="font-[family-name:var(--font-mono)] text-[28px] font-bold tracking-[0.3em] text-[var(--color-accent-primary)]"
+          className="font-mono text-[28px] font-bold tracking-[0.3em] text-[var(--color-accent-primary)]"
           data-testid="qr-code-text"
         >
           {code}
@@ -122,7 +122,7 @@ export function QRCodeDisplay({ code, className }: QRCodeDisplayProps) {
             variant="outline"
             size="sm"
             onClick={handleCopy}
-            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-[family-name:var(--font-body)]"
+            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-body"
             data-testid="qr-copy-btn"
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -132,7 +132,7 @@ export function QRCodeDisplay({ code, className }: QRCodeDisplayProps) {
             variant="outline"
             size="sm"
             onClick={handleShare}
-            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-[family-name:var(--font-body)]"
+            className="gap-2 rounded-xl border-[var(--color-border-subtle)] font-body"
             data-testid="qr-share-btn"
           >
             <Share2 size={16} />

@@ -32,7 +32,7 @@ export function HayahWordmark() {
     <div className="text-center mb-10">
       {/* English wordmark */}
       <h1
-        className="font-[family-name:var(--font-display)] text-[40px] font-bold leading-tight"
+        className="font-display text-[40px] font-bold leading-tight"
         style={{ color: "var(--text-primary, #2C2825)" }}
         aria-label="HaYYah"
       >
@@ -57,7 +57,7 @@ export function HayahWordmark() {
 
       {/* Arabic subtitle */}
       <motion.p
-        className="font-[family-name:var(--font-arabic)] text-[18px] mt-1"
+        className="font-arabic text-[18px] mt-1"
         style={{ color: "var(--text-secondary, #6B6560)" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -68,7 +68,7 @@ export function HayahWordmark() {
 
       {/* Tagline */}
       <motion.p
-        className="font-[family-name:var(--font-body)] text-[14px] italic mt-3"
+        className="font-body text-[14px] italic mt-3"
         style={{ color: "var(--text-muted, #B5ADA4)" }}
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}

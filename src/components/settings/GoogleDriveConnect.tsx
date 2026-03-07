@@ -46,10 +46,10 @@ export function GoogleDriveConnect({ className }: GoogleDriveConnectProps) {
       <div className="flex items-center gap-3">
         <HardDrive size={20} strokeWidth={1.5} className="text-[var(--color-text-secondary)]" />
         <div>
-          <p className="text-[15px] font-[family-name:var(--font-body)] text-[var(--color-text-primary)]">
+          <p className="text-[15px] font-body text-[var(--color-text-primary)]">
             Google Drive
           </p>
-          <p className="text-[12px] font-[family-name:var(--font-body)] text-[var(--color-text-muted)]">
+          <p className="text-[12px] font-body text-[var(--color-text-muted)]">
             {isConnected ? "Connected" : "Back up photos to Google Drive"}
           </p>
         </div>
