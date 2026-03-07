@@ -161,6 +161,10 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | SettingsPage | ✅ | `app/(main)/settings/page.tsx` | Redirect to `/more`. (V2: T117 — consolidated into More page) |
+| NotificationsPage | ✅ | `app/(main)/more/notifications/page.tsx` | Push notification settings sub-page. Toggle push on/off, permission status banners (unsupported/denied/default/granted), registered device list with remove. Uses `usePushSettings` hook. 12 tests passing. |
+| PermissionBanner | ✅ | `components/settings/PermissionBanner.tsx` | `variant: "info" \| "warning" \| "success", icon: ReactNode, title: string, description: string, className?` — Reusable status banner with semantic background colors. |
+| GoogleDriveConnect | ✅ | `components/settings/GoogleDriveConnect.tsx` | `className?` — Google Drive connect/disconnect toggle. Mirrors GoogleCalendarConnect pattern. Checks `google_drive_connected_at`. Shares OAuth flow with Calendar. 6 tests passing. |
+| StorageInfo | ✅ | `components/settings/StorageInfo.tsx` | Storage usage display using `navigator.storage.estimate()`. Shows progress bar with used/quota. Graceful fallback when unavailable. 6 tests passing. |
 
 ## Ops Module
 
@@ -262,6 +266,8 @@
 | useGarden | ✅ | `lib/hooks/use-garden.ts` | `useGarden() → { gardenDays, recentFlowers, isLoading, error, recordOpened }` — Garden data hook. recordOpened upserts today's row (yahya_opened/yara_opened based on display_name). When both opened + no flower, picks random from 12 emojis. Race-safe: UPDATE WHERE flower_type IS NULL with retry fallback. Realtime on garden_days. 14 tests passing. |
 | useFoodJournal | ✅ | `lib/hooks/use-food-journal.ts` | `useFoodJournal() → { visits, isLoading, error, stats, addVisit, updateVisit, toggleBookmark, addRating, getMyRating, getPartnerRating, addPhotos, removePhoto, getPhotos, getPreferenceDot, getVisitById, filterByCuisine }` — Food journal data hook. Fetches food_visits + food_ratings + food_photos from Supabase. Derived stats (totalVisits, uniquePlaces, avgOverall, topCuisine, returnSpots, bookmarkedCount). getVisitById returns VisitWithRatings join. getPreferenceDot computes vibe masking per rating dimension. filterByCuisine filters visits by cuisine type array. Realtime subscription on food_visits. Auth-safe: inert state when user null. 17 tests passing. |
 
+| usePushSettings | ✅ | `lib/hooks/use-push-settings.ts` | `usePushSettings() → { permissionState, isSubscribed, isLoading, devices, currentEndpoint, error, togglePush, removeDevice, refreshDevices }` — Push notification settings hook. Checks browser Push API + permission state. Fetches device list from push_subscriptions. togglePush calls subscribeToPush/unsubscribeFromPush from push-service.ts. removeDevice deletes from DB + unsubscribes browser if current device. Auth-safe. 7 tests passing. |
+
 ## Types
 
 | Type File | Status | Path | Exports |
@@ -286,6 +292,7 @@
 |---|---|---|---|
 | push-service | ✅ | `lib/services/push-service.ts` | `isPushSupported(), getPushPermission(), subscribeToPush(userId), unsubscribeFromPush(userId)` — Web Push API wrapper. VAPID key subscription via PushManager. Stores subscription JSON in Supabase `push_subscriptions`. Delete+insert pattern for subscription updates. 9 tests passing. |
 | google-calendar | ✅ | `lib/google-calendar.ts` | `getGoogleAuthUrl(), disconnectGoogleCalendar(supabase, userId)` — Google OAuth URL builder with env-based client_id + redirect_uri. Disconnect nulls token columns in profiles. 8 tests passing. |
+| google-drive | ✅ | `lib/google-drive.ts` | `disconnectGoogleDrive(supabase, userId)` — Disconnect Google Drive by nulling `google_drive_refresh_token` and `google_drive_connected_at` on profiles. Mirrors disconnectGoogleCalendar pattern. |
 | calendar-constants | ✅ | `lib/calendar-constants.ts` | `EVENT_CATEGORY_CONFIG`, `getCategoryColor(cat)`, `getCategoryLabel(cat)` — 4-category color config (date_night=#B87333, milestone=#DAA520, reminder=#9CA3AF, other=#4A4543) with Heart/Star/Bell/Calendar icons. 10 tests passing. |
 | avatar-upload | ✅ | `lib/avatar-upload.ts` | `uploadAvatar(file: File, userId: string) → { url } \| { error }` — Validates image type/size (5MB max), center-crops to 400x400 via OffscreenCanvas, exports as WebP 80% quality, uploads to Supabase Storage `avatars/${userId}.webp` with cache-busting URL. 13 tests passing. |
 | notification-router | ✅ | `lib/notification-router.ts` | `getRouteForNotification(type?, payload?) → string` — Maps notification types to target routes for SW click handler and in-app routing. Handles coupon_received/redeemed/approved (with coupon_id), ping, challenge_created/claimed, purchase_received, daily_bonus. Default → `/`. 11 tests passing. |

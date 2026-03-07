@@ -11,6 +11,9 @@ import {
   LogOut,
   Link2Off,
   Calendar,
+  Trash2,
+  Download,
+  Globe,
 } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -21,6 +24,8 @@ import { Avatar } from "@/components/shared/Avatar"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { GoogleCalendarConnect } from "@/components/calendar/GoogleCalendarConnect"
+import { GoogleDriveConnect } from "@/components/settings/GoogleDriveConnect"
+import { StorageInfo } from "@/components/settings/StorageInfo"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +44,8 @@ export default function MorePage() {
   const [editingProfile, setEditingProfile] = useState(false)
   const [unpairOpen, setUnpairOpen] = useState(false)
   const [unpairing, setUnpairing] = useState(false)
+  const [clearCacheOpen, setClearCacheOpen] = useState(false)
+  const [isClearing, setIsClearing] = useState(false)
 
   if (isLoading) {
     return (
@@ -124,6 +131,11 @@ export default function MorePage() {
             <p className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-secondary)]">
               {profile.email || user?.email || ""}
             </p>
+            {profile.role && (
+              <span className="inline-block mt-1 font-[family-name:var(--font-mono)] text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-2 py-0.5 rounded-md uppercase tracking-wide">
+                {profile.role}
+              </span>
+            )}
           </div>
         </div>
 
@@ -172,14 +184,51 @@ export default function MorePage() {
               icon={<Bell size={20} strokeWidth={1.5} />}
               label="Notifications"
               subtitle="Push notification settings"
+              href="/more/notifications"
             />
             <GoogleCalendarConnect />
+            <GoogleDriveConnect />
             <SettingsRow
               icon={<Palette size={20} strokeWidth={1.5} />}
               label="Theme"
               rightElement={
                 <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
                   Light
+                </span>
+              }
+            />
+            <SettingsRow
+              icon={<Globe size={20} strokeWidth={1.5} />}
+              label="Language"
+              subtitle="English"
+              rightElement={
+                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
+                  Coming soon
+                </span>
+              }
+            />
+          </div>
+        </div>
+
+        {/* Data & Storage Section */}
+        <div>
+          <p className="mb-2 font-[family-name:var(--font-body)] text-[12px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+            Data &amp; Storage
+          </p>
+          <div className="rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] overflow-hidden">
+            <StorageInfo />
+            <SettingsRow
+              icon={<Trash2 size={20} strokeWidth={1.5} />}
+              label="Clear Cache"
+              subtitle="Remove cached data and reload"
+              onClick={() => setClearCacheOpen(true)}
+            />
+            <SettingsRow
+              icon={<Download size={20} strokeWidth={1.5} />}
+              label="Export My Data"
+              rightElement={
+                <span className="font-[family-name:var(--font-body)] text-[13px] text-[var(--color-text-muted)]">
+                  Coming soon
                 </span>
               }
             />
@@ -202,7 +251,7 @@ export default function MorePage() {
               label="Version"
               rightElement={
                 <span className="font-[family-name:var(--font-mono)] text-[13px] text-[var(--color-text-muted)]">
-                  1.0.0
+                  {process.env.APP_VERSION ?? "0.1.0"}
                 </span>
               }
             />
@@ -213,6 +262,39 @@ export default function MorePage() {
             />
           </div>
         </div>
+
+        {/* Clear Cache Dialog */}
+        <AlertDialog open={clearCacheOpen} onOpenChange={setClearCacheOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear cached data?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove all cached data and reload the app. Your account data will not be affected.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isClearing}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={isClearing}
+                onClick={async (e) => {
+                  e.preventDefault()
+                  setIsClearing(true)
+                  try {
+                    const keys = await caches.keys()
+                    await Promise.all(keys.map((key) => caches.delete(key)))
+                    window.location.reload()
+                  } catch {
+                    setIsClearing(false)
+                    setClearCacheOpen(false)
+                  }
+                }}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                {isClearing ? "Clearing..." : "Clear Cache"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Unpair Dialog */}
         <AlertDialog open={unpairOpen} onOpenChange={setUnpairOpen}>

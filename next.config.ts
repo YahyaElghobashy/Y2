@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const pkg = require("./package.json") as { version: string };
 
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
@@ -8,6 +12,9 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
+  env: {
+    APP_VERSION: pkg.version,
+  },
   turbopack: {
     root: process.cwd(),
   },
