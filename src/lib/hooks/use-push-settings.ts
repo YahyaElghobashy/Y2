@@ -70,13 +70,19 @@ export function usePushSettings(): UsePushSettingsReturn {
         const permission = getPushPermission()
         if (mounted) setPermissionState(permission)
 
-        if (isPushSupported()) {
-          // Check if currently subscribed
-          const registration = await navigator.serviceWorker.ready
-          const subscription = await registration.pushManager.getSubscription()
-          if (mounted) {
-            setIsSubscribed(Boolean(subscription))
-            setCurrentEndpoint(subscription?.endpoint ?? null)
+        if (isPushSupported() && "serviceWorker" in navigator) {
+          // Check if currently subscribed — timeout after 3s to avoid hanging
+          // when no service worker is registered (e.g. dev/preview environments)
+          const registration = await Promise.race([
+            navigator.serviceWorker.ready,
+            new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000)),
+          ])
+          if (registration) {
+            const subscription = await registration.pushManager.getSubscription()
+            if (mounted) {
+              setIsSubscribed(Boolean(subscription))
+              setCurrentEndpoint(subscription?.endpoint ?? null)
+            }
           }
         }
 
