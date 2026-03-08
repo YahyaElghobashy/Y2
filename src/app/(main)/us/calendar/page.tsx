@@ -3,8 +3,7 @@
 import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus, CalendarPlus } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus } from "lucide-react"
 import { format } from "date-fns"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -12,12 +11,10 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { EventDotCalendar } from "@/components/calendar/EventDotCalendar"
 import { EventCard } from "@/components/calendar/EventCard"
-import { EventCategoryBadge } from "@/components/calendar/EventCategoryBadge"
+import { DayDetailSheet } from "@/components/calendar/DayDetailSheet"
 import { useCalendar } from "@/lib/hooks/use-calendar"
-import { getCategoryLabel } from "@/lib/calendar-constants"
-import type { CalendarEvent, EventCategory } from "@/lib/types/calendar.types"
-
-const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
+import { useAuth } from "@/lib/providers/AuthProvider"
+import type { CalendarEvent } from "@/lib/types/calendar.types"
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
@@ -45,11 +42,13 @@ function categoryToBadge(category: string): "milestone" | "copper" | "reminder" 
 export default function CalendarTabPage() {
   const today = new Date()
   const router = useRouter()
+  const { user } = useAuth()
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [selectedDate, setSelectedDate] = useState<number | undefined>(
     today.getDate()
   )
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   const {
     upcomingEvents,
@@ -208,50 +207,20 @@ export default function CalendarTabPage() {
           month={currentMonth}
           events={calendarDotEvents}
           selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
+          onDateSelect={(date) => {
+            setSelectedDate(date)
+            setIsSheetOpen(true)
+          }}
         />
 
-        {/* Selected day events */}
-        <AnimatePresence mode="wait">
-          {selectedDate && (
-            <motion.div
-              key={`day-${currentYear}-${currentMonth}-${selectedDate}`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: EASE_OUT }}
-              className="flex flex-col gap-2"
-              data-testid="selected-day-events"
-            >
-              <h3 className="font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary)]">
-                {MONTHS[currentMonth]} {selectedDate}
-              </h3>
-
-              {selectedDayEvents.length > 0 ? (
-                selectedDayEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    title={event.title}
-                    date={formatEventDate(event)}
-                    badge={categoryToBadge(event.category)}
-                    onClick={() => router.push(`/us/calendar/edit/${event.id}`)}
-                  />
-                ))
-              ) : (
-                <Link
-                  href={createUrl}
-                  className="rounded-xl border border-dashed border-[var(--border-subtle)] px-4 py-6 text-center block"
-                  data-testid="empty-day"
-                >
-                  <CalendarPlus size={20} className="mx-auto mb-1.5 text-[var(--accent-copper,#B87333)]" />
-                  <p className="text-[13px] text-[var(--text-muted,#B5ADA4)]">
-                    No events — tap to add one
-                  </p>
-                </Link>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Day detail bottom sheet */}
+        <DayDetailSheet
+          isOpen={isSheetOpen && selectedDate !== undefined}
+          onClose={() => setIsSheetOpen(false)}
+          date={new Date(currentYear, currentMonth, selectedDate ?? 1)}
+          events={selectedDayEvents}
+          userId={user?.id}
+        />
 
         {/* Coming Up section */}
         <div className="flex flex-col gap-3">
