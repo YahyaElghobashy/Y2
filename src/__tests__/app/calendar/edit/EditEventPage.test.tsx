@@ -86,6 +86,16 @@ vi.mock("next/link", () => ({
   ),
 }))
 
+vi.mock("@/lib/hooks/use-event-reminders", () => ({
+  useEventReminders: () => ({
+    reminders: [],
+    isLoading: false,
+    addReminder: vi.fn(),
+    removeReminder: vi.fn(),
+    hasReminder: () => false,
+  }),
+}))
+
 // Mock window.confirm
 vi.stubGlobal("confirm", vi.fn(() => true))
 

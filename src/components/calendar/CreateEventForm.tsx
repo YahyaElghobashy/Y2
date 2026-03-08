@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ChevronLeft, Trash2 } from "lucide-react"
@@ -18,6 +18,8 @@ import {
   type EventRecurrence,
 } from "@/lib/types/calendar.types"
 import type { CalendarEvent } from "@/lib/types/calendar.types"
+import { useEventReminders } from "@/lib/hooks/use-event-reminders"
+import { ReminderPicker } from "@/components/calendar/ReminderPicker"
 
 type CreateEventFormProps = {
   initialEvent?: CalendarEvent
@@ -61,14 +63,38 @@ export function CreateEventForm({
     (initialEvent?.category as EventCategory) ?? "other"
   )
   const [isShared, setIsShared] = useState(initialEvent?.is_shared ?? true)
+  const [selectedReminders, setSelectedReminders] = useState<string[]>([])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
 
+  // Reminders hook (for edit mode — pre-selects existing reminders)
+  const { reminders: existingReminders, addReminder, removeReminder } =
+    useEventReminders(mode === "edit" ? initialEvent?.id : undefined)
+
+  // Pre-fill selected reminders from existing data in edit mode
+  useEffect(() => {
+    if (existingReminders.length > 0 && selectedReminders.length === 0) {
+      setSelectedReminders(existingReminders.map((r) => r.remind_before))
+    }
+  }, [existingReminders]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const markChanged = useCallback(() => {
     if (!hasChanges) setHasChanges(true)
   }, [hasChanges])
+
+  const handleReminderToggle = useCallback(
+    (value: string) => {
+      setSelectedReminders((prev) =>
+        prev.includes(value)
+          ? prev.filter((v) => v !== value)
+          : [...prev, value]
+      )
+      markChanged()
+    },
+    [markChanged]
+  )
 
   const isValid = title.trim().length > 0 && date.length > 0
 
@@ -88,11 +114,33 @@ export function CreateEventForm({
     }
 
     try {
+      let eventId: string | undefined
+
       if (mode === "edit" && initialEvent) {
         await updateEvent(initialEvent.id, eventData)
+        eventId = initialEvent.id
       } else {
-        await createEvent(eventData)
+        const created = await createEvent(eventData)
+        eventId = created?.id
       }
+
+      // Sync reminders (fire-and-forget)
+      if (eventId && selectedReminders.length > 0) {
+        const existingValues = existingReminders.map((r) => r.remind_before)
+        // Add new reminders
+        for (const val of selectedReminders) {
+          if (!existingValues.includes(val)) {
+            addReminder(eventId, val).catch(() => {})
+          }
+        }
+        // Remove deselected reminders
+        for (const existing of existingReminders) {
+          if (!selectedReminders.includes(existing.remind_before)) {
+            removeReminder(existing.id).catch(() => {})
+          }
+        }
+      }
+
       router.back()
     } catch {
       // error is set on the hook
@@ -102,7 +150,8 @@ export function CreateEventForm({
   }, [
     isValid, isSubmitting, title, date, allDay, startTime, endTime,
     description, recurrence, category, isShared, mode, initialEvent,
-    createEvent, updateEvent, router,
+    createEvent, updateEvent, router, selectedReminders,
+    existingReminders, addReminder, removeReminder,
   ])
 
   const handleDelete = useCallback(async () => {
@@ -348,6 +397,16 @@ export function CreateEventForm({
               })}
             </div>
           </div>
+
+          {/* Reminders */}
+          {!readOnly && (
+            <ReminderPicker
+              selected={selectedReminders}
+              onToggle={handleReminderToggle}
+              allDay={allDay}
+              disabled={readOnly}
+            />
+          )}
 
           {/* Share with Partner */}
           <div className="flex items-center justify-between">
