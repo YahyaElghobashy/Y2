@@ -44,14 +44,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       async (_event, session) => {
         if (!mounted) return
 
-        // Handle password recovery flow — redirect to reset page if needed
-        if (_event === "PASSWORD_RECOVERY") {
-          if (typeof window !== "undefined" && !window.location.pathname.includes("/reset-password")) {
-            router.push("/reset-password")
-          }
-          return
-        }
-
         if (session?.user) {
           setUser(session.user)
 
