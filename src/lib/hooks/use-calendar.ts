@@ -9,8 +9,44 @@ import type {
 } from "@/lib/types/calendar.types"
 
 export function useCalendar(): UseCalendarReturn {
-  const { user, profile } = useAuth()
+  const { user, profile, partner } = useAuth()
   const supabase = getSupabaseBrowserClient()
+
+  // Fire-and-forget partner notification for shared events
+  const notifyPartner = useCallback(
+    (eventTitle: string, action: "created" | "updated" | "deleted") => {
+      if (!user || !partner) return
+      const bodyMap = {
+        created: `shared "${eventTitle}" with you`,
+        updated: `updated "${eventTitle}"`,
+        deleted: `removed "${eventTitle}"`,
+      }
+      // Insert notification row then invoke send-notification edge function
+      Promise.resolve(
+        supabase
+          .from("notifications")
+          .insert({
+            recipient_id: partner.id,
+            sender_id: user.id,
+            type: "shared_event",
+            title: "Calendar",
+            body: bodyMap[action],
+            metadata: { action },
+          })
+          .select()
+          .single()
+      )
+        .then(({ data }) => {
+          if (data) {
+            supabase.functions.invoke("send-notification", {
+              body: { notification_id: (data as { id: string }).id, recipient_id: partner.id },
+            }).catch(() => {})
+          }
+        })
+        .catch(() => {}) // swallow — notification failure should never break UI
+    },
+    [user, partner, supabase]
+  )
 
   // Fire-and-forget Google Calendar sync (no-op if not connected)
   const syncToGoogleCalendar = useCallback(
@@ -89,10 +125,12 @@ export function useCalendar(): UseCalendarReturn {
       }
 
       await fetchEvents()
-      syncToGoogleCalendar((created as CalendarEvent).id, "create")
-      return created as CalendarEvent
+      const createdEvent = created as CalendarEvent
+      syncToGoogleCalendar(createdEvent.id, "create")
+      if (data.is_shared) notifyPartner(data.title, "created")
+      return createdEvent
     },
-    [user, supabase, fetchEvents, syncToGoogleCalendar]
+    [user, supabase, fetchEvents, syncToGoogleCalendar, notifyPartner]
   )
 
   // CRUD: update event
@@ -113,8 +151,10 @@ export function useCalendar(): UseCalendarReturn {
 
       await fetchEvents()
       syncToGoogleCalendar(id, "update")
+      const existing = events.find((e) => e.id === id)
+      if (existing?.is_shared) notifyPartner(data.title ?? existing.title, "updated")
     },
-    [user, supabase, fetchEvents, syncToGoogleCalendar]
+    [user, supabase, fetchEvents, syncToGoogleCalendar, notifyPartner, events]
   )
 
   // CRUD: delete event
@@ -126,6 +166,8 @@ export function useCalendar(): UseCalendarReturn {
       // Sync delete to Google Calendar BEFORE removing from DB
       // (edge function needs the event row to look up google_calendar_event_id)
       syncToGoogleCalendar(id, "delete")
+      const existing = events.find((e) => e.id === id)
+      if (existing?.is_shared) notifyPartner(existing.title, "deleted")
 
       const { error: deleteError } = await supabase
         .from("events")
@@ -139,7 +181,7 @@ export function useCalendar(): UseCalendarReturn {
 
       await fetchEvents()
     },
-    [user, supabase, fetchEvents, syncToGoogleCalendar]
+    [user, supabase, fetchEvents, syncToGoogleCalendar, notifyPartner, events]
   )
 
   // Initial data load

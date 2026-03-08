@@ -53,6 +53,17 @@ const stableAuthReturn = {
   refreshProfile: vi.fn(),
 }
 
+const stablePartner = { id: "user-2", display_name: "Partner" }
+const stableAuthWithPartner = {
+  user: stableUser,
+  profile: stableProfile,
+  partner: stablePartner,
+  isLoading: false,
+  profileNeedsSetup: false,
+  signOut: vi.fn(),
+  refreshProfile: vi.fn(),
+}
+
 const stableAuthNoGcal = {
   user: stableUser,
   profile: { ...stableProfile, google_calendar_refresh_token: null },
@@ -114,6 +125,16 @@ const mockChannel = {
   subscribe: vi.fn(),
 }
 
+// Track notifications table inserts
+const mockNotifInsert = vi.fn().mockReturnValue({
+  select: vi.fn().mockReturnValue({
+    single: vi.fn().mockResolvedValue({
+      data: { id: "notif-1" },
+      error: null,
+    }),
+  }),
+})
+
 // CRITICAL: stable reference — same object every call to prevent infinite re-renders
 const stableSupabaseClient = {
   from: (table: string) => {
@@ -124,6 +145,9 @@ const stableSupabaseClient = {
         update: mockUpdate,
         delete: mockDelete,
       }
+    }
+    if (table === "notifications") {
+      return { insert: mockNotifInsert }
     }
     return {}
   },
@@ -484,5 +508,234 @@ describe("useCalendar", () => {
 
     expect(res).toBeNull()
     expect(mockInvoke).not.toHaveBeenCalled()
+  })
+
+  // ── Partner Notifications ──
+
+  it("notifies partner when creating a shared event", async () => {
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.createEvent({
+        title: "Date Night",
+        event_date: "2026-04-20",
+        event_time: null,
+        end_time: null,
+        is_all_day: true,
+        recurrence: "none",
+        category: "date_night",
+        is_shared: true,
+      })
+    })
+
+    // Should insert notification for partner
+    expect(mockNotifInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipient_id: "user-2",
+        sender_id: "user-1",
+        type: "shared_event",
+        title: "Calendar",
+        body: 'shared "Date Night" with you',
+      })
+    )
+  })
+
+  it("does NOT notify partner when creating an unshared event", async () => {
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.createEvent({
+        title: "Private Event",
+        event_date: "2026-04-20",
+        event_time: null,
+        end_time: null,
+        is_all_day: true,
+        recurrence: "none",
+        category: "other",
+        is_shared: false,
+      })
+    })
+
+    expect(mockNotifInsert).not.toHaveBeenCalled()
+  })
+
+  it("does NOT notify when no partner is linked", async () => {
+    // Default stableAuthReturn has partner: null
+    currentAuth = stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.createEvent({
+        title: "Solo Event",
+        event_date: "2026-04-20",
+        event_time: null,
+        end_time: null,
+        is_all_day: true,
+        recurrence: "none",
+        category: "other",
+        is_shared: true,
+      })
+    })
+
+    // is_shared=true but partner=null → no notification
+    expect(mockNotifInsert).not.toHaveBeenCalled()
+  })
+
+  it("notifies partner on shared event update", async () => {
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // evt-1 is in MOCK_EVENTS with is_shared: true
+    await act(async () => {
+      await result.current.updateEvent("evt-1", { title: "Updated Title" })
+    })
+
+    expect(mockNotifInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipient_id: "user-2",
+        sender_id: "user-1",
+        type: "shared_event",
+        body: 'updated "Updated Title"',
+      })
+    )
+  })
+
+  it("does NOT notify on update of unshared event", async () => {
+    // Override select to return an unshared event
+    mockSelect.mockReturnValueOnce({
+      order: vi.fn().mockResolvedValue({
+        data: [{ ...MOCK_EVENTS[0], is_shared: false }],
+        error: null,
+      }),
+    })
+
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.updateEvent("evt-1", { title: "Updated" })
+    })
+
+    expect(mockNotifInsert).not.toHaveBeenCalled()
+  })
+
+  it("notifies partner on shared event delete", async () => {
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // evt-1 is shared in MOCK_EVENTS
+    await act(async () => {
+      await result.current.deleteEvent("evt-1")
+    })
+
+    expect(mockNotifInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipient_id: "user-2",
+        sender_id: "user-1",
+        type: "shared_event",
+        body: 'removed "Date Night"',
+      })
+    )
+  })
+
+  it("calls send-notification edge function after inserting notification", async () => {
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.createEvent({
+        title: "Shared",
+        event_date: "2026-04-20",
+        event_time: null,
+        end_time: null,
+        is_all_day: true,
+        recurrence: "none",
+        category: "other",
+        is_shared: true,
+      })
+    })
+
+    // Wait for the async notification chain to resolve
+    await waitFor(() => {
+      expect(mockInvoke).toHaveBeenCalledWith("send-notification", {
+        body: { notification_id: "notif-1", recipient_id: "user-2" },
+      })
+    })
+  })
+
+  it("notification failure does not break createEvent", async () => {
+    mockNotifInsert.mockReturnValueOnce({
+      select: vi.fn().mockReturnValue({
+        single: vi.fn().mockRejectedValue(new Error("DB error")),
+      }),
+    })
+
+    currentAuth = stableAuthWithPartner as typeof stableAuthReturn
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    let created: unknown = null
+    await act(async () => {
+      created = await result.current.createEvent({
+        title: "Shared Event",
+        event_date: "2026-04-20",
+        event_time: null,
+        end_time: null,
+        is_all_day: true,
+        recurrence: "none",
+        category: "other",
+        is_shared: true,
+      })
+    })
+
+    // Event still created despite notification failure
+    expect(created).not.toBeNull()
+    expect(result.current.error).toBeNull()
+  })
+
+  // ── Integration: Realtime subscription ──
+
+  it("subscribes to realtime events channel", async () => {
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(mockChannel.on).toHaveBeenCalled()
+    expect(mockChannel.subscribe).toHaveBeenCalled()
   })
 })
