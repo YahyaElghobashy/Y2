@@ -4,7 +4,8 @@ import { updateSession } from "@/lib/supabase/middleware"
 const PROTECTED_PREFIXES = ["/", "/us", "/health", "/spirit", "/ops", "/settings"]
 
 function isProtectedRoute(pathname: string): boolean {
-  // Allow unauthenticated access to /pair deep links (handled by the page)
+  // Allow unauthenticated access to public routes
+  if (pathname.startsWith("/e")) return false
   if (pathname.startsWith("/pair")) return false
   if (pathname === "/") return true
   return PROTECTED_PREFIXES.some(
