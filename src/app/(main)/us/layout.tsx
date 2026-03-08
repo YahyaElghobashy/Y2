@@ -5,6 +5,7 @@ const US_TABS = [
   { label: "CoYYns", href: "/us/coyyns" },
   { label: "Coupons", href: "/us/coupons" },
   { label: "Calendar", href: "/us/calendar" },
+  { label: "Events", href: "/us/events" },
   { label: "Ping", href: "/us/ping" },
   { label: "List", href: "/us/list" },
   { label: "Watch", href: "/us/watch" },
