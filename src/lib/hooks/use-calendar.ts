@@ -9,8 +9,19 @@ import type {
 } from "@/lib/types/calendar.types"
 
 export function useCalendar(): UseCalendarReturn {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const supabase = getSupabaseBrowserClient()
+
+  // Fire-and-forget Google Calendar sync (no-op if not connected)
+  const syncToGoogleCalendar = useCallback(
+    (eventId: string, action: "create" | "update" | "delete") => {
+      if (!profile?.google_calendar_refresh_token) return
+      supabase.functions
+        .invoke("google-calendar-sync", { body: { event_id: eventId, action } })
+        .catch(() => {}) // swallow — sync failure should never break UI
+    },
+    [profile?.google_calendar_refresh_token, supabase]
+  )
 
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -78,9 +89,10 @@ export function useCalendar(): UseCalendarReturn {
       }
 
       await fetchEvents()
+      syncToGoogleCalendar((created as CalendarEvent).id, "create")
       return created as CalendarEvent
     },
-    [user, supabase, fetchEvents]
+    [user, supabase, fetchEvents, syncToGoogleCalendar]
   )
 
   // CRUD: update event
@@ -100,8 +112,9 @@ export function useCalendar(): UseCalendarReturn {
       }
 
       await fetchEvents()
+      syncToGoogleCalendar(id, "update")
     },
-    [user, supabase, fetchEvents]
+    [user, supabase, fetchEvents, syncToGoogleCalendar]
   )
 
   // CRUD: delete event
@@ -109,6 +122,10 @@ export function useCalendar(): UseCalendarReturn {
     async (id: string) => {
       setError(null)
       if (!user) return
+
+      // Sync delete to Google Calendar BEFORE removing from DB
+      // (edge function needs the event row to look up google_calendar_event_id)
+      syncToGoogleCalendar(id, "delete")
 
       const { error: deleteError } = await supabase
         .from("events")
@@ -122,7 +139,7 @@ export function useCalendar(): UseCalendarReturn {
 
       await fetchEvents()
     },
-    [user, supabase, fetchEvents]
+    [user, supabase, fetchEvents, syncToGoogleCalendar]
   )
 
   // Initial data load
