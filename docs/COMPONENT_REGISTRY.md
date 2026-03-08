@@ -437,6 +437,22 @@
 |---|---|---|---|
 | EliminationPills | ✅ | `components/wheel/EliminationPills.tsx` | `options: { label, eliminated }[], onEliminate?: (label) => void, className?` — Animated flex-wrap pills for active vs eliminated options. Active pills: solid copper bg. Eliminated: muted/strikethrough with Framer Motion exit (scale + opacity out). `AnimatePresence` for smooth removal transitions. |
 
+## Game Module (Together Time)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| GameHomePage | ✅ | `app/(main)/game/page.tsx` | Page component — 3 game mode cards (check_in, deep_dive, date_night) with claymorphism UI. Active session resume card. Question Bank navigation. Framer Motion staggered entrance. |
+| CheckInSetup | ✅ | `components/game/CheckInSetup.tsx` | Setup wizard for Alignment Check-In mode. 8 category grid, question count slider (5-15), relationship pulse slider (1-10), open discussion toggle. Creates session with CheckInConfig. |
+| DeepDiveSetup | ✅ | `components/game/DeepDiveSetup.tsx` | Setup for Deep Dive mode. Single focus category selection (radio), question count slider (5-15), difficulty preference pills (multi-select: Light/Medium/Deep). No-pressure messaging card. |
+| DateNightSetup | ✅ | `components/game/DateNightSetup.tsx` | 3-step wizard for Date Night Game. Step 1: category grid + questions-per-category. Step 2: dares toggle, heat level, wildcard count, truth-or-dare. Step 3: custom questions toggle + game preview summary. |
+| PartnerAuthoredSetup | ✅ | `components/game/PartnerAuthoredSetup.tsx` | Partner card authoring screen. Up to 5 secret questions + 3 dares with heat levels. HIDDEN badge. Polls for partner completion (3s interval). Waiting state with pulse animation. |
+
+## Game Hooks
+
+| Hook | Status | Path | Notes |
+|---|---|---|---|
+| useGameEngine | ✅ | `lib/hooks/use-game-engine.ts` | Core 3-mode session engine. Session lifecycle (create/start/pause/resume/complete/abandon). Round generation + management. Partner-authored content. Realtime subscriptions. Answer history. Active session detection. |
+
 ## Scripts / Infrastructure
 
 | Script | Status | Path | Notes |
