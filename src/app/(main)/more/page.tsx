@@ -14,6 +14,7 @@ import {
   Trash2,
   Download,
   Globe,
+  KeyRound,
 } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -26,6 +27,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { GoogleCalendarConnect } from "@/components/calendar/GoogleCalendarConnect"
 import { GoogleDriveConnect } from "@/components/settings/GoogleDriveConnect"
 import { StorageInfo } from "@/components/settings/StorageInfo"
+import { ChangePasswordForm } from "@/components/auth/ChangePasswordForm"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +44,7 @@ export default function MorePage() {
   const { user, profile, partner, isLoading, signOut, refreshProfile } = useAuth()
   const router = useRouter()
   const [editingProfile, setEditingProfile] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
   const [unpairOpen, setUnpairOpen] = useState(false)
   const [unpairing, setUnpairing] = useState(false)
   const [clearCacheOpen, setClearCacheOpen] = useState(false)
@@ -177,8 +180,19 @@ export default function MorePage() {
               subtitle={partner?.display_name || "Not connected"}
               onClick={partner ? () => setUnpairOpen(true) : () => router.push("/pair")}
             />
+            <SettingsRow
+              icon={<KeyRound size={20} strokeWidth={1.5} />}
+              label="Change Password"
+              subtitle="Update your account password"
+              onClick={() => setChangingPassword(!changingPassword)}
+            />
           </div>
         </div>
+
+        {/* Inline Change Password */}
+        {changingPassword && (
+          <ChangePasswordForm onClose={() => setChangingPassword(false)} />
+        )}
 
         {/* Preferences Section */}
         <div>

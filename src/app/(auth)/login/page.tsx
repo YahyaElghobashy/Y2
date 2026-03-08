@@ -113,6 +113,20 @@ export default function LoginPage() {
             )}
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.3 }}
+            className="flex justify-end -mt-1"
+          >
+            <Link
+              href="/forgot-password"
+              className="text-[12px] text-[var(--text-secondary,#8C8279)] hover:text-[var(--accent-copper,#B87333)] transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </motion.div>
+
           {errors.root && (
             <motion.p
               initial={{ opacity: 0 }}

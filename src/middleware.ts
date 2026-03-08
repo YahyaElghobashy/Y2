@@ -19,8 +19,9 @@ export async function middleware(request: NextRequest) {
   try {
     const { response, user } = await updateSession(request)
 
-    // Authenticated user on /login → redirect to home
-    if (user && pathname === "/login") {
+    // Authenticated user on auth pages → redirect to home
+    // Note: /reset-password is excluded — user arrives authenticated via recovery flow
+    if (user && (pathname === "/login" || pathname === "/forgot-password")) {
       return NextResponse.redirect(new URL("/", request.url))
     }
 
