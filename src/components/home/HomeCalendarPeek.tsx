@@ -37,7 +37,7 @@ export function HomeCalendarPeek({ className }: { className?: string }) {
           No upcoming events. Plan something together?
         </p>
         <Link
-          href="/us/calendar?action=create"
+          href="/us/calendar/create"
           className="flex items-center justify-center gap-1.5 text-[13px] font-medium"
           style={{ color: "var(--accent-copper, #B87333)" }}
           data-testid="add-event-cta"

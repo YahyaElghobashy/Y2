@@ -69,6 +69,12 @@ vi.mock("@/lib/hooks/use-calendar", () => ({
   useCalendar: () => mockCalendarReturn,
 }))
 
+vi.mock("next/link", () => ({
+  default: ({ href, children, ...rest }: { href: string; children: React.ReactNode } & Record<string, unknown>) => (
+    <a href={href} {...rest}>{children}</a>
+  ),
+}))
+
 vi.mock("@/components/animations", () => ({
   PageTransition: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   FadeIn: ({ children, className }: { children: React.ReactNode; className?: string }) => (
@@ -171,7 +177,7 @@ describe("CalendarTabPage", () => {
       render(<CalendarTabPage />)
       // Today is selected by default
       expect(screen.getByTestId("empty-day")).toBeInTheDocument()
-      expect(screen.getByText("No events on this day")).toBeInTheDocument()
+      expect(screen.getByText("No events — tap to add one")).toBeInTheDocument()
     })
 
     it("displays upcoming events in Coming Up section", () => {
@@ -322,6 +328,31 @@ describe("CalendarTabPage", () => {
       expect(screen.getByTestId("month-header")).toHaveTextContent(
         `December ${YEAR}`
       )
+    })
+
+    it("renders FAB create button", () => {
+      render(<CalendarTabPage />)
+      const fab = screen.getByTestId("fab-create")
+      expect(fab).toBeInTheDocument()
+      expect(fab).toHaveAttribute("href", expect.stringContaining("/us/calendar/create"))
+    })
+
+    it("FAB passes selected date in URL", () => {
+      render(<CalendarTabPage />)
+      const fab = screen.getByTestId("fab-create")
+      const expectedMonth = String(MONTH + 1).padStart(2, "0")
+      const expectedDay = String(DAY).padStart(2, "0")
+      expect(fab).toHaveAttribute(
+        "href",
+        `/us/calendar/create?date=${YEAR}-${expectedMonth}-${expectedDay}`
+      )
+    })
+
+    it("empty day CTA links to create page", () => {
+      mockGetEventsForMonth.mockReturnValue([])
+      render(<CalendarTabPage />)
+      const emptyDay = screen.getByTestId("empty-day")
+      expect(emptyDay).toHaveAttribute("href", expect.stringContaining("/us/calendar/create"))
     })
   })
 })

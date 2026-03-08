@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useMemo, useCallback } from "react"
-import { ChevronLeft, ChevronRight, Calendar, RefreshCw } from "lucide-react"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus, CalendarPlus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { PageTransition } from "@/components/animations"
@@ -106,6 +107,16 @@ export default function CalendarTabPage() {
     }
     setSelectedDate(undefined)
   }, [currentMonth])
+
+  /** Build the create URL with the currently selected or today's date */
+  const createUrl = useMemo(() => {
+    if (selectedDate) {
+      const monthStr = String(currentMonth + 1).padStart(2, "0")
+      const dayStr = String(selectedDate).padStart(2, "0")
+      return `/us/calendar/create?date=${currentYear}-${monthStr}-${dayStr}`
+    }
+    return "/us/calendar/create"
+  }, [selectedDate, currentYear, currentMonth])
 
   const formatEventDate = useCallback((event: CalendarEvent) => {
     const d = new Date(event.event_date + "T00:00:00")
@@ -227,14 +238,16 @@ export default function CalendarTabPage() {
                   />
                 ))
               ) : (
-                <div
-                  className="rounded-xl border border-dashed border-[var(--border-subtle)] px-4 py-6 text-center"
+                <Link
+                  href={createUrl}
+                  className="rounded-xl border border-dashed border-[var(--border-subtle)] px-4 py-6 text-center block"
                   data-testid="empty-day"
                 >
+                  <CalendarPlus size={20} className="mx-auto mb-1.5 text-[var(--accent-copper,#B87333)]" />
                   <p className="text-[13px] text-[var(--text-muted,#B5ADA4)]">
-                    No events on this day
+                    No events — tap to add one
                   </p>
-                </div>
+                </Link>
               )}
             </motion.div>
           )}
@@ -270,6 +283,16 @@ export default function CalendarTabPage() {
           )}
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      <Link
+        href={createUrl}
+        className="fixed bottom-20 end-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent-copper,#B87333)] text-white shadow-[0_4px_14px_rgba(184,115,51,0.35)] active:scale-95 transition-transform"
+        aria-label="Create event"
+        data-testid="fab-create"
+      >
+        <Plus size={24} />
+      </Link>
     </PageTransition>
   )
 }

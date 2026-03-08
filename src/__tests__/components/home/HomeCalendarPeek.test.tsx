@@ -185,7 +185,7 @@ describe("HomeCalendarPeek", () => {
     render(<HomeCalendarPeek />)
     const cta = screen.getByTestId("add-event-cta")
     expect(cta).toHaveTextContent("Add Event")
-    expect(cta.closest("a")).toHaveAttribute("href", "/us/calendar?action=create")
+    expect(cta.closest("a")).toHaveAttribute("href", "/us/calendar/create")
   })
 
   // ── Interaction Tests ──
