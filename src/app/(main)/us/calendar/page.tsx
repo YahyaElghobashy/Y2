@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus } from "lucide-react"
+import { motion, type PanInfo, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
@@ -89,6 +90,15 @@ export default function CalendarTabPage() {
     [upcomingEvents]
   )
 
+  const isCurrentMonth =
+    currentYear === today.getFullYear() && currentMonth === today.getMonth()
+
+  const goToToday = useCallback(() => {
+    setCurrentYear(today.getFullYear())
+    setCurrentMonth(today.getMonth())
+    setSelectedDate(today.getDate())
+  }, [today])
+
   const goToPrevMonth = useCallback(() => {
     if (currentMonth === 0) {
       setCurrentMonth(11)
@@ -108,6 +118,22 @@ export default function CalendarTabPage() {
     }
     setSelectedDate(undefined)
   }, [currentMonth])
+
+  const handleSwipeEnd = useCallback(
+    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+      // Check angle — only trigger for mostly-horizontal swipes
+      const absX = Math.abs(info.offset.x)
+      const absY = Math.abs(info.offset.y)
+      if (absX < 50 || absY > absX) return // too short or too vertical
+
+      if (info.offset.x < -50) {
+        goToNextMonth()
+      } else if (info.offset.x > 50) {
+        goToPrevMonth()
+      }
+    },
+    [goToNextMonth, goToPrevMonth]
+  )
 
   /** Build the create URL with the currently selected or today's date */
   const createUrl = useMemo(() => {
@@ -201,17 +227,47 @@ export default function CalendarTabPage() {
           </button>
         </div>
 
-        {/* Calendar grid */}
-        <EventDotCalendar
-          year={currentYear}
-          month={currentMonth}
-          events={calendarDotEvents}
-          selectedDate={selectedDate}
-          onDateSelect={(date) => {
-            setSelectedDate(date)
-            setIsSheetOpen(true)
-          }}
-        />
+        {/* Calendar grid with swipe gestures */}
+        <motion.div
+          key={`${currentYear}-${currentMonth}`}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.3}
+          onDragEnd={handleSwipeEnd}
+          style={{ touchAction: "pan-y" }}
+          data-testid="calendar-swipe-area"
+        >
+          <EventDotCalendar
+            year={currentYear}
+            month={currentMonth}
+            events={calendarDotEvents}
+            selectedDate={selectedDate}
+            onDateSelect={(date) => {
+              setSelectedDate(date)
+              setIsSheetOpen(true)
+            }}
+          />
+        </motion.div>
+
+        {/* Today button — visible when not on current month */}
+        <AnimatePresence>
+          {!isCurrentMonth && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex justify-center"
+            >
+              <button
+                onClick={goToToday}
+                className="rounded-full bg-[var(--accent-copper,#B87333)] px-4 py-1.5 text-[12px] font-medium text-white shadow-sm"
+                data-testid="today-button"
+              >
+                Today
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Day detail bottom sheet */}
         <DayDetailSheet
