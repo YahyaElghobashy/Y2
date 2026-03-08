@@ -75,6 +75,7 @@
 | HomeCalendarPeek | ✅ | `components/home/HomeCalendarPeek.tsx` | `className?` — Upcoming events peek widget. Uses `useCalendar().upcomingEvents`, shows next 3 events with category-colored date badges, titles, formatted times. "Coming Up" + "See All" header. Empty state with "Add Event" CTA. Returns null when loading. 17 tests passing. |
 | HomePrayerWidget | ✅ | `components/home/HomePrayerWidget.tsx` | `className?` — Mini prayer dashboard widget for home. 5 mini circles (w-5 h-5), copper fill for completed prayers, "X/5 prayers today" summary text. Wrapped in `Link` to `/me/soul` with `motion.div whileTap`. Returns null when loading or no data. Uses `usePrayer()` hook. 11 tests passing. |
 | StatusIndicatorCard | ✅ | `components/home/StatusIndicatorCard.tsx` | `icon: ReactNode, label: string, value: string \| number, accentColor?: string, className?` — Reusable at-a-glance status card with `border-l-4` accent, circular icon container, label/value pair. Used across home dashboard widgets for consistent metric display. |
+| HomeGameWidget | ✅ | `components/home/HomeGameWidget.tsx` | `className?` — Home page game widget. Shows active session card with resume CTA when a game is in progress, or next scheduled game with mode icon and countdown. Returns null when no active session and no upcoming schedule. Uses useGameEngine for active session detection. |
 
 ## Relationship Module
 
@@ -446,12 +447,38 @@
 | DeepDiveSetup | ✅ | `components/game/DeepDiveSetup.tsx` | Setup for Deep Dive mode. Single focus category selection (radio), question count slider (5-15), difficulty preference pills (multi-select: Light/Medium/Deep). No-pressure messaging card. |
 | DateNightSetup | ✅ | `components/game/DateNightSetup.tsx` | 3-step wizard for Date Night Game. Step 1: category grid + questions-per-category. Step 2: dares toggle, heat level, wildcard count, truth-or-dare. Step 3: custom questions toggle + game preview summary. |
 | PartnerAuthoredSetup | ✅ | `components/game/PartnerAuthoredSetup.tsx` | Partner card authoring screen. Up to 5 secret questions + 3 dares with heat levels. HIDDEN badge. Polls for partner completion (3s interval). Waiting state with pulse animation. |
+| AlignmentBar | ✅ | `components/game/AlignmentBar.tsx` | `{ myValue, partnerValue, min?, max?, className? }` — Scale visualization bar showing answer comparison between partners. Renders two position markers on a gradient track. Alignment badges: aligned (green), close (amber), talk_about_it (rose) based on value distance. |
+| AlignmentReveal | ✅ | `components/game/AlignmentReveal.tsx` | `{ myAnswer, partnerAnswer, questionType, className? }` — Side-by-side answer reveal for scale, open-text, and choice answers after both partners submit. AlignmentBar for scale questions, text comparison for open-text, choice highlight for multiple-choice. AnimatePresence staggered reveal. |
+| CheckInPlayScreen | ✅ | `components/game/CheckInPlayScreen.tsx` | `{ session, className? }` — Full Mode 1 (Alignment Check-In) play screen. Three phases: answering (question + input), waiting (partner pulse), reveal (AlignmentReveal). Progress bar with question count. Pause menu overlay with resume/abandon. Uses useGameEngine for round management. |
+| DeepDivePlayScreen | ✅ | `components/game/DeepDivePlayScreen.tsx` | `{ session, className? }` — Calm Mode 2 (Deep Dive) play screen. Journal toggle for private notes. No scoring or alignment comparison. Fade-in question transitions. Reflective UI with muted tones. Single-player pacing (no waiting phase). |
+| GameCard | ✅ | `components/game/GameCard.tsx` | `{ question, isFlipped?, onFlip?, partnerAuthored?, className? }` — 3D flip card for Date Night mode. CSS perspective transform with front/back faces. Partner-authored cards get rose-tinted border glow. Tap to flip with spring animation. |
+| DareCard | ✅ | `components/game/DareCard.tsx` | `{ dare, heatLevel, coyynsStake?, onComplete?, onSkip?, className? }` — Dare-specific 3D flip card with heat level gradients (mild=warm, medium=orange, spicy=red). CoYYns stakes display. Complete/Skip action buttons. Inherits GameCard flip mechanics. |
+| TruthCard | ✅ | `components/game/TruthCard.tsx` | `{ question, onAnswer?, className? }` — Truth card shown after choosing Truth in Truth-or-Dare. Optional response textarea for typed answers. No CoYYns stakes (truth is free). Clean card aesthetic without heat gradients. |
+| DateNightPlayScreen | ✅ | `components/game/DateNightPlayScreen.tsx` | `{ session, className? }` — Full Mode 3 (Date Night Game) play screen. Dark ambient background. Truth-or-dare choice prompt. GameCard/TruthCard/DareCard rendering based on choice. Live scoreboard. Card flip animations. Partner-authored card integration. |
+| GameComplete | ✅ | `components/game/GameComplete.tsx` | `{ session, mode, className? }` — Mode-specific completion screen. CheckInComplete variant: overall alignment percentage, per-category alignment bars, talk-about-it highlights. DateNightComplete variant: final scores, crown for winner, dare completion stats. Confetti animation. Share/replay CTAs. |
+| DeepDiveComplete | ✅ | `components/game/DeepDiveComplete.tsx` | `{ session, className? }` — Calm completion screen for Deep Dive mode. Exploration summary (questions explored, time spent). Journal excerpt previews. No numbers or scores. Warm reflective tone. "Return to space" CTA. |
+| AnswerTrajectory | ✅ | `components/game/AnswerTrajectory.tsx` | `{ history, questionId?, className? }` — Custom SVG line chart for answer history over time. Scale answer trajectories with partner comparison lines. Text answer timeline with date markers. Copper line for self, muted for partner. Responsive width. |
+| GameScheduleSettings | ✅ | `components/game/GameScheduleSettings.tsx` | `{ className? }` — Schedule configuration panel. Mode selection (check_in/deep_dive/date_night). Recurrence picker (daily/weekly/custom). Day-of-week selector grid. Time picker. Notification toggle. Saves to game_schedules table. |
+| ContributeForm | ✅ | `components/game/ContributeForm.tsx` | `{ open, onClose, onSubmit?, className? }` — Bottom sheet form for contributing custom questions to the question bank. Mode selector, category picker, question text input, optional follow-up. 5 CoYYns cost with balance check. Portal + AnimatePresence. |
 
 ## Game Hooks
 
 | Hook | Status | Path | Notes |
 |---|---|---|---|
 | useGameEngine | ✅ | `lib/hooks/use-game-engine.ts` | Core 3-mode session engine. Session lifecycle (create/start/pause/resume/complete/abandon). Round generation + management. Partner-authored content. Realtime subscriptions. Answer history. Active session detection. |
+
+## Game Routes (Part 2)
+
+| Route | Status | Path | Notes |
+|---|---|---|---|
+| /game/check-in/play | ✅ | `app/(main)/game/check-in/play/page.tsx` | Client Component. Wraps CheckInPlayScreen with active session from useGameEngine. Redirects to /game if no active check_in session. |
+| /game/deep-dive/play | ✅ | `app/(main)/game/deep-dive/play/page.tsx` | Client Component. Wraps DeepDivePlayScreen with active session from useGameEngine. Redirects to /game if no active deep_dive session. |
+| /game/date-night/play | ✅ | `app/(main)/game/date-night/play/page.tsx` | Client Component. Wraps DateNightPlayScreen with active session from useGameEngine. Redirects to /game if no active date_night session. |
+| /game/check-in/complete | ✅ | `app/(main)/game/check-in/complete/page.tsx` | Client Component. Wraps GameComplete with mode="check_in". Shows alignment results. Redirects to /game if no completed session. |
+| /game/deep-dive/complete | ✅ | `app/(main)/game/deep-dive/complete/page.tsx` | Client Component. Wraps DeepDiveComplete. Shows exploration summary. Redirects to /game if no completed session. |
+| /game/date-night/complete | ✅ | `app/(main)/game/date-night/complete/page.tsx` | Client Component. Wraps GameComplete with mode="date_night". Shows scores and crown. Redirects to /game if no completed session. |
+| /game/schedule | ✅ | `app/(main)/game/schedule/page.tsx` | Client Component. PageHeader + GameScheduleSettings. Configure recurring game sessions with mode, day, and time preferences. |
+| /game/bank | ✅ | `app/(main)/game/bank/page.tsx` | Client Component. QuestionBankPage — inline component with search input, mode filter pills (all/check_in/deep_dive/date_night), question cards with category badges, ContributeForm FAB. |
 
 ## Scripts / Infrastructure
 

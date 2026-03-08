@@ -167,3 +167,12 @@
 | TG05c | Date Night Setup | ✅ | 2026-03-08 | — | DateNightSetup: 3-step wizard with progress dots. Categories + dares + custom content toggles. Game preview summary (total rounds, categories, time estimate). Routes to author page or play. Coral/rose accents. 19 tests passing. |
 | TG06 | Partner Authored Setup | ✅ | 2026-03-08 | — | PartnerAuthoredSetup: secret card authoring (5 questions + 3 dares max). Heat level picker. HIDDEN badges. Polls partner completion (3s). Waiting screen with pulse animation. Auto-navigates when both done. 20 tests passing. |
 | TU01-TU70 | UI Redesign Test Validation | ✅ | 2026-03-08 | 4ab0db6 | All 70 UI redesign tasks (TU01-TU70) validated. Component code was already implemented; fixed 120 failing tests across 27 test files to align with redesigned components. Fixes: Proxy framer-motion mocks, updated labels/text (Tasbih, Prayer Tracker, Quran Journey), CSS class→inline style assertions, ChatBubble-based ping rendering, animate-skeleton-warm skeleton classes, role guard fix in use-cycle. Final: 209 test files, 2853 tests, 0 failures. Build clean. |
+| TG07 | CheckInPlayScreen | ✅ | 2026-03-08 | — | Mode 1 play screen with answering/waiting/reveal phases, AlignmentBar and AlignmentReveal sub-components. |
+| TG08 | DeepDivePlayScreen | ✅ | 2026-03-08 | — | Mode 2 calm play screen with journal toggle, no scoring, difficulty badges. |
+| TG09 | DateNightPlayScreen | ✅ | 2026-03-08 | — | Mode 3 dark play screen with GameCard, DareCard, TruthCard, truth-or-dare choice, scoreboard. |
+| TG09a | TruthCard | ✅ | 2026-03-08 | — | Truth card component for Date Night with optional response textarea. |
+| TG10 | GameComplete | ✅ | 2026-03-08 | — | Mode-specific completion screens: CheckInComplete (alignment %, category bars, highlights) + DateNightComplete (scores, crown, dare stats). |
+| TG10a | DeepDiveComplete | ✅ | 2026-03-08 | — | Calm deep dive completion with exploration summary, journal excerpts, empty state. |
+| TG11 | AnswerTrajectory | ✅ | 2026-03-08 | — | Custom SVG line chart for answer history visualization (scale + text timeline, no recharts dependency). |
+| TG12 | GameScheduleSettings + HomeGameWidget | ✅ | 2026-03-08 | — | Schedule configuration (mode/recurrence/day/time) + home widget showing active session or next scheduled game. |
+| TG13 | QuestionBank + ContributeForm | ✅ | 2026-03-08 | — | Question bank browser page with search/mode filter + bottom sheet contribution form (5 CoYYns, daily limit). |
