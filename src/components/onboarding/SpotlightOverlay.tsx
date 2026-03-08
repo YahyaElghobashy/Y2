@@ -128,7 +128,7 @@ export function SpotlightOverlay({
             <motion.rect
               fill="black"
               rx={hole.borderRadius}
-              initial={{ x: window.innerWidth / 2, y: window.innerHeight / 2, width: 0, height: 0 }}
+              initial={{ x: 0, y: 0, width: 0, height: 0 }}
               animate={{ x: hole.x, y: hole.y, width: hole.width, height: hole.height }}
               transition={{ duration: 0.3, ease: EASE_OUT }}
             />

@@ -88,9 +88,6 @@ export function BottomNav() {
   const [expanded, setExpanded] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
-  // Hide during onboarding flow
-  if (pathname.startsWith("/onboarding")) return null
-
   const toggleExpand = useCallback(() => {
     setExpanded((prev) => !prev)
   }, [])
@@ -111,6 +108,9 @@ export function BottomNav() {
     document.addEventListener("mousedown", handleClick)
     return () => document.removeEventListener("mousedown", handleClick)
   }, [expanded])
+
+  // Hide during onboarding flow — AFTER all hooks to avoid Rules of Hooks violation
+  if (pathname.startsWith("/onboarding")) return null
 
   const isCenter = pathname.startsWith("/2026") ||
     pathname.startsWith("/snap") ||

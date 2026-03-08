@@ -23,10 +23,12 @@ export default function OnboardingPage() {
   const onboarding = useOnboarding()
 
   // Deep link code forwarding (e.g. /onboarding?code=ABC123)
-  const [initialCode] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null
-    return new URLSearchParams(window.location.search).get("code")
-  })
+  const [initialCode, setInitialCode] = useState<string | null>(null)
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("code")
+    if (code) setInitialCode(code)
+  }, [])
 
   // Redirect to home if onboarding is complete
   useEffect(() => {

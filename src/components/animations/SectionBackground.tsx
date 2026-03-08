@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { usePathname } from "next/navigation"
 
@@ -84,10 +84,14 @@ export function SectionBackground() {
   const section = getSection(pathname)
   const blobs = SECTION_BLOBS[section]
 
-  // Memoize the prefersReducedMotion check
-  const prefersReducedMotion = useMemo(() => {
-    if (typeof window === "undefined") return false
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+    setPrefersReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
   }, [])
 
   return (
