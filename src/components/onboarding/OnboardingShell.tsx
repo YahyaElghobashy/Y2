@@ -51,7 +51,7 @@ export function OnboardingShell({
       </div>
 
       {/* Skip button (tour steps only) */}
-      {canSkip && isTourStep && (
+      {canSkip && (
         <motion.button
           className="absolute bottom-8 end-5 z-10 font-body text-[13px] text-[var(--color-text-secondary)] opacity-50"
           onClick={onSkip}
@@ -60,7 +60,7 @@ export function OnboardingShell({
           transition={{ delay: 0.5, duration: 0.3 }}
           data-testid="skip-tour-btn"
         >
-          Skip tour &rarr;
+          {isTourStep ? "Skip tour" : "Skip setup"} &rarr;
         </motion.button>
       )}
     </div>

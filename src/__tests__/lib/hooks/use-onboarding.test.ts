@@ -66,7 +66,7 @@ describe("useOnboarding", () => {
     expect(result.current.progress).toBe(0)
     expect(result.current.isComplete).toBe(false)
     expect(result.current.isTourStep).toBe(false)
-    expect(result.current.canSkip).toBe(false)
+    expect(result.current.canSkip).toBe(true)
     expect(result.current.direction).toBe("forward")
   })
 
@@ -122,12 +122,12 @@ describe("useOnboarding", () => {
     }
   })
 
-  it("isTourStep is false for non-tour steps", () => {
+  it("isTourStep is false for non-tour steps but canSkip is always true", () => {
     for (const step of ["welcome", "profile", "pairing", "ready"] as const) {
       mockProfile.onboarding_step = step
       const { result } = renderHook(() => useOnboarding())
       expect(result.current.isTourStep).toBe(false)
-      expect(result.current.canSkip).toBe(false)
+      expect(result.current.canSkip).toBe(true)
     }
   })
 
@@ -222,7 +222,7 @@ describe("useOnboarding", () => {
     )
   })
 
-  it("skipOnboarding does nothing from a non-tour step", async () => {
+  it("skipOnboarding works from any step (not just tour steps)", async () => {
     mockProfile.onboarding_step = "welcome"
     const { result } = renderHook(() => useOnboarding())
 
@@ -230,8 +230,13 @@ describe("useOnboarding", () => {
       await result.current.skipOnboarding()
     })
 
-    expect(result.current.currentStep).toBe("welcome")
-    expect(mockFrom).not.toHaveBeenCalled()
+    expect(result.current.currentStep).toBe("ready")
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        onboarding_step: "ready",
+        onboarding_completed_at: expect.any(String),
+      })
+    )
   })
 
   // --- Integration: DB persistence ---

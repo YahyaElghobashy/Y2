@@ -31,19 +31,24 @@ export default function AppLayout({
     // Skip guards during profile setup overlay
     if (profileNeedsSetup) return
 
+    // ── ONBOARDING BYPASS (temporary) ──────────────────────────
+    // Onboarding flow is deactivated while features are under
+    // active development. Remove this block and uncomment the
+    // guards below to re-enable.
+    //
     // Redirect to onboarding if not completed
-    if (!profile.onboarding_completed_at) {
-      // Forward deep link code param to onboarding (e.g. ?code=ABC123)
-      const urlParams = new URLSearchParams(window.location.search)
-      const code = urlParams.get("code")
-      router.replace(code ? `/onboarding?code=${code}` : "/onboarding")
-      return
-    }
-
+    // if (!profile.onboarding_completed_at) {
+    //   const urlParams = new URLSearchParams(window.location.search)
+    //   const code = urlParams.get("code")
+    //   router.replace(code ? `/onboarding?code=${code}` : "/onboarding")
+    //   return
+    // }
+    //
     // Redirect unpaired users to /pair (unless already there)
-    if (profile.pairing_status !== "paired" && pathname !== "/pair") {
-      router.replace("/pair")
-    }
+    // if (profile.pairing_status !== "paired" && pathname !== "/pair") {
+    //   router.replace("/pair")
+    // }
+    // ── END ONBOARDING BYPASS ──────────────────────────────────
   }, [isLoading, user, profile, profileNeedsSetup, isOnboarding, pathname, router])
 
   return (

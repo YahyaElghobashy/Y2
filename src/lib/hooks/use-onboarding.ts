@@ -27,7 +27,7 @@ export function useOnboarding(): UseOnboardingReturn {
   const progress = totalSteps > 1 ? stepIndex / (totalSteps - 1) : 0
   const isComplete = !!profile?.onboarding_completed_at
   const isTourStep = TOUR_STEPS.includes(currentStep)
-  const canSkip = isTourStep
+  const canSkip = true // Allow skip from any step (was: isTourStep)
 
   const persistStep = useCallback(
     async (step: OnboardingStep, completedAt?: string) => {
@@ -107,8 +107,6 @@ export function useOnboarding(): UseOnboardingReturn {
   }, [persistStep, refreshProfile])
 
   const skipOnboarding = useCallback(async () => {
-    if (!canSkip) return
-
     setIsLoading(true)
     setError(null)
     setDirection("forward")
@@ -123,7 +121,7 @@ export function useOnboarding(): UseOnboardingReturn {
     } finally {
       setIsLoading(false)
     }
-  }, [canSkip, persistStep, refreshProfile])
+  }, [persistStep, refreshProfile])
 
   return useMemo(
     () => ({
