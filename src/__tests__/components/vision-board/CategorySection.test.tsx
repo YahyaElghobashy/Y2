@@ -85,19 +85,19 @@ describe("CategorySection", () => {
     expect(screen.getByText("💪")).toBeInTheDocument()
   })
 
-  it("renders item count for multiple items", () => {
+  it("renders achieved/total count for multiple items", () => {
     render(<CategorySection category={makeCategory()} />)
-    expect(screen.getByText("2 items")).toBeInTheDocument()
+    expect(screen.getByText("0/2")).toBeInTheDocument()
   })
 
-  it("renders singular 'item' for single item", () => {
+  it("renders achieved/total count for single item", () => {
     render(<CategorySection category={makeCategory({ items: [makeItem("item-1", "Run")] })} />)
-    expect(screen.getByText("1 item")).toBeInTheDocument()
+    expect(screen.getByText("0/1")).toBeInTheDocument()
   })
 
-  it("renders 0 items when empty", () => {
+  it("renders 0/0 count when empty", () => {
     render(<CategorySection category={makeCategory({ items: [] })} />)
-    expect(screen.getByText("0 items")).toBeInTheDocument()
+    expect(screen.getByText("0/0")).toBeInTheDocument()
   })
 
   it("renders all VisionItemCards for each item", () => {

@@ -20,7 +20,7 @@ describe("ChallengeCard", () => {
 
   it("renders the stakes text", () => {
     render(<ChallengeCard {...defaultProps} />)
-    expect(screen.getByText("Loser cooks dinner for a week")).toBeInTheDocument()
+    expect(screen.getByText("🎯 Loser cooks dinner for a week")).toBeInTheDocument()
   })
 
   it("renders 'Pending' badge when status is pending", () => {

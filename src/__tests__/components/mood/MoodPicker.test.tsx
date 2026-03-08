@@ -70,7 +70,7 @@ describe("MoodPicker", () => {
       expect(screen.getByText("Loving")).toBeInTheDocument()
     })
 
-    it("selected mood has accent-primary background class", () => {
+    it("selected mood has accent-copper border style", () => {
       useMood.mockReturnValue({
         ...defaultMoodReturn,
         todayMood: {
@@ -86,10 +86,10 @@ describe("MoodPicker", () => {
       render(<MoodPicker />)
 
       const goodButton = screen.getByTestId("mood-button-good")
-      expect(goodButton.className).toContain("accent-primary")
+      expect(goodButton.style.border).toContain("var(--accent-copper")
     })
 
-    it("unselected moods have secondary background", () => {
+    it("unselected moods have soft-cream background style", () => {
       useMood.mockReturnValue({
         ...defaultMoodReturn,
         todayMood: {
@@ -105,7 +105,7 @@ describe("MoodPicker", () => {
       render(<MoodPicker />)
 
       const calmButton = screen.getByTestId("mood-button-calm")
-      expect(calmButton.className).toContain("bg-secondary")
+      expect(calmButton.style.backgroundColor).toContain("var(--bg-soft-cream")
     })
 
     it("custom className applied", () => {
@@ -201,9 +201,9 @@ describe("MoodPicker", () => {
 
       render(<MoodPicker />)
 
-      // The meh button should be the selected one (accent background)
+      // The meh button should be the selected one (accent-copper border)
       const mehButton = screen.getByTestId("mood-button-meh")
-      expect(mehButton.className).toContain("accent-primary")
+      expect(mehButton.style.border).toContain("var(--accent-copper")
     })
 
     it("calls setMood from useMood hook on button click", async () => {

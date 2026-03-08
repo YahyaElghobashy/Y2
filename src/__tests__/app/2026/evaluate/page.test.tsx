@@ -160,11 +160,11 @@ describe("EvaluatePage", () => {
 
     await waitFor(() => {
       expect(submitEvaluation).toHaveBeenCalledWith(expect.objectContaining({
-        overall_score: 8,
+        overallScore: 8,
         reflection: "Great progress",
-        category_scores: expect.arrayContaining([
-          expect.objectContaining({ category_id: "cat-1", score: 7 }),
-          expect.objectContaining({ category_id: "cat-2", score: 5 }),
+        categoryScores: expect.arrayContaining([
+          expect.objectContaining({ categoryId: "cat-1", score: 7 }),
+          expect.objectContaining({ categoryId: "cat-2", score: 5 }),
         ]),
       }))
     })
@@ -195,7 +195,7 @@ describe("EvaluatePage", () => {
     fireEvent.click(screen.getByTestId("submit-evaluation"))
     await waitFor(() => {
       expect(submitEvaluation).toHaveBeenCalledWith(
-        expect.objectContaining({ reflection: null })
+        expect.objectContaining({ reflection: undefined })
       )
     })
   })

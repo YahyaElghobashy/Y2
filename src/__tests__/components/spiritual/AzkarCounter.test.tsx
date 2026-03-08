@@ -110,7 +110,7 @@ describe("AzkarCounter", () => {
 
     it("displays target", () => {
       render(<AzkarCounter />)
-      expect(screen.getByText("/ 33")).toBeInTheDocument()
+      expect(screen.getByText("10 / 33")).toBeInTheDocument()
     })
 
     it("renders session toggle", () => {
@@ -134,22 +134,23 @@ describe("AzkarCounter", () => {
     it("renders reset button", () => {
       render(<AzkarCounter />)
       expect(screen.getByTestId("reset-button")).toBeInTheDocument()
-      expect(screen.getByText("Reset")).toBeInTheDocument()
+      expect(screen.getByLabelText("Reset counter")).toBeInTheDocument()
     })
 
     it("has heading text", () => {
       render(<AzkarCounter />)
-      expect(screen.getByText("Azkar")).toBeInTheDocument()
+      expect(screen.getByText("Tasbih")).toBeInTheDocument()
     })
 
-    it("shows error message", () => {
+    it("shows error message when error and no session", () => {
       mockUseAzkar.mockReturnValue({
         session: null, sessionType: "morning" as const,
         increment: vi.fn(), reset: vi.fn(), setTarget: vi.fn(),
         switchType: vi.fn(), isLoading: false, error: "Network error", justCompleted: false,
       })
       render(<AzkarCounter />)
-      expect(screen.getByTestId("azkar-error")).toHaveTextContent("Network error")
+      expect(screen.getByTestId("azkar-counter-error")).toBeInTheDocument()
+      expect(screen.getByText("Could not load azkar data")).toBeInTheDocument()
     })
 
     it("shows completion ripple when justCompleted", () => {

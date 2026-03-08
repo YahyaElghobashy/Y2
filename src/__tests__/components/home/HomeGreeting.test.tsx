@@ -6,6 +6,27 @@ vi.mock("date-fns", () => ({
   format: () => "Monday, March 2",
 }))
 
+// Mock WordReveal to render plain text
+vi.mock("@/components/animations/WordReveal", () => ({
+  WordReveal: ({ text }: { text: string }) => <span>{text}</span>,
+}))
+
+// Mock framer-motion
+vi.mock("framer-motion", () => ({
+  motion: new Proxy(
+    {},
+    {
+      get: (_target, tag: string) => {
+        const Component = ({ children, initial, animate, exit, transition, whileHover, whileTap, variants, custom, layoutId, ...domProps }: Record<string, unknown> & { children?: React.ReactNode }) =>
+          require("react").createElement(tag, domProps, children)
+        Component.displayName = `motion.${tag}`
+        return Component
+      },
+    }
+  ),
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}))
+
 // Mock useAuth
 const mockAuthReturn = {
   user: { id: "user-1" },

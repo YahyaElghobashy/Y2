@@ -1,3 +1,4 @@
+import React from "react"
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import { AppShell } from "@/components/shared/AppShell"
@@ -7,14 +8,58 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }))
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const { whileTap, layoutId, transition, ...domProps } = props
-      return <div data-layoutid={layoutId as string} {...domProps}>{children}</div>
-    },
+// Mock next/image
+vi.mock("next/image", () => ({
+  default: (props: Record<string, unknown>) => {
+    const { priority, ...rest } = props
+    return <img {...rest} />
   },
+}))
+
+// Mock SectionBackground
+vi.mock("@/components/animations/SectionBackground", () => ({
+  SectionBackground: () => <div data-testid="section-background" />,
+}))
+
+// Mock framer-motion with Proxy to handle all motion elements
+vi.mock("framer-motion", () => ({
+  motion: new Proxy(
+    {},
+    {
+      get: (_target, tag: string) =>
+        React.forwardRef(
+          (
+            {
+              children,
+              initial,
+              animate,
+              exit,
+              transition,
+              whileHover,
+              whileTap,
+              whileInView,
+              variants,
+              custom,
+              layoutId,
+              layout,
+              onAnimationComplete,
+              onAnimationStart,
+              ...domProps
+            }: Record<string, unknown> & { children?: React.ReactNode },
+            ref: React.Ref<HTMLElement>
+          ) =>
+            React.createElement(
+              tag,
+              {
+                ...domProps,
+                ref,
+                "data-layoutid": layoutId as string,
+              },
+              children
+            )
+        ),
+    }
+  ),
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }))
 
@@ -58,13 +103,12 @@ describe("AppShell", () => {
     expect(outerDiv).toHaveClass("min-h-[100dvh]")
   })
 
-  it("background color class is applied", () => {
-    const { container } = render(
+  it("renders SectionBackground component", () => {
+    render(
       <AppShell>
         <p>Content</p>
       </AppShell>
     )
-    const outerDiv = container.firstElementChild
-    expect(outerDiv).toHaveClass("bg-bg-primary")
+    expect(screen.getByTestId("section-background")).toBeInTheDocument()
   })
 })

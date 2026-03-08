@@ -233,7 +233,7 @@ describe("HorizontalTabBar", () => {
       render(<HorizontalTabBar tabs={sampleTabs} />)
 
       const pingTab = screen.getByTestId("tab-ping")
-      expect(pingTab.className).toContain("text-[var(--color-accent-primary)]")
+      expect(pingTab.className).toContain("text-[var(--accent-copper,#B87333)]")
     })
 
     it("inactive tab has secondary text color class", () => {

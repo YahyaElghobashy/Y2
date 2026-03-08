@@ -99,10 +99,10 @@ describe("MarketplaceItemCard", () => {
     expect(screen.getByTestId("need-more-tooltip")).toHaveTextContent("Need 5 more")
   })
 
-  it("buy button has disabled styling when cannot afford", () => {
+  it("buy button shows 'Need X more' text when cannot afford", () => {
     render(<MarketplaceItemCard {...defaultProps} balance={5} />)
     const btn = screen.getByTestId("buy-button")
-    expect(btn).toHaveClass("cursor-not-allowed")
+    expect(btn).toHaveTextContent("Need 5 more")
   })
 
   it("applies className prop", () => {

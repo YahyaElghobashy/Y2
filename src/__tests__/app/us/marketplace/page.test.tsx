@@ -217,7 +217,7 @@ describe("MarketplacePage", () => {
     const source = fs.readFileSync(filePath, "utf-8")
 
     // Match hex color patterns like #FBF8F4, #fff, #2C2825
-    // Allow hex in comments and the coin unicode escape &#x1FA99
+    // Allow hex in comments, HTML entities (&#x...), and CSS variable fallbacks (var(--..., #hex))
     const lines = source.split("\n")
     const hexPattern = /#[0-9a-fA-F]{3,8}\b/
 
@@ -226,7 +226,11 @@ describe("MarketplacePage", () => {
       // Skip comments
       if (trimmed.startsWith("//") || trimmed.startsWith("*")) return false
       // Skip HTML entities (&#x...)
-      const cleaned = trimmed.replace(/&#x[0-9a-fA-F]+;/g, "")
+      let cleaned = trimmed.replace(/&#x[0-9a-fA-F]+;/g, "")
+      // Skip hex values inside CSS variable fallbacks: var(--..., #hex)
+      cleaned = cleaned.replace(/var\(--[^)]*#[0-9a-fA-F]{3,8}[^)]*\)/g, "")
+      // Skip hex values inside rgba() or other color functions that are part of design tokens
+      cleaned = cleaned.replace(/rgba?\([^)]*\)/g, "")
       return hexPattern.test(cleaned)
     })
 

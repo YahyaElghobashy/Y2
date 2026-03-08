@@ -89,13 +89,12 @@ describe("CoyynsWidget", () => {
 
   it('renders "CoYYns" label text', () => {
     render(<CoyynsWidget />)
-    expect(screen.getByText("CoYYns")).toBeInTheDocument()
+    expect(screen.getByText(/CoYYns/)).toBeInTheDocument()
   })
 
-  it("renders CoyynsBadge component (coin icon present)", () => {
+  it("renders coin emoji indicator", () => {
     render(<CoyynsWidget />)
-    const svg = document.querySelector("svg")
-    expect(svg).toBeInTheDocument()
+    expect(screen.getByText(/🪙/)).toBeInTheDocument()
   })
 
   it("renders 3 transaction rows when transactions has 3+ entries", () => {

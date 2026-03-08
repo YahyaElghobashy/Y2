@@ -184,7 +184,9 @@ describe("VisionBoardPage", () => {
 
   it("renders gradient placeholder when no hero_media_id", () => {
     const { container } = render(<VisionBoardPage />)
-    expect(container.querySelector(".bg-gradient-to-br")).toBeInTheDocument()
+    // Gradient is now inline style, not a Tailwind class
+    const gradientEl = container.querySelector("[style*='linear-gradient']")
+    expect(gradientEl).toBeInTheDocument()
   })
 
   it("renders MediaImage when hero_media_id exists", () => {
@@ -203,7 +205,7 @@ describe("VisionBoardPage", () => {
   it("renders evaluation prompt when hasEvaluatedThisMonth is false", () => {
     render(<VisionBoardPage />)
     expect(screen.getByTestId("eval-prompt")).toBeInTheDocument()
-    expect(screen.getByText("Monthly reflection due")).toBeInTheDocument()
+    expect(screen.getByText("Time for your monthly check-in")).toBeInTheDocument()
   })
 
   it("does NOT render evaluation prompt when hasEvaluatedThisMonth is true", () => {

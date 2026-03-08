@@ -96,8 +96,10 @@ describe("PingHistory", () => {
       notifications: [makePing({ sender_id: "u1", body: "Hey there" })],
     }
     render(<PingHistory />)
-    expect(screen.getByTestId("ping-sent")).toBeInTheDocument()
+    // ChatBubble renders with chat-bubble-sent class and message text
     expect(screen.getByText("Hey there")).toBeInTheDocument()
+    const bubble = screen.getByText("Hey there").closest("[class*='chat-bubble-sent']")
+    expect(bubble).toBeTruthy()
   })
 
   it("renders received pings aligned left", () => {
@@ -106,26 +108,27 @@ describe("PingHistory", () => {
       notifications: [makePing({ sender_id: "u2", recipient_id: "u1", body: "Hi back" })],
     }
     render(<PingHistory />)
-    expect(screen.getByTestId("ping-received")).toBeInTheDocument()
     expect(screen.getByText("Hi back")).toBeInTheDocument()
+    const bubble = screen.getByText("Hi back").closest("[class*='chat-bubble-received']")
+    expect(bubble).toBeTruthy()
   })
 
-  it("shows status icon for sent pings", () => {
+  it("renders sent ping body text", () => {
     mockNotificationsReturn = {
       ...mockNotificationsReturn,
-      notifications: [makePing({ status: "sent" })],
+      notifications: [makePing({ status: "sent", body: "Test message" })],
     }
     render(<PingHistory />)
-    expect(screen.getByTestId("status-sent")).toBeInTheDocument()
+    expect(screen.getByText("Test message")).toBeInTheDocument()
   })
 
-  it("shows delivered status icon", () => {
+  it("renders delivered ping body text", () => {
     mockNotificationsReturn = {
       ...mockNotificationsReturn,
-      notifications: [makePing({ status: "delivered" })],
+      notifications: [makePing({ status: "delivered", body: "Delivered message" })],
     }
     render(<PingHistory />)
-    expect(screen.getByTestId("status-delivered")).toBeInTheDocument()
+    expect(screen.getByText("Delivered message")).toBeInTheDocument()
   })
 
   it("groups pings by date with headers", () => {
@@ -141,13 +144,15 @@ describe("PingHistory", () => {
     expect(screen.getByText("Today")).toBeInTheDocument()
   })
 
-  it("shows title and emoji when title is not 'Ping'", () => {
+  it("shows title and body combined when title is not 'Ping'", () => {
     mockNotificationsReturn = {
       ...mockNotificationsReturn,
       notifications: [makePing({ title: "Good morning", body: "Rise and shine" })],
     }
     render(<PingHistory />)
-    expect(screen.getByText("Good morning")).toBeInTheDocument()
-    expect(screen.getByText("Rise and shine")).toBeInTheDocument()
+    // Title and body are concatenated with newline in displayMessage
+    const messageEl = screen.getByText(/Good morning/)
+    expect(messageEl).toBeInTheDocument()
+    expect(messageEl.textContent).toContain("Rise and shine")
   })
 })

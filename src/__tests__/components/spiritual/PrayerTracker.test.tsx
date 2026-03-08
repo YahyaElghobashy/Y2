@@ -133,13 +133,11 @@ describe("PrayerTracker", () => {
       expect(screen.getByTestId("prayer-label-ar-isha")).toHaveTextContent("عشاء")
     })
 
-    it("renders English labels for each prayer", () => {
+    it("does not render English labels (removed in redesign)", () => {
       render(<PrayerTracker />)
-      expect(screen.getByTestId("prayer-label-en-fajr")).toHaveTextContent("Fajr")
-      expect(screen.getByTestId("prayer-label-en-dhuhr")).toHaveTextContent("Dhuhr")
-      expect(screen.getByTestId("prayer-label-en-asr")).toHaveTextContent("Asr")
-      expect(screen.getByTestId("prayer-label-en-maghrib")).toHaveTextContent("Maghrib")
-      expect(screen.getByTestId("prayer-label-en-isha")).toHaveTextContent("Isha")
+      // English labels were removed; only Arabic labels exist now
+      expect(screen.queryByTestId("prayer-label-en-fajr")).not.toBeInTheDocument()
+      expect(screen.queryByTestId("prayer-label-en-dhuhr")).not.toBeInTheDocument()
     })
 
     it("marks completed prayers with data-completed=true", () => {
@@ -149,7 +147,7 @@ describe("PrayerTracker", () => {
       expect(screen.getByTestId("prayer-asr")).toHaveAttribute("data-completed", "true")
     })
 
-    it("shows error message when error exists", () => {
+    it("shows error state when error exists and no data", () => {
       mockUsePrayer.mockReturnValue({
         today: null,
         togglePrayer: vi.fn(),
@@ -158,7 +156,8 @@ describe("PrayerTracker", () => {
         error: "Something went wrong",
       })
       render(<PrayerTracker />)
-      expect(screen.getByTestId("prayer-error")).toHaveTextContent("Something went wrong")
+      expect(screen.getByTestId("prayer-tracker-error")).toBeInTheDocument()
+      expect(screen.getByText("Could not load prayer data")).toBeInTheDocument()
     })
 
     it("has aria-pressed on prayer buttons", () => {
@@ -221,7 +220,7 @@ describe("PrayerTracker", () => {
 
     it("renders heading text", () => {
       render(<PrayerTracker />)
-      expect(screen.getByText("Daily Prayers")).toBeInTheDocument()
+      expect(screen.getByText("Prayer Tracker")).toBeInTheDocument()
     })
   })
 })

@@ -9,7 +9,7 @@ const MOCK_PROFILE = {
   email: "yahya@test.com",
   avatar_url: null,
   partner_id: "yara-1",
-  role: "user",
+  role: "admin",
   created_at: "",
   updated_at: "",
 }

@@ -145,7 +145,7 @@ describe("MoodStrip", () => {
 
     render(<MoodStrip />)
     expect(screen.getByTestId("mood-strip-loading")).toBeInTheDocument()
-    const pulses = document.querySelectorAll(".animate-pulse")
+    const pulses = document.querySelectorAll(".animate-skeleton-warm")
     expect(pulses).toHaveLength(4)
   })
 

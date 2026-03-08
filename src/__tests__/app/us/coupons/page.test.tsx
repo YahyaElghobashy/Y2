@@ -100,20 +100,22 @@ describe("CouponWalletPage", () => {
 
   it("renders three tab pills", () => {
     render(<CouponWalletPage />)
-    expect(screen.getByTestId("tab-for-me")).toBeInTheDocument()
-    expect(screen.getByTestId("tab-i-made")).toBeInTheDocument()
-    expect(screen.getByTestId("tab-history")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "For Me" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "I Made" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "History" })).toBeInTheDocument()
   })
 
-  it("defaults to For Me tab", () => {
+  it("defaults to For Me tab (active has text-white class)", () => {
     render(<CouponWalletPage />)
-    expect(screen.getByTestId("tab-for-me")).toHaveAttribute("aria-selected", "true")
+    const forMeBtn = screen.getByRole("button", { name: "For Me" })
+    expect(forMeBtn.className).toContain("text-white")
   })
 
   it("switches to I Made tab on click", () => {
     render(<CouponWalletPage />)
-    fireEvent.click(screen.getByTestId("tab-i-made"))
-    expect(screen.getByTestId("tab-i-made")).toHaveAttribute("aria-selected", "true")
+    fireEvent.click(screen.getByRole("button", { name: "I Made" }))
+    const iMadeBtn = screen.getByRole("button", { name: "I Made" })
+    expect(iMadeBtn.className).toContain("text-white")
   })
 
   it("renders CouponCards in For Me tab", () => {
@@ -140,14 +142,14 @@ describe("CouponWalletPage", () => {
       pendingApprovals: [pending],
     })
     render(<CouponWalletPage />)
-    fireEvent.click(screen.getByTestId("tab-i-made"))
+    fireEvent.click(screen.getByRole("button", { name: "I Made" }))
     expect(screen.getByText("Needs Your Attention")).toBeInTheDocument()
     expect(screen.getByTestId("pending-section")).toBeInTheDocument()
   })
 
   it("renders empty state with CTA in I Made tab when no created coupons", () => {
     render(<CouponWalletPage />)
-    fireEvent.click(screen.getByTestId("tab-i-made"))
+    fireEvent.click(screen.getByRole("button", { name: "I Made" }))
     expect(screen.getByText("No coupons created")).toBeInTheDocument()
     expect(screen.getByText("Create one")).toBeInTheDocument()
   })

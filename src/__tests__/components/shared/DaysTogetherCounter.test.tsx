@@ -194,7 +194,8 @@ describe("DaysTogetherCounter", () => {
       render(<DaysTogetherCounter variant="full" />)
       const el = screen.getByTestId("days-together-counter")
       expect(el.className).toContain("rounded-2xl")
-      expect(el.className).toContain("border")
+      // Border is now an inline style, not a className
+      expect(el.style.border).toBeTruthy()
     })
 
     it("compact variant shows number + heart icon", () => {

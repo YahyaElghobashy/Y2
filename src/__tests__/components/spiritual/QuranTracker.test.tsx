@@ -104,12 +104,12 @@ describe("QuranTracker", () => {
 
     it("shows daily goal", () => {
       render(<QuranTracker />)
-      expect(screen.getByText("/ 5 pages")).toBeInTheDocument()
+      expect(screen.getByText("3 / 5 pages")).toBeInTheDocument()
     })
 
     it("shows monthly total", () => {
       render(<QuranTracker />)
-      expect(screen.getByTestId("monthly-total")).toHaveTextContent("42 pages this month")
+      expect(screen.getByTestId("monthly-total")).toHaveTextContent("42 Pages this month")
     })
 
     it("renders add page button", () => {
@@ -125,10 +125,10 @@ describe("QuranTracker", () => {
 
     it("shows heading text", () => {
       render(<QuranTracker />)
-      expect(screen.getByText("Quran Reading")).toBeInTheDocument()
+      expect(screen.getByText("Quran Journey")).toBeInTheDocument()
     })
 
-    it("shows error message", () => {
+    it("shows error state when error and no data", () => {
       mockUseQuran.mockReturnValue({
         today: null,
         logPages: vi.fn(),
@@ -139,7 +139,8 @@ describe("QuranTracker", () => {
         error: "Failed to load",
       })
       render(<QuranTracker />)
-      expect(screen.getByTestId("quran-error")).toHaveTextContent("Failed to load")
+      expect(screen.getByTestId("quran-tracker-error")).toBeInTheDocument()
+      expect(screen.getByText("Could not load reading data")).toBeInTheDocument()
     })
 
     it("add button has correct aria-label", () => {
@@ -175,7 +176,7 @@ describe("QuranTracker", () => {
     it("displays data from useQuran hook", () => {
       render(<QuranTracker />)
       expect(screen.getByTestId("pages-read")).toHaveTextContent("3")
-      expect(screen.getByTestId("monthly-total")).toHaveTextContent("42 pages this month")
+      expect(screen.getByTestId("monthly-total")).toHaveTextContent("42 Pages this month")
     })
 
     it("applies custom className", () => {
@@ -204,7 +205,7 @@ describe("QuranTracker", () => {
       })
       render(<QuranTracker />)
       expect(screen.getByTestId("pages-read")).toHaveTextContent("0")
-      expect(screen.getByTestId("monthly-total")).toHaveTextContent("0 pages this month")
+      expect(screen.getByTestId("monthly-total")).toHaveTextContent("0 Pages this month")
     })
   })
 })

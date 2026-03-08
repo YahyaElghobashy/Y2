@@ -129,7 +129,7 @@ describe("CoyynsWallet", () => {
     mockCoyynsReturn = { ...mockCoyynsReturn, isLoading: true, wallet: null, partnerWallet: null }
     render(<CoyynsWallet />)
     expect(screen.getByTestId("wallet-loading")).toBeInTheDocument()
-    const pulseElements = screen.getByTestId("wallet-loading").querySelectorAll(".animate-pulse")
+    const pulseElements = screen.getByTestId("wallet-loading").querySelectorAll(".animate-skeleton-warm")
     expect(pulseElements.length).toBeGreaterThan(0)
   })
 

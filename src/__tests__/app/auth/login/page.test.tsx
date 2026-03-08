@@ -1,3 +1,4 @@
+import React from "react"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach } from "vitest"
@@ -19,14 +20,52 @@ vi.mock("@/lib/supabase/client", () => ({
   getSupabaseBrowserClient: () => mockSupabase,
 }))
 
+// Mock HayahWordmark to render simple text
+vi.mock("@/components/animations/HayahWordmark", () => ({
+  HayahWordmark: () => (
+    <div>
+      <h1 aria-label="HaYYah">HaYYah</h1>
+      <p>حياة</p>
+    </div>
+  ),
+}))
+
+// Mock framer-motion with Proxy to handle all motion elements
 vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => {
-      const { initial, animate, transition, whileHover, whileTap, ...rest } = props
-      void initial; void animate; void transition; void whileHover; void whileTap;
-      return <div {...rest}>{children}</div>
-    },
-  },
+  motion: new Proxy(
+    {},
+    {
+      get: (_target, tag: string) =>
+        React.forwardRef(
+          (
+            {
+              children,
+              initial,
+              animate,
+              exit,
+              transition,
+              whileHover,
+              whileTap,
+              whileInView,
+              variants,
+              custom,
+              layoutId,
+              layout,
+              onAnimationComplete,
+              onAnimationStart,
+              ...domProps
+            }: Record<string, unknown> & { children?: React.ReactNode },
+            ref: React.Ref<HTMLElement>
+          ) =>
+            React.createElement(
+              tag,
+              { ...domProps, ref },
+              children
+            )
+        ),
+    }
+  ),
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }))
 
 import LoginPage from "@/app/(auth)/login/page"
@@ -37,9 +76,9 @@ describe("Login Page", () => {
     mockSignIn.mockResolvedValue({ data: {}, error: null })
   })
 
-  it("renders the Hayah heading", () => {
+  it("renders the HaYYah heading", () => {
     render(<LoginPage />)
-    expect(screen.getByText("Hayah")).toBeInTheDocument()
+    expect(screen.getByLabelText("HaYYah")).toBeInTheDocument()
   })
 
   it("renders the Arabic subtitle", () => {
@@ -49,8 +88,8 @@ describe("Login Page", () => {
 
   it("renders email and password inputs", () => {
     render(<LoginPage />)
-    expect(screen.getByPlaceholderText("Email")).toBeInTheDocument()
-    expect(screen.getByPlaceholderText("Password")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("Your password")).toBeInTheDocument()
   })
 
   it("renders the Sign In button", () => {
@@ -62,7 +101,7 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    const emailInput = screen.getByPlaceholderText("Email")
+    const emailInput = screen.getByPlaceholderText("you@example.com")
     await user.type(emailInput, "notanemail")
     await user.tab()
 
@@ -75,7 +114,7 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    const passwordInput = screen.getByPlaceholderText("Password")
+    const passwordInput = screen.getByPlaceholderText("Your password")
     await user.click(passwordInput)
     await user.tab()
 
@@ -88,8 +127,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "test@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "password123")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "password123")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -104,8 +143,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "test@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "password123")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "password123")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -118,8 +157,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "wrong@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "wrongpass")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "wrong@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "wrongpass")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -132,8 +171,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "test@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "password123")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "password123")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -146,8 +185,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "test@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "password123")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "password123")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -160,8 +199,8 @@ describe("Login Page", () => {
     const user = userEvent.setup()
     render(<LoginPage />)
 
-    await user.type(screen.getByPlaceholderText("Email"), "test@example.com")
-    await user.type(screen.getByPlaceholderText("Password"), "password123")
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.type(screen.getByPlaceholderText("Your password"), "password123")
     await user.click(screen.getByRole("button", { name: "Sign In" }))
 
     await waitFor(() => {
@@ -171,6 +210,6 @@ describe("Login Page", () => {
 
   it("email input has correct autocomplete attribute", () => {
     render(<LoginPage />)
-    expect(screen.getByPlaceholderText("Email")).toHaveAttribute("autocomplete", "email")
+    expect(screen.getByPlaceholderText("you@example.com")).toHaveAttribute("autocomplete", "email")
   })
 })

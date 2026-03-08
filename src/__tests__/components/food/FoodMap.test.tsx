@@ -153,7 +153,7 @@ describe("OurTablePage", () => {
     })
 
     const { container } = render(<OurTablePage />)
-    const skeletons = container.querySelectorAll(".animate-pulse")
+    const skeletons = container.querySelectorAll(".animate-skeleton-warm")
     expect(skeletons.length).toBeGreaterThan(0)
   })
 

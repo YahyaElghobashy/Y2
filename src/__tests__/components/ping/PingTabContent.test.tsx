@@ -355,8 +355,8 @@ describe("PingTabContent", () => {
 
       // PushPermissionPrompt first
       expect(children[0].getAttribute("data-testid")).toBe("push-permission-prompt")
-      // SendLimitIndicator second
-      expect(children[1].getAttribute("data-testid")).toBe("send-limit-indicator")
+      // Wrapper div containing SendLimitIndicator + PingLimitDots second
+      expect(children[1].querySelector("[data-testid='send-limit-indicator']")).toBeTruthy()
       // NotificationBuilder third
       expect(children[2].getAttribute("data-testid")).toBe("notification-builder")
       // Divider fourth (contains "or write your own")

@@ -29,6 +29,10 @@ vi.mock("@/components/spiritual/AzkarCounter", () => ({
   AzkarCounter: () => <div data-testid="azkar-counter">AzkarCounter</div>,
 }))
 
+vi.mock("@/components/spiritual/DailyAyah", () => ({
+  DailyAyah: () => <div data-testid="daily-ayah">DailyAyah</div>,
+}))
+
 import SoulPage from "@/app/(main)/me/soul/page"
 
 describe("SoulPage (T618)", () => {
@@ -62,17 +66,9 @@ describe("SoulPage (T618)", () => {
       expect(screen.getByText("AzkarCounter")).toBeInTheDocument()
     })
 
-    it("renders 3 dividers", () => {
+    it("renders DailyAyah component", () => {
       render(<SoulPage />)
-      expect(screen.getByTestId("divider-1")).toBeInTheDocument()
-      expect(screen.getByTestId("divider-2")).toBeInTheDocument()
-      expect(screen.getByTestId("divider-3")).toBeInTheDocument()
-    })
-
-    it("renders future placeholder", () => {
-      render(<SoulPage />)
-      expect(screen.getByTestId("future-placeholder")).toBeInTheDocument()
-      expect(screen.getByText("Daily Verse / Hadith — coming soon")).toBeInTheDocument()
+      expect(screen.getByText("DailyAyah")).toBeInTheDocument()
     })
   })
 
@@ -87,13 +83,7 @@ describe("SoulPage (T618)", () => {
       expect(transition).toContainElement(screen.getByText("PrayerTracker"))
       expect(transition).toContainElement(screen.getByText("QuranTracker"))
       expect(transition).toContainElement(screen.getByText("AzkarCounter"))
-      expect(transition).toContainElement(screen.getByTestId("future-placeholder"))
-    })
-
-    it("dividers use border-subtle color variable", () => {
-      render(<SoulPage />)
-      const divider = screen.getByTestId("divider-1")
-      expect(divider.className).toContain("border-t")
+      expect(transition).toContainElement(screen.getByText("DailyAyah"))
     })
   })
 })

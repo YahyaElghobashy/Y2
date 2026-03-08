@@ -66,15 +66,20 @@ describe("VisionItemCard", () => {
   })
 
   it("renders copper check badge when is_achieved is true", () => {
-    const { container } = render(<VisionItemCard item={makeItem({ is_achieved: true })} />)
+    render(<VisionItemCard item={makeItem({ is_achieved: true })} />)
+    // Achieved items have a gold border via inline style on the inner frame, not ring-2
     const card = screen.getByTestId("vision-item-card-item-1")
-    expect(card.className).toContain("ring-2")
+    // The check badge (Check icon) is rendered inside the card
+    const checkBadge = card.querySelector("[style*='DAA520']")
+    expect(checkBadge).toBeTruthy()
   })
 
   it("does NOT render check badge when is_achieved is false", () => {
-    const { container } = render(<VisionItemCard item={makeItem({ is_achieved: false })} />)
+    render(<VisionItemCard item={makeItem({ is_achieved: false })} />)
     const card = screen.getByTestId("vision-item-card-item-1")
-    expect(card.className).not.toContain("ring-2")
+    // No check badge present
+    const checkBadge = card.querySelector("[style*='DAA520']")
+    expect(checkBadge).toBeNull()
   })
 
   it("applies className prop", () => {
@@ -118,10 +123,11 @@ describe("VisionItemCard", () => {
     expect(screen.getByTestId("vision-item-card-custom-id")).toBeInTheDocument()
   })
 
-  it("shows gradient overlay when media_id is present", () => {
-    const { container } = render(<VisionItemCard item={makeItem({ media_id: "media-1" })} />)
-    const overlay = container.querySelector(".bg-gradient-to-t")
-    expect(overlay).toBeInTheDocument()
+  it("shows caption below image when media_id is present", () => {
+    render(<VisionItemCard item={makeItem({ media_id: "media-1" })} />)
+    // Caption text is rendered below the image area with line-clamp-2
+    const caption = screen.getByText("Learn Arabic")
+    expect(caption.className).toContain("line-clamp-2")
   })
 
   it("centers text when no media_id", () => {
@@ -130,11 +136,11 @@ describe("VisionItemCard", () => {
     expect(textContainer).toBeInTheDocument()
   })
 
-  it("renders text with line-clamp-3 for long titles", () => {
-    const { container } = render(
+  it("renders text without line-clamp when no media", () => {
+    // Items without media_id show text centered with no line-clamp
+    render(
       <VisionItemCard item={makeItem({ title: "A very long title that should be clamped" })} />
     )
-    const textEl = container.querySelector(".line-clamp-3")
-    expect(textEl).toBeInTheDocument()
+    expect(screen.getByText("A very long title that should be clamped")).toBeInTheDocument()
   })
 })
