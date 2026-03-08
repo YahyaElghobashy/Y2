@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus, CalendarPlus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
@@ -43,6 +44,7 @@ function categoryToBadge(category: string): "milestone" | "copper" | "reminder" 
 
 export default function CalendarTabPage() {
   const today = new Date()
+  const router = useRouter()
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [selectedDate, setSelectedDate] = useState<number | undefined>(
@@ -232,9 +234,7 @@ export default function CalendarTabPage() {
                     title={event.title}
                     date={formatEventDate(event)}
                     badge={categoryToBadge(event.category)}
-                    onClick={() => {
-                      // TC05 will add edit navigation here
-                    }}
+                    onClick={() => router.push(`/us/calendar/edit/${event.id}`)}
                   />
                 ))
               ) : (

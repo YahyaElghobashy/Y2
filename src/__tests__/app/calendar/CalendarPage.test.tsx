@@ -46,6 +46,11 @@ const MOCK_EVENTS = [
 ]
 
 // ── Mocks ───────────────────────────────────────────────────
+const mockPush = vi.fn()
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush, back: vi.fn() }),
+}))
+
 const mockCreateEvent = vi.fn()
 const mockUpdateEvent = vi.fn()
 const mockDeleteEvent = vi.fn()
@@ -353,6 +358,15 @@ describe("CalendarTabPage", () => {
       render(<CalendarTabPage />)
       const emptyDay = screen.getByTestId("empty-day")
       expect(emptyDay).toHaveAttribute("href", expect.stringContaining("/us/calendar/create"))
+    })
+
+    it("event card click navigates to edit page", () => {
+      render(<CalendarTabPage />)
+      // Click on "Date Night" event card in selected day section
+      const eventCards = screen.getAllByText("Date Night")
+      // Click the first one found (which should be the EventCard button)
+      fireEvent.click(eventCards[0].closest("button")!)
+      expect(mockPush).toHaveBeenCalledWith("/us/calendar/edit/evt-1")
     })
   })
 })
