@@ -5,6 +5,15 @@ import { WelcomeStep } from "@/components/onboarding/steps/WelcomeStep"
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
   motion: {
+    h1: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+      <h1 data-testid={props["data-testid"] as string} className={props.className as string}>{children}</h1>
+    ),
+    h2: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+      <h2 data-testid={props["data-testid"] as string} className={props.className as string}>{children}</h2>
+    ),
+    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+      <div data-testid={props["data-testid"] as string} className={props.className as string} style={props.style as React.CSSProperties}>{children}</div>
+    ),
     p: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <p data-testid={props["data-testid"] as string}>{children}</p>
     ),
@@ -47,7 +56,7 @@ describe("WelcomeStep", () => {
   it("renders the Arabic text", () => {
     render(<WelcomeStep onContinue={onContinue} />)
     expect(screen.getByTestId("welcome-arabic")).toBeInTheDocument()
-    expect(screen.getByTestId("welcome-arabic").textContent).toBe("حَيَاة")
+    expect(screen.getByTestId("welcome-arabic").textContent).toBe("حياة")
   })
 
   it("renders the English transliteration", () => {
@@ -57,13 +66,13 @@ describe("WelcomeStep", () => {
 
   it("renders the tagline", () => {
     render(<WelcomeStep onContinue={onContinue} />)
-    expect(screen.getByTestId("welcome-tagline")).toHaveTextContent("Our shared life, in one place.")
+    expect(screen.getByTestId("welcome-tagline")).toHaveTextContent("A companion for the two of you.")
   })
 
   it("renders the philosophy line", () => {
     render(<WelcomeStep onContinue={onContinue} />)
     expect(screen.getByTestId("welcome-philosophy")).toHaveTextContent(
-      "A space built with intention"
+      /Warm when you arrive/
     )
   })
 

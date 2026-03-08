@@ -71,6 +71,34 @@ vi.mock("@/components/animations", () => ({
   PageTransition: ({ children }: React.PropsWithChildren) => <div>{children}</div>,
 }))
 
+// Mock child components that have complex dependencies (QR code, camera APIs)
+vi.mock("@/components/pairing/QRCodeDisplay", () => ({
+  QRCodeDisplay: ({ code }: { code: string | null }) => (
+    <div data-testid="qr-code-display">
+      <p data-testid="invite-code">{code}</p>
+    </div>
+  ),
+}))
+
+vi.mock("@/components/pairing/QRCodeScanner", () => ({
+  QRCodeScanner: ({ onScan }: { onScan: (code: string) => void }) => (
+    <button data-testid="qr-scanner" onClick={() => onScan("SCANNED")}>
+      Scan QR Code
+    </button>
+  ),
+}))
+
+vi.mock("@/components/pairing/PairPartnerForm", () => ({
+  PairPartnerForm: ({ onPaired }: { onPaired: () => void }) => (
+    <div data-testid="pair-partner-form">
+      <input data-testid="pair-code-input" />
+      <button data-testid="pair-submit-btn" onClick={onPaired}>
+        Submit
+      </button>
+    </div>
+  ),
+}))
+
 import PairPage from "@/app/(main)/pair/page"
 
 describe("PairPage", () => {
@@ -83,7 +111,7 @@ describe("PairPage", () => {
     it("renders pairing page for unpaired user", () => {
       render(<PairPage />)
       expect(screen.getByText("Find your partner")).toBeInTheDocument()
-      expect(screen.getByText("Share your invite code or enter theirs to connect")).toBeInTheDocument()
+      expect(screen.getByText("Share your QR code or scan theirs to connect")).toBeInTheDocument()
     })
 
     it("renders invite code section", () => {
@@ -97,9 +125,9 @@ describe("PairPage", () => {
       expect(screen.getByTestId("pair-submit-btn")).toBeInTheDocument()
     })
 
-    it("renders 'or' divider", () => {
+    it("renders 'or' dividers", () => {
       render(<PairPage />)
-      expect(screen.getByText("or")).toBeInTheDocument()
+      expect(screen.getAllByText("or").length).toBeGreaterThanOrEqual(1)
     })
 
     it("shows loading skeleton when auth is loading", () => {

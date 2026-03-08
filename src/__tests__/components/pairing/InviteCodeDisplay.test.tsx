@@ -3,6 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { InviteCodeDisplay } from "@/components/pairing/InviteCodeDisplay"
 
+// Mock pairing-link to return predictable URLs
+vi.mock("@/lib/pairing-link", () => ({
+  generatePairingLink: (code: string) => `http://localhost/pair/${code}`,
+}))
+
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
   motion: {
@@ -74,7 +79,7 @@ describe("InviteCodeDisplay", () => {
       render(<InviteCodeDisplay code="ABC123" />)
       await user.click(screen.getByTestId("copy-code-btn"))
 
-      expect(mockWriteText).toHaveBeenCalledWith("ABC123")
+      expect(mockWriteText).toHaveBeenCalledWith("http://localhost/pair/ABC123")
     })
 
     it("shows 'Copied!' after successful copy", async () => {
@@ -106,8 +111,9 @@ describe("InviteCodeDisplay", () => {
       await user.click(screen.getByTestId("share-code-btn"))
 
       expect(mockShare).toHaveBeenCalledWith({
-        title: "Hayah Invite Code",
+        title: "Join me on Hayah",
         text: "Join me on Hayah! Use my invite code: XYZ789",
+        url: "http://localhost/pair/XYZ789",
       })
     })
 
@@ -128,7 +134,7 @@ describe("InviteCodeDisplay", () => {
       render(<InviteCodeDisplay code="ABC123" />)
       await user.click(screen.getByTestId("share-code-btn"))
 
-      expect(mockWriteText).toHaveBeenCalledWith("ABC123")
+      expect(mockWriteText).toHaveBeenCalledWith("http://localhost/pair/ABC123")
     })
   })
 })

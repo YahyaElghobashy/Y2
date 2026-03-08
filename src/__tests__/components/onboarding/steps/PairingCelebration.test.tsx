@@ -5,6 +5,9 @@ import { PairingCelebration } from "@/components/onboarding/steps/PairingCelebra
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
   motion: {
+    h1: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
+      <h1 data-testid={props["data-testid"] as string}>{children}</h1>
+    ),
     div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => (
       <div data-testid={props["data-testid"] as string} style={props.style as React.CSSProperties}>
         {children}
@@ -79,7 +82,7 @@ describe("PairingCelebration", () => {
     render(
       <PairingCelebration userName="Yahya" partnerName="Yara" onContinue={onContinue} />
     )
-    expect(screen.getByTestId("celebration-subtitle")).toHaveTextContent("Your space is ready.")
+    expect(screen.getByTestId("celebration-subtitle")).toHaveTextContent("You're connected. This is yours now.")
   })
 
   // --- Unit: Celebration visual elements ---

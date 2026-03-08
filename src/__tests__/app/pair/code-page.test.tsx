@@ -3,15 +3,28 @@ import { Suspense } from "react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // Mock framer-motion
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
-      const { initial, animate, exit, transition, ...rest } = props
-      return <div {...rest}>{children}</div>
+vi.mock("framer-motion", () => {
+  const createMockElement = (Tag: string) => {
+    return ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
+      const htmlProps = Object.fromEntries(
+        Object.entries(props).filter(([k]) =>
+          /^[a-z]/.test(k) || k.startsWith("data-") || k === "className" || k === "style" || k === "role" || k === "onClick" || k === "disabled"
+        )
+      )
+      const El = Tag as React.ElementType
+      return <El {...htmlProps}>{children}</El>
+    }
+  }
+  return {
+    motion: {
+      div: createMockElement("div"),
+      span: createMockElement("span"),
+      h1: createMockElement("h1"),
+      p: createMockElement("p"),
     },
-  },
-  AnimatePresence: ({ children }: React.PropsWithChildren) => children,
-}))
+    AnimatePresence: ({ children }: React.PropsWithChildren) => children,
+  }
+})
 
 // Mock next/navigation
 const mockPush = vi.fn()
@@ -149,7 +162,7 @@ describe("PairCodePage", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("pair-code-success")).toBeInTheDocument()
-        expect(screen.getByText("Connected with Yara")).toBeInTheDocument()
+        expect(screen.getByText("Connection Established")).toBeInTheDocument()
       })
     })
 
