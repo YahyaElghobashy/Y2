@@ -59,6 +59,11 @@ const mockInsertChain = {
 }
 const mockInsert = vi.fn().mockReturnValue(mockInsertChain)
 const mockFunctionsInvoke = vi.fn().mockResolvedValue({ data: null, error: null })
+// consume_send RPC — atomically debits a send server-side. Default: success.
+const mockRpc = vi.fn().mockResolvedValue({ data: null, error: null })
+// notifications.delete().eq() chain — used to roll back when consume_send fails
+const mockDeleteEq = vi.fn().mockResolvedValue({ error: null })
+const mockDelete = vi.fn().mockReturnValue({ eq: mockDeleteEq })
 
 let notifQueryResult: { data: unknown; error: unknown } = {
   data: MOCK_NOTIFICATIONS,
@@ -82,6 +87,7 @@ const mockFrom = vi.fn((table: string) => {
     table === "daily_send_limits" ? limitQueryResult : notifQueryResult
   )
   chain.insert = mockInsert
+  chain.delete = mockDelete
 
   return chain
 })
@@ -95,6 +101,7 @@ const mockRemoveChannel = vi.fn()
 const mockSupabase = {
   from: mockFrom,
   functions: { invoke: mockFunctionsInvoke },
+  rpc: mockRpc,
   channel: mockChannelFn,
   removeChannel: mockRemoveChannel,
 }
@@ -122,6 +129,9 @@ import { useNotifications } from "@/lib/hooks/use-notifications"
 describe("useNotifications", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockRpc.mockResolvedValue({ data: null, error: null })
+    mockDeleteEq.mockResolvedValue({ error: null })
+    mockDelete.mockReturnValue({ eq: mockDeleteEq })
     notifQueryResult = { data: MOCK_NOTIFICATIONS, error: null }
     limitQueryResult = { data: MOCK_DAILY_LIMIT, error: null }
     mockInsertChain.single.mockResolvedValue({
@@ -247,6 +257,91 @@ describe("useNotifications", () => {
     })
   })
 
+  it("sendNotification debits the daily limit via consume_send RPC", async () => {
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.sendNotification("Test", "Body")
+    })
+
+    // The send must be consumed server-side so the 2/day quota is real.
+    expect(mockRpc).toHaveBeenCalledWith("consume_send", { p_user_id: "user-1" })
+  })
+
+  it("sendNotification consumes the send AFTER inserting the notification row", async () => {
+    const callOrder: string[] = []
+    mockInsert.mockImplementationOnce(() => {
+      callOrder.push("insert")
+      return mockInsertChain
+    })
+    mockRpc.mockImplementationOnce(async () => {
+      callOrder.push("consume")
+      return { data: null, error: null }
+    })
+
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.sendNotification("Test", "Body")
+    })
+
+    expect(callOrder).toEqual(["insert", "consume"])
+  })
+
+  it("rolls back the notification and sets error when consume_send fails (limit race)", async () => {
+    // Server-side guard rejects: another send already spent the allowance.
+    mockRpc.mockResolvedValueOnce({
+      data: null,
+      error: { message: "send_limit_reached", code: "P0001" },
+    })
+
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    const countBefore = result.current.notifications.length
+
+    await act(async () => {
+      await result.current.sendNotification("Test", "Body")
+    })
+
+    // Optimistic row removed, inserted notification deleted, push NOT sent.
+    expect(result.current.error).toBe("Daily send limit reached")
+    expect(result.current.notifications.length).toBe(countBefore)
+    expect(mockDelete).toHaveBeenCalled()
+    expect(mockDeleteEq).toHaveBeenCalledWith("id", "notif-new")
+    expect(mockFunctionsInvoke).not.toHaveBeenCalled()
+  })
+
+  it("does NOT consume a send when the notification insert fails", async () => {
+    mockInsertChain.single.mockResolvedValue({
+      data: null,
+      error: { message: "Insert failed", code: "23505" },
+    })
+
+    const { result } = renderHook(() => useNotifications())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.sendNotification("Test", "Body")
+    })
+
+    expect(mockRpc).not.toHaveBeenCalled()
+  })
+
   it("sendNotification sets error and returns early when canSend is false", async () => {
     limitQueryResult = {
       data: {
@@ -270,6 +365,7 @@ describe("useNotifications", () => {
 
     expect(result.current.error).toBe("Daily send limit reached")
     expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockRpc).not.toHaveBeenCalled()
   })
 
   it("sendNotification removes optimistic row when insert fails", async () => {

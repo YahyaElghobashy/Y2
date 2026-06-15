@@ -2227,6 +2227,19 @@ export interface Database {
         }
         Returns: undefined
       }
+      consume_send: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          id: string
+          user_id: string
+          date: string
+          free_sends_used: number
+          bonus_sends_used: number
+          bonus_sends_available: number
+        }
+      }
     }
     Enums: Record<string, never>
   }

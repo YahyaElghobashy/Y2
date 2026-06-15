@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Calendar, RefreshCw, Plus } from "lucide-react"
+import { ChevronLeft, ChevronRight, Calendar, CalendarPlus, RefreshCw, Plus } from "lucide-react"
 import { motion, type PanInfo, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
 import { PageTransition } from "@/components/animations"
@@ -21,6 +21,8 @@ const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ]
+
+const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 /** Maps DB category to EventDotCalendar's dot color keys */
 const CATEGORY_DOT_MAP: Record<string, string> = {
@@ -269,7 +271,49 @@ export default function CalendarTabPage() {
           )}
         </AnimatePresence>
 
-        {/* Day detail bottom sheet */}
+        {/* Selected day events (inline at-a-glance list with edit navigation) */}
+        <AnimatePresence mode="wait">
+          {selectedDate && (
+            <motion.div
+              key={`day-${currentYear}-${currentMonth}-${selectedDate}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
+              className="flex flex-col gap-2"
+              data-testid="selected-day-events"
+            >
+              <h3 className="font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary)]">
+                {MONTHS[currentMonth]} {selectedDate}
+              </h3>
+
+              {selectedDayEvents.length > 0 ? (
+                selectedDayEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    title={event.title}
+                    date={formatEventDate(event)}
+                    badge={categoryToBadge(event.category)}
+                    onClick={() => router.push(`/us/calendar/edit/${event.id}`)}
+                  />
+                ))
+              ) : (
+                <Link
+                  href={createUrl}
+                  className="rounded-xl border border-dashed border-[var(--border-subtle)] px-4 py-6 text-center block"
+                  data-testid="empty-day"
+                >
+                  <CalendarPlus size={20} className="mx-auto mb-1.5 text-[var(--accent-copper,#B87333)]" />
+                  <p className="text-[13px] text-[var(--text-muted,#B5ADA4)]">
+                    No events — tap to add one
+                  </p>
+                </Link>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Day detail bottom sheet (richer view, opens on calendar tap) */}
         <DayDetailSheet
           isOpen={isSheetOpen && selectedDate !== undefined}
           onClose={() => setIsSheetOpen(false)}
@@ -292,9 +336,7 @@ export default function CalendarTabPage() {
                   title={event.title}
                   date={formatEventDate(event)}
                   badge={categoryToBadge(event.category)}
-                  onClick={() => {
-                    // TC05 will add edit navigation here
-                  }}
+                  onClick={() => router.push(`/us/calendar/edit/${event.id}`)}
                 />
               ))}
             </div>
