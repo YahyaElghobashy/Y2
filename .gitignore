@@ -17,3 +17,7 @@ __pycache__/
 *.pyc
 *.pyo
 .vercel
+
+# revamp temp creds
+.env.local.oldproject.bak
+.hayah-creds.tmp

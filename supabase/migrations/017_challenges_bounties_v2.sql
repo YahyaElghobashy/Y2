@@ -117,9 +117,12 @@ CREATE POLICY "bounties: creator insert"
   ON public.bounties FOR INSERT TO authenticated
   WITH CHECK (creator_id = auth.uid());
 
-CREATE POLICY "bounties: authenticated update"
+-- Only the bounty creator may modify it (reward/is_active/etc.).
+-- Payout-driven deactivation runs through confirm_bounty_claim (SECURITY DEFINER, bypasses RLS).
+CREATE POLICY "bounties: creator update"
   ON public.bounties FOR UPDATE TO authenticated
-  USING (true);
+  USING (creator_id = auth.uid())
+  WITH CHECK (creator_id = auth.uid());
 
 -- Bounty Claims
 ALTER TABLE public.bounty_claims ENABLE ROW LEVEL SECURITY;
@@ -132,9 +135,25 @@ CREATE POLICY "bounty_claims: claimer insert"
   ON public.bounty_claims FOR INSERT TO authenticated
   WITH CHECK (claimer_id = auth.uid());
 
-CREATE POLICY "bounty_claims: authenticated update"
+-- A claim may be modified only by its claimer or by the creator of the
+-- referenced bounty. Status confirm/deny still flows through the
+-- confirm_bounty_claim RPC (SECURITY DEFINER); this guards direct table writes.
+CREATE POLICY "bounty_claims: claimer or bounty creator update"
   ON public.bounty_claims FOR UPDATE TO authenticated
-  USING (true);
+  USING (
+    claimer_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM public.bounties b
+      WHERE b.id = bounty_claims.bounty_id AND b.creator_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    claimer_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM public.bounties b
+      WHERE b.id = bounty_claims.bounty_id AND b.creator_id = auth.uid()
+    )
+  );
 
 
 -- ── 6. RPC: RESOLVE CHALLENGE PAYOUT ──────────────────────────
