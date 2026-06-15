@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link2, AlertCircle, PartyPopper } from "lucide-react"
+import { Link2, AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -10,61 +10,22 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
 type PairPartnerFormProps = {
-  onPaired: () => void
+  /** Fired on a successful pair, with the partner's display name. */
+  onPaired: (partnerName: string) => void
   className?: string
   initialCode?: string
 }
 
 type PairState = "idle" | "loading" | "success" | "error"
 
-const CONFETTI_COLORS = [
-  "var(--color-accent-primary)",
-  "#D4A574",
-  "#E8D5C0",
-  "#C4956A",
-  "#B87333",
-]
-
-function ConfettiParticle({ index }: { index: number }) {
-  const angle = (index / 20) * 360
-  const distance = 80 + (index % 5) * 30
-  const x = Math.cos((angle * Math.PI) / 180) * distance
-  const y = Math.sin((angle * Math.PI) / 180) * distance
-  const rotation = Math.random() * 360
-  const size = 6 + (index % 3) * 3
-
-  return (
-    <motion.div
-      className="absolute rounded-sm"
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
-        left: "50%",
-        top: "50%",
-      }}
-      initial={{ x: 0, y: 0, opacity: 1, scale: 0, rotate: 0 }}
-      animate={{
-        x,
-        y: y - 20,
-        opacity: 0,
-        scale: 1,
-        rotate: rotation,
-      }}
-      transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-    />
-  )
-}
-
 export function PairPartnerForm({ onPaired, className, initialCode }: PairPartnerFormProps) {
-  const { user, refreshProfile } = useAuth()
+  const { user } = useAuth()
   const supabase = getSupabaseBrowserClient()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [code, setCode] = useState(initialCode ?? "")
   const [state, setState] = useState<PairState>("idle")
   const [error, setError] = useState<string | null>(null)
-  const [partnerName, setPartnerName] = useState<string | null>(null)
   const [shake, setShake] = useState(false)
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,9 +64,11 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
       }
 
       if (result.success) {
-        setPartnerName(result.partner_name || "your partner")
         setState("success")
-        await refreshProfile()
+        // Hand the partner name up; the page plays the keepsake celebration
+        // and only then refreshes the profile + redirects (so it isn't
+        // unmounted by an early paired-status redirect).
+        onPaired(result.partner_name || "your partner")
       }
     } catch {
       setState("error")
@@ -120,48 +83,8 @@ export function PairPartnerForm({ onPaired, className, initialCode }: PairPartne
   }
 
   if (state === "success") {
-    return (
-      <div className={cn("flex flex-col items-center gap-6", className)}>
-        <div className="relative">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <PartyPopper size={64} className="text-[var(--color-accent-primary)]" />
-          </motion.div>
-          {Array.from({ length: 20 }).map((_, i) => (
-            <ConfettiParticle key={i} index={i} />
-          ))}
-        </div>
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
-        >
-          <h3 className="font-display text-[22px] font-bold text-[var(--color-text-primary)] mb-2">
-            You&apos;re paired!
-          </h3>
-          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
-            Connected with {partnerName}
-          </p>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Button
-            onClick={onPaired}
-            className="h-12 px-8 rounded-xl bg-[var(--color-accent-primary)] text-white font-body font-medium text-[15px]"
-            data-testid="enter-hayah-btn"
-          >
-            Enter Hayah
-          </Button>
-        </motion.div>
-      </div>
-    )
+    // The page renders the keepsake overlay; the form just steps aside.
+    return null
   }
 
   return (

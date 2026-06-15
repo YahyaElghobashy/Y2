@@ -1,0 +1,191 @@
+/* Hayah pairing keepsake — "The Seal" world.
+   Faithful port of the Claude Designer handoff (Pairing Animations.html).
+   Intentionally its own warm riso aesthetic (cream + copper/coral), per the
+   design brief — not the general app tokens. */
+
+.stage {
+  --paper: #F6E0BF;
+  --copper: #B86A2C;
+  --coral: #DD7A57;
+  --gold: #E8B36B;
+  --deep: #9A5024;
+  --ink: #7A4A28;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-contact: 1.55s;
+  --t-text: 1.98s;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
+  background:
+    radial-gradient(120% 95% at 50% 40%, rgba(255, 250, 235, 0.45), transparent 60%),
+    var(--paper);
+  transition: background 0.6s ease;
+  cursor: pointer;
+  isolation: isolate;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+.area {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scene { position: relative; display: flex; align-items: center; justify-content: center; }
+.artFx { position: relative; }
+.art {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  will-change: transform, opacity;
+}
+.fx { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+
+/* sizes */
+.sceneSeal .artFx  { height: min(60vh, 104vw); aspect-ratio: 1122 / 1402; }
+.sceneGirih .artFx { height: min(60vh, 104vw); aspect-ratio: 1122 / 1402; }
+.sceneWeave .artFx { height: min(56vh, 82vw); aspect-ratio: 1 / 1; }
+.sceneInk .artFx   { width: min(92vw, 156vh); aspect-ratio: 1672 / 941; }
+
+.sceneGirih .art { background-image: url("/pairing/girih_a.png"); }
+.sceneWeave .art { background-image: url("/pairing/weave_a.png"); }
+
+.half {
+  position: absolute;
+  inset: 0;
+  background-image: url("/pairing/seal.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  will-change: transform;
+  filter: drop-shadow(0 16px 34px rgba(120, 70, 30, 0.16));
+}
+.half.l { clip-path: inset(0 50.89% 0 0); }
+.half.r { clip-path: inset(0 0 0 49.11%); }
+
+.layer { position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; mix-blend-mode: multiply; }
+.layer.l { background-image: url("/pairing/ink_copper.png"); transform: translateX(32%); }
+.layer.r { background-image: url("/pairing/ink_coral.png"); transform: translateX(-32%); }
+
+/* fx pieces */
+.bloom {
+  position: absolute; left: 50%; top: 50%; width: 58%; aspect-ratio: 1; margin: -29% 0 0 -29%;
+  border-radius: 50%; opacity: 0; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 238, 200, 0.95) 0%, rgba(232, 179, 107, 0.5) 40%, transparent 70%);
+}
+.hglow {
+  position: absolute; left: 50%; top: 50%; width: 22%; aspect-ratio: 1; margin: -11% 0 0 -11%;
+  border-radius: 50%; opacity: 0; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 251, 240, 0.95), rgba(255, 251, 240, 0) 66%);
+}
+.dots { position: absolute; inset: 0; }
+.dot {
+  position: absolute; left: 50%; top: 50%; width: var(--s); height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%; background: var(--c); opacity: 0;
+}
+.star8 {
+  position: absolute; left: 50%; top: 50%; width: var(--ss, 15%); aspect-ratio: 1;
+  transform: translate(-50%, -50%); opacity: 0;
+}
+.star8::before, .star8::after { content: ""; position: absolute; inset: 0; background: var(--sc, #F4D79A); border-radius: 14%; }
+.star8::after { transform: rotate(45deg); }
+
+/* ── entrances (only when .go) ───────────────────────── */
+.sceneSeal.go .half.l { animation: sealL 0.95s var(--ease) 0.5s both; }
+.sceneSeal.go .half.r { animation: sealR 0.95s var(--ease) 0.5s both; }
+.sceneGirih.go .art { animation: girihIn 1.4s var(--ease) 0.4s both; }
+.sceneWeave.go .art { animation: weaveIn 1.3s var(--ease) 0.4s both; }
+.sceneInk.go .layer.l { animation: inkL 1.45s var(--ease) 0.4s both; }
+.sceneInk.go .layer.r { animation: inkR 1.45s var(--ease) 0.4s both; }
+
+.go .artFx { animation: press 0.26s ease-out var(--t-contact) both, shakeT 0.2s ease-out var(--t-contact) both; }
+.go .bloom { animation: bloom 1s ease-out var(--t-contact) both; }
+.go .hglow { animation: hgl 0.95s ease-out calc(var(--t-contact) + 0.08s) both; }
+.go .star8 { animation: starpop 0.9s ease-out calc(var(--t-contact) + 0.06s) both; }
+.go .dot { animation: risodot calc(0.72s + var(--d2)) ease-out calc(var(--t-contact) + var(--d)) both; }
+
+@keyframes sealL { 0% { transform: translateX(-64vw) scale(1.015); } 100% { transform: translateX(0) scale(1); } }
+@keyframes sealR { 0% { transform: translateX(64vw) scale(1.015); } 100% { transform: translateX(0) scale(1); } }
+@keyframes girihIn {
+  0% { transform: scale(0.74) rotate(-11deg); opacity: 0;
+       -webkit-mask: radial-gradient(circle at 50% 49%, #000 0%, transparent 7%); mask: radial-gradient(circle at 50% 49%, #000 0%, transparent 7%); }
+  16% { opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1;
+       -webkit-mask: radial-gradient(circle at 50% 49%, #000 72%, transparent 84%); mask: radial-gradient(circle at 50% 49%, #000 72%, transparent 84%); }
+}
+@keyframes weaveIn { 0% { transform: scale(0.2) rotate(135deg); opacity: 0; } 16% { opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes inkL { 0% { transform: translateX(-4%); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(32%); opacity: 1; } }
+@keyframes inkR { 0% { transform: translateX(4%); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(-32%); opacity: 1; } }
+@keyframes press { 0% { transform: scale(1); } 34% { transform: scale(0.977); } 100% { transform: scale(1); } }
+@keyframes shakeT { 0% { translate: 0 0; } 22% { translate: -3px 1px; } 48% { translate: 3px -2px; } 74% { translate: -2px 1px; } 100% { translate: 0 0; } }
+@keyframes bloom { 0% { opacity: 0; transform: scale(0.25); } 22% { opacity: 0.92; } 100% { opacity: 0; transform: scale(2.5); } }
+@keyframes hgl { 0% { opacity: 0; transform: scale(0.4); } 45% { opacity: 0.85; } 100% { opacity: 0; transform: scale(1.5); } }
+@keyframes starpop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); } 50% { opacity: 0.95; } 72% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); } }
+@keyframes risodot { 0% { opacity: 0; transform: translate(0, 0) scale(0.35); } 16% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1); } }
+
+/* ── inscription ─────────────────────────────────────── */
+.inscription {
+  position: relative; z-index: 3; text-align: center;
+  padding-bottom: clamp(70px, 11vh, 110px); margin-top: clamp(6px, 1.4vh, 18px);
+}
+.names {
+  display: flex; flex-wrap: nowrap; align-items: baseline; justify-content: center; white-space: nowrap;
+  gap: clamp(14px, 2.4vw, 28px); font-size: clamp(28px, 4.6vh, 52px); font-weight: 500; color: var(--ink);
+}
+.names span { white-space: nowrap; }
+.amp { font-style: italic; font-size: 0.74em; color: var(--coral); transform: translateY(-0.04em); }
+.hayah {
+  font-family: var(--font-amiri), "Amiri", serif; direction: rtl; font-size: clamp(24px, 3.8vh, 42px);
+  color: var(--copper); margin-top: 0.16em; line-height: 1;
+}
+.stamp {
+  margin-top: clamp(10px, 1.8vh, 18px); font-size: clamp(10px, 1.4vh, 12px); letter-spacing: 0.42em;
+  text-transform: uppercase; color: var(--copper); opacity: 0.6; padding-left: 0.42em;
+}
+
+.playing .names { animation: rise 0.82s var(--ease) var(--t-text) both; }
+.playing .hayah { animation: rise 0.82s var(--ease) calc(var(--t-text) + 0.13s) both; }
+.playing .stamp { animation: fadein 0.9s ease-out calc(var(--t-text) + 0.5s) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 0.6; } }
+
+/* ── continue control ────────────────────────────────── */
+.enter {
+  position: absolute; left: 0; right: 0; bottom: clamp(18px, 4vh, 36px); z-index: 9;
+  display: flex; justify-content: center; opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.enterOn { opacity: 1; pointer-events: auto; }
+.enterBtn {
+  font-family: inherit; cursor: pointer; font-size: 16px; letter-spacing: 0.06em;
+  color: #fff; background: var(--copper); border: none; border-radius: 999px; padding: 11px 26px;
+  box-shadow: 0 8px 22px rgba(120, 70, 30, 0.22);
+  transition: transform 0.12s var(--ease), background 0.2s;
+}
+.enterBtn:hover { transform: translateY(-1px); background: var(--deep); }
+
+@media (prefers-reduced-motion: reduce) {
+  .go *, .playing * { animation: none !important; }
+  .bloom, .hglow, .star8, .dot { opacity: 0 !important; }
+  .sceneGirih .art { -webkit-mask: none; mask: none; }
+}

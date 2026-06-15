@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri, Caveat, Lora, Plus_Jakarta_Sans } from "next/font/google"
+import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri, Caveat, Lora, Plus_Jakarta_Sans, Cormorant_Garamond } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
 import "./globals.css"
@@ -51,6 +51,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 })
 
+// Inscription serif for the pairing keepsake ("The Seal" world)
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   title: "Hayah",
   description: "Our shared life, in one place.",
@@ -76,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable} ${caveat.variable} ${lora.variable} ${plusJakartaSans.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable} ${caveat.variable} ${lora.variable} ${plusJakartaSans.variable} ${cormorant.variable}`}>
       <head>
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
