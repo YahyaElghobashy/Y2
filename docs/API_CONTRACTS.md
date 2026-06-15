@@ -192,6 +192,26 @@ Triggered by pg_cron. Queries due notifications, sends via Web Push.
 ### check-schedules
 Triggered by pg_cron every minute. Updates `next_fire_at` for recurring notifications.
 
+### Scheduled function cron registration
+
+The 4 scheduled edge functions are registered as pg_cron jobs by the idempotent
+`scripts/register-cron.sql`. Each job uses `pg_net` (`net.http_post`) to invoke the
+function endpoint with the project **secret key** (`sb_secret_…`) read from the Vault
+secret `service_role_key` — **never** hardcoded in the repo.
+
+| Function | cron schedule (UTC) | Cadence |
+|---|---|---|
+| `send-event-reminder` | `*/5 * * * *` | every 5 min |
+| `snap-trigger` | `* * * * *` | every minute |
+| `google-calendar-pull` | `*/30 * * * *` | every 30 min |
+| `media-export` | `0 3 * * *` | daily 03:00 |
+
+**Auth note (new Supabase API-key system):** these functions have `verify_jwt = ON` and
+body-check `authHeader.includes(SUPABASE_SERVICE_ROLE_KEY)`. On Hayah the edge runtime
+injects the **`sb_secret_…`** key as `SUPABASE_SERVICE_ROLE_KEY`; the legacy service_role
+JWT passes PostgREST but **401s** on these functions. The Vault `service_role_key` secret
+therefore holds the `sb_secret_` key. Re-run `register-cron.sql` (idempotent) to refresh.
+
 ## External APIs
 
 ### Aladhan Prayer Times
