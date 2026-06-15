@@ -155,6 +155,12 @@ export default function CalendarTabPage() {
     return dateStr
   }, [])
 
+  /** Navigate into the edit flow for an existing event */
+  const goToEvent = useCallback(
+    (eventId: string) => router.push(`/us/calendar/edit/${eventId}`),
+    [router]
+  )
+
   // Loading state
   if (isLoading) {
     return (
@@ -278,6 +284,31 @@ export default function CalendarTabPage() {
           userId={user?.id}
         />
 
+        {/* Selected day events (inline) */}
+        {selectedDate !== undefined && (
+          <div className="flex flex-col gap-2" data-testid="selected-day-events">
+            {selectedDayEvents.length > 0 ? (
+              selectedDayEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  title={event.title}
+                  date={formatEventDate(event)}
+                  badge={categoryToBadge(event.category)}
+                  onClick={() => goToEvent(event.id)}
+                />
+              ))
+            ) : (
+              <Link
+                href={createUrl}
+                className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-4 py-6 text-[13px] text-[var(--text-muted,#B5ADA4)] transition-colors hover:border-[var(--accent-copper,#B87333)]/40"
+                data-testid="empty-day"
+              >
+                No events — tap to add one
+              </Link>
+            )}
+          </div>
+        )}
+
         {/* Coming Up section */}
         <div className="flex flex-col gap-3">
           <h3 className="font-nav text-[11px] font-medium uppercase tracking-widest text-[var(--text-secondary)]">
@@ -292,9 +323,7 @@ export default function CalendarTabPage() {
                   title={event.title}
                   date={formatEventDate(event)}
                   badge={categoryToBadge(event.category)}
-                  onClick={() => {
-                    // TC05 will add edit navigation here
-                  }}
+                  onClick={() => goToEvent(event.id)}
                 />
               ))}
             </div>

@@ -51,6 +51,18 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, back: vi.fn() }),
 }))
 
+vi.mock("@/lib/providers/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1", email: "yahya@test.com" },
+    profile: { id: "user-1", display_name: "Yahya", partner_id: "user-2", role: "admin" },
+    partner: { id: "user-2", display_name: "Yara", partner_id: "user-1", role: "user" },
+    isLoading: false,
+    profileNeedsSetup: false,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  }),
+}))
+
 const mockCreateEvent = vi.fn()
 const mockUpdateEvent = vi.fn()
 const mockDeleteEvent = vi.fn()
