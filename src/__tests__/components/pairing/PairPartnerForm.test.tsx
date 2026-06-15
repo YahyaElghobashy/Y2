@@ -116,7 +116,7 @@ describe("PairPartnerForm", () => {
 
   // ── Interaction tests ───────────────────────────────────
   describe("interaction", () => {
-    it("submits valid code and shows success screen", async () => {
+    it("reports the partner name up and unmounts the form on success", async () => {
       const user = userEvent.setup()
       mockRpc.mockResolvedValueOnce({
         data: { success: true, partner_name: "Yara" },
@@ -128,10 +128,11 @@ describe("PairPartnerForm", () => {
       await user.type(screen.getByTestId("pair-code-input"), "XYZ789")
       await user.click(screen.getByTestId("pair-submit-btn"))
 
+      // The page owns the celebration; the form hands up the name then steps aside.
       await waitFor(() => {
-        expect(screen.getByText("You're paired!")).toBeInTheDocument()
-        expect(screen.getByText("Connected with Yara")).toBeInTheDocument()
+        expect(mockOnPaired).toHaveBeenCalledWith("Yara")
       })
+      expect(screen.queryByTestId("pair-code-input")).not.toBeInTheDocument()
     })
 
     it("shows error for invalid invite code", async () => {
@@ -185,10 +186,10 @@ describe("PairPartnerForm", () => {
       })
     })
 
-    it("calls onPaired when 'Enter Hayah' is clicked after success", async () => {
+    it("falls back to a generic partner name when the RPC omits one", async () => {
       const user = userEvent.setup()
       mockRpc.mockResolvedValueOnce({
-        data: { success: true, partner_name: "Yara" },
+        data: { success: true },
         error: null,
       })
 
@@ -198,11 +199,8 @@ describe("PairPartnerForm", () => {
       await user.click(screen.getByTestId("pair-submit-btn"))
 
       await waitFor(() => {
-        expect(screen.getByTestId("enter-hayah-btn")).toBeInTheDocument()
+        expect(mockOnPaired).toHaveBeenCalledWith("your partner")
       })
-
-      await user.click(screen.getByTestId("enter-hayah-btn"))
-      expect(mockOnPaired).toHaveBeenCalled()
     })
 
     it("enables submit button when code is 6 chars", async () => {
@@ -236,7 +234,7 @@ describe("PairPartnerForm", () => {
       })
     })
 
-    it("calls refreshProfile after successful pairing", async () => {
+    it("delegates the refresh/redirect to the page (does not refresh itself)", async () => {
       const user = userEvent.setup()
       const mockRefresh = vi.fn().mockResolvedValue(undefined)
       useAuth.mockReturnValue({
@@ -258,9 +256,11 @@ describe("PairPartnerForm", () => {
       await user.type(screen.getByTestId("pair-code-input"), "XYZ789")
       await user.click(screen.getByTestId("pair-submit-btn"))
 
+      // Refresh + redirect happen on the page after the keepsake, not in the form.
       await waitFor(() => {
-        expect(mockRefresh).toHaveBeenCalled()
+        expect(mockOnPaired).toHaveBeenCalledWith("Yara")
       })
+      expect(mockRefresh).not.toHaveBeenCalled()
     })
 
     it("does not call rpc when user is null", async () => {

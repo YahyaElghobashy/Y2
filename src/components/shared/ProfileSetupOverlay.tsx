@@ -14,7 +14,11 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 const profileSchema = z.object({
-  display_name: z.string().min(1, "Name is required").max(50, "Name must be 50 characters or fewer"),
+  display_name: z
+    .string()
+    .min(1, "Name is required")
+    .max(50, "Name must be 50 characters or fewer")
+    .refine((v) => v.trim().length >= 2, "Name must be at least 2 characters"),
 })
 
 type ProfileFormData = z.infer<typeof profileSchema>
@@ -86,7 +90,7 @@ export function ProfileSetupOverlay({ userId, userEmail, initialName, onComplete
       }
 
       const profileData = {
-        display_name: data.display_name,
+        display_name: data.display_name.trim(),
         email: userEmail,
         ...(avatar_url ? { avatar_url } : {}),
       }

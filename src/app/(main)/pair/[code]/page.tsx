@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState, use } from "react"
+import { useEffect, useRef, useState, use } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 import { Heart, AlertCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PairingCelebration } from "@/components/pairing/PairingCelebration"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { storePendingPairCode } from "@/lib/pairing-link"
@@ -20,6 +20,12 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
   const [error, setError] = useState<string | null>(null)
   const [partnerName, setPartnerName] = useState<string | null>(null)
 
+  // The mount decision (already-paired vs. auto-pair) is made exactly once.
+  // Without this, the refreshProfile() after a successful pair flips
+  // pairing_status to "paired", re-runs this effect, and would unmount the
+  // celebration into the "already paired" screen before it's seen.
+  const startedRef = useRef(false)
+
   const upperCode = code?.toUpperCase()
 
   useEffect(() => {
@@ -32,7 +38,10 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
       return
     }
 
-    // Already paired: show message
+    if (startedRef.current) return
+    startedRef.current = true
+
+    // Already paired on arrival: show message
     if (profile?.pairing_status === "paired") {
       setState("already_paired")
       return
@@ -92,125 +101,19 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
     )
   }
 
-  // Success state
+  // Success state → play the shared keepsake celebration. It gates its own
+  // exit ("Enter Hayah"), so the paired redirect can't unmount it early.
   if (state === "success") {
-    const userName = profile?.display_name || "You"
+    const userName = profile?.display_name?.trim() || "You"
     return (
-      <main
-        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--bg-warm-white, #FFFDF9) 0%, var(--bg-soft-cream, #F5EDE3) 100%)",
-        }}
-        data-testid="pair-code-success"
-      >
-        {/* Copper glow */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.15, 0.08] }}
-          transition={{ duration: 2.5, ease: "easeInOut" }}
-          style={{
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(184,115,51,0.15) 0%, transparent 70%)",
-          }}
-          aria-hidden
+      <div data-testid="pair-code-success">
+        <PairingCelebration
+          variant="seal"
+          nameA={userName}
+          nameB={partnerName || "your partner"}
+          onDone={() => router.replace("/")}
         />
-
-        <div className="relative z-10 flex flex-col items-center text-center">
-          {/* CONNECTION ESTABLISHED */}
-          <motion.span
-            className="mb-2 text-xs font-bold tracking-[0.2em] uppercase text-[var(--color-text-muted)]"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-          >
-            Connection Established
-          </motion.span>
-
-          {/* Names + Heart */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <motion.h1
-              className="font-display text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              {userName}
-            </motion.h1>
-
-            <motion.div
-              className="relative flex items-center justify-center"
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1, 1.3, 1] }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-            >
-              <motion.div
-                className="absolute rounded-full"
-                style={{ width: 48, height: 48, border: "2px solid var(--accent-copper, #B87333)" }}
-                initial={{ scale: 1, opacity: 0 }}
-                animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
-                transition={{ duration: 1.5, delay: 1.0, repeat: 2, repeatDelay: 0.5 }}
-                aria-hidden
-              />
-              <Heart
-                size={40}
-                className="fill-[var(--accent-copper,#B87333)] text-[var(--accent-copper,#B87333)]"
-              />
-            </motion.div>
-
-            <motion.h1
-              className="font-display text-5xl font-bold tracking-tight text-[var(--color-text-primary)]"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              {partnerName}
-            </motion.h1>
-          </div>
-
-          {/* Subtitle */}
-          <motion.p
-            className="font-display text-xl italic text-[var(--color-text-primary)] opacity-80 max-w-md leading-relaxed"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.4 }}
-          >
-            You&apos;re connected. This is yours now.
-          </motion.p>
-
-          {/* Decorative divider */}
-          <motion.div
-            className="mt-12 mb-12 flex gap-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.0, duration: 0.4 }}
-          >
-            <div className="h-1 w-8 rounded-full opacity-20" style={{ backgroundColor: "var(--accent-copper, #B87333)" }} />
-            <div className="h-1 w-12 rounded-full" style={{ backgroundColor: "var(--accent-copper, #B87333)" }} />
-            <div className="h-1 w-8 rounded-full opacity-20" style={{ backgroundColor: "var(--accent-copper, #B87333)" }} />
-          </motion.div>
-
-          {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.5, duration: 0.3 }}
-          >
-            <Button
-              onClick={() => router.replace("/")}
-              className="h-14 rounded-xl px-8 font-body text-[16px] font-bold text-white"
-              style={{
-                backgroundColor: "var(--accent-copper, #B87333)",
-                boxShadow: "0 4px 14px rgba(184,115,51,0.3)",
-              }}
-              data-testid="pair-enter-btn"
-            >
-              Enter Your Space →
-            </Button>
-          </motion.div>
-        </div>
-      </main>
+      </div>
     )
   }
 

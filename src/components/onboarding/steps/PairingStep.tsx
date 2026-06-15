@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
-import { ArrowLeft } from "lucide-react"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { InviteCodeDisplay } from "@/components/pairing/InviteCodeDisplay"
 import { QRCodeDisplay } from "@/components/pairing/QRCodeDisplay"
 import { PairPartnerForm } from "@/components/pairing/PairPartnerForm"
-import { PairingCelebration } from "./PairingCelebration"
+import { PairingCelebration } from "@/components/pairing/PairingCelebration"
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
@@ -66,11 +65,16 @@ export function PairingStep({ onContinue, onSkip, initialCode }: PairingStepProp
   const partnerName = partner?.display_name || "Your partner"
 
   if (pairingState === "celebration") {
+    // The keepsake gates its own exit: onboarding only advances when the user
+    // taps "Enter Hayah", so it never unmounts mid-animation.
     return (
       <PairingCelebration
-        userName={userName}
-        partnerName={partnerName}
-        onContinue={onContinue}
+        variant="seal"
+        nameA={userName}
+        nameB={partnerName}
+        onDone={() => {
+          void onContinue()
+        }}
       />
     )
   }
