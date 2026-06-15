@@ -13,11 +13,12 @@ let orderResult: any = { data: [], error: null }
 let insertResult: any = { data: null, error: null }
 
 const chain: any = {}
-const methods = ["select", "insert", "update", "eq", "in", "or", "contains", "lte", "order", "limit"]
+const methods = ["select", "insert", "update", "eq", "in", "or", "contains", "lte", "order", "limit", "filter"]
 for (const m of methods) {
   chain[m] = vi.fn(() => chain)
 }
 chain.single = vi.fn(() => Promise.resolve(singleResult))
+chain.maybeSingle = vi.fn(() => Promise.resolve(singleResult))
 // thenable: allow `.then()` on the chain (used for queries that don't end with .single())
 chain.then = vi.fn((resolve: any, reject?: any) => {
   return Promise.resolve(orderResult).then(resolve, reject)
@@ -64,6 +65,7 @@ describe("useGameEngine", () => {
     chain.then.mockImplementation((resolve: any, reject?: any) =>
       Promise.resolve(orderResult).then(resolve, reject)
     )
+    chain.maybeSingle.mockImplementation(() => Promise.resolve(singleResult))
   })
 
   // ─── Unit Tests ───
@@ -226,5 +228,119 @@ describe("useGameEngine", () => {
 
     expect(mockFrom).toHaveBeenCalledWith("answer_history")
     expect(chain.eq).toHaveBeenCalled()
+  })
+
+  // ─── Game → Wallet credit (T3) ───
+
+  it("completeSession credits the local player's earned CoYYns to the wallet", async () => {
+    singleResult = {
+      data: {
+        id: "s1",
+        mode: "date_night",
+        status: "playing",
+        created_by: "user-1", // → isPlayer1 = true for user-1
+        player1_score: 45,
+        player2_score: 0,
+        total_coyyns_earned: 45,
+        started_at: new Date(Date.now() - 60000).toISOString(),
+        alignment_score: null,
+        category_scores: null,
+      },
+      error: null,
+    }
+
+    const { result } = renderHook(() => useGameEngine("s1"))
+
+    // let the session load
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 10))
+    })
+
+    // No prior credit row exists for this session
+    chain.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+
+    await act(async () => {
+      await result.current.completeSession()
+    })
+
+    expect(mockFrom).toHaveBeenCalledWith("coyyns_transactions")
+
+    const earnInsert = chain.insert.mock.calls
+      .map((c: any[]) => c[0])
+      .find((row: any) => row && row.type === "earn" && row.category === "game")
+
+    expect(earnInsert).toBeTruthy()
+    expect(earnInsert.amount).toBe(45)
+    expect(earnInsert.user_id).toBe("user-1")
+    expect(earnInsert.metadata.session_id).toBe("s1")
+  })
+
+  it("completeSession does NOT credit when no CoYYns were earned", async () => {
+    singleResult = {
+      data: {
+        id: "s2",
+        mode: "check_in",
+        status: "playing",
+        created_by: "user-1",
+        player1_score: 0,
+        player2_score: 0,
+        total_coyyns_earned: 0,
+        started_at: new Date(Date.now() - 60000).toISOString(),
+        alignment_score: null,
+        category_scores: null,
+      },
+      error: null,
+    }
+
+    const { result } = renderHook(() => useGameEngine("s2"))
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 10))
+    })
+
+    await act(async () => {
+      await result.current.completeSession()
+    })
+
+    const earnInsert = chain.insert.mock.calls
+      .map((c: any[]) => c[0])
+      .find((row: any) => row && row.type === "earn" && row.category === "game")
+
+    expect(earnInsert).toBeFalsy()
+  })
+
+  it("completeSession does NOT double-credit when a session credit already exists", async () => {
+    singleResult = {
+      data: {
+        id: "s3",
+        mode: "date_night",
+        status: "playing",
+        created_by: "user-1",
+        player1_score: 30,
+        player2_score: 0,
+        total_coyyns_earned: 30,
+        started_at: new Date(Date.now() - 60000).toISOString(),
+        alignment_score: null,
+        category_scores: null,
+      },
+      error: null,
+    }
+
+    const { result } = renderHook(() => useGameEngine("s3"))
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 10))
+    })
+
+    // A prior credit row for this session already exists → guard must skip insert
+    chain.maybeSingle.mockResolvedValueOnce({ data: { id: "tx-existing" }, error: null })
+
+    await act(async () => {
+      await result.current.completeSession()
+    })
+
+    const earnInsert = chain.insert.mock.calls
+      .map((c: any[]) => c[0])
+      .find((row: any) => row && row.type === "earn" && row.category === "game")
+
+    expect(earnInsert).toBeFalsy()
   })
 })

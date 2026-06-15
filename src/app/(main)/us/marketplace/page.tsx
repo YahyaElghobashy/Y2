@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Trophy, Plus } from "lucide-react"
+import { Trophy, Plus, ChevronDown } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
@@ -14,7 +14,11 @@ import {
 } from "@/components/relationship/MarketplaceItemCard"
 import { PurchaseConfirmModal } from "@/components/relationship/PurchaseConfirmModal"
 import { CreateChallengeForm } from "@/components/relationship/CreateChallengeForm"
+import { ActivePurchaseCard } from "@/components/marketplace/ActivePurchaseCard"
+import { PurchaseHistoryItem } from "@/components/marketplace/PurchaseHistoryItem"
 import { useMarketplace } from "@/lib/hooks/use-marketplace"
+import { useActivePurchases } from "@/lib/hooks/use-active-purchases"
+import { usePurchaseHistory } from "@/lib/hooks/use-purchase-history"
 import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import { cn } from "@/lib/utils"
 import type { MarketplaceItem, Purchase } from "@/lib/types/marketplace.types"
@@ -33,10 +37,14 @@ export default function MarketplacePage() {
   const { wallet } = useCoyyns()
   const balance = wallet?.balance ?? 0
   const { items, isLoading, error } = useMarketplace()
+  const { activePurchases, completePurchase, declinePurchase } =
+    useActivePurchases()
+  const { history } = usePurchaseHistory()
 
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null)
   const [showModal, setShowModal] = useState(false)
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   const handleBuy = (itemId: string) => {
     const item = items.find((i) => i.id === itemId)
@@ -107,6 +115,31 @@ export default function MarketplacePage() {
               transition={{ duration: 0.15, ease: EASE_OUT }}
               className="mt-4"
             >
+              {/* Active purchases — incoming + outgoing, resolves live */}
+              {activePurchases.length > 0 && (
+                <section className="mb-6" data-testid="active-purchases-section">
+                  <h2 className="mb-3 font-body text-[15px] font-semibold text-text-primary">
+                    Active
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    {activePurchases.map((purchase) => (
+                      // onAcknowledge and onComplete both resolve to completePurchase
+                      // on purpose: every positive target action (veto "Got it",
+                      // wildcard "Accept", task_order "Mark Complete", dnd/extra_ping
+                      // dismiss) is terminal here → 'completed'. Only wildcard
+                      // "Decline" diverges → declinePurchase ('declined').
+                      <ActivePurchaseCard
+                        key={purchase.id}
+                        purchase={purchase}
+                        onAcknowledge={completePurchase}
+                        onComplete={completePurchase}
+                        onDecline={declinePurchase}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )}
+
               {isLoading ? (
                 <div className="flex flex-col gap-3">
                   {Array.from({ length: 4 }, (_, i) => (
@@ -137,6 +170,52 @@ export default function MarketplacePage() {
                     />
                   ))}
                 </StaggerList>
+              )}
+
+              {/* Purchase history — past purchases for both partners */}
+              {history.length > 0 && (
+                <section className="mt-8" data-testid="purchase-history-section">
+                  <button
+                    type="button"
+                    onClick={() => setShowHistory((v) => !v)}
+                    className="flex w-full items-center justify-between"
+                    data-testid="purchase-history-toggle"
+                  >
+                    <h2 className="font-body text-[15px] font-semibold text-text-primary">
+                      Purchase History
+                    </h2>
+                    <motion.div
+                      animate={{ rotate: showHistory ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={18} className="text-text-secondary" />
+                    </motion.div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {showHistory && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div
+                          className="flex flex-col gap-2 pt-3"
+                          data-testid="purchase-history-list"
+                        >
+                          {history.map((purchase) => (
+                            <PurchaseHistoryItem
+                              key={purchase.id}
+                              purchase={purchase}
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </section>
               )}
             </motion.div>
           ) : (

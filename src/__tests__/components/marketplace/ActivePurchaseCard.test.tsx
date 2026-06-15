@@ -196,17 +196,19 @@ describe("ActivePurchaseCard", () => {
   // ── Interaction ─────────────────────────────────────
 
   describe("interaction", () => {
-    it("acknowledge button calls onAcknowledge with purchase id", () => {
+    it("task_order shows 'Mark Complete' and calls onComplete when actionable (pending)", () => {
       const purchase = makePurchase("task_order", { status: "pending" })
       renderCard(purchase)
 
-      fireEvent.click(screen.getByTestId("acknowledge-btn"))
-      expect(mockOnAcknowledge).toHaveBeenCalledWith("purchase-1")
+      // task_order has no acknowledge step — it is resolved by completing it
+      expect(screen.queryByTestId("acknowledge-btn")).not.toBeInTheDocument()
+      fireEvent.click(screen.getByTestId("complete-btn"))
+      expect(mockOnComplete).toHaveBeenCalledWith("purchase-1")
     })
 
-    it("veto shows 'Got it' text on acknowledge button", () => {
+    it("veto shows 'Got it' acknowledge button when active (driven by edge fn)", () => {
       const purchase = makePurchase("veto", {
-        status: "pending",
+        status: "active",
         effect_payload: { movie: "Test" },
       })
       renderCard(purchase)
@@ -215,6 +217,41 @@ describe("ActivePurchaseCard", () => {
       expect(btn).toHaveTextContent("Got it")
       fireEvent.click(btn)
       expect(mockOnAcknowledge).toHaveBeenCalledWith("purchase-1")
+    })
+
+    it("wildcard shows accept/decline when active (driven by edge fn)", () => {
+      const purchase = makePurchase("wildcard", {
+        status: "active",
+        effect_payload: { input: "Something" },
+      })
+      renderCard(purchase)
+
+      expect(screen.getByTestId("accept-btn")).toBeInTheDocument()
+      expect(screen.getByTestId("decline-btn")).toBeInTheDocument()
+    })
+
+    it("shows no actions for a completed (terminal) purchase", () => {
+      const purchase = makePurchase("veto", {
+        status: "completed",
+        effect_payload: { movie: "Test" },
+      })
+      renderCard(purchase)
+
+      expect(screen.queryByTestId("acknowledge-btn")).not.toBeInTheDocument()
+      expect(screen.queryByTestId("complete-btn")).not.toBeInTheDocument()
+      expect(screen.queryByTestId("dismiss-btn")).not.toBeInTheDocument()
+    })
+
+    it("auto-completes dnd_timer when its countdown has already expired", () => {
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+      const purchase = makePurchase(
+        "dnd_timer",
+        { status: "active", created_at: twoHoursAgo },
+        { effect_config: { duration_minutes: 60 } }
+      )
+      renderCard(purchase)
+
+      expect(mockOnComplete).toHaveBeenCalledWith("purchase-1")
     })
 
     it("wildcard shows accept and decline buttons", () => {

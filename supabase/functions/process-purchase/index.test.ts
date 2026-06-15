@@ -426,23 +426,39 @@ async function simulateHandler(
           { onConflict: "user_id,date" },
         );
 
+        // Instant effect — fully resolved, mark completed.
+        await supabase
+          .from("purchases")
+          .update({
+            status: "completed",
+            completed_at: new Date().toISOString(),
+          })
+          .eq("id", purchase_id);
+
         await sendPushToUser(supabase, wp, target_id, buyer_id, {
           title: "Extra Ping Purchased",
           body: "Your partner bought an extra notification slot!",
           emoji: "🔔",
           type: "marketplace_effect",
+          metadata: { effect: "extra_ping", purchase_id },
         });
         break;
       }
       case "veto": {
         const movie =
           (effect_payload?.movie as string) ?? "a movie";
+
+        await supabase
+          .from("purchases")
+          .update({ status: "active" })
+          .eq("id", purchase_id);
+
         await sendPushToUser(supabase, wp, target_id, buyer_id, {
           title: "VETO!",
           body: `Movie night decision: "${movie}". No arguments allowed!`,
           emoji: "🎬",
           type: "marketplace_effect",
-          metadata: { effect: "veto", movie },
+          metadata: { effect: "veto", movie, purchase_id },
         });
         break;
       }
@@ -500,12 +516,18 @@ async function simulateHandler(
       case "wildcard": {
         const wish =
           (effect_payload?.wish as string) ?? "A wildcard favor";
+
+        await supabase
+          .from("purchases")
+          .update({ status: "active" })
+          .eq("id", purchase_id);
+
         await sendPushToUser(supabase, wp, target_id, buyer_id, {
           title: "Wildcard Favor!",
           body: `Your partner wishes: "${wish}". You can accept, decline, or negotiate.`,
           emoji: "🃏",
           type: "marketplace_effect",
-          metadata: { effect: "wildcard", wish, negotiable: true },
+          metadata: { effect: "wildcard", wish, negotiable: true, purchase_id },
         });
         break;
       }
@@ -693,6 +715,26 @@ Deno.test("extra_ping: sends push notification to target user", async () => {
   assertEquals(webpush._sentTo[0], sub.subscription.endpoint);
 });
 
+// 8b. extra_ping: resolves the purchase to "completed"
+Deno.test("extra_ping: updates purchase status to 'completed'", async () => {
+  const sub = createMockSubscription("sub-1", TARGET_ID);
+  const supabase = createMockSupabaseClient({
+    subscriptionsByUser: new Map([[TARGET_ID, [sub]]]),
+  });
+  const webpush = createMockWebPush();
+
+  await simulateHandler(
+    { method: "POST", body: validBody(), hasAuth: true },
+    { supabaseAuth: supabase, supabaseService: supabase, webpush },
+  );
+
+  const purchaseUpdate = supabase._statusUpdates.find(
+    (u) => u.table === "purchases" && u.id === PURCHASE_ID,
+  );
+  assertExists(purchaseUpdate);
+  assertEquals(purchaseUpdate.status, "completed");
+});
+
 // 9. veto: push body contains movie from payload
 Deno.test("veto: push body contains movie name from effect_payload", async () => {
   const sub = createMockSubscription("sub-1", TARGET_ID);
@@ -736,6 +778,33 @@ Deno.test("veto: defaults to 'a movie' when effect_payload is null", async () =>
 
   const payload = JSON.parse(webpush._sentPayloads[0]);
   assertEquals(payload.body.includes("a movie"), true);
+});
+
+// 10b. veto: updates purchase status to "active"
+Deno.test("veto: updates purchase status to 'active'", async () => {
+  const sub = createMockSubscription("sub-1", TARGET_ID);
+  const supabase = createMockSupabaseClient({
+    subscriptionsByUser: new Map([[TARGET_ID, [sub]]]),
+  });
+  const webpush = createMockWebPush();
+
+  await simulateHandler(
+    {
+      method: "POST",
+      body: validBody({
+        effect_type: "veto",
+        effect_payload: { movie: "Inception" },
+      }),
+      hasAuth: true,
+    },
+    { supabaseAuth: supabase, supabaseService: supabase, webpush },
+  );
+
+  const purchaseUpdate = supabase._statusUpdates.find(
+    (u) => u.table === "purchases" && u.id === PURCHASE_ID,
+  );
+  assertExists(purchaseUpdate);
+  assertEquals(purchaseUpdate.status, "active");
 });
 
 // 11. task_order: updates purchase status to "active"
@@ -880,6 +949,33 @@ Deno.test("wildcard: push body contains wish text from payload", async () => {
 
   const payload = JSON.parse(webpush._sentPayloads[0]);
   assertEquals(payload.body.includes("Dance in the rain"), true);
+});
+
+// 15b. wildcard: updates purchase status to "active"
+Deno.test("wildcard: updates purchase status to 'active'", async () => {
+  const sub = createMockSubscription("sub-1", TARGET_ID);
+  const supabase = createMockSupabaseClient({
+    subscriptionsByUser: new Map([[TARGET_ID, [sub]]]),
+  });
+  const webpush = createMockWebPush();
+
+  await simulateHandler(
+    {
+      method: "POST",
+      body: validBody({
+        effect_type: "wildcard",
+        effect_payload: { wish: "Dance in the rain" },
+      }),
+      hasAuth: true,
+    },
+    { supabaseAuth: supabase, supabaseService: supabase, webpush },
+  );
+
+  const purchaseUpdate = supabase._statusUpdates.find(
+    (u) => u.table === "purchases" && u.id === PURCHASE_ID,
+  );
+  assertExists(purchaseUpdate);
+  assertEquals(purchaseUpdate.status, "active");
 });
 
 // 16. Critical: notification insert uses status "sent" (not "pending")

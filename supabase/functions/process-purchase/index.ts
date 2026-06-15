@@ -162,6 +162,7 @@ async function sendPushToUser(
 
 async function handleExtraPing(
   supabase: ReturnType<typeof createClient>,
+  purchaseId: string,
   buyerId: string,
   targetId: string,
 ): Promise<void> {
@@ -188,28 +189,43 @@ async function handleExtraPing(
     { onConflict: "user_id,date" },
   );
 
+  // Instant effect — the bonus send is already granted, so the purchase is
+  // fully resolved. Mark it completed so it never sticks in 'pending'.
+  await supabase
+    .from("purchases")
+    .update({ status: "completed", completed_at: new Date().toISOString() })
+    .eq("id", purchaseId);
+
   await sendPushToUser(supabase, targetId, buyerId, {
     title: "Extra Ping Purchased",
     body: "Your partner bought an extra notification slot!",
     emoji: "🔔",
     type: "marketplace_effect",
+    metadata: { effect: "extra_ping", purchase_id: purchaseId },
   });
 }
 
 async function handleVeto(
   supabase: ReturnType<typeof createClient>,
+  purchaseId: string,
   buyerId: string,
   targetId: string,
   payload: Record<string, unknown> | null,
 ): Promise<void> {
   const movie = (payload?.movie as string) ?? "a movie";
 
+  // In effect now — target acknowledges via the active-purchase card to complete.
+  await supabase
+    .from("purchases")
+    .update({ status: "active" })
+    .eq("id", purchaseId);
+
   await sendPushToUser(supabase, targetId, buyerId, {
     title: "VETO!",
     body: `Movie night decision: "${movie}". No arguments allowed!`,
     emoji: "🎬",
     type: "marketplace_effect",
-    metadata: { effect: "veto", movie },
+    metadata: { effect: "veto", movie, purchase_id: purchaseId },
   });
 }
 
@@ -271,18 +287,25 @@ async function handleDndTimer(
 
 async function handleWildcard(
   supabase: ReturnType<typeof createClient>,
+  purchaseId: string,
   buyerId: string,
   targetId: string,
   payload: Record<string, unknown> | null,
 ): Promise<void> {
   const wish = (payload?.wish as string) ?? "A wildcard favor";
 
+  // In effect now — target accepts (complete) or declines via the card.
+  await supabase
+    .from("purchases")
+    .update({ status: "active" })
+    .eq("id", purchaseId);
+
   await sendPushToUser(supabase, targetId, buyerId, {
     title: "Wildcard Favor!",
     body: `Your partner wishes: "${wish}". You can accept, decline, or negotiate.`,
     emoji: "🃏",
     type: "marketplace_effect",
-    metadata: { effect: "wildcard", wish, negotiable: true },
+    metadata: { effect: "wildcard", wish, negotiable: true, purchase_id: purchaseId },
   });
 }
 
@@ -337,10 +360,10 @@ serve(async (req: Request) => {
     // Dispatch based on effect_type
     switch (effect_type) {
       case "extra_ping":
-        await handleExtraPing(supabase, buyer_id, target_id);
+        await handleExtraPing(supabase, purchase_id, buyer_id, target_id);
         break;
       case "veto":
-        await handleVeto(supabase, buyer_id, target_id, effect_payload);
+        await handleVeto(supabase, purchase_id, buyer_id, target_id, effect_payload);
         break;
       case "task_order":
         await handleTaskOrder(supabase, purchase_id, buyer_id, target_id, effect_payload);
@@ -349,7 +372,7 @@ serve(async (req: Request) => {
         await handleDndTimer(supabase, purchase_id, buyer_id, target_id);
         break;
       case "wildcard":
-        await handleWildcard(supabase, buyer_id, target_id, effect_payload);
+        await handleWildcard(supabase, purchase_id, buyer_id, target_id, effect_payload);
         break;
       default:
         return jsonResponse(

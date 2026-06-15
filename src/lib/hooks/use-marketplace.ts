@@ -128,9 +128,12 @@ export function useMarketplace(): UseMarketplaceReturn {
 
       const purchase = data as Purchase
 
-      // 3. Fire-and-forget: invoke process-purchase edge function
-      supabase.functions
-        .invoke("process-purchase", {
+      // 3. Invoke process-purchase edge function (applies the effect + pushes
+      //    a notification to the partner). Awaited so a failure is observable
+      //    rather than silently swallowed.
+      const { error: fnError } = await supabase.functions.invoke(
+        "process-purchase",
+        {
           body: {
             purchase_id: purchase.id,
             item_id: itemId,
@@ -139,10 +142,51 @@ export function useMarketplace(): UseMarketplaceReturn {
             buyer_id: user.id,
             target_id: partner.id,
           },
-        })
-        .catch(() => {
-          // Edge function failure is non-blocking — purchase record exists
-        })
+        }
+      )
+
+      if (fnError) {
+        // Push / effect processing failed. Don't drop it on the floor — write
+        // an in-app notification row so the partner still sees the purchase,
+        // and activate it so it shows up as actionable rather than stuck.
+        // The purchase + spend already succeeded, so a fallback failure must
+        // never throw back to the caller — log it and move on.
+        console.warn(
+          "[marketplace] process-purchase failed, falling back to in-app notification",
+          fnError
+        )
+        try {
+          const { error: notifError } = await supabase
+            .from("notifications")
+            .insert({
+              sender_id: user.id,
+              recipient_id: partner.id,
+              title: `${item.icon} ${item.name}`.trim(),
+              body: `Your partner sent you "${item.name}".`,
+              emoji: item.icon,
+              type: "marketplace_effect",
+              status: "sent",
+              metadata: {
+                purchase_id: purchase.id,
+                effect_type: item.effect_type,
+                fallback: true,
+              },
+            })
+          if (notifError) {
+            console.warn("[marketplace] fallback notification insert failed", notifError)
+          }
+
+          const { error: updateError } = await supabase
+            .from("purchases")
+            .update({ status: "active" })
+            .eq("id", purchase.id)
+          if (updateError) {
+            console.warn("[marketplace] fallback purchase activation failed", updateError)
+          }
+        } catch (fallbackError) {
+          console.warn("[marketplace] fallback handling threw", fallbackError)
+        }
+      }
 
       // 4. Refresh local purchases list
       await refreshPurchases()
