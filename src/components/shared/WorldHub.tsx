@@ -40,7 +40,7 @@ export function WorldHub({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: EASE }}
       >
-        <p className="text-[20px] leading-none" style={{ fontFamily: "var(--font-arabic)", color: "var(--color-terracotta)" }} dir="rtl">
+        <p className="text-[20px] leading-none" style={{ fontFamily: "var(--font-arabic)", color: "var(--color-terracotta)" }}>
           {arabic}
         </p>
         <h1 className="mt-1 text-[32px] font-extrabold tracking-tight" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
