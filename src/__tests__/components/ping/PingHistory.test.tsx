@@ -113,22 +113,51 @@ describe("PingHistory", () => {
     expect(bubble).toBeTruthy()
   })
 
-  it("renders sent ping body text", () => {
+  it("renders sent ping body text + 'sent' delivery indicator", () => {
     mockNotificationsReturn = {
       ...mockNotificationsReturn,
       notifications: [makePing({ status: "sent", body: "Test message" })],
     }
     render(<PingHistory />)
     expect(screen.getByText("Test message")).toBeInTheDocument()
+    const indicator = screen.getByTestId("delivery-status-sent")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator).toHaveAttribute("aria-label", "Sent")
   })
 
-  it("renders delivered ping body text", () => {
+  it("renders delivered ping body text + 'delivered' delivery indicator", () => {
     mockNotificationsReturn = {
       ...mockNotificationsReturn,
       notifications: [makePing({ status: "delivered", body: "Delivered message" })],
     }
     render(<PingHistory />)
     expect(screen.getByText("Delivered message")).toBeInTheDocument()
+    const indicator = screen.getByTestId("delivery-status-delivered")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator).toHaveAttribute("aria-label", "Delivered")
+  })
+
+  it("renders 'failed' delivery indicator on a failed sent ping", () => {
+    mockNotificationsReturn = {
+      ...mockNotificationsReturn,
+      notifications: [makePing({ status: "failed", body: "Unreachable" })],
+    }
+    render(<PingHistory />)
+    const indicator = screen.getByTestId("delivery-status-failed")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator).toHaveAttribute("aria-label", "Failed to deliver")
+  })
+
+  it("does not render a delivery indicator on received pings", () => {
+    mockNotificationsReturn = {
+      ...mockNotificationsReturn,
+      notifications: [
+        makePing({ sender_id: "u2", recipient_id: "u1", status: "delivered", body: "From partner" }),
+      ],
+    }
+    render(<PingHistory />)
+    expect(screen.getByText("From partner")).toBeInTheDocument()
+    expect(screen.queryByTestId("delivery-status-delivered")).not.toBeInTheDocument()
   })
 
   it("groups pings by date with headers", () => {

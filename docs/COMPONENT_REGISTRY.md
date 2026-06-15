@@ -429,7 +429,7 @@
 
 | Component | Status | Path | Props |
 |---|---|---|---|
-| ChatBubble | ✅ | `components/ping/ChatBubble.tsx` | `message: string, isSent: boolean, timestamp?: string, className?` — Sent/received chat bubble with directional styling (sent: copper bg, right-aligned; received: elevated bg, left-aligned). Rounded corners with tail direction. Framer Motion entrance animation (fade + slide from direction). |
+| ChatBubble | ✅ | `components/ping/ChatBubble.tsx` | `message: string, timestamp: string, direction: "sent" \| "received", emoji?, status?: NotificationStatus, className?` — Sent/received chat bubble with directional styling (sent: copper bg, end-aligned; received: elevated bg, start-aligned, RTL logical props). Framer Motion entrance (fade + slide). Sent bubbles surface **delivery state** next to the timestamp: `sent`→Check (muted), `delivered`→CheckCheck (success), `failed`→AlertCircle (error); aria-labelled, `data-testid="delivery-status-{status}"`. |
 | PingLimitDots | ✅ | `components/ping/PingLimitDots.tsx` | `remaining: number, total: number, className?` — Visual copper dot indicator showing remaining ping sends. Filled dots for remaining, outline dots for used. Horizontal flex row. |
 
 ## Wheel Module

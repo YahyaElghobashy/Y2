@@ -14,7 +14,7 @@ import {
   isYesterday,
   format,
 } from "date-fns"
-import type { Notification } from "@/lib/types/notification.types"
+import type { Notification, NotificationStatus } from "@/lib/types/notification.types"
 
 type DateGroup = {
   label: string
@@ -102,6 +102,7 @@ export function PingHistory({ className }: { className?: string }) {
                   )}
                   direction={isSent ? "sent" : "received"}
                   emoji={ping.emoji || undefined}
+                  status={isSent ? (ping.status as NotificationStatus) : undefined}
                 />
               )
             })}
