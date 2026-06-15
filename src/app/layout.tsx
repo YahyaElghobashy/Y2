@@ -1,27 +1,44 @@
 import type { Metadata, Viewport } from "next"
-import { Playfair_Display, DM_Sans, JetBrains_Mono, Amiri, Caveat, Lora, Plus_Jakarta_Sans, Cormorant_Garamond } from "next/font/google"
+import { Bricolage_Grotesque, Fraunces, Space_Grotesk, JetBrains_Mono, Amiri, Caveat, Cormorant_Garamond } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
 import "./globals.css"
 
-const playfair = Playfair_Display({
+// ── Hayah Voice Map (see docs/DESIGN_BLUEPRINT.md §1.2) ──
+// Display (bold-tender): hero greetings, world titles, celebration words
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-display",
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-bricolage",
   display: "swap",
 })
 
-const dmSans = DM_Sans({
+// Editorial (elegant): memories, letters, prompts, quotes
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-body",
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
   display: "swap",
 })
 
-const jetbrainsMono = JetBrains_Mono({
+// Data (cold-confident): CoYYns, stats, dates, nav labels, system chrome, body
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-mono",
+  weight: ["400", "500", "700"],
+  variable: "--font-space",
   display: "swap",
 })
 
+// Hand (intimate): pet-name notes, signatures, secret corners
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+})
+
+// Arabic / editorial: bilingual headings, du'a, RTL
 const amiri = Amiri({
   subsets: ["arabic"],
   weight: ["400", "700"],
@@ -29,25 +46,10 @@ const amiri = Amiri({
   display: "swap",
 })
 
-const caveat = Caveat({
+// Mono: codes, times, raw data values
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-handwritten",
-  display: "swap",
-})
-
-const lora = Lora({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
-})
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-nav",
+  variable: "--font-jetbrains",
   display: "swap",
 })
 
@@ -72,7 +74,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#FBF8F4",
+  themeColor: "#F7EFE3",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -85,7 +87,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${amiri.variable} ${caveat.variable} ${lora.variable} ${plusJakartaSans.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${bricolage.variable} ${fraunces.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${amiri.variable} ${caveat.variable} ${cormorant.variable}`}>
       <head>
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
