@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 
 // ── Hoisted mocks ─────────────────────────────────────────
 const mockReplace = vi.fn()
@@ -89,11 +90,33 @@ vi.mock("@/components/pairing/QRCodeScanner", () => ({
 }))
 
 vi.mock("@/components/pairing/PairPartnerForm", () => ({
-  PairPartnerForm: ({ onPaired }: { onPaired: () => void }) => (
+  PairPartnerForm: ({ onPaired }: { onPaired: (partnerName: string) => void }) => (
     <div data-testid="pair-partner-form">
       <input data-testid="pair-code-input" />
-      <button data-testid="pair-submit-btn" onClick={onPaired}>
+      <button data-testid="pair-submit-btn" onClick={() => onPaired("Yara")}>
         Submit
+      </button>
+    </div>
+  ),
+}))
+
+// Mock the shared keepsake celebration (uses portals/audio in real life)
+vi.mock("@/components/pairing/PairingCelebration", () => ({
+  PairingCelebration: ({
+    nameA,
+    nameB,
+    onDone,
+  }: {
+    variant?: string
+    nameA: string
+    nameB: string
+    onDone: () => void
+  }) => (
+    <div data-testid="pairing-celebration">
+      <span data-testid="celeb-a">{nameA}</span>
+      <span data-testid="celeb-b">{nameB}</span>
+      <button data-testid="celeb-done" onClick={onDone}>
+        Enter Hayah
       </button>
     </div>
   ),
@@ -209,6 +232,82 @@ describe("PairPage", () => {
 
       render(<PairPage />)
       expect(screen.getByTestId("invite-code")).toHaveTextContent("ABC123")
+    })
+  })
+
+  // ── Interaction: keepsake celebration ───────────────────
+  describe("interaction: celebration", () => {
+    it("plays the keepsake celebration once paired, with both names", async () => {
+      const user = userEvent.setup()
+      render(<PairPage />)
+
+      expect(screen.queryByTestId("pairing-celebration")).not.toBeInTheDocument()
+
+      await user.click(screen.getByTestId("pair-submit-btn"))
+
+      expect(screen.getByTestId("pairing-celebration")).toBeInTheDocument()
+      expect(screen.getByTestId("celeb-a")).toHaveTextContent("Test User")
+      expect(screen.getByTestId("celeb-b")).toHaveTextContent("Yara")
+    })
+
+    it("does not redirect home while the celebration plays, even after pairing_status flips to paired", async () => {
+      const user = userEvent.setup()
+      // Start unpaired so the page renders and we can trigger the celebration.
+      const { rerender } = render(<PairPage />)
+      await user.click(screen.getByTestId("pair-submit-btn"))
+      expect(screen.getByTestId("pairing-celebration")).toBeInTheDocument()
+
+      // Now the profile flips to paired (as refreshProfile would do) WHILE the
+      // keepsake is on screen. The redirect must stay gated by `celebrate`.
+      useAuth.mockReturnValue({
+        user: mockUser,
+        profile: {
+          id: "user-1",
+          display_name: "Test User",
+          pairing_status: "paired",
+          invite_code: "ABC123",
+          partner_id: "partner-1",
+        },
+        partner: { id: "partner-1", display_name: "Yara" },
+        isLoading: false,
+        refreshProfile: vi.fn(),
+        signOut: vi.fn(),
+        profileNeedsSetup: false,
+      } as ReturnType<typeof useAuth>)
+      rerender(<PairPage />)
+
+      // Gate holds: no early redirect, keepsake still mounted.
+      expect(mockReplace).not.toHaveBeenCalled()
+      expect(screen.getByTestId("pairing-celebration")).toBeInTheDocument()
+    })
+
+    it("refreshes profile and redirects home when celebration completes", async () => {
+      const user = userEvent.setup()
+      const mockRefresh = vi.fn().mockResolvedValue(undefined)
+      useAuth.mockReturnValue({
+        user: mockUser,
+        profile: {
+          id: "user-1",
+          display_name: "Test User",
+          pairing_status: "unpaired",
+          invite_code: "ABC123",
+        },
+        partner: null,
+        isLoading: false,
+        refreshProfile: mockRefresh,
+        signOut: vi.fn(),
+        profileNeedsSetup: false,
+      } as ReturnType<typeof useAuth>)
+
+      render(<PairPage />)
+
+      await user.click(screen.getByTestId("pair-submit-btn"))
+      await user.click(screen.getByTestId("celeb-done"))
+
+      await waitFor(() => {
+        expect(mockRefresh).toHaveBeenCalled()
+        expect(mockReplace).toHaveBeenCalledWith("/")
+      })
     })
   })
 })

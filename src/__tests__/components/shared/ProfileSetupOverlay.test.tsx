@@ -84,6 +84,34 @@ describe("ProfileSetupOverlay", () => {
     })
   })
 
+  it("rejects a whitespace-only name", async () => {
+    const user = userEvent.setup()
+    render(<ProfileSetupOverlay {...defaultProps} />)
+
+    await user.type(screen.getByPlaceholderText("Your name"), "   ")
+    await user.click(screen.getByRole("button", { name: "Continue" }))
+
+    await waitFor(() => {
+      expect(screen.getByText("Name must be at least 2 characters")).toBeInTheDocument()
+    })
+    expect(mockUpdate).not.toHaveBeenCalled()
+  })
+
+  it("trims surrounding whitespace before saving", async () => {
+    const user = userEvent.setup()
+    render(<ProfileSetupOverlay {...defaultProps} />)
+
+    await user.type(screen.getByPlaceholderText("Your name"), "  Yahya  ")
+    await user.click(screen.getByRole("button", { name: "Continue" }))
+
+    await waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledWith({
+        display_name: "Yahya",
+        email: "yahya@test.com",
+      })
+    })
+  })
+
   it("submits profile update with display_name", async () => {
     const user = userEvent.setup()
     render(<ProfileSetupOverlay {...defaultProps} />)

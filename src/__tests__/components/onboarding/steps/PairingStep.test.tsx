@@ -62,22 +62,24 @@ vi.mock("@/components/pairing/PairPartnerForm", () => ({
   ),
 }))
 
-// Mock celebration
-vi.mock("@/components/onboarding/steps/PairingCelebration", () => ({
+// Mock the shared keepsake celebration (props: variant, nameA, nameB, onDone)
+vi.mock("@/components/pairing/PairingCelebration", () => ({
   PairingCelebration: ({
-    userName,
-    partnerName,
-    onContinue,
+    variant,
+    nameA,
+    nameB,
+    onDone,
   }: {
-    userName: string
-    partnerName: string
-    onContinue: () => void
+    variant?: string
+    nameA: string
+    nameB: string
+    onDone: () => void
   }) => (
-    <div data-testid="pairing-celebration">
-      <span data-testid="celeb-user">{userName}</span>
-      <span data-testid="celeb-partner">{partnerName}</span>
-      <button data-testid="celeb-continue" onClick={onContinue}>
-        Continue
+    <div data-testid="pairing-celebration" data-variant={variant}>
+      <span data-testid="celeb-user">{nameA}</span>
+      <span data-testid="celeb-partner">{nameB}</span>
+      <button data-testid="celeb-continue" onClick={onDone}>
+        Enter Hayah
       </button>
     </div>
   ),

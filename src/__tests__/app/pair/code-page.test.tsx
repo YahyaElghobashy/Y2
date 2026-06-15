@@ -59,6 +59,28 @@ vi.mock("@/lib/pairing-link", () => ({
   storePendingPairCode: (code: string) => mockStorePendingPairCode(code),
 }))
 
+// Mock the shared keepsake celebration (uses portals/audio in real life)
+vi.mock("@/components/pairing/PairingCelebration", () => ({
+  PairingCelebration: ({
+    nameA,
+    nameB,
+    onDone,
+  }: {
+    variant?: string
+    nameA: string
+    nameB: string
+    onDone: () => void
+  }) => (
+    <div data-testid="pairing-celebration">
+      <span data-testid="celeb-a">{nameA}</span>
+      <span data-testid="celeb-b">{nameB}</span>
+      <button data-testid="celeb-done" onClick={onDone}>
+        Enter Hayah
+      </button>
+    </div>
+  ),
+}))
+
 import PairCodePage from "@/app/(main)/pair/[code]/page"
 
 async function renderPage(code: string) {
@@ -162,8 +184,9 @@ describe("PairCodePage", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("pair-code-success")).toBeInTheDocument()
-        expect(screen.getByText("Connection Established")).toBeInTheDocument()
+        expect(screen.getByTestId("pairing-celebration")).toBeInTheDocument()
       })
+      expect(screen.getByTestId("celeb-b")).toHaveTextContent("Yara")
     })
 
     it("refreshes profile after successful pairing", async () => {
@@ -247,7 +270,7 @@ describe("PairCodePage", () => {
       })
     })
 
-    it("has Enter Hayah button that navigates home on success", async () => {
+    it("navigates home only when the keepsake completes (Enter Hayah)", async () => {
       mockAuthState.user = { id: "user-1" }
       mockAuthState.profile = { pairing_status: "unpaired", invite_code: "MY_CODE" }
       mockRpc.mockResolvedValue({
@@ -258,8 +281,15 @@ describe("PairCodePage", () => {
       renderPage("ABC123")
 
       await waitFor(() => {
-        expect(screen.getByTestId("pair-enter-btn")).toBeInTheDocument()
+        expect(screen.getByTestId("celeb-done")).toBeInTheDocument()
       })
+      // Redirect is gated until the keepsake is dismissed.
+      expect(mockReplace).not.toHaveBeenCalled()
+
+      await act(async () => {
+        screen.getByTestId("celeb-done").click()
+      })
+      expect(mockReplace).toHaveBeenCalledWith("/")
     })
 
     it("has manual entry button on error", async () => {
