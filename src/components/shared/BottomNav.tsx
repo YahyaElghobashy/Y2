@@ -2,320 +2,194 @@
 
 import { useState, useCallback, useEffect, useRef } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   House,
   Heart,
-  User,
-  MoreHorizontal,
-  Sparkles,
+  Coins,
+  BookHeart,
+  Plus,
   Camera,
-  UtensilsCrossed,
-  Disc3,
+  Ticket,
+  PenLine,
+  ListPlus,
+  Smile,
+  Send,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-import type { LucideIcon } from "lucide-react"
-
-type NavTab = {
+/**
+ * BottomNav — the 5-world model (docs/DESIGN_BLUEPRINT.md §1.6):
+ *   [ Home ] [ Us ]  ( + create )  [ Treasury ] [ Keepsake ]
+ * Me + Settings live on the Home top-bar. Active = world accent.
+ */
+type World = {
   label: string
   href: string
   icon: LucideIcon
-  match: (pathname: string) => boolean
+  accent: string
+  match: (p: string) => boolean
 }
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
-const SIDE_TABS: NavTab[] = [
-  {
-    label: "Home",
-    href: "/",
-    icon: House,
-    match: (pathname) => pathname === "/",
-  },
-  {
-    label: "Us",
-    href: "/us",
-    icon: Heart,
-    match: (pathname) => pathname.startsWith("/us"),
-  },
+export const NAV_WORLDS: World[] = [
+  { label: "Home", href: "/", icon: House, accent: "var(--color-amber)", match: (p) => p === "/" },
+  { label: "Us", href: "/us", icon: Heart, accent: "var(--color-coral)", match: (p) => p.startsWith("/us") || p.startsWith("/game") || p.startsWith("/our-table") || p.startsWith("/wheel") },
+  { label: "Treasury", href: "/treasury", icon: Coins, accent: "var(--color-terracotta)", match: (p) => p.startsWith("/treasury") },
+  { label: "Keepsake", href: "/keepsake", icon: BookHeart, accent: "var(--color-teal)", match: (p) => p.startsWith("/keepsake") || p.startsWith("/snap") || p.startsWith("/garden") || p.startsWith("/2026") },
 ]
 
-const RIGHT_TABS: NavTab[] = [
-  {
-    label: "Me",
-    href: "/me",
-    icon: User,
-    match: (pathname) => pathname.startsWith("/me"),
-  },
-  {
-    label: "More",
-    href: "/more",
-    icon: MoreHorizontal,
-    match: (pathname) => pathname.startsWith("/more"),
-  },
-]
+const LEFT = NAV_WORLDS.slice(0, 2)
+const RIGHT = NAV_WORLDS.slice(2)
 
-export const NAV_TABS: (NavTab & { isCenter?: boolean })[] = [
-  ...SIDE_TABS,
-  {
-    label: "2026",
-    href: "/2026",
-    icon: Sparkles,
-    match: (pathname) => pathname.startsWith("/2026"),
-    isCenter: true,
-  },
-  ...RIGHT_TABS,
-]
-
-type QuickAction = {
-  label: string
-  href: string
-  icon: LucideIcon
-}
-
-const QUICK_ACTIONS: QuickAction[] = [
-  { label: "2026", href: "/2026", icon: Sparkles },
-  { label: "Snap", href: "/snap", icon: Camera },
-  { label: "Our Table", href: "/our-table", icon: UtensilsCrossed },
-  { label: "Wheel", href: "/wheel", icon: Disc3 },
+type CreateAction = { label: string; href: string; icon: LucideIcon; accent: string }
+const CREATE_ACTIONS: CreateAction[] = [
+  { label: "Snap", href: "/snap/capture", icon: Camera, accent: "var(--color-amber)" },
+  { label: "Coupon", href: "/create-coupon", icon: Ticket, accent: "var(--color-coral)" },
+  { label: "Letter", href: "/me/rituals", icon: PenLine, accent: "var(--color-teal)" },
+  { label: "List", href: "/us/list", icon: ListPlus, accent: "var(--color-indigo)" },
+  { label: "Mood", href: "/", icon: Smile, accent: "var(--color-dusty-rose)" },
+  { label: "Ping", href: "/us/ping", icon: Send, accent: "var(--color-terracotta)" },
 ]
 
 export function BottomNav() {
   const pathname = usePathname()
-  const [expanded, setExpanded] = useState(false)
+  const [open, setOpen] = useState(false)
   const navRef = useRef<HTMLElement>(null)
 
-  const toggleExpand = useCallback(() => {
-    setExpanded((prev) => !prev)
-  }, [])
+  const toggle = useCallback(() => setOpen((p) => !p), [])
 
-  // Close on route change
+  useEffect(() => setOpen(false), [pathname])
   useEffect(() => {
-    setExpanded(false)
-  }, [pathname])
-
-  // Close on outside click
-  useEffect(() => {
-    if (!expanded) return
-    const handleClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setExpanded(false)
-      }
+    if (!open) return
+    const onClick = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(false)
     }
-    document.addEventListener("mousedown", handleClick)
-    return () => document.removeEventListener("mousedown", handleClick)
-  }, [expanded])
+    document.addEventListener("mousedown", onClick)
+    return () => document.removeEventListener("mousedown", onClick)
+  }, [open])
 
-  // Hide during onboarding flow — AFTER all hooks to avoid Rules of Hooks violation
   if (pathname.startsWith("/onboarding")) return null
-
-  const isCenter = pathname.startsWith("/2026") ||
-    pathname.startsWith("/snap") ||
-    pathname.startsWith("/our-table") ||
-    pathname.startsWith("/wheel")
 
   return (
     <>
-      {/* Backdrop overlay */}
       <AnimatePresence>
-        {expanded && (
+        {open && (
           <motion.div
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
+            className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={() => setExpanded(false)}
-            aria-hidden="true"
+            onClick={() => setOpen(false)}
+            aria-hidden
           />
         )}
       </AnimatePresence>
 
       <nav
         ref={navRef}
-        className="fixed bottom-0 inset-x-0 z-50 bg-bg-elevated border-t border-border-subtle"
-        style={{
-          boxShadow: "0 -2px 12px rgba(44, 40, 37, 0.04)",
-        }}
+        className="fixed inset-x-0 bottom-0 z-50 border-t"
+        style={{ background: "var(--card)", borderColor: "var(--border)", boxShadow: "0 -2px 14px rgba(42,40,37,0.05)" }}
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Quick action bubbles — arc layout above mascot */}
+        {/* Create sheet */}
         <AnimatePresence>
-          {expanded && (
+          {open && (
             <motion.div
-              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 flex items-end gap-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              className="absolute bottom-full left-1/2 mb-4 grid -translate-x-1/2 grid-cols-3 gap-3 rounded-3xl border p-3"
+              style={{ background: "var(--card)", borderColor: "var(--border)", boxShadow: "var(--shadow-warm-xl)" }}
+              initial={{ opacity: 0, y: 16, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.94 }}
+              transition={{ duration: 0.22, ease: EASE_OUT }}
             >
-              {QUICK_ACTIONS.map((action, i) => {
-                const Icon = action.icon
-                const isActionActive = pathname.startsWith(action.href)
-                // Arc: center items higher, edges lower
-                const arcOffsets = [-4, -10, -10, -4]
+              {CREATE_ACTIONS.map((a) => {
+                const Icon = a.icon
                 return (
-                  <motion.div
-                    key={action.href}
-                    initial={{ opacity: 0, y: 20, scale: 0.6 }}
-                    animate={{ opacity: 1, y: arcOffsets[i], scale: 1 }}
-                    exit={{ opacity: 0, y: 20, scale: 0.6 }}
-                    transition={{
-                      type: "spring",
-                      damping: 15,
-                      stiffness: 200,
-                      delay: i * 0.06,
-                    }}
+                  <Link
+                    key={a.href}
+                    href={a.href}
+                    className="flex w-[78px] flex-col items-center gap-1.5 rounded-2xl px-2 py-3"
+                    style={{ background: "var(--color-sand)" }}
+                    data-testid={`create-${a.label.toLowerCase()}`}
                   >
-                    <Link
-                      href={action.href}
-                      className={cn(
-                        "flex flex-col items-center gap-1.5 rounded-2xl px-4 py-3 shadow-lg border transition-colors",
-                        isActionActive
-                          ? "bg-[var(--color-accent-primary)] border-[var(--color-accent-primary)] text-white"
-                          : "bg-[var(--color-bg-elevated)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)]"
-                      )}
-                      data-testid={`quick-action-${action.label.toLowerCase().replace(/\s+/g, "-")}`}
-                    >
-                      <Icon size={22} strokeWidth={1.75} />
-                      <span className="text-[11px] font-medium font-nav whitespace-nowrap">
-                        {action.label}
-                      </span>
-                    </Link>
-                  </motion.div>
+                    <span className="grid h-10 w-10 place-items-center rounded-full" style={{ background: a.accent, color: "#FFF7EF" }}>
+                      <Icon size={20} strokeWidth={2} />
+                    </span>
+                    <span className="text-[11px] font-semibold" style={{ fontFamily: "var(--font-nav)", color: "var(--foreground)" }}>
+                      {a.label}
+                    </span>
+                  </Link>
                 )
               })}
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex items-center justify-around h-16">
-          {/* Left tabs */}
-          {SIDE_TABS.map((tab) => (
-            <NavItem key={tab.href} tab={tab} pathname={pathname} />
-          ))}
+        <div className="flex h-16 items-center justify-around">
+          {LEFT.map((w) => <NavItem key={w.href} world={w} pathname={pathname} />)}
 
-          {/* Center mascot button */}
-          <div className="flex-1 flex justify-center">
+          <div className="flex flex-1 justify-center">
             <motion.button
               type="button"
-              onClick={toggleExpand}
-              className="relative -translate-y-3 flex items-center justify-center"
+              onClick={toggle}
+              className="relative -translate-y-3 grid h-[54px] w-[54px] place-items-center rounded-full"
+              style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }}
               whileTap={{ scale: 0.9 }}
-              transition={{ duration: 0.1 }}
-              aria-label={expanded ? "Close quick menu" : "Open quick menu"}
-              aria-expanded={expanded}
-              data-testid="nav-mascot-btn"
+              animate={{ rotate: open ? 45 : 0 }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
+              aria-label={open ? "Close create menu" : "Create"}
+              aria-expanded={open}
+              data-testid="nav-create-btn"
             >
-              <motion.div
-                className={cn(
-                  "relative w-[52px] h-[52px] rounded-full overflow-hidden border-2 shadow-md transition-colors",
-                  expanded
-                    ? "border-[var(--color-accent-primary)] shadow-[0_0_16px_rgba(196,149,106,0.3)]"
-                    : isCenter
-                      ? "border-[var(--color-accent-primary)]"
-                      : "border-[var(--color-border-subtle)]"
-                )}
-                animate={
-                  expanded
-                    ? { rotate: [0, -8, 8, -4, 0], scale: [1, 1.05, 1] }
-                    : { rotate: 0, scale: 1 }
-                }
-                transition={
-                  expanded
-                    ? {
-                        rotate: { duration: 0.4, ease: "easeInOut" },
-                        scale: { duration: 2, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
-                      }
-                    : { duration: 0.2 }
-                }
-              >
-                <Image
-                  src="/mascot.png"
-                  alt="Hayah"
-                  width={52}
-                  height={52}
-                  className="w-full h-full object-cover"
-                  priority
-                />
-              </motion.div>
+              <Plus size={26} strokeWidth={2.5} />
             </motion.button>
           </div>
 
-          {/* Right tabs */}
-          {RIGHT_TABS.map((tab) => (
-            <NavItem key={tab.href} tab={tab} pathname={pathname} />
-          ))}
+          {RIGHT.map((w) => <NavItem key={w.href} world={w} pathname={pathname} />)}
         </div>
-        <div
-          className="w-full"
-          style={{
-            paddingBottom: "max(env(safe-area-inset-bottom), 8px)",
-          }}
-        />
+        <div className="w-full" style={{ paddingBottom: "max(env(safe-area-inset-bottom), 8px)" }} />
       </nav>
     </>
   )
 }
 
-function NavItem({ tab, pathname }: { tab: NavTab; pathname: string }) {
-  const isActive = tab.match(pathname)
-  const Icon = tab.icon
-
+function NavItem({ world, pathname }: { world: World; pathname: string }) {
+  const active = world.match(pathname)
+  const Icon = world.icon
   return (
-    <Link
-      href={tab.href}
-      className="flex-1"
-      aria-current={isActive ? "page" : undefined}
-      data-testid={`nav-tab-${tab.label.toLowerCase()}`}
-    >
-      <motion.div
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.1 }}
-        className="flex flex-col items-center gap-1"
-      >
+    <Link href={world.href} className="flex-1" aria-current={active ? "page" : undefined} data-testid={`nav-${world.label.toLowerCase()}`}>
+      <motion.div whileTap={{ scale: 0.95 }} transition={{ duration: 0.1 }} className="flex flex-col items-center gap-1">
         <div className="relative flex flex-col items-center">
           <Icon
-            size={20}
-            strokeWidth={1.75}
-            className={cn(
-              "transition-colors duration-200",
-              isActive ? "text-accent-primary" : "text-text-secondary"
-            )}
+            size={21}
+            strokeWidth={1.85}
+            style={{ color: active ? world.accent : "var(--color-ink-soft)" }}
+            className="transition-colors duration-200"
           />
-          {isActive && (
-            <>
-              {/* Glow halo behind indicator */}
-              <motion.div
-                layoutId="bottomnav-glow"
-                className="absolute -bottom-1.5 h-2 w-8 rounded-full"
-                style={{
-                  background: "var(--accent-copper, #B87333)",
-                  filter: "blur(6px)",
-                }}
-                animate={{ opacity: [0.15, 0.3, 0.15] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                aria-hidden="true"
-              />
-              <motion.div
-                layoutId="bottomnav-indicator"
-                className="absolute -bottom-1.5 h-0.5 w-6 rounded-full bg-accent-primary"
-                transition={{ duration: 0.25, ease: EASE_OUT }}
-              />
-            </>
+          {active && (
+            <motion.span
+              layoutId="nav-indicator"
+              className="absolute -bottom-1.5 h-1 w-1 rounded-full"
+              style={{ background: world.accent }}
+              transition={{ duration: 0.25, ease: EASE_OUT }}
+            />
           )}
         </div>
         <span
-          className={cn(
-            "text-[11px] leading-none font-nav",
-            isActive ? "font-semibold text-accent-primary" : "font-medium text-text-secondary"
-          )}
+          className="text-[10.5px] leading-none"
+          style={{
+            fontFamily: "var(--font-nav)",
+            fontWeight: active ? 700 : 500,
+            color: active ? world.accent : "var(--color-ink-soft)",
+          }}
         >
-          {tab.label}
+          {world.label}
         </span>
       </motion.div>
     </Link>
