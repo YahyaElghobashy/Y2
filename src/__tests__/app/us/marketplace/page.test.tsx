@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import fs from "fs"
 import path from "path"
 
@@ -20,6 +20,29 @@ const { useMarketplace } = vi.hoisted(() => ({
 }))
 
 vi.mock("@/lib/hooks/use-marketplace", () => ({ useMarketplace }))
+
+const { useActivePurchases } = vi.hoisted(() => ({
+  useActivePurchases: vi.fn(() => ({
+    activePurchases: [] as Array<Record<string, unknown>>,
+    isLoading: false,
+    error: null as string | null,
+    acknowledgePurchase: vi.fn(),
+    completePurchase: vi.fn(),
+    declinePurchase: vi.fn(),
+    refreshPurchases: vi.fn(),
+  })),
+}))
+vi.mock("@/lib/hooks/use-active-purchases", () => ({ useActivePurchases }))
+
+const { usePurchaseHistory } = vi.hoisted(() => ({
+  usePurchaseHistory: vi.fn(() => ({
+    history: [] as Array<Record<string, unknown>>,
+    isLoading: false,
+    error: null as string | null,
+    refreshHistory: vi.fn(),
+  })),
+}))
+vi.mock("@/lib/hooks/use-purchase-history", () => ({ usePurchaseHistory }))
 
 // Mock useAuth (used by CreateChallengeForm)
 vi.mock("@/lib/providers/AuthProvider", () => ({
@@ -128,7 +151,41 @@ vi.mock("sonner", () => ({
 
 import MarketplacePage from "@/app/(main)/us/marketplace/page"
 
+const DEFAULT_ITEMS = [
+  { id: "1", name: "Extra Notification", description: "Send more", price: 10, icon: "🔔", effect_type: "extra_ping", effect_config: {}, is_active: true, sort_order: 1, created_at: "" },
+  { id: "2", name: "Movie Night Veto", description: "Pick a movie", price: 25, icon: "🎬", effect_type: "veto", effect_config: {}, is_active: true, sort_order: 2, created_at: "" },
+]
+
 describe("MarketplacePage", () => {
+  beforeEach(() => {
+    // Re-seed default implementations so per-test overrides
+    // (mockReturnValue) never leak into the next test.
+    useMarketplace.mockImplementation(() => ({
+      items: DEFAULT_ITEMS,
+      purchases: [],
+      isLoading: false,
+      error: null,
+      createPurchase: vi.fn(),
+      refreshItems: vi.fn(),
+      refreshPurchases: vi.fn(),
+    }))
+    useActivePurchases.mockImplementation(() => ({
+      activePurchases: [],
+      isLoading: false,
+      error: null,
+      acknowledgePurchase: vi.fn(),
+      completePurchase: vi.fn(),
+      declinePurchase: vi.fn(),
+      refreshPurchases: vi.fn(),
+    }))
+    usePurchaseHistory.mockImplementation(() => ({
+      history: [],
+      isLoading: false,
+      error: null,
+      refreshHistory: vi.fn(),
+    }))
+  })
+
   it("renders without crashing", () => {
     render(<MarketplacePage />)
     expect(screen.getByText("Marketplace")).toBeInTheDocument()
@@ -271,5 +328,126 @@ describe("MarketplacePage", () => {
     })
     render(<MarketplacePage />)
     expect(screen.getByText("Marketplace unavailable")).toBeInTheDocument()
+  })
+
+  // ── Active purchases section ──────────────────────────────
+
+  function makeActivePurchase(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "ap-1",
+      buyer_id: "user-2",
+      target_id: "user-1",
+      item_id: "item-1",
+      cost: 25,
+      status: "active",
+      effect_payload: { movie: "Inception" },
+      created_at: new Date().toISOString(),
+      completed_at: null,
+      marketplace_items: {
+        id: "item-1",
+        name: "Movie Night Veto",
+        description: "Pick a movie",
+        price: 25,
+        icon: "🎬",
+        effect_type: "veto",
+        effect_config: {},
+        is_active: true,
+        sort_order: 2,
+        created_at: "",
+      },
+      ...overrides,
+    }
+  }
+
+  it("does not render Active section when there are no active purchases", () => {
+    render(<MarketplacePage />)
+    expect(screen.queryByTestId("active-purchases-section")).not.toBeInTheDocument()
+  })
+
+  it("renders the Active section with an ActivePurchaseCard when an active purchase exists", () => {
+    const completePurchase = vi.fn()
+    useActivePurchases.mockReturnValue({
+      activePurchases: [makeActivePurchase()],
+      isLoading: false,
+      error: null,
+      acknowledgePurchase: vi.fn(),
+      completePurchase,
+      declinePurchase: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+
+    render(<MarketplacePage />)
+    expect(screen.getByTestId("active-purchases-section")).toBeInTheDocument()
+    expect(screen.getByTestId("active-purchase-card")).toBeInTheDocument()
+  })
+
+  it("wires the Active card acknowledge action to completePurchase (terminal resolution)", () => {
+    const completePurchase = vi.fn()
+    useActivePurchases.mockReturnValue({
+      activePurchases: [makeActivePurchase()],
+      isLoading: false,
+      error: null,
+      acknowledgePurchase: vi.fn(),
+      completePurchase,
+      declinePurchase: vi.fn(),
+      refreshPurchases: vi.fn(),
+    })
+
+    render(<MarketplacePage />)
+    // veto card → "Got it" → onAcknowledge → completePurchase
+    fireEvent.click(screen.getByTestId("acknowledge-btn"))
+    expect(completePurchase).toHaveBeenCalledWith("ap-1")
+  })
+
+  // ── Purchase history section ──────────────────────────────
+
+  function makeHistoryEntry(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "h-1",
+      buyer_id: "user-1",
+      target_id: "user-2",
+      item_id: "item-9",
+      cost: 40,
+      status: "completed",
+      effect_payload: null,
+      created_at: new Date().toISOString(),
+      completed_at: new Date().toISOString(),
+      marketplace_items: {
+        id: "item-9",
+        name: "Breakfast in Bed",
+        description: "Make breakfast",
+        price: 40,
+        icon: "🍳",
+        effect_type: "task_order",
+        effect_config: {},
+        is_active: true,
+        sort_order: 3,
+        created_at: "",
+      },
+      ...overrides,
+    }
+  }
+
+  it("does not render history section when history is empty", () => {
+    render(<MarketplacePage />)
+    expect(screen.queryByTestId("purchase-history-section")).not.toBeInTheDocument()
+  })
+
+  it("renders history section collapsed, expanding on toggle", () => {
+    usePurchaseHistory.mockReturnValue({
+      history: [makeHistoryEntry()],
+      isLoading: false,
+      error: null,
+      refreshHistory: vi.fn(),
+    })
+
+    render(<MarketplacePage />)
+    expect(screen.getByTestId("purchase-history-section")).toBeInTheDocument()
+    // collapsed by default
+    expect(screen.queryByTestId("purchase-history-list")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("purchase-history-toggle"))
+    expect(screen.getByTestId("purchase-history-list")).toBeInTheDocument()
+    expect(screen.getByText("Breakfast in Bed")).toBeInTheDocument()
   })
 })

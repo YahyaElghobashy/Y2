@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Check, Clock, ShoppingBag, Volume2, Star, Timer } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,17 +34,41 @@ function getTimeRemaining(createdAt: string, durationMinutes: number): { minutes
   }
 }
 
-function DNDCountdown({ createdAt, durationMinutes }: { createdAt: string; durationMinutes: number }) {
+function DNDCountdown({
+  createdAt,
+  durationMinutes,
+  onExpire,
+}: {
+  createdAt: string
+  durationMinutes: number
+  onExpire?: () => void
+}) {
   const [time, setTime] = useState(() => getTimeRemaining(createdAt, durationMinutes))
+  const firedRef = useRef(false)
+
+  // Fire onExpire exactly once if the timer is already done on mount.
+  useEffect(() => {
+    if (time.expired && !firedRef.current) {
+      firedRef.current = true
+      onExpire?.()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
       const remaining = getTimeRemaining(createdAt, durationMinutes)
       setTime(remaining)
-      if (remaining.expired) clearInterval(interval)
+      if (remaining.expired) {
+        clearInterval(interval)
+        if (!firedRef.current) {
+          firedRef.current = true
+          onExpire?.()
+        }
+      }
     }, 1000)
     return () => clearInterval(interval)
-  }, [createdAt, durationMinutes])
+  }, [createdAt, durationMinutes, onExpire])
 
   const totalSeconds = durationMinutes * 60
   const elapsed = totalSeconds - (time.minutes * 60 + time.seconds)
@@ -114,6 +138,17 @@ export function ActivePurchaseCard({
     [item.effect_config]
   )
 
+  // A purchase is actionable by the target while it has not reached a terminal
+  // state. Effects land here as 'pending' (just bought) or 'active' (put in
+  // effect by the process-purchase edge function); either way the target can
+  // resolve it. Terminal states (completed/declined/expired) show no actions.
+  const actionable =
+    isTarget && (purchase.status === "pending" || purchase.status === "active")
+
+  const handleDndExpire = useCallback(() => {
+    if (actionable) onComplete(purchase.id)
+  }, [actionable, onComplete, purchase.id])
+
   return (
     <motion.div
       className={cn(
@@ -154,6 +189,7 @@ export function ActivePurchaseCard({
         <DNDCountdown
           createdAt={purchase.created_at}
           durationMinutes={(effectConfig.duration_minutes as number) ?? 60}
+          onExpire={handleDndExpire}
         />
       )}
 
@@ -193,40 +229,38 @@ export function ActivePurchaseCard({
         </p>
       )}
 
-      {/* Action buttons — only for target user */}
-      {isTarget && purchase.status === "pending" && effectType !== "dnd_timer" && effectType !== "extra_ping" && (
+      {/* Target action buttons — shown while the purchase is non-terminal. */}
+      {actionable && effectType === "wildcard" && (
         <div className="flex gap-2 mt-2">
-          {effectType === "wildcard" ? (
-            <>
-              <button
-                className="flex-1 rounded-lg bg-[var(--accent-primary,#C4956A)] px-3 py-2 text-[13px] font-semibold text-white"
-                data-testid="accept-btn"
-                onClick={() => onAcknowledge(purchase.id)}
-              >
-                Accept
-              </button>
-              <button
-                className="flex-1 rounded-lg border border-[var(--color-border-subtle,rgba(44,40,37,0.08))] px-3 py-2 text-[13px] font-medium text-[var(--color-text-secondary,#8C8279)]"
-                data-testid="decline-btn"
-                onClick={() => onDecline(purchase.id)}
-              >
-                Decline
-              </button>
-            </>
-          ) : (
-            <button
-              className="w-full rounded-lg bg-[var(--accent-primary,#C4956A)] px-3 py-2 text-[13px] font-semibold text-white"
-              data-testid="acknowledge-btn"
-              onClick={() => onAcknowledge(purchase.id)}
-            >
-              {effectType === "veto" ? "Got it" : "Acknowledge"}
-            </button>
-          )}
+          <button
+            className="flex-1 rounded-lg bg-[var(--accent-primary,#C4956A)] px-3 py-2 text-[13px] font-semibold text-white"
+            data-testid="accept-btn"
+            onClick={() => onAcknowledge(purchase.id)}
+          >
+            Accept
+          </button>
+          <button
+            className="flex-1 rounded-lg border border-[var(--color-border-subtle,rgba(44,40,37,0.08))] px-3 py-2 text-[13px] font-medium text-[var(--color-text-secondary,#8C8279)]"
+            data-testid="decline-btn"
+            onClick={() => onDecline(purchase.id)}
+          >
+            Decline
+          </button>
         </div>
       )}
 
-      {/* Complete button for active tasks */}
-      {isTarget && purchase.status === "active" && effectType === "task_order" && (
+      {actionable && effectType === "veto" && (
+        <button
+          className="w-full rounded-lg bg-[var(--accent-primary,#C4956A)] px-3 py-2 text-[13px] font-semibold text-white mt-2"
+          data-testid="acknowledge-btn"
+          onClick={() => onAcknowledge(purchase.id)}
+        >
+          Got it
+        </button>
+      )}
+
+      {/* task_order is a real-world chore: the target marks it complete. */}
+      {actionable && effectType === "task_order" && (
         <button
           className="w-full rounded-lg bg-emerald-500 px-3 py-2 text-[13px] font-semibold text-white mt-2"
           data-testid="complete-btn"
@@ -236,8 +270,9 @@ export function ActivePurchaseCard({
         </button>
       )}
 
-      {/* Dismiss for DND and extra_ping when target */}
-      {isTarget && purchase.status === "pending" && (effectType === "dnd_timer" || effectType === "extra_ping") && (
+      {/* dnd_timer / extra_ping: one-tap dismiss to resolve (dnd also auto-
+          completes when the countdown expires via onExpire). */}
+      {actionable && (effectType === "dnd_timer" || effectType === "extra_ping") && (
         <button
           className="w-full rounded-lg border border-[var(--color-border-subtle,rgba(44,40,37,0.08))] px-3 py-2 text-[13px] font-medium text-[var(--color-text-secondary,#8C8279)] mt-2"
           data-testid="dismiss-btn"
