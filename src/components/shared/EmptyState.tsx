@@ -1,13 +1,16 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { FadeIn } from "@/components/animations"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type EmptyStateProps = {
-  icon: React.ReactNode
+  icon?: React.ReactNode
+  /** A riso scene filename (no path/ext) under /assets/scenes/ — overrides icon. */
+  scene?: string
   title: string
   subtitle?: string
   actionLabel?: string
@@ -18,6 +21,7 @@ type EmptyStateProps = {
 
 export function EmptyState({
   icon,
+  scene,
   title,
   subtitle,
   actionLabel,
@@ -34,9 +38,21 @@ export function EmptyState({
         className
       )}
     >
-      <div className="mb-4 w-16 h-16 rounded-full bg-[var(--accent-soft,#E8D5C0)]/50 flex items-center justify-center text-[var(--accent-copper,#B87333)]">
-        {icon}
-      </div>
+      {scene ? (
+        <Image
+          src={`/assets/scenes/${scene}.webp`}
+          alt=""
+          aria-hidden
+          width={180}
+          height={220}
+          className="mb-5 rounded-2xl object-cover"
+          style={{ width: 168, height: 206, boxShadow: "var(--shadow-warm-md)" }}
+        />
+      ) : (
+        <div className="mb-4 w-16 h-16 rounded-full bg-[var(--accent-soft,#E8D5C0)]/50 flex items-center justify-center text-[var(--accent-copper,#B87333)]">
+          {icon}
+        </div>
+      )}
 
       <h3 className="mb-1 text-center font-display text-[18px] font-semibold text-[var(--text-primary,#2C2825)]">
         {title}
