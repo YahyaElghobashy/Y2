@@ -6,6 +6,24 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "y-engage",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd 'Vendor Crawler' && python3.11 -m uvicorn dashboard.app:app --reload --port 8080"],
+      "port": 8080
+    },
+    {
+      "name": "proposal-builder",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd '/Users/yahyaelghobashy/Yahya/Side Projects 🚀/Web Proposal Builder Project' && npm run dev -- --port 5173"],
+      "port": 5173
+    },
+    {
+      "name": "phd-dashboard",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd '/Users/yahyaelghobashy/Yahya/Yara/PhD/Literature Review/phd-extraction-pipeline' && python3 -c \"import uvicorn; from dashboard.backend.app import app; uvicorn.run(app, host='127.0.0.1', port=8765, log_level='info')\""],
+      "port": 8765
     }
   ]
 }

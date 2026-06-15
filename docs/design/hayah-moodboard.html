@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hayah — Feel & Moodboard v0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Space+Grotesk:wght@400;500;700&family=Amiri:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#F7EFE3; --sand:#EBDDC7; --clay:#E4CDAE; --deep-sand:#D8BE97;
+    --ink:#2A2018; --ink-soft:#6B5D4F; --ink-faint:#A8997F;
+    --amber:#F2A93B; --terracotta:#C8552B; --coral:#E5663C; --rose:#E0857A;
+    --teal:#1F8A8A; --teal-deep:#15706F; --indigo:#2B2F5E;
+    --night-bg:#191A2C; --night-card:#23263F; --night-ink:#F2E9DB; --lantern:#F2A93B; --teal-glow:#3FB0A8; --night-coral:#F07B54;
+    --display:'Bricolage Grotesque',sans-serif;
+    --serif:'Fraunces',Georgia,serif;
+    --grotesk:'Space Grotesk',sans-serif;
+    --hand:'Caveat',cursive;
+    --arabic:'Amiri',serif;
+    --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--grotesk);line-height:1.5;-webkit-font-smoothing:antialiased;position:relative}
+  body::before{content:'';position:fixed;inset:0;background-image:var(--grain);background-size:220px;opacity:.05;pointer-events:none;z-index:9999;mix-blend-mode:multiply}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  section{padding:54px 0;border-bottom:1px solid rgba(42,32,24,.09)}
+  .eyebrow{font-family:var(--grotesk);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--terracotta);font-weight:700;margin-bottom:18px}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.05;letter-spacing:-.02em;margin-bottom:8px}
+  h3{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 6px}
+  p.lead{font-family:var(--serif);font-size:18px;color:var(--ink-soft);max-width:64ch}
+  .muted{color:var(--ink-soft)}
+  .small{font-size:13px}
+  .mono{font-family:var(--grotesk)}
+
+  /* HERO */
+  .hero{padding:72px 0 60px;background:
+      radial-gradient(ellipse 70% 60% at 18% 20%, rgba(242,169,59,.30), transparent 60%),
+      radial-gradient(ellipse 80% 70% at 88% 70%, rgba(200,85,43,.22), transparent 62%),
+      radial-gradient(ellipse 60% 50% at 60% 95%, rgba(31,138,138,.16), transparent 60%);}
+  .hero .badge{display:inline-block;font-family:var(--grotesk);font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:700;color:var(--ink);background:rgba(255,255,255,.5);border:1px solid rgba(42,32,24,.14);padding:7px 14px;border-radius:999px;margin-bottom:24px}
+  .hero h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,8vw,86px);line-height:.96;letter-spacing:-.035em;margin-bottom:18px}
+  .hero h1 .ar{font-family:var(--arabic);font-weight:400;display:inline-block;margin-inline-start:.15em}
+  .hero .sub{font-family:var(--serif);font-style:italic;font-size:clamp(18px,2.4vw,26px);color:var(--terracotta);max-width:30ch}
+  .hero .nstar{margin-top:26px;font-family:var(--hand);font-size:30px;color:var(--ink-soft);transform:rotate(-2deg)}
+
+  /* FEELING STACK */
+  .feel{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:24px}
+  .feel .card{background:#fff;border:1px solid rgba(42,32,24,.08);border-radius:18px;padding:20px;box-shadow:0 6px 22px rgba(42,32,24,.05)}
+  .feel .k{font-family:var(--display);font-weight:700;font-size:17px;margin-bottom:4px}
+  .feel .v{font-size:13px;color:var(--ink-soft)}
+  .feel .no{border-color:rgba(200,85,43,.3);background:linear-gradient(180deg,#fff,#FBEEE7)}
+
+  /* PALETTE */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px;margin-top:22px}
+  .sw{border-radius:14px;overflow:hidden;border:1px solid rgba(42,32,24,.1);box-shadow:0 4px 14px rgba(42,32,24,.06)}
+  .sw .chip{height:84px}
+  .sw .meta{padding:9px 11px;background:#fff;font-size:12px}
+  .sw .nm{font-weight:700;font-family:var(--display)}
+  .sw .hx{font-family:var(--grotesk);color:var(--ink-soft);letter-spacing:.02em}
+  .roles{margin-top:14px;font-size:13px;color:var(--ink-soft)}
+  .roles b{color:var(--ink)}
+
+  /* DUOTONE strip */
+  .duos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}
+  .duo{height:120px;border-radius:14px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:12px;color:#fff;font-family:var(--display);font-weight:700;font-size:14px}
+  .duo span{position:relative;z-index:2;mix-blend-mode:normal}
+  .duo::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.18) 1px, transparent 1.4px);background-size:7px 7px;z-index:1}
+  .d1{background:linear-gradient(135deg,var(--indigo),var(--coral))}
+  .d2{background:linear-gradient(135deg,var(--teal-deep),var(--amber))}
+  .d3{background:linear-gradient(135deg,var(--terracotta),var(--rose))}
+  .d4{background:linear-gradient(135deg,#3A2B1A,var(--amber))}
+
+  /* TYPE */
+  .type-row{border-top:1px dashed rgba(42,32,24,.18);padding:22px 0;display:grid;grid-template-columns:140px 1fr;gap:22px;align-items:baseline}
+  .type-row:first-of-type{border-top:none}
+  .type-role{font-family:var(--grotesk);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--terracotta);font-weight:700}
+  .type-role .use{display:block;color:var(--ink-faint);letter-spacing:.02em;text-transform:none;font-size:12px;margin-top:6px;font-weight:400}
+  .sp-display{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,52px);line-height:1;letter-spacing:-.03em}
+  .sp-serif{font-family:var(--serif);font-weight:400;font-size:clamp(22px,3.4vw,32px);line-height:1.25}
+  .sp-serif i{color:var(--terracotta)}
+  .sp-grotesk{font-family:var(--grotesk);font-weight:500;font-size:20px;letter-spacing:.01em}
+  .sp-grotesk .num{font-weight:700;font-size:30px}
+  .sp-hand{font-family:var(--hand);font-weight:600;font-size:34px;color:var(--ink-soft)}
+  .sp-ar{font-family:var(--arabic);font-size:30px;direction:rtl}
+
+  /* TILES */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:18px;margin-top:24px}
+  .tile{border-radius:22px;padding:22px;min-height:230px;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 12px 34px rgba(42,32,24,.12)}
+  .tile .grain{position:absolute;inset:0;background-image:var(--grain);background-size:200px;opacity:.08;mix-blend-mode:overlay;pointer-events:none}
+  .tlabel{position:absolute;top:12px;right:14px;font-family:var(--grotesk);font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.5;font-weight:700}
+
+  .tile-home{background:linear-gradient(160deg,#FBEAD0 0%,var(--clay) 100%);color:var(--ink)}
+  .tile-home .hi{font-family:var(--grotesk);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--terracotta);font-weight:700}
+  .tile-home .greet{font-family:var(--display);font-weight:800;font-size:32px;line-height:1.02;letter-spacing:-.03em;margin-top:6px}
+  .tile-home .greet em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--terracotta)}
+  .tile-home .note{font-family:var(--hand);font-size:24px;color:var(--ink-soft);margin-top:auto;transform:rotate(-1.5deg)}
+
+  .tile-coupon{background:var(--coral);color:#fff7ef;border:none}
+  .tile-coupon::before{content:'';position:absolute;left:-7px;top:0;bottom:0;width:14px;background-image:radial-gradient(circle at 0 7px, transparent 5px, var(--paper) 5px);background-size:14px 16px}
+  .tile-coupon .k{font-family:var(--grotesk);font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.85;font-weight:700}
+  .tile-coupon .big{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.04;margin-top:8px;letter-spacing:-.02em}
+  .tile-coupon .pill{margin-top:auto;align-self:flex-start;background:rgba(255,255,255,.92);color:var(--terracotta);font-family:var(--grotesk);font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px}
+
+  .tile-coyyn{background:var(--indigo);color:var(--night-ink)}
+  .tile-coyyn .k{font-family:var(--grotesk);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);font-weight:700}
+  .tile-coyyn .num{font-family:var(--display);font-weight:800;font-size:60px;line-height:1;letter-spacing:-.04em;margin-top:4px}
+  .tile-coyyn .num small{font-size:20px;color:var(--teal-glow);font-weight:700}
+  .tile-coyyn .row{margin-top:auto;display:flex;gap:7px;font-family:var(--grotesk);font-size:11px}
+  .tile-coyyn .tag{background:rgba(255,255,255,.1);padding:5px 10px;border-radius:8px}
+
+  .tile-memory{background:#fff;color:var(--ink);border:1px solid rgba(42,32,24,.1)}
+  .tile-memory .date{font-family:var(--grotesk);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+  .tile-memory .body{font-family:var(--serif);font-size:21px;line-height:1.3;margin-top:10px}
+  .tile-memory .body i{color:var(--terracotta)}
+  .tile-memory .sig{font-family:var(--hand);font-size:26px;color:var(--teal-deep);margin-top:auto}
+
+  /* night */
+  .nightband{background:var(--night-bg);color:var(--night-ink);border-radius:24px;padding:30px;margin-top:22px;position:relative;overflow:hidden}
+  .nightband::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 10%, rgba(242,169,59,.18), transparent 60%),radial-gradient(ellipse 50% 50% at 90% 90%, rgba(63,176,168,.16), transparent 60%)}
+  .nightband > *{position:relative;z-index:2}
+  .nightband h3{color:var(--night-ink)}
+  .nightband .sw .meta{background:var(--night-card);color:var(--night-ink)}
+  .nightband .sw .hx{color:#b9b0c9}
+
+  /* PATTERN */
+  .patrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:20px}
+  .pat{height:140px;border-radius:16px;border:1px solid rgba(42,32,24,.1);position:relative;overflow:hidden;background:#fff}
+  .pat .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);font-size:11px;padding:7px 10px;font-family:var(--grotesk);font-weight:600}
+  .pat-zellij{background:
+     conic-gradient(from 0deg at 50% 50%, var(--terracotta) 0 25%, var(--amber) 0 50%, var(--terracotta) 0 75%, var(--amber) 0) 0 0/40px 40px;}
+  .pat-star{background:var(--sand)}
+  .pat-halftone{background:radial-gradient(circle at 1px 1px, var(--terracotta) 1.6px, transparent 2px) 0 0/12px 12px, var(--paper)}
+  .pat-grain{background:var(--clay)}
+  .pat-grain::after{content:'';position:absolute;inset:0;background-image:var(--grain);background-size:160px;opacity:.16;mix-blend-mode:multiply}
+
+  /* REFERENCES */
+  .refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:22px}
+  .ref{background:#fff;border:1px solid rgba(42,32,24,.1);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(42,32,24,.05)}
+  .ref .tag{font-family:var(--grotesk);font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:#fff;background:var(--terracotta);padding:4px 9px;border-radius:6px;display:inline-block;margin-bottom:10px}
+  .ref h4{font-family:var(--display);font-weight:700;font-size:16px;margin-bottom:5px}
+  .ref p{font-size:13px;color:var(--ink-soft);margin-bottom:10px}
+  .ref .steal{font-size:12px;color:var(--teal-deep);font-weight:600;margin-bottom:10px}
+  .ref a{display:block;font-size:12px;color:var(--indigo);text-decoration:none;border-top:1px dashed rgba(42,32,24,.16);padding-top:7px;margin-top:6px;word-break:break-all}
+  .ref a:hover{color:var(--coral)}
+  .ref a::before{content:'↗ '}
+
+  footer{padding:40px 0 70px;text-align:center;color:var(--ink-faint);font-size:12px}
+  .tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .tag-list span{background:#fff;border:1px solid rgba(42,32,24,.12);border-radius:999px;padding:6px 13px;font-size:12px;font-family:var(--grotesk);font-weight:500}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Hayah · Feel & Moodboard · v0</span>
+    <h1>Cairo meets<br/>Los&nbsp;Santos<span class="ar">حياة</span></h1>
+    <p class="sub">…run through a risograph press.</p>
+    <p class="nstar">she closes it feeling — closer, &amp; a little lighter</p>
+    <div class="tag-list">
+      <span>warm editorial pop</span><span>handmade soul</span><span>golden-hour, comfortable</span>
+      <span>bold but tender</span><span>sacred geometry</span><span>cinematic motion</span><span>anti-SaaS</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">The Feeling Stack</div>
+    <h2>Calm, with a pulse.</h2>
+    <p class="lead">Safe · warm · serene at the core — but alive, playful, refreshing on the surface. A keepsake box inside a living room that grows with you. It <i>accrues</i>; it never resets to zero.</p>
+    <div class="feel">
+      <div class="card"><div class="k">Held &amp; safe</div><div class="v">soft light, low contrast, nothing sharp</div></div>
+      <div class="card"><div class="k">A small smile</div><div class="v">delight hiding in the corners</div></div>
+      <div class="card"><div class="k">Calm exhale</div><div class="v">space, stillness, room to breathe</div></div>
+      <div class="card"><div class="k">Alive &amp; fun</div><div class="v">summery, exciting, refreshing</div></div>
+      <div class="card no"><div class="k">✗ Cold / clinical</div><div class="v">no SaaS, no gray, no Inter-blue</div></div>
+      <div class="card no"><div class="k">✗ Generic</div><div class="v">if any app could own this screen, kill it</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Color — "Golden Hour, Comfortable"</div>
+    <h2>Sun-soaked, never eye-searing.</h2>
+    <p class="lead">Warm sunlit grounds carry the day; saturated Los-Santos pops appear as small, confident accents and duotone blocks — not walls of color. Built for 10–15 calm minutes a day.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#F7EFE3"></div><div class="meta"><div class="nm">Sunlit Paper</div><div class="hx">#F7EFE3 · ground</div></div></div>
+      <div class="sw"><div class="chip" style="background:#EBDDC7"></div><div class="meta"><div class="nm">Sand</div><div class="hx">#EBDDC7 · surface</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E4CDAE"></div><div class="meta"><div class="nm">Warm Clay</div><div class="hx">#E4CDAE · deep ground</div></div></div>
+      <div class="sw"><div class="chip" style="background:#2A2018"></div><div class="meta"><div class="nm">Espresso Ink</div><div class="hx">#2A2018 · text</div></div></div>
+      <div class="sw"><div class="chip" style="background:#F2A93B"></div><div class="meta"><div class="nm">Sun Amber</div><div class="hx">#F2A93B · accent</div></div></div>
+      <div class="sw"><div class="chip" style="background:#C8552B"></div><div class="meta"><div class="nm">Terracotta</div><div class="hx">#C8552B · brand</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E5663C"></div><div class="meta"><div class="nm">Sunset Coral</div><div class="hx">#E5663C · warm CTA</div></div></div>
+      <div class="sw"><div class="chip" style="background:#1F8A8A"></div><div class="meta"><div class="nm">Oasis Teal</div><div class="hx">#1F8A8A · cool pop</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E0857A"></div><div class="meta"><div class="nm">Dusty Rose</div><div class="hx">#E0857A · soft</div></div></div>
+      <div class="sw"><div class="chip" style="background:#2B2F5E"></div><div class="meta"><div class="nm">Dusk Indigo</div><div class="hx">#2B2F5E · depth</div></div></div>
+    </div>
+    <p class="roles"><b>Warm–cool tension</b> is the engine: terracotta/amber grounds, teal/indigo as the counterpoint that keeps it from going dated or sweet. <b>Duotone pairs</b> for all illustration &amp; photo treatment:</p>
+    <div class="duos">
+      <div class="duo d1"><span>Indigo × Coral</span></div>
+      <div class="duo d2"><span>Teal × Amber</span></div>
+      <div class="duo d3"><span>Terracotta × Rose</span></div>
+      <div class="duo d4"><span>Espresso × Amber</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Typography — the Voice Map</div>
+    <h2>One soul, many voices.</h2>
+    <p class="lead">Type isn't one font — it's a cast, each register assigned a job. The deliberate variety is what gives the tool a soul.</p>
+
+    <div class="type-row">
+      <div class="type-role">Bold &amp; Tender<span class="use">Bricolage Grotesque · hero headers, greetings, celebration</span></div>
+      <div><div class="sp-display">Good morning, ya 'amar.</div></div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Editorial &amp; Elegant<span class="use">Fraunces · memories, letters, deep-dive prompts</span></div>
+      <div><div class="sp-serif">The day we got lost in Khan el-Khalili and <i>didn't care.</i></div></div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Cold &amp; Confident<span class="use">Space Grotesk · CoYYns, stats, nav, system chrome</span></div>
+      <div><div class="sp-grotesk"><span class="num">248</span> COYYNS · 3 COUPONS LIVE · NEXT DATE: FRI</div></div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Intimate / Handmade<span class="use">Caveat · pet-name notes, signatures, secret corners</span></div>
+      <div><div class="sp-hand">left you something in the keepsake box ♡</div></div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Arabic / Editorial<span class="use">Amiri (candidate) · bilingual headings, du'a, RTL</span></div>
+      <div><div class="sp-ar">حياةٌ نعيشها معًا</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">The Feel, Built — sample poster-tiles</div>
+    <h2>What "a screen" looks like.</h2>
+    <p class="lead">Cards are <b>posters</b>, not boxes: bold composition, one confident focal point, warm grain, generous space. These four show the palette + voice-map + texture working together.</p>
+    <div class="tiles">
+      <div class="tile tile-home"><div class="grain"></div><span class="tlabel">Home / Living Room</span>
+        <div class="hi">Thursday · Golden hour</div>
+        <div class="greet">Welcome home,<br/><em>you two.</em></div>
+        <div class="note">3 new memories this week ♡</div>
+      </div>
+      <div class="tile tile-coupon"><div class="grain"></div><span class="tlabel">Love Coupon</span>
+        <div class="k">Redeemable · from Yara</div>
+        <div class="big">One breakfast in bed, no questions asked</div>
+        <div class="pill">Redeem →</div>
+      </div>
+      <div class="tile tile-coyyn"><div class="grain"></div><span class="tlabel">CoYYns Wallet</span>
+        <div class="k">Your balance</div>
+        <div class="num">248<small> ¢y</small></div>
+        <div class="row"><span class="tag">+12 today</span><span class="tag">ritual streak</span></div>
+      </div>
+      <div class="tile tile-memory"><div class="grain"></div><span class="tlabel">Keepsake / Memory</span>
+        <div class="date">14 June · Cairo</div>
+        <div class="body">"You laughed so hard at your own joke that <i>I forgot mine.</i>"</div>
+        <div class="sig">— always, y.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">The Living Skin — adaptive</div>
+    <h2>Golden by day. Lantern by dusk.</h2>
+    <p class="lead">Not a dark-mode toggle — a time-aware soul that can move with the sun and prayer rhythm of Cairo. Same warmth, deeper at night: indigo grounds, amber lantern-glow, teal embers.</p>
+    <div class="nightband">
+      <h3 style="font-family:var(--display)">Night drive</h3>
+      <div class="swatches" style="margin-top:14px">
+        <div class="sw"><div class="chip" style="background:#191A2C"></div><div class="meta"><div class="nm">Night</div><div class="hx">#191A2C</div></div></div>
+        <div class="sw"><div class="chip" style="background:#23263F"></div><div class="meta"><div class="nm">Night Card</div><div class="hx">#23263F</div></div></div>
+        <div class="sw"><div class="chip" style="background:#F2A93B"></div><div class="meta"><div class="nm">Lantern</div><div class="hx">#F2A93B</div></div></div>
+        <div class="sw"><div class="chip" style="background:#3FB0A8"></div><div class="meta"><div class="nm">Teal Glow</div><div class="hx">#3FB0A8</div></div></div>
+        <div class="sw"><div class="chip" style="background:#F07B54"></div><div class="meta"><div class="nm">Ember Coral</div><div class="hx">#F07B54</div></div></div>
+        <div class="sw"><div class="chip" style="background:#F2E9DB"></div><div class="meta"><div class="nm">Moon Ink</div><div class="hx">#F2E9DB</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Texture &amp; Pattern</div>
+    <h2>Printed by hand, not rendered.</h2>
+    <p class="lead">Risograph grain, halftone dots, real paper, and Islamic geometry as <b>structure</b> (margins, dividers, spiritual corners) — never as stickers. Every surface should feel like it went through a press.</p>
+    <div class="patrow">
+      <div class="pat pat-grain"><div class="cap">Riso grain on warm clay</div></div>
+      <div class="pat pat-halftone"><div class="cap">Halftone dots — terracotta</div></div>
+      <div class="pat pat-zellij"><div class="cap">Zellij blocks — geometry as structure</div></div>
+      <div class="pat pat-star">
+        <svg viewBox="0 0 120 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block">
+          <defs><pattern id="star" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M30 4 L37 22 L56 22 L41 34 L47 53 L30 42 L13 53 L19 34 L4 22 L23 22 Z" fill="none" stroke="#1F8A8A" stroke-width="1.2" opacity=".55"/>
+            <circle cx="30" cy="30" r="3" fill="#C8552B" opacity=".5"/>
+          </pattern></defs>
+          <rect width="120" height="120" fill="url(#star)"/>
+        </svg>
+        <div class="cap">8-point star lattice</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Reference Gallery — go look, pull screenshots</div>
+    <h2>The five pillars, sourced.</h2>
+    <p class="lead">Open these, screenshot the frames that hit, drop them next to the master prompt in Stitch / Designer. Each card says exactly <b>what to steal</b> — and what to leave.</p>
+    <div class="refs">
+      <div class="ref">
+        <span class="tag">Pillar 1 · Pop confidence</span>
+        <h4>GTA V — Stephen Bliss art</h4>
+        <p>Cel-shaded, thick-ink, oversaturated, 1970s-movie-poster + pop-art / neo-noir. The <em>swagger</em>.</p>
+        <div class="steal">STEAL: bold composition, confident color blocking, poster framing. LEAVE: the crime/grit, the black outlines on everything.</div>
+        <a href="https://nerdburglars.net/question/what-is-the-art-style-used-in-the-gta-games-loading-screens/">GTA loading-screen art style explained</a>
+        <a href="https://www.gta5-mods.com/misc/cool-images-loading-screen">Loading-screen art gallery (GTA5-Mods)</a>
+        <a href="https://www.pinterest.com/search/pins/?q=gta%20v%20loading%20screen%20art">Pinterest · GTA V loading-screen art</a>
+      </div>
+      <div class="ref">
+        <span class="tag">Pillar 2 · Handmade soul</span>
+        <h4>Risograph print</h4>
+        <p>Coral + navy ink on warm paper, halftone, slight misregister, grain. Bold forms, reduced palette, real texture.</p>
+        <div class="steal">STEAL: warm-paper ground, duotone, grain, halftone shadows. LEAVE: muddy over-texture, neon riso pinks.</div>
+        <a href="https://peopleofprint.com/best-of/pop-member-showcase-15-riso-projects/">People of Print · 15 riso projects</a>
+        <a href="https://www.pinterest.com/search/pins/?q=risograph%20poster%20warm">Pinterest · warm risograph posters</a>
+        <a href="https://dribbble.com/resources/tips/risograph-printing">Dribbble · intro to risograph</a>
+      </div>
+      <div class="ref">
+        <span class="tag">Pillar 3 · Sacred geometry</span>
+        <h4>Islamic pattern / Zellij</h4>
+        <p>6- &amp; 8-point tessellation, glazed-terracotta zellij. Clean modern grids, low-relief, never cluttered.</p>
+        <div class="steal">STEAL: lattice as dividers/margins, star motifs, warm tile color. LEAVE: busy full-bleed wallpaper, gold-on-gold kitsch.</div>
+        <a href="https://dribbble.com/tags/islamic-pattern">Dribbble · modern Islamic pattern</a>
+        <a href="https://en.wikipedia.org/wiki/Islamic_geometric_patterns">Wikipedia · Islamic geometric patterns</a>
+        <a href="https://www.pinterest.com/lzibdeh/geometric-patterns-islamic-design-elements/">Pinterest · Islamic design elements</a>
+      </div>
+      <div class="ref">
+        <span class="tag">Pillar 4 · Mid-century print</span>
+        <h4>Vintage Cairo travel posters</h4>
+        <p>Art-deco Egypt: minarets, pyramids, retro planes, starlit warm skies, halftone finish, playful minimalist line.</p>
+        <div class="steal">STEAL: heroic warm illustration, limited ink, confident type lockups. LEAVE: literal touristy clichés.</div>
+        <a href="https://www.andersondesigngroupstore.com/a/collections/world-travel/egypt-cairo">Anderson Design Group · Egypt/Cairo</a>
+        <a href="https://myretroposter.com/collections/egypt-travel-posters">MyRetroposter · Egypt (halftone finish)</a>
+        <a href="https://www.pinterest.com/thehegab/egypt-vintage-posters/">Pinterest · Egypt vintage posters</a>
+      </div>
+      <div class="ref">
+        <span class="tag">Pillar 5 · The craft bar</span>
+        <h4>Editorial app UI — bold &amp; warm</h4>
+        <p>Magazine-grade mobile UI: big type, generous space, left-aligned, poster-cards. The execution quality to match.</p>
+        <div class="steal">STEAL: type scale &amp; rhythm, whitespace, editorial layout. LEAVE: cold minimalism, gray SaaS, hearts-everywhere couple kitsch.</div>
+        <a href="https://dribbble.com/tags/editorial-ui">Dribbble · editorial UI</a>
+        <a href="https://dribbble.com/tags/bold-typography">Dribbble · bold typography</a>
+        <a href="https://dribbble.com/search/app-for-couples">Dribbble · apps for couples (curate hard)</a>
+      </div>
+      <div class="ref">
+        <span class="tag">Bonus · Light &amp; mood</span>
+        <h4>Golden-hour photography</h4>
+        <p>Cairo rooftops, warm summer light, long soft shadows — the literal lighting model of the UI. Treat photos in duotone.</p>
+        <div class="steal">STEAL: color temperature, haze, low warm sun. LEAVE: cold blue-hour, harsh flash.</div>
+        <a href="https://unsplash.com/s/photos/cairo-golden-hour">Unsplash · Cairo golden hour</a>
+        <a href="https://unsplash.com/s/photos/golden-hour-warm">Unsplash · golden-hour warmth</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── v1 expansion ── */
+  .scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:22px}
+  .scene{border-radius:20px;overflow:hidden;position:relative;box-shadow:0 12px 34px rgba(42,32,24,.12);aspect-ratio:4/5;background:var(--clay)}
+  .scene svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .scene .g{position:absolute;inset:0;background-image:var(--grain);background-size:200px;opacity:.1;mix-blend-mode:overlay;pointer-events:none}
+  .scene .cap{position:absolute;left:0;right:0;bottom:0;padding:12px 14px;font-family:var(--grotesk);font-size:12px;font-weight:700;color:#fff;background:linear-gradient(180deg,transparent,rgba(42,32,24,.55));z-index:3}
+  .scene .cap small{display:block;font-weight:400;opacity:.85;font-size:11px;margin-top:2px}
+  .anchor{margin-top:16px;font-size:13px;color:var(--ink-soft)}
+  .anchor b{color:var(--terracotta)}
+
+  .patlib{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:20px}
+  .pl{aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;border:1px solid rgba(42,32,24,.1);background:#fff}
+  .pl svg,.pl .fill{position:absolute;inset:0;width:100%;height:100%}
+  .pl .cap{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);font-size:11px;padding:6px 9px;font-family:var(--grotesk);font-weight:600;z-index:2}
+
+  .stamps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:22px}
+  .stamp{aspect-ratio:1;background:#fff;border:1px solid rgba(42,32,24,.1);border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 6px 20px rgba(42,32,24,.06)}
+  .stamp svg{width:74%;height:74%}
+  .stamp .lbl{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--grotesk);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+
+  .posters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:22px}
+  .poster{aspect-ratio:3/4;border-radius:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 12px 30px rgba(42,32,24,.14)}
+  .poster .g{position:absolute;inset:0;background-image:var(--grain);background-size:200px;opacity:.12;mix-blend-mode:overlay}
+  .poster .w{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,52px);line-height:.9;letter-spacing:-.03em;text-align:center;z-index:2;padding:0 10px}
+  .poster .star{position:absolute;font-size:13px;opacity:.6;z-index:2}
+  .p-coral{background:var(--coral);color:#FFF3E9}
+  .p-indigo{background:var(--indigo);color:var(--amber)}
+  .p-amber{background:var(--amber);color:#2A2018}
+  .p-teal{background:var(--teal-deep);color:#F2E9DB}
+
+  .iconrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+  .ico{width:58px;height:58px;border-radius:14px;background:#fff;border:1px solid rgba(42,32,24,.1);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(42,32,24,.05)}
+  .ico svg{width:26px;height:26px;stroke:var(--ink);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Illustration System — riso scenes</div>
+    <h2>Printed scenes, not vector clipart.</h2>
+    <p class="lead">Every illustration is a 2–3 ink riso print: flat bold shapes, halftone shading, slight misregistration, warm paper. One focal idea, room to breathe. (Sketched here in CSS — real art comes from the prompt library.)</p>
+    <div class="scenes">
+      <div class="scene">
+        <svg viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
+          <defs><radialGradient id="sun" cx="30%" cy="34%" r="70%"><stop offset="0%" stop-color="#FBD89B"/><stop offset="45%" stop-color="#F2A93B"/><stop offset="100%" stop-color="#E5663C"/></radialGradient></defs>
+          <rect width="300" height="375" fill="url(#sun)"/>
+          <circle cx="92" cy="120" r="46" fill="#FBE6C0" opacity=".9"/>
+          <g fill="#2B2F5E"><rect x="0" y="250" width="300" height="125"/><rect x="40" y="200" width="34" height="60"/><rect x="92" y="170" width="20" height="90"/><path d="M92 170 a10 10 0 0 1 20 0 z"/><rect x="99" y="150" width="6" height="20"/><rect x="150" y="215" width="50" height="45"/><rect x="210" y="190" width="30" height="70"/></g>
+          <g stroke="#2B2F5E" stroke-width="5" fill="none"><path d="M255 260 q4 -40 0 -70"/><path d="M255 195 q-22 -6 -34 -20"/><path d="M255 195 q22 -6 34 -20"/><path d="M255 195 q-16 -16 -34 -16"/><path d="M255 195 q16 -16 34 -16"/></g>
+        </svg>
+        <div class="g"></div>
+        <div class="cap">Home — golden-hour rooftop<small>amber × coral × indigo · sunburst, minaret, palm</small></div>
+      </div>
+      <div class="scene">
+        <svg viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#191A2C"/><stop offset="100%" stop-color="#3A2E4A"/></linearGradient></defs>
+          <rect width="300" height="375" fill="url(#night)"/>
+          <g fill="#F2A93B"><circle cx="60" cy="70" r="1.6"/><circle cx="120" cy="50" r="1.4"/><circle cx="200" cy="80" r="1.8"/><circle cx="250" cy="55" r="1.4"/><circle cx="160" cy="100" r="1.4"/></g>
+          <path d="M235 60 a34 34 0 1 0 14 52 a26 26 0 1 1 -14 -52 z" fill="#F2A93B"/>
+          <g fill="#23263F"><rect x="0" y="250" width="300" height="125"/><rect x="20" y="210" width="40" height="50"/><rect x="70" y="180" width="26" height="80"/><rect x="110" y="225" width="55" height="35"/><rect x="180" y="195" width="30" height="65"/><rect x="225" y="215" width="50" height="45"/></g>
+          <g fill="#F07B54" opacity=".85"><rect x="30" y="222" width="5" height="6"/><rect x="80" y="200" width="5" height="6"/><rect x="190" y="210" width="5" height="6"/><rect x="240" y="228" width="5" height="6"/></g>
+        </svg>
+        <div class="g"></div>
+        <div class="cap">Night-drive skyline (dark skin)<small>indigo × lantern amber · crescent, embers</small></div>
+      </div>
+      <div class="scene">
+        <svg viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
+          <rect width="300" height="375" fill="#EFE0C6"/>
+          <path d="M90 300 V150 a60 60 0 0 1 120 0 V300 Z" fill="#1F8A8A" opacity=".14"/>
+          <path d="M90 300 V150 a60 60 0 0 1 120 0 V300" fill="none" stroke="#15706F" stroke-width="4"/>
+          <g opacity=".5" fill="#F2A93B"><path d="M150 150 l6 16 16 0 -13 11 5 16 -14 -10 -14 10 5 -16 -13 -11 16 0z"/></g>
+          <g stroke="#C8552B" stroke-width="3" fill="none"><rect x="206" y="120" width="34" height="46" rx="4"/><path d="M223 110 v10 M214 166 l9 14 9 -14"/></g>
+          <rect x="120" y="300" width="60" height="8" fill="#8B5E2B"/>
+          <g fill="#F2A93B" opacity=".5"><rect x="105" y="250" width="22" height="22" transform="rotate(8 116 261)"/><rect x="175" y="240" width="18" height="18" transform="rotate(-6 184 249)"/></g>
+        </svg>
+        <div class="g"></div>
+        <div class="cap">Soul — prayer light<small>amber × teal · mihrab arch, lantern, star light</small></div>
+      </div>
+      <div class="scene">
+        <svg viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
+          <rect width="300" height="375" fill="#E7E3CE"/>
+          <circle cx="225" cy="95" r="40" fill="#F2A93B" opacity=".8"/>
+          <path d="M70 300 h160 l-14 -50 h-132 z" fill="#C8552B"/>
+          <g stroke="#15706F" stroke-width="5" fill="none"><path d="M150 250 q-30 -50 -10 -100"/><path d="M150 250 q30 -40 12 -86"/><path d="M150 250 V150"/></g>
+          <g fill="#1F8A8A"><circle cx="135" cy="150" r="12"/><circle cx="168" cy="166" r="11"/><circle cx="150" cy="135" r="10"/></g>
+          <g fill="#E0857A"><circle cx="138" cy="148" r="3"/><circle cx="166" cy="164" r="3"/></g>
+        </svg>
+        <div class="g"></div>
+        <div class="cap">Garden — things you grow<small>sage-teal × amber · pot, jasmine, sun</small></div>
+      </div>
+    </div>
+    <p class="anchor">North-star illustrators (riso): <b>Lorna Robey</b> — warm golden sunrises · <b>Emmanuelle Orr</b> — dusk rooftop gradients, DIY warmth · <b>Atelier Hourra</b> — warm regional town posters, vintage-meets-modern. Pull their work in the prompt's <i>::style::</i> token.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Pattern Library — geometry as structure</div>
+    <h2>The press marks every surface.</h2>
+    <p class="lead">Six tiles for dividers, margins, card textures, spiritual corners. Low-contrast so type sits over them. Real versions: prompts C1–C5.</p>
+    <div class="patlib">
+      <div class="pl">
+        <svg viewBox="0 0 80 80"><defs><pattern id="z8" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#E4CDAE"/><path d="M20 3 l5 12 13 0 -10 9 4 13 -12 -8 -12 8 4 -13 -10 -9 13 0z" fill="#C8552B" opacity=".8"/><path d="M0 20 l4 4 -4 4 -4 -4z M40 20 l4 4 -4 4 -4 -4z M20 0 l4 4 -4 4 -4 -4z M20 40 l4 4 -4 4 -4 -4z" fill="#1F8A8A"/></pattern></defs><rect width="80" height="80" fill="url(#z8)"/></svg>
+        <div class="cap">Zellij 8-point</div>
+      </div>
+      <div class="pl">
+        <div class="fill" style="background:conic-gradient(from 0deg at 50% 42%, #F2A93B 0 12deg, #E5663C 12deg 24deg)"></div>
+        <div class="fill" style="background:radial-gradient(circle at 50% 42%, #FBD89B 0 14%, transparent 14%)"></div>
+        <div class="cap">Sunburst rays</div>
+      </div>
+      <div class="pl">
+        <svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#2A2018"/><g fill="none" stroke="#F2A93B" stroke-width="1.4" opacity=".75"><path d="M0 20h80M0 40h80M0 60h80M20 0v80M40 0v80M60 0v80"/><path d="M20 20l20 20-20 20M60 20L40 40l20 20M20 20l20 20 20-20M20 60l20-20 20 20"/></g></svg>
+        <div class="cap">Mashrabiya screen</div>
+      </div>
+      <div class="pl">
+        <div class="fill" style="background:radial-gradient(circle at 1px 1px, #C8552B 1.5px, transparent 2px) 0 0/9px 9px, linear-gradient(135deg,#F7EFE3,#E4CDAE)"></div>
+        <div class="cap">Halftone gradient</div>
+      </div>
+      <div class="pl">
+        <svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#F5EAD8"/><g fill="none" stroke="#15706F" stroke-width="1.5" opacity=".7"><path d="M40 8 q14 0 14 14 q0 14 -14 14 q-14 0 -14 -14 q0 -14 14 -14z"/><path d="M40 44 q14 0 14 14 M40 44 q-14 0 -14 14"/><circle cx="40" cy="22" r="3" fill="#C8552B" stroke="none"/></g></svg>
+        <div class="cap">Arabesque divider</div>
+      </div>
+      <div class="pl pat-grain" style="background:#E4CDAE"><div class="cap">Riso paper grain</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Stamps, Coins &amp; Seals — the reward system</div>
+    <h2>Wins you can almost hold.</h2>
+    <p class="lead">Calibrated celebration as physical-feeling marks: a pressed coin, a smudged ink stamp, a wax seal. Big for milestones, quiet for daily. Prompts B2, F1–F3.</p>
+    <div class="stamps">
+      <div class="stamp">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#F2A93B"/><circle cx="50" cy="50" r="44" fill="none" stroke="#C8552B" stroke-width="2" opacity=".5"/><circle cx="50" cy="50" r="36" fill="none" stroke="#8B5E2B" stroke-width="1.5" stroke-dasharray="2 4"/><text x="50" y="62" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="34" fill="#7A3B16">YY</text></svg>
+        <div class="lbl">CoYYn coin</div>
+      </div>
+      <div class="stamp">
+        <svg viewBox="0 0 100 100"><g transform="rotate(-9 50 50)"><circle cx="50" cy="50" r="40" fill="none" stroke="#C8552B" stroke-width="3" opacity=".85"/><circle cx="50" cy="50" r="33" fill="none" stroke="#C8552B" stroke-width="1.4" opacity=".7"/><text x="50" y="56" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="15" letter-spacing="1" fill="#C8552B">REDEEMED</text><text x="50" y="33" text-anchor="middle" font-size="9" fill="#C8552B">★ ★</text></g></svg>
+        <div class="lbl">Ink stamp</div>
+      </div>
+      <div class="stamp">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#C8552B"/><path d="M50 12 l6 6 8 -2 2 8 8 4 -3 8 5 7 -7 5 0 8 -8 1 -4 8 -8 -3 -7 5 -7 -5 -8 3 -4 -8 -8 -1 0 -8 -7 -5 5 -7 -3 -8 8 -4 2 -8 8 2z" fill="#C8552B" opacity=".55"/><text x="50" y="60" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="26" fill="#F4E3C8">YY</text></svg>
+        <div class="lbl">Wax seal · milestone</div>
+      </div>
+      <div class="stamp">
+        <svg viewBox="0 0 100 100"><path d="M62 28 a30 30 0 1 0 12 46 a23 23 0 1 1 -12 -46z" fill="#F2A93B"/><path d="M74 30 l3 7 7 0 -6 5 2 7 -6 -4 -6 4 2 -7 -6 -5 7 0z" fill="#E0857A"/></svg>
+        <div class="lbl">Crescent · secret</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Display Posters — celebration takeovers</div>
+    <h2>One bold word, screen-printed.</h2>
+    <p class="lead">Full-screen moments for the big wins — anniversaries, streaks, redeemed coupons. Heavy Bricolage letters, overprinted, grain, a star or two. Prompt G1 (use Ideogram for the lettering).</p>
+    <div class="posters">
+      <div class="poster p-coral"><div class="g"></div><span class="star" style="top:14px;left:16px">✦</span><span class="star" style="bottom:18px;right:18px">✦</span><div class="w">MAB<br/>ROUK</div></div>
+      <div class="poster p-indigo"><div class="g"></div><span class="star" style="top:20px;right:20px">✦</span><div class="w">YALLA</div></div>
+      <div class="poster p-amber"><div class="g"></div><span class="star" style="bottom:16px;left:18px">✦</span><div class="w">100<br/>DAYS</div></div>
+      <div class="poster p-teal"><div class="g"></div><span class="star" style="top:16px;left:18px">✦</span><div class="w" style="font-family:var(--serif);font-style:italic;font-weight:400">habibi</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">More screens — the feel, applied</div>
+    <h2>Beyond Home.</h2>
+    <div class="tiles">
+      <div class="tile tile-coupon" style="background:var(--terracotta)"><div class="grain"></div><span class="tlabel">Love Economy · Shop</span>
+        <div class="k">Spend your CoYYns</div>
+        <div class="big">Trade 50 ¢y → one chosen movie night</div>
+        <div class="pill" style="color:var(--terracotta)">Browse shop →</div>
+      </div>
+      <div class="tile" style="background:linear-gradient(160deg,#F3E6CF,#E4CDAE);color:var(--ink)"><div class="grain"></div><span class="tlabel">Soul · Quiet corner</span>
+        <div style="font-family:var(--grotesk);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-deep);font-weight:700">Maghrib · 6:54</div>
+        <div style="font-family:var(--serif);font-size:26px;line-height:1.2;margin-top:10px">A quiet room, not a<br/>productivity dashboard.</div>
+        <div style="font-family:var(--arabic);font-size:26px;margin-top:auto;color:var(--teal-deep);direction:rtl">رَبِّ اشْرَحْ لِي صَدْرِي</div>
+      </div>
+      <div class="tile" style="background:var(--teal-deep);color:#F2E9DB"><div class="grain"></div><span class="tlabel">Game · Date night</span>
+        <div style="font-family:var(--grotesk);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:700">Deep dive · Q7</div>
+        <div style="font-family:var(--display);font-weight:800;font-size:26px;line-height:1.05;margin-top:8px">What did you<br/>think of me, first?</div>
+        <div style="margin-top:auto;display:flex;gap:8px"><span style="background:rgba(255,255,255,.14);padding:8px 14px;border-radius:999px;font-family:var(--grotesk);font-size:13px;font-weight:700">Truth</span><span style="background:var(--amber);color:#2A2018;padding:8px 14px;border-radius:999px;font-family:var(--grotesk);font-size:13px;font-weight:700">Dare</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Iconography — warm line</div>
+    <h2>Hand-drawn, not sterile.</h2>
+    <p class="lead">~1.75 stroke with a faint wobble, rounded ends, riso-ink on the line. Warm and characterful. Prompt D1 (Recraft).</p>
+    <div class="iconrow">
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9 12h6M12 9v6"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16v4a2 2 0 000 4v2H4v-2a2 2 0 000-4z"/><path d="M12 7v10" stroke-dasharray="1 2"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16M8 3v4M16 3v4"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2 4 4 0 017 2c0 5.5-7 10-7 10z"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22V12M12 12c-3 0-5-2-5-5 3 0 5 2 5 5zM12 12c3 0 5-2 5-5-3 0-5 2-5 5z"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><circle cx="15" cy="15" r="1.2"/><circle cx="15" cy="9" r="1.2"/><circle cx="9" cy="15" r="1.2"/></svg></div>
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M5 8h14v12H5zM3 8h18M12 8v12M12 8c-2 0-4-1-4-3s3-2 4 1c1-3 4-2 4 1s-2 1-4 1z"/></svg></div>
+    </div>
+  </div>
+</section>
+
+
+<style>
+  .refwall{margin-top:22px}
+  .refband{margin-bottom:34px}
+  .refband .bh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .refband .bh .t{font-family:var(--display);font-weight:700;font-size:18px;color:var(--ink)}
+  .refband .bh .s{font-size:12px;color:var(--ink-soft)}
+  .refgrid{columns:5 160px;column-gap:10px}
+  .refgrid img{width:100%;margin:0 0 10px;border-radius:12px;break-inside:avoid;display:block;box-shadow:0 4px 14px rgba(42,32,24,.10);border:1px solid rgba(42,32,24,.06)}
+  @media(max-width:680px){.refgrid{columns:2 130px}}
+</style>
+
+<section id="captured"><div class="wrap">
+<div class="eyebrow">Captured References — pulled live from Pinterest</div>
+<h2>60 frames, six pillars.</h2>
+<p class="lead">Real reference shots harvested into <code>docs/design/refs/</code>. This is the visual target you screenshot from when prompting. Each band: what to steal, what to leave.</p>
+<div class="refwall">
+<div class="refband"><div class="bh"><span class="t">Pillar 1 · Pop confidence</span><span class="s">GTA-V loading screens — STEAL: bold poster composition, golden-hour color, confident framing. LEAVE: the grit, black outlines.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/gta-01.jpg" alt="gta 1"/>
+<img loading="lazy" src="refs/gta-02.jpg" alt="gta 2"/>
+<img loading="lazy" src="refs/gta-03.jpg" alt="gta 3"/>
+<img loading="lazy" src="refs/gta-04.jpg" alt="gta 4"/>
+<img loading="lazy" src="refs/gta-05.jpg" alt="gta 5"/>
+<img loading="lazy" src="refs/gta-06.jpg" alt="gta 6"/>
+<img loading="lazy" src="refs/gta-07.jpg" alt="gta 7"/>
+<img loading="lazy" src="refs/gta-08.jpg" alt="gta 8"/>
+<img loading="lazy" src="refs/gta-09.jpg" alt="gta 9"/>
+<img loading="lazy" src="refs/gta-10.jpg" alt="gta 10"/>
+</div></div>
+<div class="refband"><div class="bh"><span class="t">Pillar 2 · Handmade soul</span><span class="s">Risograph warm — STEAL: grain, duotone, warm-paper sunsets, halftone. LEAVE: muddy over-texture, neon.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/riso-01.jpg" alt="riso 1"/>
+<img loading="lazy" src="refs/riso-02.jpg" alt="riso 2"/>
+<img loading="lazy" src="refs/riso-03.jpg" alt="riso 3"/>
+<img loading="lazy" src="refs/riso-04.jpg" alt="riso 4"/>
+<img loading="lazy" src="refs/riso-05.jpg" alt="riso 5"/>
+<img loading="lazy" src="refs/riso-06.jpg" alt="riso 6"/>
+<img loading="lazy" src="refs/riso-07.jpg" alt="riso 7"/>
+<img loading="lazy" src="refs/riso-08.jpg" alt="riso 8"/>
+<img loading="lazy" src="refs/riso-09.jpg" alt="riso 9"/>
+<img loading="lazy" src="refs/riso-10.jpg" alt="riso 10"/>
+</div></div>
+<div class="refband"><div class="bh"><span class="t">Pillar 3 · Sacred geometry</span><span class="s">Zellij / Islamic tile — STEAL: terracotta tiles, 8-point stars, lattice as structure. LEAVE: busy full-bleed.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/zellij-01.jpg" alt="zellij 1"/>
+<img loading="lazy" src="refs/zellij-02.jpg" alt="zellij 2"/>
+<img loading="lazy" src="refs/zellij-03.jpg" alt="zellij 3"/>
+<img loading="lazy" src="refs/zellij-04.jpg" alt="zellij 4"/>
+<img loading="lazy" src="refs/zellij-05.jpg" alt="zellij 5"/>
+<img loading="lazy" src="refs/zellij-06.jpg" alt="zellij 6"/>
+<img loading="lazy" src="refs/zellij-07.jpg" alt="zellij 7"/>
+<img loading="lazy" src="refs/zellij-08.jpg" alt="zellij 8"/>
+<img loading="lazy" src="refs/zellij-09.jpg" alt="zellij 9"/>
+<img loading="lazy" src="refs/zellij-10.jpg" alt="zellij 10"/>
+</div></div>
+<div class="refband"><div class="bh"><span class="t">Pillar 4 · Mid-century print</span><span class="s">Vintage Egypt posters — STEAL: heroic warm illustration, limited ink, confident type lockups. LEAVE: tourist cliché.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/cairo-01.jpg" alt="cairo 1"/>
+<img loading="lazy" src="refs/cairo-02.jpg" alt="cairo 2"/>
+<img loading="lazy" src="refs/cairo-03.jpg" alt="cairo 3"/>
+<img loading="lazy" src="refs/cairo-04.jpg" alt="cairo 4"/>
+<img loading="lazy" src="refs/cairo-05.jpg" alt="cairo 5"/>
+<img loading="lazy" src="refs/cairo-06.jpg" alt="cairo 6"/>
+<img loading="lazy" src="refs/cairo-07.jpg" alt="cairo 7"/>
+<img loading="lazy" src="refs/cairo-08.jpg" alt="cairo 8"/>
+<img loading="lazy" src="refs/cairo-09.jpg" alt="cairo 9"/>
+<img loading="lazy" src="refs/cairo-10.jpg" alt="cairo 10"/>
+</div></div>
+<div class="refband"><div class="bh"><span class="t">Pillar 5 · The craft bar</span><span class="s">Bold editorial app UI — STEAL: type scale, whitespace, poster-cards. LEAVE: cold minimalism, gray SaaS.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/editorial-01.jpg" alt="editorial 1"/>
+<img loading="lazy" src="refs/editorial-02.jpg" alt="editorial 2"/>
+<img loading="lazy" src="refs/editorial-03.jpg" alt="editorial 3"/>
+<img loading="lazy" src="refs/editorial-04.jpg" alt="editorial 4"/>
+<img loading="lazy" src="refs/editorial-05.jpg" alt="editorial 5"/>
+<img loading="lazy" src="refs/editorial-06.jpg" alt="editorial 6"/>
+<img loading="lazy" src="refs/editorial-07.jpg" alt="editorial 7"/>
+<img loading="lazy" src="refs/editorial-08.jpg" alt="editorial 8"/>
+<img loading="lazy" src="refs/editorial-09.jpg" alt="editorial 9"/>
+<img loading="lazy" src="refs/editorial-10.jpg" alt="editorial 10"/>
+</div></div>
+<div class="refband"><div class="bh"><span class="t">Bonus · The light</span><span class="s">Golden-hour Cairo — STEAL: color temperature, haze, minaret silhouettes, the rooftop iftar lights. LEAVE: cold blue hour.</span></div><div class="refgrid">
+<img loading="lazy" src="refs/golden-01.jpg" alt="golden 1"/>
+<img loading="lazy" src="refs/golden-02.jpg" alt="golden 2"/>
+<img loading="lazy" src="refs/golden-03.jpg" alt="golden 3"/>
+<img loading="lazy" src="refs/golden-04.jpg" alt="golden 4"/>
+<img loading="lazy" src="refs/golden-05.jpg" alt="golden 5"/>
+<img loading="lazy" src="refs/golden-06.jpg" alt="golden 6"/>
+<img loading="lazy" src="refs/golden-07.jpg" alt="golden 7"/>
+<img loading="lazy" src="refs/golden-08.jpg" alt="golden 8"/>
+<img loading="lazy" src="refs/golden-09.jpg" alt="golden 9"/>
+<img loading="lazy" src="refs/golden-10.jpg" alt="golden 10"/>
+</div></div>
+</div></div></section>
+
+<footer>
+  <div class="wrap">
+    Hayah — Feel &amp; Moodboard v1 · "Cairo meets Los Santos, run through a risograph press."<br/>
+    Pair with <strong>hayah-master-prompt.md</strong> + <strong>hayah-asset-prompts.md</strong>. CSS sketches here → real art via the prompt library.
+  </div>
+</footer>
+
+</body>
+</html>

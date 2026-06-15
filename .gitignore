@@ -21,3 +21,6 @@ __pycache__/
 # revamp temp creds
 .env.local.oldproject.bak
 .hayah-creds.tmp
+*.tsbuildinfo
+supabase/.temp/
+Vendor Crawler/

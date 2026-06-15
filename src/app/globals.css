@@ -309,6 +309,15 @@ h1, h2, h3, h4, h5, h6 {
 .animate-skeleton-warm { animation: skeleton-warm 2s ease-in-out infinite; }
 .animate-preference-pulse { animation: preference-pulse 3s ease-in-out infinite; }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.animate-shake { animation: shake 0.4s ease-out; }
+
 /* ─── Hayah Design Overhaul: Texture Utilities ─── */
 
 /* Subtle paper grain noise — 3% opacity for parchment feel */
