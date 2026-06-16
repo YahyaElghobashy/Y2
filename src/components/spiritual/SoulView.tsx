@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
+import { getDailyAyah } from "@/lib/quran/daily-ayah"
 
 /**
  * SoulView — the sacred corner (docs/DESIGN_BLUEPRINT.md §7.2). The reverent
@@ -11,12 +12,14 @@ import { PosterCard } from "@/components/shared/PosterCard"
  * stillness. Presentational; real trackers (PrayerTracker/Quran/Azkar/Ayah)
  * wire in behind the same layout.
  */
+// Names only — prayer TIMES are intentionally not shown until real,
+// location-based times are computed. Showing fabricated times is misleading.
 const PRAYERS = [
-  { key: "fajr", name: "Fajr", time: "4:42" },
-  { key: "dhuhr", name: "Dhuhr", time: "12:58" },
-  { key: "asr", name: "Asr", time: "4:31" },
-  { key: "maghrib", name: "Maghrib", time: "7:54" },
-  { key: "isha", name: "Isha", time: "9:22" },
+  { key: "fajr", name: "Fajr" },
+  { key: "dhuhr", name: "Dhuhr" },
+  { key: "asr", name: "Asr" },
+  { key: "maghrib", name: "Maghrib" },
+  { key: "isha", name: "Isha" },
 ]
 
 export type SoulData = {
@@ -91,7 +94,6 @@ export function SoulView({
                   {done ? <Check size={18} strokeWidth={2.5} /> : <span className="text-[15px]">🕌</span>}
                 </motion.span>
                 <span className="text-[11px] font-bold" style={{ fontFamily: "var(--font-nav)", color: done ? "var(--color-teal-deep)" : "var(--color-ink)" }}>{p.name}</span>
-                <span className="text-[10px]" style={{ color: "var(--color-ink-soft)" }}>{p.time}</span>
               </button>
             )
           })}
@@ -109,6 +111,9 @@ export function SoulView({
           <p className="mt-2 text-[12px] font-bold uppercase tracking-[0.16em]" style={{ fontFamily: "var(--font-nav)", color: "var(--color-amber)" }}>
             {data.ayah.ref}
           </p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--color-ink-soft)", opacity: 0.6 }}>
+            Saheeh International
+          </p>
         </PosterCard>
 
         {/* ── Quran + Azkar ── */}
@@ -119,7 +124,7 @@ export function SoulView({
             <div className="mt-2 h-2 overflow-hidden rounded-full" style={{ background: "var(--color-sand)" }}>
               <div className="h-full rounded-full" style={{ width: `${data.quran.pct}%`, background: "var(--color-teal)" }} />
             </div>
-            <p className="mt-1.5 text-[12px]" style={{ color: "var(--color-ink-soft)" }}>{data.quran.pct}% of the juz</p>
+            <p className="mt-1.5 text-[12px]" style={{ color: "var(--color-ink-soft)" }}>{data.quran.pct}% this month</p>
           </PosterCard>
 
           <PosterCard accent="amber" className="!p-4">
@@ -138,13 +143,11 @@ export function SoulView({
   )
 }
 
+const MOCK_AYAH = getDailyAyah()
 export const SOUL_MOCK: SoulData = {
   prayed: { fajr: true, dhuhr: true, asr: false, maghrib: false, isha: false },
-  ayah: {
-    arabic: "وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ",
-    translation: "And He is with you wherever you are.",
-    ref: "Al-Hadid · 57:4",
-  },
+  // Sourced from the vetted Qur'an dataset — never hand-typed.
+  ayah: { arabic: MOCK_AYAH.arabic, translation: MOCK_AYAH.translation, ref: `${MOCK_AYAH.surahNameEn} ${MOCK_AYAH.ref}` },
   quran: { surah: "Al-Mulk", pct: 40 },
   azkar: { goal: 33 },
 }

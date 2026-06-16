@@ -29,11 +29,17 @@ export type BodyData = {
   nextPeriodDays: number
   energy: string
   ribbon: Phase[] // one per cycle day
-  fitness: { goalKg: number; currentKg: number; startKg: number }
+  // Real fitness data — optional. When absent/null there is no fitness source yet,
+  // and the section renders an honest "coming soon" state instead of fabricating a
+  // progress bar with made-up kilograms.
+  fitness?: { goalKg: number; currentKg: number; startKg: number } | null
 }
 
 export function BodyView({ data }: { data: BodyData }) {
-  const fitPct = Math.round(((data.fitness.startKg - data.fitness.currentKg) / (data.fitness.startKg - data.fitness.goalKg)) * 100)
+  const fitness = data.fitness ?? null
+  const fitPct = fitness
+    ? Math.round(((fitness.startKg - fitness.currentKg) / (fitness.startKg - fitness.goalKg)) * 100)
+    : 0
   return (
     <div className="skin-aware min-h-[100dvh] px-5 pb-28 pt-6" style={{ background: "var(--background)" }}>
       <header className="mb-4">
@@ -90,16 +96,30 @@ export function BodyView({ data }: { data: BodyData }) {
       </div>
 
       {/* ── Fitness ── */}
-      <h2 className="mb-2 mt-6 text-[17px] font-bold tracking-tight" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>Toward {data.fitness.goalKg}kg</h2>
-      <PosterCard accent="teal" grain={false}>
-        <div className="flex items-end justify-between">
-          <span className="text-[28px] font-extrabold leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>{data.fitness.currentKg}<span className="text-[15px] font-medium" style={{ color: "var(--color-ink-soft)" }}> kg</span></span>
-          <span className="text-[13px]" style={{ color: "var(--color-ink-soft)" }}>{fitPct}% there</span>
-        </div>
-        <div className="mt-2 h-2.5 overflow-hidden rounded-full" style={{ background: "var(--color-sand)" }}>
-          <div className="h-full rounded-full" style={{ width: `${Math.max(4, Math.min(100, fitPct))}%`, background: "var(--color-teal)" }} />
-        </div>
-      </PosterCard>
+      <h2 className="mb-2 mt-6 text-[17px] font-bold tracking-tight" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
+        {fitness ? `Toward ${fitness.goalKg}kg` : "Fitness"}
+      </h2>
+      {fitness ? (
+        <PosterCard accent="teal" grain={false}>
+          <div className="flex items-end justify-between">
+            <span className="text-[28px] font-extrabold leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>{fitness.currentKg}<span className="text-[15px] font-medium" style={{ color: "var(--color-ink-soft)" }}> kg</span></span>
+            <span className="text-[13px]" style={{ color: "var(--color-ink-soft)" }}>{fitPct}% there</span>
+          </div>
+          <div className="mt-2 h-2.5 overflow-hidden rounded-full" style={{ background: "var(--color-sand)" }}>
+            <div className="h-full rounded-full" style={{ width: `${Math.max(4, Math.min(100, fitPct))}%`, background: "var(--color-teal)" }} />
+          </div>
+        </PosterCard>
+      ) : (
+        /* No real fitness source yet — stay honest: a calm note, no fabricated kilograms. */
+        <PosterCard accent="teal" grain={false}>
+          <p className="text-[15px] font-bold leading-snug" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
+            Fitness tracking is coming soon
+          </p>
+          <p className="mt-1 text-[13px]" style={{ color: "var(--color-ink-soft)" }}>
+            A gentle place to follow the journey — once it&rsquo;s ready.
+          </p>
+        </PosterCard>
+      )}
     </div>
   )
 }

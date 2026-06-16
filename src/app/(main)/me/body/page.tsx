@@ -59,11 +59,9 @@ export default function BodyPage() {
       nextPeriodDays,
       energy,
       ribbon,
-      // TODO(wire): fitness has no hook source — the old page only ever showed a
-      // "coming soon" placeholder. Use the design's reference figures (85kg goal,
-      // matching the old placeholder copy) until a real fitness hook exists.
-      // Distinct start/current/goal avoid a 0/0 progress division.
-      fitness: { goalKg: 85, currentKg: 91, startKg: 98 },
+      // Fitness has no real hook/table source yet. Do NOT fabricate progress on the
+      // authed route — pass null so BodyView renders its honest "coming soon" state.
+      fitness: null,
     }
   }, [showCycle, config, currentDay, phase, daysUntilBreak, daysUntilActive, isPMSWindow])
 
@@ -99,7 +97,8 @@ export default function BodyPage() {
         />
 
         {/* Redesigned BodyView renders the phase hero, insights, ribbon, and fitness.
-            (Fitness shown with the design's goal until a real fitness hook exists.) */}
+            Fitness has no data source yet, so BodyView shows an honest "coming soon"
+            state (bodyData.fitness is null) — never fabricated kilograms. */}
         <BodyView data={bodyData} />
 
         <CycleConfigForm

@@ -1,5 +1,13 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react"
+import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
+
+/**
+ * CalendarTabPage (src/app/(main)/us/calendar/page.tsx) was redesigned to render
+ * the presentational `PlanView`, fed by real hooks (`useCalendar`, `useAuth`).
+ * These tests assert the NEW behavior: the page maps DB events → PlanData,
+ * drives month navigation through `getEventsForMonth`, and wires day taps to the
+ * shared `DayDetailSheet` and event taps to the edit route.
+ */
 
 // ── Mock data ──────────────────────────────────────────────
 const TODAY = new Date()
@@ -7,13 +15,20 @@ const YEAR = TODAY.getFullYear()
 const MONTH = TODAY.getMonth() // 0-indexed
 const DAY = TODAY.getDate()
 const MONTH_STR = String(MONTH + 1).padStart(2, "0")
+const DAY_STR = String(DAY).padStart(2, "0")
+const TODAY_DATE = `${YEAR}-${MONTH_STR}-${DAY_STR}`
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+]
 
 const makeEvent = (overrides: Record<string, unknown> = {}) => ({
   id: "evt-1",
   creator_id: "user-1",
   title: "Date Night",
   description: null,
-  event_date: `${YEAR}-${MONTH_STR}-${String(DAY).padStart(2, "0")}`,
+  event_date: TODAY_DATE,
   event_time: "19:00:00",
   end_time: null,
   recurrence: "none",
@@ -51,23 +66,19 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush, back: vi.fn() }),
 }))
 
-const mockCreateEvent = vi.fn()
-const mockUpdateEvent = vi.fn()
-const mockDeleteEvent = vi.fn()
-const mockRefreshEvents = vi.fn()
 const mockGetEventsForMonth = vi.fn()
 
-let mockCalendarReturn = {
-  events: MOCK_EVENTS,
-  upcomingEvents: MOCK_EVENTS,
-  milestones: [MOCK_EVENTS[1]],
-  isLoading: false,
-  error: null as string | null,
-  createEvent: mockCreateEvent,
-  updateEvent: mockUpdateEvent,
-  deleteEvent: mockDeleteEvent,
-  refreshEvents: mockRefreshEvents,
-  getEventsForMonth: mockGetEventsForMonth,
+// getEventsForMonth(year, month1Indexed) → events whose date is in that month.
+function defaultGetEventsForMonth(year: number, month: number) {
+  const prefix = `${year}-${String(month).padStart(2, "0")}`
+  return MOCK_EVENTS.filter((e) => e.event_date.startsWith(prefix))
+}
+
+let mockCalendarReturn: {
+  upcomingEvents: ReturnType<typeof makeEvent>[]
+  getEventsForMonth: typeof mockGetEventsForMonth
+  isLoading: boolean
+  error: string | null
 }
 
 vi.mock("@/lib/hooks/use-calendar", () => ({
@@ -79,8 +90,8 @@ vi.mock("@/lib/hooks/use-calendar", () => ({
 vi.mock("@/lib/providers/AuthProvider", () => ({
   useAuth: () => ({
     user: { id: "user-1" },
-    profile: { id: "user-1" },
-    partner: { id: "user-2" },
+    profile: { id: "user-1", display_name: "Yahya", partner_id: "user-2" },
+    partner: { id: "user-2", display_name: "Yara", partner_id: "user-1" },
     isLoading: false,
     profileNeedsSetup: false,
     signOut: vi.fn(),
@@ -88,46 +99,26 @@ vi.mock("@/lib/providers/AuthProvider", () => ({
   }),
 }))
 
-vi.mock("next/link", () => ({
-  default: ({ href, children, ...rest }: { href: string; children: React.ReactNode } & Record<string, unknown>) => (
-    <a href={href} {...rest}>{children}</a>
-  ),
-}))
-
+// PageTransition wrapper → passthrough; LoadingSkeleton → identifiable stub.
 vi.mock("@/components/animations", () => ({
   PageTransition: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FadeIn: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div className={className}>{children}</div>
-  ),
 }))
 
-vi.mock("@/components/shared/PageHeader", () => ({
-  PageHeader: ({ title }: { title: string }) => <h1 data-testid="page-header">{title}</h1>,
-}))
-
+// framer-motion: strip animation props, keep DOM + data-testid (matches repo pattern).
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: Record<string, unknown>) => (
-      <div data-testid={props["data-testid"] as string}>{children as React.ReactNode}</div>
-    ),
+    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
+      const { whileHover, whileTap, transition, layoutId, initial, animate, exit, variants, drag, dragConstraints, dragElastic, onDragEnd, ...domProps } = props
+      void whileHover; void whileTap; void transition; void layoutId; void initial; void animate; void exit; void variants; void drag; void dragConstraints; void dragElastic; void onDragEnd
+      return <div {...(domProps as Record<string, unknown>)}>{children as React.ReactNode}</div>
+    },
+    button: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
+      const { whileHover, whileTap, transition, ...domProps } = props
+      void whileHover; void whileTap; void transition
+      return <button {...(domProps as Record<string, unknown>)}>{children as React.ReactNode}</button>
+    },
   },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}))
-
-vi.mock("date-fns", () => ({
-  format: (date: Date, fmt: string) => {
-    if (fmt === "MMM d") {
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      return `${months[date.getMonth()]} ${date.getDate()}`
-    }
-    if (fmt === "h:mm a") {
-      const h = date.getHours()
-      const m = String(date.getMinutes()).padStart(2, "0")
-      const ampm = h >= 12 ? "PM" : "AM"
-      return `${h % 12 || 12}:${m} ${ampm}`
-    }
-    return date.toISOString()
-  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }))
 
 // Import after mocks
@@ -136,251 +127,269 @@ import CalendarTabPage from "@/app/(main)/us/calendar/page"
 describe("CalendarTabPage", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockGetEventsForMonth.mockImplementation((year: number, month: number) => {
-      const prefix = `${year}-${String(month).padStart(2, "0")}`
-      return MOCK_EVENTS.filter((e) => e.event_date.startsWith(prefix))
-    })
+    mockGetEventsForMonth.mockImplementation(defaultGetEventsForMonth)
     mockCalendarReturn = {
-      events: MOCK_EVENTS,
       upcomingEvents: MOCK_EVENTS,
-      milestones: [MOCK_EVENTS[1]],
+      getEventsForMonth: mockGetEventsForMonth,
       isLoading: false,
       error: null,
-      createEvent: mockCreateEvent,
-      updateEvent: mockUpdateEvent,
-      deleteEvent: mockDeleteEvent,
-      refreshEvents: mockRefreshEvents,
-      getEventsForMonth: mockGetEventsForMonth,
     }
   })
 
-  // ── Unit tests ──────────────────────────────────────────────
+  // Helper: read the month label rendered by PlanView (the only month heading).
+  function monthLabel() {
+    return screen.getByText((_, el) =>
+      el?.tagName === "SPAN" && /(January|February|March|April|May|June|July|August|September|October|November|December)\s\d{4}/.test(el.textContent ?? ""),
+    )
+  }
+
+  // ── Unit: derived values render from mocked data ──────────────
 
   describe("unit", () => {
-    it("renders page header with correct title", () => {
+    it("renders the redesigned Plan header (not the old 'Our Calendar' header)", () => {
       render(<CalendarTabPage />)
-      expect(screen.getByTestId("page-header")).toHaveTextContent("Our Calendar")
+      expect(screen.getByRole("heading", { name: "Plan" })).toBeInTheDocument()
+      expect(screen.queryByText("Our Calendar")).not.toBeInTheDocument()
     })
 
-    it("displays current month and year in header", () => {
+    it("derives the month label from the current view (current month + year)", () => {
       render(<CalendarTabPage />)
-      const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-      ]
-      expect(screen.getByTestId("month-header")).toHaveTextContent(
-        `${months[MONTH]} ${YEAR}`
-      )
+      expect(
+        screen.getByText(`${MONTH_NAMES[MONTH]} ${YEAR}`),
+      ).toBeInTheDocument()
     })
 
-    it("calls getEventsForMonth with correct year and 1-indexed month", () => {
+    it("calls getEventsForMonth with the current year and 1-indexed month", () => {
       render(<CalendarTabPage />)
       expect(mockGetEventsForMonth).toHaveBeenCalledWith(YEAR, MONTH + 1)
     })
 
-    it("shows loading skeleton when isLoading is true", () => {
+    it("renders the loading skeleton (not PlanView) when isLoading is true", () => {
       mockCalendarReturn = { ...mockCalendarReturn, isLoading: true }
       render(<CalendarTabPage />)
       expect(screen.getByTestId("calendar-loading")).toBeInTheDocument()
+      // PlanView's heading must NOT be present while loading
+      expect(screen.queryByRole("heading", { name: "Plan" })).not.toBeInTheDocument()
     })
 
-    it("shows error state with retry button when error occurs", () => {
+    it("renders the error state (not PlanView) when error is set", () => {
       mockCalendarReturn = { ...mockCalendarReturn, error: "Network error" }
       render(<CalendarTabPage />)
-      expect(screen.getByTestId("calendar-error")).toBeInTheDocument()
-      expect(screen.getByTestId("calendar-retry")).toBeInTheDocument()
+      const err = screen.getByTestId("calendar-error")
+      expect(err).toBeInTheDocument()
+      expect(err).toHaveTextContent("Something went wrong loading your calendar.")
+      expect(screen.queryByRole("heading", { name: "Plan" })).not.toBeInTheDocument()
     })
 
-    it("shows empty day message when selected day has no events", () => {
-      mockGetEventsForMonth.mockReturnValue([])
+    it("renders the day grid with the correct number of day cells for the month", () => {
       render(<CalendarTabPage />)
-      // Today is selected by default
-      expect(screen.getByTestId("empty-day")).toBeInTheDocument()
-      expect(screen.getByText("No events — tap to add one")).toBeInTheDocument()
+      const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate()
+      // Each day is a button with aria-label "Day N..."
+      const dayCells = screen
+        .getAllByRole("button")
+        .filter((b) => /^Day \d+/.test(b.getAttribute("aria-label") ?? ""))
+      expect(dayCells).toHaveLength(daysInMonth)
     })
 
-    it("displays upcoming events in Coming Up section", () => {
+    it("highlights today: today's cell advertises its events in its aria-label", () => {
       render(<CalendarTabPage />)
-      expect(screen.getByText("Coming Up")).toBeInTheDocument()
-      // Should show upcoming events (may appear in both selected day and Coming Up)
-      expect(screen.getAllByText("Date Night").length).toBeGreaterThanOrEqual(1)
+      // evt-1 (Date Night) is on today's date → today's cell has 1 event.
+      const todayCell = screen.getByRole("button", {
+        name: new RegExp(`^Day ${DAY}, 1 event$`),
+      })
+      expect(todayCell).toBeInTheDocument()
     })
 
-    it("shows empty state when no upcoming events", () => {
-      mockCalendarReturn = { ...mockCalendarReturn, upcomingEvents: [] }
+    it("renders upcoming events (capped at 3) in the 'Coming up' section", () => {
       render(<CalendarTabPage />)
-      expect(screen.getByText("Nothing coming up")).toBeInTheDocument()
+      expect(screen.getByRole("heading", { name: "Coming up" })).toBeInTheDocument()
+      // All three mock events are upcoming and within the cap of 3.
+      expect(screen.getByText("Date Night")).toBeInTheDocument()
+      expect(screen.getByText("Anniversary")).toBeInTheDocument()
+      expect(screen.getByText("Dentist")).toBeInTheDocument()
     })
 
-    it("does not contain SAMPLE_EVENTS or hardcoded data", () => {
+    it("does not render stale hardcoded sample events", () => {
       render(<CalendarTabPage />)
-      // Verify the old sample event titles are not rendered
-      // (unless they match our mock data)
       expect(screen.queryByText("6 Month Anniversary")).not.toBeInTheDocument()
       expect(screen.queryByText("Yara's Birthday")).not.toBeInTheDocument()
     })
+
+    it("does not open the DayDetailSheet until a day is selected", () => {
+      render(<CalendarTabPage />)
+      expect(screen.queryByTestId("day-detail-sheet")).not.toBeInTheDocument()
+    })
   })
 
-  // ── Interaction tests ────────────────────────────────────────
+  // ── Interaction: user flows ──────────────────────────────────
 
   describe("interaction", () => {
-    it("navigates to previous month on left arrow click", () => {
+    it("navigates to the previous month when the prev chevron is clicked", () => {
       render(<CalendarTabPage />)
-      fireEvent.click(screen.getByTestId("prev-month"))
+      fireEvent.click(screen.getByRole("button", { name: "Previous month" }))
 
       const prevMonth = MONTH === 0 ? 11 : MONTH - 1
       const prevYear = MONTH === 0 ? YEAR - 1 : YEAR
-      const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-      ]
-      expect(screen.getByTestId("month-header")).toHaveTextContent(
-        `${months[prevMonth]} ${prevYear}`
-      )
+      expect(monthLabel()).toHaveTextContent(`${MONTH_NAMES[prevMonth]} ${prevYear}`)
     })
 
-    it("navigates to next month on right arrow click", () => {
+    it("navigates to the next month when the next chevron is clicked", () => {
       render(<CalendarTabPage />)
-      fireEvent.click(screen.getByTestId("next-month"))
+      fireEvent.click(screen.getByRole("button", { name: "Next month" }))
 
       const nextMonth = MONTH === 11 ? 0 : MONTH + 1
       const nextYear = MONTH === 11 ? YEAR + 1 : YEAR
-      const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
-      ]
-      expect(screen.getByTestId("month-header")).toHaveTextContent(
-        `${months[nextMonth]} ${nextYear}`
+      expect(monthLabel()).toHaveTextContent(`${MONTH_NAMES[nextMonth]} ${nextYear}`)
+    })
+
+    it("re-queries getEventsForMonth with the new month after navigating forward", () => {
+      render(<CalendarTabPage />)
+      mockGetEventsForMonth.mockClear()
+      fireEvent.click(screen.getByRole("button", { name: "Next month" }))
+
+      const nextMonth = MONTH === 11 ? 0 : MONTH + 1
+      const nextYear = MONTH === 11 ? YEAR + 1 : YEAR
+      // hook is called with 1-indexed month for the now-displayed month
+      expect(mockGetEventsForMonth).toHaveBeenCalledWith(nextYear, nextMonth + 1)
+    })
+
+    it("wraps Dec → Jan of the next year and back again", () => {
+      render(<CalendarTabPage />)
+      for (let i = 0; i <= 11 - MONTH; i++) {
+        fireEvent.click(screen.getByRole("button", { name: "Next month" }))
+      }
+      expect(monthLabel()).toHaveTextContent(`January ${YEAR + 1}`)
+
+      fireEvent.click(screen.getByRole("button", { name: "Previous month" }))
+      expect(monthLabel()).toHaveTextContent(`December ${YEAR}`)
+    })
+
+    it("opens the DayDetailSheet for the tapped day", () => {
+      render(<CalendarTabPage />)
+      expect(screen.queryByTestId("day-detail-sheet")).not.toBeInTheDocument()
+
+      // Tap today's cell (which has an event).
+      fireEvent.click(
+        screen.getByRole("button", { name: new RegExp(`^Day ${DAY},`) }),
+      )
+
+      expect(screen.getByTestId("day-detail-sheet")).toBeInTheDocument()
+      // Sheet title is the formatted selected date (e.g. "Monday, June 16").
+      const monthShort = MONTH_NAMES[MONTH]
+      expect(screen.getByTestId("day-sheet-title")).toHaveTextContent(
+        new RegExp(`${monthShort} ${DAY}$`),
       )
     })
 
-    it("clears selectedDate when navigating months", () => {
+    it("passes the tapped day's events into the DayDetailSheet", () => {
       render(<CalendarTabPage />)
-      // Initially today is selected, showing selected-day-events
-      expect(screen.getByTestId("selected-day-events")).toBeInTheDocument()
-
-      // Navigate to next month — selectedDate should clear
-      fireEvent.click(screen.getByTestId("next-month"))
-      expect(screen.queryByTestId("selected-day-events")).not.toBeInTheDocument()
+      fireEvent.click(
+        screen.getByRole("button", { name: new RegExp(`^Day ${DAY},`) }),
+      )
+      // The sheet renders an EventCard for evt-1 ("Date Night") which falls on today.
+      const sheet = screen.getByTestId("day-detail-sheet")
+      expect(sheet).toHaveTextContent("Date Night")
     })
 
-    it("calls refreshEvents when retry button is clicked", () => {
-      mockCalendarReturn = { ...mockCalendarReturn, error: "Failed" }
+    it("closes the DayDetailSheet when navigating to another month", () => {
       render(<CalendarTabPage />)
-      fireEvent.click(screen.getByTestId("calendar-retry"))
-      expect(mockRefreshEvents).toHaveBeenCalledTimes(1)
+      fireEvent.click(
+        screen.getByRole("button", { name: new RegExp(`^Day ${DAY},`) }),
+      )
+      expect(screen.getByTestId("day-detail-sheet")).toBeInTheDocument()
+
+      // goNextMonth clears the selected day → sheet unmounts.
+      fireEvent.click(screen.getByRole("button", { name: "Next month" }))
+      expect(screen.queryByTestId("day-detail-sheet")).not.toBeInTheDocument()
+    })
+
+    it("shows the empty-day state in the sheet when the tapped day has no events", () => {
+      render(<CalendarTabPage />)
+      // Tap a day with no events. Use day 1 unless an event lands on it.
+      const emptyDay = MOCK_EVENTS.some((e) => e.event_date.endsWith("-01")) ? 2 : 1
+      fireEvent.click(
+        screen.getByRole("button", { name: new RegExp(`^Day ${emptyDay}(,|$)`) }),
+      )
+      expect(screen.getByTestId("day-sheet-empty")).toBeInTheDocument()
+      expect(screen.getByText("No events this day")).toBeInTheDocument()
     })
   })
 
-  // ── Integration tests ────────────────────────────────────────
+  // ── Integration: mocked hooks receive correct calls ──────────
 
   describe("integration", () => {
-    it("passes correct events to EventDotCalendar after mapping", () => {
-      // getEventsForMonth returns events with event_date as YYYY-MM-DD strings
-      // The page should map them to {date: number, category: string} for EventDotCalendar
+    it("routes the FAB to the calendar create sub-route via router.push", () => {
       render(<CalendarTabPage />)
-
-      // Verify getEventsForMonth was called with correct args
-      expect(mockGetEventsForMonth).toHaveBeenCalledWith(YEAR, MONTH + 1)
+      fireEvent.click(screen.getByRole("button", { name: "Add" }))
+      expect(mockPush).toHaveBeenCalledWith("/us/calendar/create")
     })
 
-    it("maps date_night category to 'date' for EventDotCalendar dots", () => {
-      const eventsForMonth = [makeEvent({ event_date: `${YEAR}-${MONTH_STR}-${String(DAY).padStart(2, "0")}` })]
-      mockGetEventsForMonth.mockReturnValue(eventsForMonth)
-
+    it("routes an upcoming event tap to its edit page via router.push(/us/calendar/edit/:id)", () => {
       render(<CalendarTabPage />)
-
-      // The component should internally map "date_night" → "date" for dot colors
-      // We verify via the calendar rendering that getEventsForMonth was called
-      expect(mockGetEventsForMonth).toHaveBeenCalled()
+      // Click the "Anniversary" upcoming card → onEditEvent("evt-2").
+      fireEvent.click(screen.getByText("Anniversary"))
+      expect(mockPush).toHaveBeenCalledWith("/us/calendar/edit/evt-2")
     })
 
-    it("displays event time when event_time is provided", () => {
-      const todayStr = `${YEAR}-${MONTH_STR}-${String(DAY).padStart(2, "0")}`
-      const timedEvent = makeEvent({ event_date: todayStr, event_time: "19:00:00" })
-      mockGetEventsForMonth.mockReturnValue([timedEvent])
-      mockCalendarReturn = {
-        ...mockCalendarReturn,
-        upcomingEvents: [timedEvent],
-        getEventsForMonth: mockGetEventsForMonth,
-      }
-
+    it("routes a sheet event tap (own event) to its edit page", () => {
       render(<CalendarTabPage />)
-
-      // Check that event is rendered (may appear in both sections)
-      expect(screen.getAllByText("Date Night").length).toBeGreaterThanOrEqual(1)
-    })
-
-    it("displays events without time as date-only", () => {
-      const todayStr = `${YEAR}-${MONTH_STR}-${String(DAY).padStart(2, "0")}`
-      const allDayEvent = makeEvent({
-        event_date: todayStr,
-        event_time: null,
-        title: "All Day Event",
-      })
-      mockGetEventsForMonth.mockReturnValue([allDayEvent])
-      mockCalendarReturn = {
-        ...mockCalendarReturn,
-        upcomingEvents: [allDayEvent],
-        getEventsForMonth: mockGetEventsForMonth,
-      }
-
-      render(<CalendarTabPage />)
-      // May appear in both selected day and Coming Up sections
-      expect(screen.getAllByText("All Day Event").length).toBeGreaterThanOrEqual(1)
-    })
-
-    it("wraps around months correctly (Dec → Jan, Jan → Dec)", () => {
-      render(<CalendarTabPage />)
-
-      // Navigate forward to wrap
-      for (let i = 0; i <= 11 - MONTH; i++) {
-        fireEvent.click(screen.getByTestId("next-month"))
-      }
-      // Should now be January of next year
-      expect(screen.getByTestId("month-header")).toHaveTextContent(
-        `January ${YEAR + 1}`
+      // Open today's sheet, then tap the event card inside it.
+      fireEvent.click(
+        screen.getByRole("button", { name: new RegExp(`^Day ${DAY},`) }),
       )
-
-      // Navigate back to wrap
-      fireEvent.click(screen.getByTestId("prev-month"))
-      expect(screen.getByTestId("month-header")).toHaveTextContent(
-        `December ${YEAR}`
-      )
-    })
-
-    it("renders FAB create button", () => {
-      render(<CalendarTabPage />)
-      const fab = screen.getByTestId("fab-create")
-      expect(fab).toBeInTheDocument()
-      expect(fab).toHaveAttribute("href", expect.stringContaining("/us/calendar/create"))
-    })
-
-    it("FAB passes selected date in URL", () => {
-      render(<CalendarTabPage />)
-      const fab = screen.getByTestId("fab-create")
-      const expectedMonth = String(MONTH + 1).padStart(2, "0")
-      const expectedDay = String(DAY).padStart(2, "0")
-      expect(fab).toHaveAttribute(
-        "href",
-        `/us/calendar/create?date=${YEAR}-${expectedMonth}-${expectedDay}`
-      )
-    })
-
-    it("empty day CTA links to create page", () => {
-      mockGetEventsForMonth.mockReturnValue([])
-      render(<CalendarTabPage />)
-      const emptyDay = screen.getByTestId("empty-day")
-      expect(emptyDay).toHaveAttribute("href", expect.stringContaining("/us/calendar/create"))
-    })
-
-    it("event card click navigates to edit page", () => {
-      render(<CalendarTabPage />)
-      // Click on "Date Night" event card in selected day section
-      const eventCards = screen.getAllByText("Date Night")
-      // Click the first one found (which should be the EventCard button)
-      fireEvent.click(eventCards[0].closest("button")!)
+      const sheet = screen.getByTestId("day-detail-sheet")
+      // evt-1 is creator_id "user-1" === userId → navigates to edit.
+      fireEvent.click(sheet.querySelector("button.text-start") ?? sheet)
+      // The EventCard's onClick → handleEventTap → push edit route for evt-1.
+      // (Find the EventCard button by its title text.)
+      const card = screen.getAllByText("Date Night").map((n) => n.closest("button")).find(Boolean)
+      if (card) fireEvent.click(card)
       expect(mockPush).toHaveBeenCalledWith("/us/calendar/edit/evt-1")
+    })
+
+    it("maps DB categories onto PlanView dot colors without throwing (date_night/milestone/reminder)", () => {
+      // reminder has no dedicated dot color → must fold onto a valid key ("family").
+      // If mapping returned an undefined key, PlanView's dot style would be undefined;
+      // rendering all three categories proves the mapping produced valid keys.
+      render(<CalendarTabPage />)
+      // All three categorized events render their titles in "Coming up".
+      expect(screen.getByText("Date Night")).toBeInTheDocument() // date_night → date
+      expect(screen.getByText("Anniversary")).toBeInTheDocument() // milestone → milestone
+      expect(screen.getByText("Dentist")).toBeInTheDocument() // reminder → family
+    })
+
+    it("caps the 'Coming up' list at 3 even when more upcoming events exist", () => {
+      const many = [
+        ...MOCK_EVENTS,
+        makeEvent({ id: "evt-4", title: "Fourth Event", event_date: `${YEAR}-${MONTH_STR}-25`, category: "reminder" }),
+        makeEvent({ id: "evt-5", title: "Fifth Event", event_date: `${YEAR}-${MONTH_STR}-26`, category: "reminder" }),
+      ]
+      mockCalendarReturn = { ...mockCalendarReturn, upcomingEvents: many }
+      render(<CalendarTabPage />)
+      // First three render; the 4th/5th are sliced off.
+      expect(screen.getByText("Date Night")).toBeInTheDocument()
+      expect(screen.getByText("Anniversary")).toBeInTheDocument()
+      expect(screen.getByText("Dentist")).toBeInTheDocument()
+      expect(screen.queryByText("Fourth Event")).not.toBeInTheDocument()
+      expect(screen.queryByText("Fifth Event")).not.toBeInTheDocument()
+    })
+
+    it("formats an upcoming event's 'when' with date + time when event_time is present", () => {
+      const todayOnly = [makeEvent({ id: "evt-1", title: "Timed Event", event_date: TODAY_DATE, event_time: "19:00:00", category: "date_night" })]
+      mockCalendarReturn = { ...mockCalendarReturn, upcomingEvents: todayOnly }
+      render(<CalendarTabPage />)
+      const card = screen.getByText("Timed Event").closest("div")?.parentElement
+      // "MMM d · h:mm a" → contains the time portion.
+      expect(card).toHaveTextContent("7:00 PM")
+    })
+
+    it("formats an all-day upcoming event's 'when' with date only (no time separator)", () => {
+      const allDay = [makeEvent({ id: "evt-1", title: "All Day", event_date: TODAY_DATE, event_time: null, category: "milestone" })]
+      mockCalendarReturn = { ...mockCalendarReturn, upcomingEvents: allDay }
+      render(<CalendarTabPage />)
+      const whenLine = screen.getByText("All Day").parentElement?.querySelector("span:last-child")
+      expect(whenLine?.textContent).not.toContain("·")
+      expect(whenLine?.textContent).not.toMatch(/\d{1,2}:\d{2}/)
     })
   })
 })

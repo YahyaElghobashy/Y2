@@ -2,24 +2,20 @@
 
 import { Share2, Bookmark } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getDailyAyah, QURAN_ATTRIBUTION } from "@/lib/quran/daily-ayah"
 
 type DailyAyahProps = {
   className?: string
 }
 
-// Static verse for now — in a future task, this could be fetched from an API
-export const DAILY_VERSE = {
-  arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
-  translation:
-    "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
-  reference: "Surah Al-Baqarah 2:152",
-}
-
 export function DailyAyah({ className }: DailyAyahProps) {
+  const verse = getDailyAyah()
+  const reference = `Surah ${verse.surahNameEn} ${verse.ref}`
+
   const handleShare = async () => {
     if (navigator.share) {
       await navigator.share({
-        text: `${DAILY_VERSE.arabic}\n\n"${DAILY_VERSE.translation}"\n\n— ${DAILY_VERSE.reference}`,
+        text: `${verse.arabic}\n\n"${verse.translation}"\n\n— ${reference}`,
       })
     }
   }
@@ -48,7 +44,7 @@ export function DailyAyah({ className }: DailyAyahProps) {
             dir="rtl"
             data-testid="ayah-arabic"
           >
-            {DAILY_VERSE.arabic}
+            {verse.arabic}
           </p>
 
           {/* Translation + reference */}
@@ -57,14 +53,17 @@ export function DailyAyah({ className }: DailyAyahProps) {
               className="font-body text-[var(--text-secondary)] italic leading-snug"
               data-testid="ayah-translation"
             >
-              &ldquo;{DAILY_VERSE.translation}&rdquo;
+              &ldquo;{verse.translation}&rdquo;
             </p>
             <p
               className="text-[10px] font-bold uppercase tracking-[0.2em]"
               style={{ color: "var(--gold, #DAA520)" }}
               data-testid="ayah-reference"
             >
-              {DAILY_VERSE.reference}
+              {reference}
+            </p>
+            <p className="text-[9px] uppercase tracking-[0.16em] text-[var(--text-secondary)] opacity-60">
+              {QURAN_ATTRIBUTION.translatorCredit}
             </p>
           </div>
         </div>

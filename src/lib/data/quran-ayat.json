@@ -1,0 +1,441 @@
+{
+  "_source": "https://alquran.cloud (api.alquran.cloud v1)",
+  "_arabicEdition": "quran-uthmani (Uthmani script)",
+  "_translationEdition": "en.sahih (Saheeh International)",
+  "_note": "Arabic + translation are fetched verbatim from the canonical API and never hand-edited. Audit by surah:ayah against any Mushaf.",
+  "_count": 48,
+  "verses": [
+    {
+      "surah": 2,
+      "ayah": 152,
+      "ref": "2:152",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "فَٱذْكُرُونِىٓ أَذْكُرْكُمْ وَٱشْكُرُوا۟ لِى وَلَا تَكْفُرُونِ",
+      "translation": "So remember Me; I will remember you. And be grateful to Me and do not deny Me."
+    },
+    {
+      "surah": 2,
+      "ayah": 153,
+      "ref": "2:153",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّٰبِرِينَ",
+      "translation": "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient."
+    },
+    {
+      "surah": 2,
+      "ayah": 155,
+      "ref": "2:155",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "وَلَنَبْلُوَنَّكُم بِشَىْءٍۢ مِّنَ ٱلْخَوْفِ وَٱلْجُوعِ وَنَقْصٍۢ مِّنَ ٱلْأَمْوَٰلِ وَٱلْأَنفُسِ وَٱلثَّمَرَٰتِ ۗ وَبَشِّرِ ٱلصَّٰبِرِينَ",
+      "translation": "And We will surely test you with something of fear and hunger and a loss of wealth and lives and fruits, but give good tidings to the patient,"
+    },
+    {
+      "surah": 2,
+      "ayah": 186,
+      "ref": "2:186",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ ۖ فَلْيَسْتَجِيبُوا۟ لِى وَلْيُؤْمِنُوا۟ بِى لَعَلَّهُمْ يَرْشُدُونَ",
+      "translation": "And when My servants ask you, [O Muhammad], concerning Me - indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. So let them respond to Me [by obedience] and believe in Me that they may be [rightly] guided."
+    },
+    {
+      "surah": 2,
+      "ayah": 216,
+      "ref": "2:216",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌۭ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًۭٔا وَهُوَ خَيْرٌۭ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًۭٔا وَهُوَ شَرٌّۭ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
+      "translation": "Fighting has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah Knows, while you know not."
+    },
+    {
+      "surah": 2,
+      "ayah": 286,
+      "ref": "2:286",
+      "surahNameAr": "سُورَةُ البَقَرَةِ",
+      "surahNameEn": "Al-Baqara",
+      "arabic": "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَٰفِرِينَ",
+      "translation": "Allah does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. \"Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.\""
+    },
+    {
+      "surah": 3,
+      "ayah": 8,
+      "ref": "3:8",
+      "surahNameAr": "سُورَةُ آلِ عِمۡرَانَ",
+      "surahNameEn": "Aal-i-Imraan",
+      "arabic": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ",
+      "translation": "[Who say], \"Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower."
+    },
+    {
+      "surah": 3,
+      "ayah": 139,
+      "ref": "3:139",
+      "surahNameAr": "سُورَةُ آلِ عِمۡرَانَ",
+      "surahNameEn": "Aal-i-Imraan",
+      "arabic": "وَلَا تَهِنُوا۟ وَلَا تَحْزَنُوا۟ وَأَنتُمُ ٱلْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ",
+      "translation": "So do not weaken and do not grieve, and you will be superior if you are [true] believers."
+    },
+    {
+      "surah": 3,
+      "ayah": 159,
+      "ref": "3:159",
+      "surahNameAr": "سُورَةُ آلِ عِمۡرَانَ",
+      "surahNameEn": "Aal-i-Imraan",
+      "arabic": "فَبِمَا رَحْمَةٍۢ مِّنَ ٱللَّهِ لِنتَ لَهُمْ ۖ وَلَوْ كُنتَ فَظًّا غَلِيظَ ٱلْقَلْبِ لَٱنفَضُّوا۟ مِنْ حَوْلِكَ ۖ فَٱعْفُ عَنْهُمْ وَٱسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِى ٱلْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ",
+      "translation": "So by mercy from Allah, [O Muhammad], you were lenient with them. And if you had been rude [in speech] and harsh in heart, they would have disbanded from about you. So pardon them and ask forgiveness for them and consult them in the matter. And when you have decided, then rely upon Allah. Indeed, Allah loves those who rely [upon Him]."
+    },
+    {
+      "surah": 3,
+      "ayah": 173,
+      "ref": "3:173",
+      "surahNameAr": "سُورَةُ آلِ عِمۡرَانَ",
+      "surahNameEn": "Aal-i-Imraan",
+      "arabic": "ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ",
+      "translation": "Those to whom hypocrites said, \"Indeed, the people have gathered against you, so fear them.\" But it [merely] increased them in faith, and they said, \"Sufficient for us is Allah, and [He is] the best Disposer of affairs.\""
+    },
+    {
+      "surah": 3,
+      "ayah": 200,
+      "ref": "3:200",
+      "surahNameAr": "سُورَةُ آلِ عِمۡرَانَ",
+      "surahNameEn": "Aal-i-Imraan",
+      "arabic": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱصْبِرُوا۟ وَصَابِرُوا۟ وَرَابِطُوا۟ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُفْلِحُونَ",
+      "translation": "O you who have believed, persevere and endure and remain stationed and fear Allah that you may be successful."
+    },
+    {
+      "surah": 6,
+      "ayah": 59,
+      "ref": "6:59",
+      "surahNameAr": "سُورَةُ الأَنۡعَامِ",
+      "surahNameEn": "Al-An'aam",
+      "arabic": "۞ وَعِندَهُۥ مَفَاتِحُ ٱلْغَيْبِ لَا يَعْلَمُهَآ إِلَّا هُوَ ۚ وَيَعْلَمُ مَا فِى ٱلْبَرِّ وَٱلْبَحْرِ ۚ وَمَا تَسْقُطُ مِن وَرَقَةٍ إِلَّا يَعْلَمُهَا وَلَا حَبَّةٍۢ فِى ظُلُمَٰتِ ٱلْأَرْضِ وَلَا رَطْبٍۢ وَلَا يَابِسٍ إِلَّا فِى كِتَٰبٍۢ مُّبِينٍۢ",
+      "translation": "And with Him are the keys of the unseen; none knows them except Him. And He knows what is on the land and in the sea. Not a leaf falls but that He knows it. And no grain is there within the darknesses of the earth and no moist or dry [thing] but that it is [written] in a clear record."
+    },
+    {
+      "surah": 7,
+      "ayah": 23,
+      "ref": "7:23",
+      "surahNameAr": "سُورَةُ الأَعۡرَافِ",
+      "surahNameEn": "Al-A'raaf",
+      "arabic": "قَالَا رَبَّنَا ظَلَمْنَآ أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ ٱلْخَٰسِرِينَ",
+      "translation": "They said, \"Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.\""
+    },
+    {
+      "surah": 8,
+      "ayah": 46,
+      "ref": "8:46",
+      "surahNameAr": "سُورَةُ الأَنفَالِ",
+      "surahNameEn": "Al-Anfaal",
+      "arabic": "وَأَطِيعُوا۟ ٱللَّهَ وَرَسُولَهُۥ وَلَا تَنَٰزَعُوا۟ فَتَفْشَلُوا۟ وَتَذْهَبَ رِيحُكُمْ ۖ وَٱصْبِرُوٓا۟ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّٰبِرِينَ",
+      "translation": "And obey Allah and His Messenger, and do not dispute and [thus] lose courage and [then] your strength would depart; and be patient. Indeed, Allah is with the patient."
+    },
+    {
+      "surah": 9,
+      "ayah": 40,
+      "ref": "9:40",
+      "surahNameAr": "سُورَةُ التَّوۡبَةِ",
+      "surahNameEn": "At-Tawba",
+      "arabic": "إِلَّا تَنصُرُوهُ فَقَدْ نَصَرَهُ ٱللَّهُ إِذْ أَخْرَجَهُ ٱلَّذِينَ كَفَرُوا۟ ثَانِىَ ٱثْنَيْنِ إِذْ هُمَا فِى ٱلْغَارِ إِذْ يَقُولُ لِصَٰحِبِهِۦ لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا ۖ فَأَنزَلَ ٱللَّهُ سَكِينَتَهُۥ عَلَيْهِ وَأَيَّدَهُۥ بِجُنُودٍۢ لَّمْ تَرَوْهَا وَجَعَلَ كَلِمَةَ ٱلَّذِينَ كَفَرُوا۟ ٱلسُّفْلَىٰ ۗ وَكَلِمَةُ ٱللَّهِ هِىَ ٱلْعُلْيَا ۗ وَٱللَّهُ عَزِيزٌ حَكِيمٌ",
+      "translation": "If you do not aid the Prophet - Allah has already aided him when those who disbelieved had driven him out [of Makkah] as one of two, when they were in the cave and he said to his companion, \"Do not grieve; indeed Allah is with us.\" And Allah sent down his tranquillity upon him and supported him with angels you did not see and made the word of those who disbelieved the lowest, while the word of Allah - that is the highest. And Allah is Exalted in Might and Wise."
+    },
+    {
+      "surah": 9,
+      "ayah": 51,
+      "ref": "9:51",
+      "surahNameAr": "سُورَةُ التَّوۡبَةِ",
+      "surahNameEn": "At-Tawba",
+      "arabic": "قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ",
+      "translation": "Say, \"Never will we be struck except by what Allah has decreed for us; He is our protector.\" And upon Allah let the believers rely."
+    },
+    {
+      "surah": 11,
+      "ayah": 88,
+      "ref": "11:88",
+      "surahNameAr": "سُورَةُ هُودٍ",
+      "surahNameEn": "Hud",
+      "arabic": "قَالَ يَٰقَوْمِ أَرَءَيْتُمْ إِن كُنتُ عَلَىٰ بَيِّنَةٍۢ مِّن رَّبِّى وَرَزَقَنِى مِنْهُ رِزْقًا حَسَنًۭا ۚ وَمَآ أُرِيدُ أَنْ أُخَالِفَكُمْ إِلَىٰ مَآ أَنْهَىٰكُمْ عَنْهُ ۚ إِنْ أُرِيدُ إِلَّا ٱلْإِصْلَٰحَ مَا ٱسْتَطَعْتُ ۚ وَمَا تَوْفِيقِىٓ إِلَّا بِٱللَّهِ ۚ عَلَيْهِ تَوَكَّلْتُ وَإِلَيْهِ أُنِيبُ",
+      "translation": "He said, \"O my people, have you considered: if I am upon clear evidence from my Lord and He has provided me with a good provision from Him...? And I do not intend to differ from you in that which I have forbidden you; I only intend reform as much as I am able. And my success is not but through Allah. Upon him I have relied, and to Him I return."
+    },
+    {
+      "surah": 12,
+      "ayah": 87,
+      "ref": "12:87",
+      "surahNameAr": "سُورَةُ يُوسُفَ",
+      "surahNameEn": "Yusuf",
+      "arabic": "يَٰبَنِىَّ ٱذْهَبُوا۟ فَتَحَسَّسُوا۟ مِن يُوسُفَ وَأَخِيهِ وَلَا تَا۟يْـَٔسُوا۟ مِن رَّوْحِ ٱللَّهِ ۖ إِنَّهُۥ لَا يَا۟يْـَٔسُ مِن رَّوْحِ ٱللَّهِ إِلَّا ٱلْقَوْمُ ٱلْكَٰفِرُونَ",
+      "translation": "O my sons, go and find out about Joseph and his brother and despair not of relief from Allah. Indeed, no one despairs of relief from Allah except the disbelieving people.\""
+    },
+    {
+      "surah": 13,
+      "ayah": 11,
+      "ref": "13:11",
+      "surahNameAr": "سُورَةُ الرَّعۡدِ",
+      "surahNameEn": "Ar-Ra'd",
+      "arabic": "لَهُۥ مُعَقِّبَٰتٌۭ مِّنۢ بَيْنِ يَدَيْهِ وَمِنْ خَلْفِهِۦ يَحْفَظُونَهُۥ مِنْ أَمْرِ ٱللَّهِ ۗ إِنَّ ٱللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا۟ مَا بِأَنفُسِهِمْ ۗ وَإِذَآ أَرَادَ ٱللَّهُ بِقَوْمٍۢ سُوٓءًۭا فَلَا مَرَدَّ لَهُۥ ۚ وَمَا لَهُم مِّن دُونِهِۦ مِن وَالٍ",
+      "translation": "For each one are successive [angels] before and behind him who protect him by the decree of Allah. Indeed, Allah will not change the condition of a people until they change what is in themselves. And when Allah intends for a people ill, there is no repelling it. And there is not for them besides Him any patron."
+    },
+    {
+      "surah": 13,
+      "ayah": 28,
+      "ref": "13:28",
+      "surahNameAr": "سُورَةُ الرَّعۡدِ",
+      "surahNameEn": "Ar-Ra'd",
+      "arabic": "ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ",
+      "translation": "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.\""
+    },
+    {
+      "surah": 14,
+      "ayah": 7,
+      "ref": "14:7",
+      "surahNameAr": "سُورَةُ إِبۡرَاهِيمَ",
+      "surahNameEn": "Ibrahim",
+      "arabic": "وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِى لَشَدِيدٌۭ",
+      "translation": "And [remember] when your Lord proclaimed, 'If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe.' \""
+    },
+    {
+      "surah": 16,
+      "ayah": 97,
+      "ref": "16:97",
+      "surahNameAr": "سُورَةُ النَّحۡلِ",
+      "surahNameEn": "An-Nahl",
+      "arabic": "مَنْ عَمِلَ صَٰلِحًۭا مِّن ذَكَرٍ أَوْ أُنثَىٰ وَهُوَ مُؤْمِنٌۭ فَلَنُحْيِيَنَّهُۥ حَيَوٰةًۭ طَيِّبَةًۭ ۖ وَلَنَجْزِيَنَّهُمْ أَجْرَهُم بِأَحْسَنِ مَا كَانُوا۟ يَعْمَلُونَ",
+      "translation": "Whoever does righteousness, whether male or female, while he is a believer - We will surely cause him to live a good life, and We will surely give them their reward [in the Hereafter] according to the best of what they used to do."
+    },
+    {
+      "surah": 16,
+      "ayah": 128,
+      "ref": "16:128",
+      "surahNameAr": "سُورَةُ النَّحۡلِ",
+      "surahNameEn": "An-Nahl",
+      "arabic": "إِنَّ ٱللَّهَ مَعَ ٱلَّذِينَ ٱتَّقَوا۟ وَّٱلَّذِينَ هُم مُّحْسِنُونَ",
+      "translation": "Indeed, Allah is with those who fear Him and those who are doers of good."
+    },
+    {
+      "surah": 17,
+      "ayah": 80,
+      "ref": "17:80",
+      "surahNameAr": "سُورَةُ الإِسۡرَاءِ",
+      "surahNameEn": "Al-Israa",
+      "arabic": "وَقُل رَّبِّ أَدْخِلْنِى مُدْخَلَ صِدْقٍۢ وَأَخْرِجْنِى مُخْرَجَ صِدْقٍۢ وَٱجْعَل لِّى مِن لَّدُنكَ سُلْطَٰنًۭا نَّصِيرًۭا",
+      "translation": "And say, \"My Lord, cause me to enter a sound entrance and to exit a sound exit and grant me from Yourself a supporting authority.\""
+    },
+    {
+      "surah": 20,
+      "ayah": 114,
+      "ref": "20:114",
+      "surahNameAr": "سُورَةُ طه",
+      "surahNameEn": "Taa-Haa",
+      "arabic": "فَتَعَٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۗ وَلَا تَعْجَلْ بِٱلْقُرْءَانِ مِن قَبْلِ أَن يُقْضَىٰٓ إِلَيْكَ وَحْيُهُۥ ۖ وَقُل رَّبِّ زِدْنِى عِلْمًۭا",
+      "translation": "So high [above all] is Allah, the Sovereign, the Truth. And, [O Muhammad], do not hasten with [recitation of] the Qur'an before its revelation is completed to you, and say, \"My Lord, increase me in knowledge.\""
+    },
+    {
+      "surah": 23,
+      "ayah": 118,
+      "ref": "23:118",
+      "surahNameAr": "سُورَةُ المُؤۡمِنُونَ",
+      "surahNameEn": "Al-Muminoon",
+      "arabic": "وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ",
+      "translation": "And, [O Muhammad], say, \"My Lord, forgive and have mercy, and You are the best of the merciful.\""
+    },
+    {
+      "surah": 25,
+      "ayah": 74,
+      "ref": "25:74",
+      "surahNameAr": "سُورَةُ الفُرۡقَانِ",
+      "surahNameEn": "Al-Furqaan",
+      "arabic": "وَٱلَّذِينَ يَقُولُونَ رَبَّنَا هَبْ لَنَا مِنْ أَزْوَٰجِنَا وَذُرِّيَّٰتِنَا قُرَّةَ أَعْيُنٍۢ وَٱجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا",
+      "translation": "And those who say, \"Our Lord, grant us from among our wives and offspring comfort to our eyes and make us an example for the righteous.\""
+    },
+    {
+      "surah": 29,
+      "ayah": 69,
+      "ref": "29:69",
+      "surahNameAr": "سُورَةُ العَنكَبُوتِ",
+      "surahNameEn": "Al-Ankaboot",
+      "arabic": "وَٱلَّذِينَ جَٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ ٱللَّهَ لَمَعَ ٱلْمُحْسِنِينَ",
+      "translation": "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allah is with the doers of good."
+    },
+    {
+      "surah": 39,
+      "ayah": 53,
+      "ref": "39:53",
+      "surahNameAr": "سُورَةُ الزُّمَرِ",
+      "surahNameEn": "Az-Zumar",
+      "arabic": "۞ قُلْ يَٰعِبَادِىَ ٱلَّذِينَ أَسْرَفُوا۟ عَلَىٰٓ أَنفُسِهِمْ لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ يَغْفِرُ ٱلذُّنُوبَ جَمِيعًا ۚ إِنَّهُۥ هُوَ ٱلْغَفُورُ ٱلرَّحِيمُ",
+      "translation": "Say, \"O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allah. Indeed, Allah forgives all sins. Indeed, it is He who is the Forgiving, the Merciful.\""
+    },
+    {
+      "surah": 40,
+      "ayah": 60,
+      "ref": "40:60",
+      "surahNameAr": "سُورَةُ غَافِرٍ",
+      "surahNameEn": "Ghafir",
+      "arabic": "وَقَالَ رَبُّكُمُ ٱدْعُونِىٓ أَسْتَجِبْ لَكُمْ ۚ إِنَّ ٱلَّذِينَ يَسْتَكْبِرُونَ عَنْ عِبَادَتِى سَيَدْخُلُونَ جَهَنَّمَ دَاخِرِينَ",
+      "translation": "And your Lord says, \"Call upon Me; I will respond to you.\" Indeed, those who disdain My worship will enter Hell [rendered] contemptible."
+    },
+    {
+      "surah": 41,
+      "ayah": 30,
+      "ref": "41:30",
+      "surahNameAr": "سُورَةُ فُصِّلَتۡ",
+      "surahNameEn": "Fussilat",
+      "arabic": "إِنَّ ٱلَّذِينَ قَالُوا۟ رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَٰمُوا۟ تَتَنَزَّلُ عَلَيْهِمُ ٱلْمَلَٰٓئِكَةُ أَلَّا تَخَافُوا۟ وَلَا تَحْزَنُوا۟ وَأَبْشِرُوا۟ بِٱلْجَنَّةِ ٱلَّتِى كُنتُمْ تُوعَدُونَ",
+      "translation": "Indeed, those who have said, \"Our Lord is Allah \" and then remained on a right course - the angels will descend upon them, [saying], \"Do not fear and do not grieve but receive good tidings of Paradise, which you were promised."
+    },
+    {
+      "surah": 46,
+      "ayah": 13,
+      "ref": "46:13",
+      "surahNameAr": "سُورَةُ الأَحۡقَافِ",
+      "surahNameEn": "Al-Ahqaf",
+      "arabic": "إِنَّ ٱلَّذِينَ قَالُوا۟ رَبُّنَا ٱللَّهُ ثُمَّ ٱسْتَقَٰمُوا۟ فَلَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ",
+      "translation": "Indeed, those who have said, \"Our Lord is Allah,\" and then remained on a right course - there will be no fear concerning them, nor will they grieve."
+    },
+    {
+      "surah": 47,
+      "ayah": 7,
+      "ref": "47:7",
+      "surahNameAr": "سُورَةُ مُحَمَّدٍ",
+      "surahNameEn": "Muhammad",
+      "arabic": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِن تَنصُرُوا۟ ٱللَّهَ يَنصُرْكُمْ وَيُثَبِّتْ أَقْدَامَكُمْ",
+      "translation": "O you who have believed, if you support Allah, He will support you and plant firmly your feet."
+    },
+    {
+      "surah": 49,
+      "ayah": 13,
+      "ref": "49:13",
+      "surahNameAr": "سُورَةُ الحُجُرَاتِ",
+      "surahNameEn": "Al-Hujuraat",
+      "arabic": "يَٰٓأَيُّهَا ٱلنَّاسُ إِنَّا خَلَقْنَٰكُم مِّن ذَكَرٍۢ وَأُنثَىٰ وَجَعَلْنَٰكُمْ شُعُوبًۭا وَقَبَآئِلَ لِتَعَارَفُوٓا۟ ۚ إِنَّ أَكْرَمَكُمْ عِندَ ٱللَّهِ أَتْقَىٰكُمْ ۚ إِنَّ ٱللَّهَ عَلِيمٌ خَبِيرٌۭ",
+      "translation": "O mankind, indeed We have created you from male and female and made you peoples and tribes that you may know one another. Indeed, the most noble of you in the sight of Allah is the most righteous of you. Indeed, Allah is Knowing and Acquainted."
+    },
+    {
+      "surah": 50,
+      "ayah": 16,
+      "ref": "50:16",
+      "surahNameAr": "سُورَةُ قٓ",
+      "surahNameEn": "Qaaf",
+      "arabic": "وَلَقَدْ خَلَقْنَا ٱلْإِنسَٰنَ وَنَعْلَمُ مَا تُوَسْوِسُ بِهِۦ نَفْسُهُۥ ۖ وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ ٱلْوَرِيدِ",
+      "translation": "And We have already created man and know what his soul whispers to him, and We are closer to him than [his] jugular vein"
+    },
+    {
+      "surah": 53,
+      "ayah": 39,
+      "ref": "53:39",
+      "surahNameAr": "سُورَةُ النَّجۡمِ",
+      "surahNameEn": "An-Najm",
+      "arabic": "وَأَن لَّيْسَ لِلْإِنسَٰنِ إِلَّا مَا سَعَىٰ",
+      "translation": "And that there is not for man except that [good] for which he strives"
+    },
+    {
+      "surah": 54,
+      "ayah": 17,
+      "ref": "54:17",
+      "surahNameAr": "سُورَةُ القَمَرِ",
+      "surahNameEn": "Al-Qamar",
+      "arabic": "وَلَقَدْ يَسَّرْنَا ٱلْقُرْءَانَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍۢ",
+      "translation": "And We have certainly made the Qur'an easy for remembrance, so is there any who will remember?"
+    },
+    {
+      "surah": 55,
+      "ayah": 13,
+      "ref": "55:13",
+      "surahNameAr": "سُورَةُ الرَّحۡمَٰن",
+      "surahNameEn": "Ar-Rahmaan",
+      "arabic": "فَبِأَىِّ ءَالَآءِ رَبِّكُمَا تُكَذِّبَانِ",
+      "translation": "So which of the favors of your Lord would you deny?"
+    },
+    {
+      "surah": 57,
+      "ayah": 4,
+      "ref": "57:4",
+      "surahNameAr": "سُورَةُ الحَدِيدِ",
+      "surahNameEn": "Al-Hadid",
+      "arabic": "هُوَ ٱلَّذِى خَلَقَ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ فِى سِتَّةِ أَيَّامٍۢ ثُمَّ ٱسْتَوَىٰ عَلَى ٱلْعَرْشِ ۚ يَعْلَمُ مَا يَلِجُ فِى ٱلْأَرْضِ وَمَا يَخْرُجُ مِنْهَا وَمَا يَنزِلُ مِنَ ٱلسَّمَآءِ وَمَا يَعْرُجُ فِيهَا ۖ وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ ۚ وَٱللَّهُ بِمَا تَعْمَلُونَ بَصِيرٌۭ",
+      "translation": "It is He who created the heavens and earth in six days and then established Himself above the Throne. He knows what penetrates into the earth and what emerges from it and what descends from the heaven and what ascends therein; and He is with you wherever you are. And Allah, of what you do, is Seeing."
+    },
+    {
+      "surah": 64,
+      "ayah": 11,
+      "ref": "64:11",
+      "surahNameAr": "سُورَةُ التَّغَابُنِ",
+      "surahNameEn": "At-Taghaabun",
+      "arabic": "مَآ أَصَابَ مِن مُّصِيبَةٍ إِلَّا بِإِذْنِ ٱللَّهِ ۗ وَمَن يُؤْمِنۢ بِٱللَّهِ يَهْدِ قَلْبَهُۥ ۚ وَٱللَّهُ بِكُلِّ شَىْءٍ عَلِيمٌۭ",
+      "translation": "No disaster strikes except by permission of Allah. And whoever believes in Allah - He will guide his heart. And Allah is Knowing of all things."
+    },
+    {
+      "surah": 65,
+      "ayah": 2,
+      "ref": "65:2",
+      "surahNameAr": "سُورَةُ الطَّلَاقِ",
+      "surahNameEn": "At-Talaaq",
+      "arabic": "فَإِذَا بَلَغْنَ أَجَلَهُنَّ فَأَمْسِكُوهُنَّ بِمَعْرُوفٍ أَوْ فَارِقُوهُنَّ بِمَعْرُوفٍۢ وَأَشْهِدُوا۟ ذَوَىْ عَدْلٍۢ مِّنكُمْ وَأَقِيمُوا۟ ٱلشَّهَٰدَةَ لِلَّهِ ۚ ذَٰلِكُمْ يُوعَظُ بِهِۦ مَن كَانَ يُؤْمِنُ بِٱللَّهِ وَٱلْيَوْمِ ٱلْءَاخِرِ ۚ وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًۭا",
+      "translation": "And when they have [nearly] fulfilled their term, either retain them according to acceptable terms or part with them according to acceptable terms. And bring to witness two just men from among you and establish the testimony for [the acceptance of] Allah. That is instructed to whoever should believe in Allah and the Last day. And whoever fears Allah - He will make for him a way out"
+    },
+    {
+      "surah": 65,
+      "ayah": 3,
+      "ref": "65:3",
+      "surahNameAr": "سُورَةُ الطَّلَاقِ",
+      "surahNameEn": "At-Talaaq",
+      "arabic": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍۢ قَدْرًۭا",
+      "translation": "And will provide for him from where he does not expect. And whoever relies upon Allah - then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a [decreed] extent."
+    },
+    {
+      "surah": 65,
+      "ayah": 7,
+      "ref": "65:7",
+      "surahNameAr": "سُورَةُ الطَّلَاقِ",
+      "surahNameEn": "At-Talaaq",
+      "arabic": "لِيُنفِقْ ذُو سَعَةٍۢ مِّن سَعَتِهِۦ ۖ وَمَن قُدِرَ عَلَيْهِ رِزْقُهُۥ فَلْيُنفِقْ مِمَّآ ءَاتَىٰهُ ٱللَّهُ ۚ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا مَآ ءَاتَىٰهَا ۚ سَيَجْعَلُ ٱللَّهُ بَعْدَ عُسْرٍۢ يُسْرًۭا",
+      "translation": "Let a man of wealth spend from his wealth, and he whose provision is restricted - let him spend from what Allah has given him. Allah does not charge a soul except [according to] what He has given it. Allah will bring about, after hardship, ease."
+    },
+    {
+      "surah": 67,
+      "ayah": 2,
+      "ref": "67:2",
+      "surahNameAr": "سُورَةُ المُلۡكِ",
+      "surahNameEn": "Al-Mulk",
+      "arabic": "ٱلَّذِى خَلَقَ ٱلْمَوْتَ وَٱلْحَيَوٰةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًۭا ۚ وَهُوَ ٱلْعَزِيزُ ٱلْغَفُورُ",
+      "translation": "[He] who created death and life to test you [as to] which of you is best in deed - and He is the Exalted in Might, the Forgiving -"
+    },
+    {
+      "surah": 93,
+      "ayah": 5,
+      "ref": "93:5",
+      "surahNameAr": "سُورَةُ الضُّحَىٰ",
+      "surahNameEn": "Ad-Dhuhaa",
+      "arabic": "وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰٓ",
+      "translation": "And your Lord is going to give you, and you will be satisfied."
+    },
+    {
+      "surah": 94,
+      "ayah": 5,
+      "ref": "94:5",
+      "surahNameAr": "سُورَةُ الشَّرۡحِ",
+      "surahNameEn": "Ash-Sharh",
+      "arabic": "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا",
+      "translation": "For indeed, with hardship [will be] ease."
+    },
+    {
+      "surah": 94,
+      "ayah": 6,
+      "ref": "94:6",
+      "surahNameAr": "سُورَةُ الشَّرۡحِ",
+      "surahNameEn": "Ash-Sharh",
+      "arabic": "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا",
+      "translation": "Indeed, with hardship [will be] ease."
+    },
+    {
+      "surah": 94,
+      "ayah": 8,
+      "ref": "94:8",
+      "surahNameAr": "سُورَةُ الشَّرۡحِ",
+      "surahNameEn": "Ash-Sharh",
+      "arabic": "وَإِلَىٰ رَبِّكَ فَٱرْغَب",
+      "translation": "And to your Lord direct [your] longing."
+    }
+  ]
+}
