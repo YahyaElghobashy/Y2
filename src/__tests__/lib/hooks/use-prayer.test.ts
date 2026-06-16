@@ -22,15 +22,51 @@ const mockFrom = vi.fn(() => ({
   upsert: mockUpsert,
 }))
 
+// ── Realtime channel mock ─────────────────────────────────────
+type RealtimeHandler = { config: { event: string }; cb: (payload: { new: unknown }) => void }
+const realtimeHandlers: RealtimeHandler[] = []
+const mockSubscribe = vi.fn()
+const mockRemoveChannel = vi.fn()
+const mockChannelOn = vi.fn(function (
+  this: unknown,
+  _event: string,
+  config: { event: string },
+  cb: (payload: { new: unknown }) => void
+) {
+  realtimeHandlers.push({ config, cb })
+  return this
+})
+const mockChannel = vi.fn(() => ({ on: mockChannelOn, subscribe: mockSubscribe }))
+
 vi.mock("@/lib/supabase/client", () => ({
-  getSupabaseBrowserClient: () => ({ from: mockFrom }),
+  getSupabaseBrowserClient: () => ({
+    from: mockFrom,
+    channel: mockChannel,
+    removeChannel: mockRemoveChannel,
+  }),
 }))
 
 import { usePrayer } from "@/lib/hooks/use-prayer"
 
+function emitRealtime(event: "INSERT" | "UPDATE", row: unknown) {
+  for (const h of realtimeHandlers) {
+    if (h.config.event === event) h.cb({ new: row })
+  }
+}
+
 describe("usePrayer", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    realtimeHandlers.length = 0
+    mockChannelOn.mockImplementation(function (
+      this: unknown,
+      _event: string,
+      config: { event: string },
+      cb: (payload: { new: unknown }) => void
+    ) {
+      realtimeHandlers.push({ config, cb })
+      return this
+    })
     mockUseAuth.mockReturnValue({ user: mockUser, partner: null })
   })
 
@@ -296,6 +332,137 @@ describe("usePrayer", () => {
         }),
         { onConflict: "user_id,date" }
       )
+    })
+  })
+
+  // ── Realtime Tests ──────────────────────────────────────────
+
+  describe("realtime", () => {
+    const today = new Date().toISOString().split("T")[0]
+    const baseRow = {
+      id: "row-1",
+      user_id: "user-1",
+      date: today,
+      fajr: false,
+      dhuhr: false,
+      asr: false,
+      maghrib: false,
+      isha: false,
+      created_at: "",
+      updated_at: "",
+    }
+
+    it("subscribes to prayer_log INSERT and UPDATE on mount", async () => {
+      mockMaybeSingle.mockResolvedValue({ data: baseRow, error: null })
+
+      // Isolate this render's .on() calls from any prior test's lingering hook.
+      mockChannelOn.mockClear()
+      mockChannel.mockClear()
+
+      const { unmount } = renderHook(() => usePrayer())
+
+      await waitFor(() => {
+        expect(mockSubscribe).toHaveBeenCalled()
+      })
+      expect(mockChannel).toHaveBeenCalled()
+      // Both INSERT and UPDATE handlers are registered (one channel listens to
+      // both events). Use a set so a harmless effect re-run can't make this
+      // brittle on exact call counts.
+      const events = new Set(
+        mockChannelOn.mock.calls.map((c) => (c[1] as { event: string }).event)
+      )
+      expect(events.has("INSERT")).toBe(true)
+      expect(events.has("UPDATE")).toBe(true)
+
+      unmount()
+    })
+
+    it("applies a realtime UPDATE for today's row to local state", async () => {
+      mockMaybeSingle.mockResolvedValue({ data: baseRow, error: null })
+
+      const { result } = renderHook(() => usePrayer())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      act(() => {
+        emitRealtime("UPDATE", { ...baseRow, fajr: true, dhuhr: true })
+      })
+
+      expect(result.current.today?.fajr).toBe(true)
+      expect(result.current.completedCount).toBe(2)
+    })
+
+    it("ignores realtime events for a different date", async () => {
+      mockMaybeSingle.mockResolvedValue({ data: baseRow, error: null })
+
+      const { result } = renderHook(() => usePrayer())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      act(() => {
+        emitRealtime("UPDATE", {
+          ...baseRow,
+          id: "row-other",
+          date: "2000-01-01",
+          fajr: true,
+        })
+      })
+
+      expect(result.current.today?.fajr).toBe(false)
+    })
+
+    it("removes the channel on unmount", async () => {
+      mockMaybeSingle.mockResolvedValue({ data: baseRow, error: null })
+
+      const { unmount } = renderHook(() => usePrayer())
+
+      await waitFor(() => {
+        expect(mockSubscribe).toHaveBeenCalled()
+      })
+
+      unmount()
+      expect(mockRemoveChannel).toHaveBeenCalled()
+    })
+
+    it("applies a realtime event for the NEW day after a midnight crossing (no stale date)", async () => {
+      vi.useFakeTimers()
+      try {
+        vi.setSystemTime(new Date("2026-06-16T23:59:00Z"))
+        mockMaybeSingle.mockResolvedValue({
+          data: { ...baseRow, id: "row-d1", date: "2026-06-16" },
+          error: null,
+        })
+
+        let hook: ReturnType<typeof renderHook<ReturnType<typeof usePrayer>, unknown>>
+        await act(async () => {
+          hook = renderHook(() => usePrayer())
+          await Promise.resolve()
+          await Promise.resolve()
+        })
+
+        // Cross midnight while the subscription stays alive.
+        vi.setSystemTime(new Date("2026-06-17T00:05:00Z"))
+
+        act(() => {
+          emitRealtime("UPDATE", {
+            ...baseRow,
+            id: "row-d2",
+            date: "2026-06-17",
+            fajr: true,
+            dhuhr: true,
+          })
+        })
+
+        // Old code captured yesterday's date and would have ignored this.
+        expect(hook!.result.current.today?.date).toBe("2026-06-17")
+        expect(hook!.result.current.completedCount).toBe(2)
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 })

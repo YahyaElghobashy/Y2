@@ -44,6 +44,13 @@ let singleResult: { data: unknown; error: unknown } = { data: null, error: null 
 const updateCalls: unknown[] = []
 const insertCalls: unknown[] = []
 
+let rpcResult: { data: unknown; error: unknown } = { data: null, error: null }
+const rpcCalls: Array<{ fn: string; args: unknown }> = []
+const mockRpc = vi.fn((fn: string, args: unknown) => {
+  rpcCalls.push({ fn, args })
+  return Promise.resolve(rpcResult)
+})
+
 const mockSubscribe = vi.fn()
 const mockRemoveChannel = vi.fn()
 const mockChannelOn = vi.fn(function (this: unknown) { return this })
@@ -75,6 +82,7 @@ const mockFrom = vi.fn(() => buildChain())
 // Stable singleton — prevents infinite useEffect loops
 const stableSupabase = {
   from: mockFrom,
+  rpc: mockRpc,
   channel: vi.fn(() => ({ on: mockChannelOn, subscribe: mockSubscribe })),
   removeChannel: mockRemoveChannel,
 }
@@ -95,6 +103,8 @@ describe("useGarden", () => {
     singleResult = { data: null, error: null }
     updateCalls.length = 0
     insertCalls.length = 0
+    rpcResult = { data: null, error: null }
+    rpcCalls.length = 0
     mockFrom.mockImplementation(() => buildChain())
     mockChannelOn.mockImplementation(function (this: unknown) { return this })
     mockUseAuth.mockReturnValue({
@@ -182,36 +192,11 @@ describe("useGarden", () => {
     expect(result.current.recentFlowers).toHaveLength(8)
   })
 
-  // ── recordOpened — insert new day ───────────────────────────
+  // ── recordOpened — atomic RPC delegation (race fix) ─────────
 
-  it("recordOpened inserts new row when today doesn't exist", async () => {
-    maybeSingleResult = { data: null, error: null }
-    singleResult = { data: { ...MOCK_GARDEN_DAY, id: "new-id", yahya_opened: true }, error: null }
-
-    const { result } = renderHook(() => useGarden())
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    await act(async () => {
-      await result.current.recordOpened()
-    })
-
-    expect(insertCalls.length).toBeGreaterThanOrEqual(1)
-    const lastInsert = insertCalls[insertCalls.length - 1] as Record<string, unknown>
-    expect(lastInsert.yahya_opened).toBe(true)
-  })
-
-  // ── recordOpened — update existing day ──────────────────────
-
-  it("recordOpened updates existing row", async () => {
-    maybeSingleResult = {
-      data: { ...MOCK_PARTIAL_DAY, yahya_opened: false },
-      error: null,
-    }
-    singleResult = {
-      data: { ...MOCK_PARTIAL_DAY, yahya_opened: true },
+  it("recordOpened delegates to the atomic record_garden_open RPC", async () => {
+    rpcResult = {
+      data: { ...MOCK_GARDEN_DAY, id: "new-id", yahya_opened: true, yara_opened: false, flower_type: null },
       error: null,
     }
 
@@ -225,39 +210,17 @@ describe("useGarden", () => {
       await result.current.recordOpened()
     })
 
-    expect(updateCalls.length).toBeGreaterThanOrEqual(1)
-    const lastUpdate = updateCalls[updateCalls.length - 1] as Record<string, unknown>
-    expect(lastUpdate.yahya_opened).toBe(true)
-  })
-
-  it("recordOpened skips if user already opened", async () => {
-    maybeSingleResult = {
-      data: { ...MOCK_PARTIAL_DAY, yahya_opened: true },
-      error: null,
-    }
-
-    const { result } = renderHook(() => useGarden())
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    await act(async () => {
-      await result.current.recordOpened()
-    })
-
+    // No client-side read-modify-write: never touches insert/update directly.
+    expect(insertCalls).toHaveLength(0)
     expect(updateCalls).toHaveLength(0)
+    expect(rpcCalls).toHaveLength(1)
+    expect(rpcCalls[0].fn).toBe("record_garden_open")
+    expect(rpcCalls[0].args).toEqual({ p_user_column: "yahya_opened" })
   })
 
-  // ── recordOpened — flower bloom ─────────────────────────────
-
-  it("includes flower_type when both users opened", async () => {
-    maybeSingleResult = {
-      data: { ...MOCK_PARTIAL_DAY, yahya_opened: false, yara_opened: true, flower_type: null },
-      error: null,
-    }
-    singleResult = {
-      data: { ...MOCK_PARTIAL_DAY, yahya_opened: true, yara_opened: true, flower_type: "🌻" },
+  it("recordOpened merges the RPC-returned row into state (new day)", async () => {
+    rpcResult = {
+      data: { ...MOCK_GARDEN_DAY, id: "fresh-id", garden_date: "2026-04-01", flower_type: null },
       error: null,
     }
 
@@ -271,17 +234,22 @@ describe("useGarden", () => {
       await result.current.recordOpened()
     })
 
-    const lastUpdate = updateCalls[updateCalls.length - 1] as Record<string, unknown>
-    expect(lastUpdate.yahya_opened).toBe(true)
-    expect(lastUpdate.flower_type).toBeDefined()
-    const flowerEmojis = ["🌸", "🌻", "🌹", "🌺", "🌷", "🌼", "💐", "🌿", "🍀", "🌵", "🪻", "🪷"]
-    expect(flowerEmojis).toContain(lastUpdate.flower_type)
+    expect(result.current.gardenDays.some((d) => d.id === "fresh-id")).toBe(true)
   })
 
-  // ── recordOpened — error handling ───────────────────────────
-
-  it("recordOpened sets error on maybeSingle failure", async () => {
-    maybeSingleResult = { data: null, error: { message: "Fetch error" } }
+  it("recordOpened reflects an atomically-bloomed flower from the RPC row", async () => {
+    // The second concurrent open returns a row where the DB has already set
+    // both columns and bloomed exactly one flower — no open was dropped.
+    rpcResult = {
+      data: {
+        ...MOCK_PARTIAL_DAY,
+        id: "gd-2",
+        yahya_opened: true,
+        yara_opened: true,
+        flower_type: "🌻",
+      },
+      error: null,
+    }
 
     const { result } = renderHook(() => useGarden())
 
@@ -293,7 +261,26 @@ describe("useGarden", () => {
       await result.current.recordOpened()
     })
 
-    expect(result.current.error).toBe("Fetch error")
+    const updated = result.current.gardenDays.find((d) => d.id === "gd-2")
+    expect(updated?.yahya_opened).toBe(true)
+    expect(updated?.yara_opened).toBe(true)
+    expect(updated?.flower_type).toBe("🌻")
+  })
+
+  it("recordOpened sets error when the RPC fails", async () => {
+    rpcResult = { data: null, error: { message: "rpc failed" } }
+
+    const { result } = renderHook(() => useGarden())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.recordOpened()
+    })
+
+    expect(result.current.error).toBe("rpc failed")
   })
 
   it("recordOpened is a no-op when no user", async () => {
@@ -305,20 +292,20 @@ describe("useGarden", () => {
       await result.current.recordOpened()
     })
 
+    expect(rpcCalls).toHaveLength(0)
     expect(updateCalls).toHaveLength(0)
     expect(insertCalls).toHaveLength(0)
   })
 
   // ── Yara column detection ──────────────────────────────────
 
-  it("uses yara_opened column for Yara's profile", async () => {
+  it("calls the RPC with yara_opened for Yara's profile", async () => {
     mockUseAuth.mockReturnValue({
       user: { id: "user-2", email: "yara@test.com" },
       profile: { display_name: "Yara" },
       partner: { id: "partner-1", display_name: "Yahya" },
     })
-    maybeSingleResult = { data: null, error: null }
-    singleResult = { data: { ...MOCK_GARDEN_DAY, id: "new-id", yara_opened: true }, error: null }
+    rpcResult = { data: { ...MOCK_GARDEN_DAY, id: "new-id", yara_opened: true }, error: null }
 
     const { result } = renderHook(() => useGarden())
 
@@ -330,8 +317,7 @@ describe("useGarden", () => {
       await result.current.recordOpened()
     })
 
-    const lastInsert = insertCalls[insertCalls.length - 1] as Record<string, unknown>
-    expect(lastInsert.yara_opened).toBe(true)
+    expect(rpcCalls[0].args).toEqual({ p_user_column: "yara_opened" })
   })
 
   // ── Realtime subscription ──────────────────────────────────

@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { differenceInDays, addDays, parseISO, startOfDay } from "date-fns"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { planPmsNotification } from "@/lib/cycle/pms-notification"
 import type { CycleConfig, CycleLog, UseCycleReturn } from "@/lib/types/health.types"
 
 const NULL_RETURN: UseCycleReturn = {
@@ -106,6 +107,77 @@ export function useCycle(): UseCycleReturn {
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  // ── PMS / period awareness notification — OWNER (Yahya) ONLY ──
+  // When today falls in a PMS or period window and we have not yet notified
+  // for THIS window, atomically claim the window with a single conditional
+  // UPDATE (safe across tabs/devices), then self-notify and deliver via the
+  // existing send-notification push pipeline. Yara never reaches this: the
+  // effect gates on the admin role and she owns no cycle_config row, so the
+  // claim matches zero rows even if the gate were bypassed.
+  const notifyAttemptRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!profile || profile.role !== "admin" || !config) return
+
+    const plan = planPmsNotification(config, new Date())
+    if (!plan) return
+    if (config.last_pms_notified_date === plan.windowStart) return
+    if (notifyAttemptRef.current === plan.windowStart) return
+    notifyAttemptRef.current = plan.windowStart
+
+    const ownerId = profile.id
+    let cancelled = false
+
+    async function notify() {
+      // Atomic claim — only one caller wins this window across all sessions.
+      const { data: claimed } = await supabase
+        .from("cycle_config")
+        .update({ last_pms_notified_date: plan!.windowStart })
+        .eq("owner_id", ownerId)
+        .or(
+          `last_pms_notified_date.is.null,last_pms_notified_date.neq.${plan!.windowStart}`
+        )
+        .select("id")
+        .maybeSingle()
+
+      if (cancelled || !claimed) return
+
+      const { data: notif } = await supabase
+        .from("notifications")
+        .insert({
+          sender_id: ownerId,
+          recipient_id: ownerId,
+          title: plan!.title,
+          body: plan!.body,
+          emoji: plan!.emoji,
+          type: "cycle_reminder",
+          metadata: { kind: plan!.kind, window_start: plan!.windowStart },
+        })
+        .select("id")
+        .single()
+
+      if (cancelled || !notif) return
+
+      await supabase.functions.invoke("send-notification", {
+        body: {
+          notification_id: (notif as { id: string }).id,
+          recipient_id: ownerId,
+        },
+      })
+
+      if (!cancelled) {
+        setConfig((prev) =>
+          prev ? { ...prev, last_pms_notified_date: plan!.windowStart } : prev
+        )
+      }
+    }
+
+    notify()
+
+    return () => {
+      cancelled = true
+    }
+  }, [profile, config, supabase])
 
   const refreshCycle = useCallback(async () => {
     setIsLoading(true)

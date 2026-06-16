@@ -44,6 +44,10 @@ describe("getRouteForNotification", () => {
       expect(getRouteForNotification("daily_bonus")).toBe("/us/coyyns")
     })
 
+    it("routes cycle_reminder to /me/body", () => {
+      expect(getRouteForNotification("cycle_reminder")).toBe("/me/body")
+    })
+
     it("routes unknown type to /", () => {
       expect(getRouteForNotification("unknown_type")).toBe("/")
     })

@@ -13,10 +13,37 @@ function createSupabaseMock() {
   let upsertResult: { data: unknown; error: unknown } = { data: null, error: null }
   const upsertCalls: unknown[] = []
 
+  const realtimeHandlers: Array<{
+    config: { event: string }
+    cb: (payload: { new: unknown }) => void
+  }> = []
+  const subscribeMock = vi.fn()
+  const removeChannelMock = vi.fn()
+
   const mock = {
     setSessionResult: (r: { data: unknown; error: unknown }) => { sessionResult = r },
     setUpsertResult: (r: { data: unknown; error: unknown }) => { upsertResult = r },
     getUpsertCalls: () => upsertCalls,
+    emit: (event: "INSERT" | "UPDATE", row: unknown) => {
+      for (const h of realtimeHandlers) {
+        if (h.config.event === event) h.cb({ new: row })
+      }
+    },
+    getSubscribe: () => subscribeMock,
+    getRemoveChannel: () => removeChannelMock,
+    channel: vi.fn(() => ({
+      on: vi.fn(function (
+        this: unknown,
+        _event: string,
+        config: { event: string },
+        cb: (payload: { new: unknown }) => void
+      ) {
+        realtimeHandlers.push({ config, cb })
+        return this
+      }),
+      subscribe: subscribeMock,
+    })),
+    removeChannel: removeChannelMock,
     from: vi.fn(() => {
       const chain: Record<string, unknown> = {}
 
@@ -338,6 +365,84 @@ describe("useAzkar", () => {
       expect(lastCall[1]).toEqual({
         onConflict: "user_id,date,session_type",
       })
+    })
+  })
+
+  // ── Realtime Tests ──────────────────────────────────────────
+
+  describe("realtime", () => {
+    const today = new Date().toISOString().split("T")[0]
+    const baseSession = {
+      id: "s-1",
+      user_id: "user-1",
+      date: today,
+      session_type: "morning",
+      count: 5,
+      target: 33,
+      created_at: "",
+      updated_at: "",
+    }
+
+    it("subscribes to azkar_sessions INSERT and UPDATE on mount", async () => {
+      supabaseMock.setSessionResult({ data: baseSession, error: null })
+
+      const { result } = renderHook(() => useAzkar())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(supabaseMock.channel).toHaveBeenCalled()
+      expect(supabaseMock.getSubscribe()).toHaveBeenCalled()
+    })
+
+    it("applies a realtime UPDATE for the active session type", async () => {
+      supabaseMock.setSessionResult({ data: baseSession, error: null })
+
+      const { result } = renderHook(() => useAzkar())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      act(() => {
+        supabaseMock.emit("UPDATE", { ...baseSession, count: 20 })
+      })
+
+      expect(result.current.session?.count).toBe(20)
+    })
+
+    it("ignores realtime UPDATE for a different session type", async () => {
+      supabaseMock.setSessionResult({ data: baseSession, error: null })
+
+      const { result } = renderHook(() => useAzkar())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      act(() => {
+        supabaseMock.emit("UPDATE", {
+          ...baseSession,
+          session_type: "evening",
+          count: 99,
+        })
+      })
+
+      expect(result.current.session?.count).toBe(5)
+    })
+
+    it("removes the channel on unmount", async () => {
+      supabaseMock.setSessionResult({ data: baseSession, error: null })
+
+      const { unmount } = renderHook(() => useAzkar())
+
+      await waitFor(() => {
+        expect(supabaseMock.getSubscribe()).toHaveBeenCalled()
+      })
+
+      unmount()
+      expect(supabaseMock.getRemoveChannel()).toHaveBeenCalled()
     })
   })
 })
