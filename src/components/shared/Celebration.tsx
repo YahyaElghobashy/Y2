@@ -105,7 +105,7 @@ export function Celebration({
               className="relative drop-shadow-xl"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/seals/seal-yy-wax.png" alt="" aria-hidden onError={hideOnError} width={96} height={96} className="h-full w-full object-contain" />
+              <img src="/assets/seals/seal-yy-wax.webp" alt="" aria-hidden onError={hideOnError} width={96} height={96} className="h-full w-full object-contain" />
             </motion.div>
 
             <motion.h2
