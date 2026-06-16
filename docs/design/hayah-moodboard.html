@@ -166,6 +166,49 @@
   </div>
 </header>
 
+<style>
+  .qa-wrap{counter-reset:qa}
+  .qa{display:grid;grid-template-columns:54px 1fr;gap:18px;padding:22px 0;border-top:1px dashed rgba(42,32,24,.16)}
+  .qa:first-of-type{border-top:none}
+  .qa .n{counter-increment:qa;font-family:var(--display);font-weight:800;font-size:26px;color:var(--deep-sand);line-height:1}
+  .qa .n::before{content:counter(qa,decimal-leading-zero)}
+  .qa .q{font-family:var(--grotesk);font-weight:700;font-size:15px;letter-spacing:.01em;color:var(--ink);margin-bottom:7px}
+  .qa .a{font-family:var(--serif);font-size:18px;line-height:1.5;color:var(--ink-soft)}
+  .qa .a b{color:var(--terracotta);font-weight:600}
+  .qa .a .ar{font-family:var(--arabic);color:var(--teal-deep)}
+  .qa-foot{margin-top:26px;background:var(--sand);border-radius:18px;padding:20px 22px;font-family:var(--serif);font-size:16px;color:var(--ink);line-height:1.5}
+  .qa-foot b{font-family:var(--display)}
+</style>
+<section id="constitution">
+  <div class="wrap">
+    <div class="eyebrow">The Art-Director Interview · حوار التأسيس</div>
+    <h2>The questions that became the Constitution.</h2>
+    <p class="lead">Before a single pixel: a feeling-first interview with Yahya — art director &amp; psychologist mode. Every visual decision in this app traces back to one of these answers. This is our reference, always. <span class="muted small">(Distilled from the founding session — paraphrased prompts, his real answers.)</span></p>
+
+    <div class="qa-wrap">
+      <div class="qa"><div class="n"></div><div><div class="q">When she opens the app, what should wash over her in the first second?</div><div class="a">A <b>mix</b> — a small smile, held &amp; safe, calm but fun. Not one note: warmth with a pulse.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">What must it NEVER feel like?</div><div class="a"><b>Cold, clinical, generic — corporate SaaS is the enemy.</b> No gray, no Inter-blue. If any app could own this screen, kill it.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">What's the core metaphor for the whole product?</div><div class="a">A <b>keepsake box inside a living room that grows with you.</b> It accrues; it never resets to zero.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">The north-star reference for design, vibe, and typography?</div><div class="a"><b>GTA V — Los Santos.</b> Its design language, its swagger, and especially its typographic variety.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Colour temperature &amp; light?</div><div class="a">Vibrant, <b>sun-soaked, golden-hour</b> — but eye-comfortable. Never harsh, never neon-cheap.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">One typeface, or many voices?</div><div class="a"><b>Per-section variety</b> — a different type register for each job: Display, Editorial, Data, Hand, Arabic.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Motion personality?</div><div class="a"><b>Cinematic + alive</b> — about two-thirds smooth, filmic glides; one-third responsive micro-reactions. Easing decelerates; never jarring.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">How should a celebration feel?</div><div class="a"><b>Depends on the moment.</b> Big milestones earn confetti + sunburst + a wax seal; everyday acts get a quiet warm glow.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Light mode or dark mode?</div><div class="a">Neither — an <b>adaptive, living theme</b> that shifts with the Cairo day &amp; prayer rhythm: day → dusk → night.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">The cultural &amp; spiritual layer?</div><div class="a"><b>Los Santos pop + Islamic geometry + mid-century print.</b> Sacred where it counts (Soul), playful everywhere else. <span class="ar">حياة</span></div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">What is the hero — the #1 thing?</div><div class="a"><b>Home</b> (the living room that informs &amp; connects to everywhere) and the <b>love economy</b> (CoYYns).</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Home — a dashboard, or something else?</div><div class="a">A <b>calm living-room that perfectly informs and connects</b> — not a 23-widget firehose. A few curated, connective blocks.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">How should the whole thing be organised?</div><div class="a"><b>Re-architect into worlds</b> — Home · Us · Treasury · Keepsake · Me (+ System).</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Onboarding — keep it?</div><div class="a">Re-enable it, but <b>skippable</b> — guide, never gate.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">How do we build it?</div><div class="a"><b>Full written spec, then execute directly</b> — no throwaway prototypes. Trust the UI/UX. QA per system as we migrate.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">Who is this for?</div><div class="a"><b>Two people — Yahya &amp; Yara.</b> Private, intimate, bilingual (English + Egyptian Arabic), RTL-ready.</div></div></div>
+      <div class="qa"><div class="n"></div><div><div class="q">If the whole app could leave one feeling, what is it?</div><div class="a">She closes it feeling <b>closer — and a little lighter.</b> That is the north star everything answers to.</div></div></div>
+    </div>
+
+    <div class="qa-foot"><b>Identity:</b> “Cairo meets Los Santos, run through a risograph press.” &nbsp;·&nbsp; <b>North star:</b> Closer + Lighter. &nbsp;·&nbsp; Warm editorial pop · handmade soul · sacred geometry · anti-SaaS.</div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="eyebrow">The Feeling Stack</div>
@@ -610,123 +653,123 @@
 <section id="library"><div class="wrap">
 <div class="eyebrow">The Cleaned Asset Library — production-ready</div>
 <h2>Every real asset, by category.</h2>
-<p class="lead">49 gen images + 4 animations → organized, web-sized, transparent where needed, collages split. Checker = real transparency. Live files from <code>assets/clean/</code>.</p>
+<p class="lead">49 gen images + 4 animations → organized, web-sized, transparent where needed, collages split. Checker = real transparency. Live files from <code>../../public/assets/</code>.</p>
 <div class="lib-band"><div class="bh"><span class="t">scenes</span><span class="n">16</span><span class="u">Hero/section backgrounds & empty states</span></div><div class="lib-grid">
-<div class="it" title="scene-cairo-skyline-night"><img height="150" loading="lazy" src="assets/clean/scenes/scene-cairo-skyline-night.webp" alt="scene-cairo-skyline-night"></div>
-<div class="it" title="scene-cards-flatlay"><img height="150" loading="lazy" src="assets/clean/scenes/scene-cards-flatlay.webp" alt="scene-cards-flatlay"></div>
-<div class="it" title="scene-coffee-pourover"><img height="150" loading="lazy" src="assets/clean/scenes/scene-coffee-pourover.webp" alt="scene-coffee-pourover"></div>
-<div class="it" title="scene-coffee-vinyl"><img height="150" loading="lazy" src="assets/clean/scenes/scene-coffee-vinyl.webp" alt="scene-coffee-vinyl"></div>
-<div class="it" title="scene-datenight-balcony"><img height="150" loading="lazy" src="assets/clean/scenes/scene-datenight-balcony.webp" alt="scene-datenight-balcony"></div>
-<div class="it" title="scene-game-cards"><img height="150" loading="lazy" src="assets/clean/scenes/scene-game-cards.webp" alt="scene-game-cards"></div>
-<div class="it" title="scene-garden-rooftop"><img height="150" loading="lazy" src="assets/clean/scenes/scene-garden-rooftop.webp" alt="scene-garden-rooftop"></div>
-<div class="it" title="scene-home-rooftop-iftar"><img height="150" loading="lazy" src="assets/clean/scenes/scene-home-rooftop-iftar.webp" alt="scene-home-rooftop-iftar"></div>
-<div class="it" title="scene-keepsake-open"><img height="150" loading="lazy" src="assets/clean/scenes/scene-keepsake-open.webp" alt="scene-keepsake-open"></div>
-<div class="it" title="scene-keepsake-teal"><img height="150" loading="lazy" src="assets/clean/scenes/scene-keepsake-teal.webp" alt="scene-keepsake-teal"></div>
-<div class="it" title="scene-lantern-dusk"><img height="150" loading="lazy" src="assets/clean/scenes/scene-lantern-dusk.webp" alt="scene-lantern-dusk"></div>
-<div class="it" title="scene-rooftop-couple-night"><img height="150" loading="lazy" src="assets/clean/scenes/scene-rooftop-couple-night.webp" alt="scene-rooftop-couple-night"></div>
-<div class="it" title="scene-rooftop-cups"><img height="150" loading="lazy" src="assets/clean/scenes/scene-rooftop-cups.webp" alt="scene-rooftop-cups"></div>
-<div class="it" title="scene-rooftop-night"><img height="150" loading="lazy" src="assets/clean/scenes/scene-rooftop-night.webp" alt="scene-rooftop-night"></div>
-<div class="it" title="scene-soul-prayer"><img height="150" loading="lazy" src="assets/clean/scenes/scene-soul-prayer.webp" alt="scene-soul-prayer"></div>
-<div class="it" title="scene-soul-prayer-wide"><img height="150" loading="lazy" src="assets/clean/scenes/scene-soul-prayer-wide.webp" alt="scene-soul-prayer-wide"></div>
+<div class="it" title="scene-cairo-skyline-night"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-cairo-skyline-night.webp" alt="scene-cairo-skyline-night"></div>
+<div class="it" title="scene-cards-flatlay"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-cards-flatlay.webp" alt="scene-cards-flatlay"></div>
+<div class="it" title="scene-coffee-pourover"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-coffee-pourover.webp" alt="scene-coffee-pourover"></div>
+<div class="it" title="scene-coffee-vinyl"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-coffee-vinyl.webp" alt="scene-coffee-vinyl"></div>
+<div class="it" title="scene-datenight-balcony"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-datenight-balcony.webp" alt="scene-datenight-balcony"></div>
+<div class="it" title="scene-game-cards"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-game-cards.webp" alt="scene-game-cards"></div>
+<div class="it" title="scene-garden-rooftop"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-garden-rooftop.webp" alt="scene-garden-rooftop"></div>
+<div class="it" title="scene-home-rooftop-iftar"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-home-rooftop-iftar.webp" alt="scene-home-rooftop-iftar"></div>
+<div class="it" title="scene-keepsake-open"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-keepsake-open.webp" alt="scene-keepsake-open"></div>
+<div class="it" title="scene-keepsake-teal"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-keepsake-teal.webp" alt="scene-keepsake-teal"></div>
+<div class="it" title="scene-lantern-dusk"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-lantern-dusk.webp" alt="scene-lantern-dusk"></div>
+<div class="it" title="scene-rooftop-couple-night"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-rooftop-couple-night.webp" alt="scene-rooftop-couple-night"></div>
+<div class="it" title="scene-rooftop-cups"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-rooftop-cups.webp" alt="scene-rooftop-cups"></div>
+<div class="it" title="scene-rooftop-night"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-rooftop-night.webp" alt="scene-rooftop-night"></div>
+<div class="it" title="scene-soul-prayer"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-soul-prayer.webp" alt="scene-soul-prayer"></div>
+<div class="it" title="scene-soul-prayer-wide"><img height="150" loading="lazy" src="../../public/assets/scenes/scene-soul-prayer-wide.webp" alt="scene-soul-prayer-wide"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">avatars</span><span class="n">3</span><span class="u">You two — riso duotone</span></div><div class="lib-grid">
-<div class="it" title="avatar-couple"><img height="150" loading="lazy" src="assets/clean/avatars/avatar-couple.webp" alt="avatar-couple"></div>
-<div class="it" title="avatar-couple-mickey"><img height="150" loading="lazy" src="assets/clean/avatars/avatar-couple-mickey.webp" alt="avatar-couple-mickey"></div>
-<div class="it" title="avatar-yara"><img height="150" loading="lazy" src="assets/clean/avatars/avatar-yara.webp" alt="avatar-yara"></div>
+<div class="it" title="avatar-couple"><img height="150" loading="lazy" src="../../public/assets/avatars/avatar-couple.webp" alt="avatar-couple"></div>
+<div class="it" title="avatar-couple-mickey"><img height="150" loading="lazy" src="../../public/assets/avatars/avatar-couple-mickey.webp" alt="avatar-couple-mickey"></div>
+<div class="it" title="avatar-yara"><img height="150" loading="lazy" src="../../public/assets/avatars/avatar-yara.webp" alt="avatar-yara"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">posters</span><span class="n">4</span><span class="u">Display-poster moments</span></div><div class="lib-grid">
-<div class="it" title="poster-cairo-night"><img height="170" loading="lazy" src="assets/clean/posters/poster-cairo-night.webp" alt="poster-cairo-night"></div>
-<div class="it" title="poster-grow-garden"><img height="170" loading="lazy" src="assets/clean/posters/poster-grow-garden.webp" alt="poster-grow-garden"></div>
-<div class="it" title="poster-mabrouk-vert"><img height="170" loading="lazy" src="assets/clean/posters/poster-mabrouk-vert.webp" alt="poster-mabrouk-vert"></div>
-<div class="it" title="poster-mabrouk-wide"><img height="170" loading="lazy" src="assets/clean/posters/poster-mabrouk-wide.webp" alt="poster-mabrouk-wide"></div>
+<div class="it" title="poster-cairo-night"><img height="170" loading="lazy" src="../../public/assets/posters/poster-cairo-night.webp" alt="poster-cairo-night"></div>
+<div class="it" title="poster-grow-garden"><img height="170" loading="lazy" src="../../public/assets/posters/poster-grow-garden.webp" alt="poster-grow-garden"></div>
+<div class="it" title="poster-mabrouk-vert"><img height="170" loading="lazy" src="../../public/assets/posters/poster-mabrouk-vert.webp" alt="poster-mabrouk-vert"></div>
+<div class="it" title="poster-mabrouk-wide"><img height="170" loading="lazy" src="../../public/assets/posters/poster-mabrouk-wide.webp" alt="poster-mabrouk-wide"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">skins</span><span class="n">1</span><span class="u">Adaptive day ground</span></div><div class="lib-grid">
-<div class="it" title="skin-day-golden"><img height="150" loading="lazy" src="assets/clean/skins/skin-day-golden.webp" alt="skin-day-golden"></div>
+<div class="it" title="skin-day-golden"><img height="150" loading="lazy" src="../../public/assets/skins/skin-day-golden.webp" alt="skin-day-golden"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">backdrops</span><span class="n">2</span><span class="u">Celebration backdrops</span></div><div class="lib-grid">
-<div class="it" title="backdrop-sun-smile"><img height="150" loading="lazy" src="assets/clean/backdrops/backdrop-sun-smile.webp" alt="backdrop-sun-smile"></div>
-<div class="it" title="backdrop-sunburst"><img height="150" loading="lazy" src="assets/clean/backdrops/backdrop-sunburst.webp" alt="backdrop-sunburst"></div>
+<div class="it" title="backdrop-sun-smile"><img height="150" loading="lazy" src="../../public/assets/backdrops/backdrop-sun-smile.webp" alt="backdrop-sun-smile"></div>
+<div class="it" title="backdrop-sunburst"><img height="150" loading="lazy" src="../../public/assets/backdrops/backdrop-sunburst.webp" alt="backdrop-sunburst"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">patterns</span><span class="n">3</span><span class="u">Tileable dividers / spiritual corners</span></div><div class="lib-grid">
-<div class="it" title="pattern-mashrabiya-gold"><img height="130" loading="lazy" src="assets/clean/patterns/pattern-mashrabiya-gold.webp" alt="pattern-mashrabiya-gold"></div>
-<div class="it" title="pattern-zellij-star"><img height="130" loading="lazy" src="assets/clean/patterns/pattern-zellij-star.webp" alt="pattern-zellij-star"></div>
-<div class="it" title="pattern-zellij-terracotta"><img height="130" loading="lazy" src="assets/clean/patterns/pattern-zellij-terracotta.webp" alt="pattern-zellij-terracotta"></div>
+<div class="it" title="pattern-mashrabiya-gold"><img height="130" loading="lazy" src="../../public/assets/patterns/pattern-mashrabiya-gold.webp" alt="pattern-mashrabiya-gold"></div>
+<div class="it" title="pattern-zellij-star"><img height="130" loading="lazy" src="../../public/assets/patterns/pattern-zellij-star.webp" alt="pattern-zellij-star"></div>
+<div class="it" title="pattern-zellij-terracotta"><img height="130" loading="lazy" src="../../public/assets/patterns/pattern-zellij-terracotta.webp" alt="pattern-zellij-terracotta"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">textures</span><span class="n">3</span><span class="u">Subtle card grain</span></div><div class="lib-grid">
-<div class="it" title="texture-cream-faint"><img height="110" loading="lazy" src="assets/clean/textures/texture-cream-faint.webp" alt="texture-cream-faint"></div>
-<div class="it" title="texture-halftone"><img height="110" loading="lazy" src="assets/clean/textures/texture-halftone.webp" alt="texture-halftone"></div>
-<div class="it" title="texture-paper-cream"><img height="110" loading="lazy" src="assets/clean/textures/texture-paper-cream.webp" alt="texture-paper-cream"></div>
+<div class="it" title="texture-cream-faint"><img height="110" loading="lazy" src="../../public/assets/textures/texture-cream-faint.webp" alt="texture-cream-faint"></div>
+<div class="it" title="texture-halftone"><img height="110" loading="lazy" src="../../public/assets/textures/texture-halftone.webp" alt="texture-halftone"></div>
+<div class="it" title="texture-paper-cream"><img height="110" loading="lazy" src="../../public/assets/textures/texture-paper-cream.webp" alt="texture-paper-cream"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">coins</span><span class="n">2</span><span class="u">CoYYns token</span></div><div class="lib-grid">
-<div class="it alpha" title="coin-yy"><img height="110" loading="lazy" src="assets/clean/coins/coin-yy.webp" alt="coin-yy"></div>
-<div class="it alpha" title="coin-yy-alt"><img height="110" loading="lazy" src="assets/clean/coins/coin-yy-alt.webp" alt="coin-yy-alt"></div>
+<div class="it alpha" title="coin-yy"><img height="110" loading="lazy" src="../../public/assets/coins/coin-yy.webp" alt="coin-yy"></div>
+<div class="it alpha" title="coin-yy-alt"><img height="110" loading="lazy" src="../../public/assets/coins/coin-yy-alt.webp" alt="coin-yy-alt"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">seals</span><span class="n">1</span><span class="u">YY wax seal · milestones</span></div><div class="lib-grid">
-<div class="it alpha" title="seal-yy-wax"><img height="110" loading="lazy" src="assets/clean/seals/seal-yy-wax.webp" alt="seal-yy-wax"></div>
+<div class="it alpha" title="seal-yy-wax"><img height="110" loading="lazy" src="../../public/assets/seals/seal-yy-wax.webp" alt="seal-yy-wax"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">badges</span><span class="n">2</span><span class="u">Achievement badges</span></div><div class="lib-grid">
-<div class="it alpha" title="badge-sunburst-01"><img height="110" loading="lazy" src="assets/clean/badges/badge-sunburst-01.webp" alt="badge-sunburst-01"></div>
-<div class="it alpha" title="badge-sunburst-74"><img height="110" loading="lazy" src="assets/clean/badges/badge-sunburst-74.webp" alt="badge-sunburst-74"></div>
+<div class="it alpha" title="badge-sunburst-01"><img height="110" loading="lazy" src="../../public/assets/badges/badge-sunburst-01.webp" alt="badge-sunburst-01"></div>
+<div class="it alpha" title="badge-sunburst-74"><img height="110" loading="lazy" src="../../public/assets/badges/badge-sunburst-74.webp" alt="badge-sunburst-74"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">ornaments</span><span class="n">2</span><span class="u">Islamic star medallions</span></div><div class="lib-grid">
-<div class="it alpha" title="ornament-star-coral"><img height="110" loading="lazy" src="assets/clean/ornaments/ornament-star-coral.webp" alt="ornament-star-coral"></div>
-<div class="it alpha" title="ornament-star-outline"><img height="110" loading="lazy" src="assets/clean/ornaments/ornament-star-outline.webp" alt="ornament-star-outline"></div>
+<div class="it alpha" title="ornament-star-coral"><img height="110" loading="lazy" src="../../public/assets/ornaments/ornament-star-coral.webp" alt="ornament-star-coral"></div>
+<div class="it alpha" title="ornament-star-outline"><img height="110" loading="lazy" src="../../public/assets/ornaments/ornament-star-outline.webp" alt="ornament-star-outline"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">stamps</span><span class="n">5</span><span class="u">Ink stamps</span></div><div class="lib-grid">
-<div class="it alpha" title="stamp-redeemed"><img height="110" loading="lazy" src="assets/clean/stamps/stamp-redeemed.webp" alt="stamp-redeemed"></div>
-<div class="it alpha" title="stamps-set-01"><img height="110" loading="lazy" src="assets/clean/stamps/stamps-set-01.png" alt="stamps-set-01"></div>
-<div class="it alpha" title="stamps-set-02"><img height="110" loading="lazy" src="assets/clean/stamps/stamps-set-02.png" alt="stamps-set-02"></div>
-<div class="it alpha" title="stamps-set-03"><img height="110" loading="lazy" src="assets/clean/stamps/stamps-set-03.png" alt="stamps-set-03"></div>
-<div class="it alpha" title="stamps-set-04"><img height="110" loading="lazy" src="assets/clean/stamps/stamps-set-04.png" alt="stamps-set-04"></div>
+<div class="it alpha" title="stamp-redeemed"><img height="110" loading="lazy" src="../../public/assets/stamps/stamp-redeemed.webp" alt="stamp-redeemed"></div>
+<div class="it alpha" title="stamps-set-01"><img height="110" loading="lazy" src="../../public/assets/stamps/stamps-set-01.png" alt="stamps-set-01"></div>
+<div class="it alpha" title="stamps-set-02"><img height="110" loading="lazy" src="../../public/assets/stamps/stamps-set-02.png" alt="stamps-set-02"></div>
+<div class="it alpha" title="stamps-set-03"><img height="110" loading="lazy" src="../../public/assets/stamps/stamps-set-03.png" alt="stamps-set-03"></div>
+<div class="it alpha" title="stamps-set-04"><img height="110" loading="lazy" src="../../public/assets/stamps/stamps-set-04.png" alt="stamps-set-04"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">wordmark</span><span class="n">6</span><span class="u">Hayah حياة logo</span></div><div class="lib-grid">
-<div class="it alpha" title="wordmark-set-01"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-01.png" alt="wordmark-set-01"></div>
-<div class="it alpha" title="wordmark-set-02"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-02.png" alt="wordmark-set-02"></div>
-<div class="it alpha" title="wordmark-set-03"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-03.png" alt="wordmark-set-03"></div>
-<div class="it alpha" title="wordmark-set-04"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-04.png" alt="wordmark-set-04"></div>
-<div class="it alpha" title="wordmark-set-05"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-05.png" alt="wordmark-set-05"></div>
-<div class="it alpha" title="wordmark-set-06"><img height="92" loading="lazy" src="assets/clean/wordmark/wordmark-set-06.png" alt="wordmark-set-06"></div>
+<div class="it alpha" title="wordmark-set-01"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-01.png" alt="wordmark-set-01"></div>
+<div class="it alpha" title="wordmark-set-02"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-02.png" alt="wordmark-set-02"></div>
+<div class="it alpha" title="wordmark-set-03"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-03.png" alt="wordmark-set-03"></div>
+<div class="it alpha" title="wordmark-set-04"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-04.png" alt="wordmark-set-04"></div>
+<div class="it alpha" title="wordmark-set-05"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-05.png" alt="wordmark-set-05"></div>
+<div class="it alpha" title="wordmark-set-06"><img height="92" loading="lazy" src="../../public/assets/wordmark/wordmark-set-06.png" alt="wordmark-set-06"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">dividers</span><span class="n">1</span><span class="u">Arabesque divider</span></div><div class="lib-grid">
-<div class="it alpha" title="divider-arabesque"><img height="80" loading="lazy" src="assets/clean/dividers/divider-arabesque.webp" alt="divider-arabesque"></div>
+<div class="it alpha" title="divider-arabesque"><img height="80" loading="lazy" src="../../public/assets/dividers/divider-arabesque.webp" alt="divider-arabesque"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">icons</span><span class="n">16</span><span class="u">UI line-icon set</span></div><div class="lib-grid">
-<div class="it alpha" title="icons-set-01"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-01.png" alt="icons-set-01"></div>
-<div class="it alpha" title="icons-set-02"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-02.png" alt="icons-set-02"></div>
-<div class="it alpha" title="icons-set-03"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-03.png" alt="icons-set-03"></div>
-<div class="it alpha" title="icons-set-04"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-04.png" alt="icons-set-04"></div>
-<div class="it alpha" title="icons-set-05"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-05.png" alt="icons-set-05"></div>
-<div class="it alpha" title="icons-set-06"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-06.png" alt="icons-set-06"></div>
-<div class="it alpha" title="icons-set-07"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-07.png" alt="icons-set-07"></div>
-<div class="it alpha" title="icons-set-08"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-08.png" alt="icons-set-08"></div>
-<div class="it alpha" title="icons-set-09"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-09.png" alt="icons-set-09"></div>
-<div class="it alpha" title="icons-set-10"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-10.png" alt="icons-set-10"></div>
-<div class="it alpha" title="icons-set-11"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-11.png" alt="icons-set-11"></div>
-<div class="it alpha" title="icons-set-12"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-12.png" alt="icons-set-12"></div>
-<div class="it alpha" title="icons-set-13"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-13.png" alt="icons-set-13"></div>
-<div class="it alpha" title="icons-set-14"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-14.png" alt="icons-set-14"></div>
-<div class="it alpha" title="icons-set-15"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-15.png" alt="icons-set-15"></div>
-<div class="it alpha" title="icons-set-16"><img height="78" loading="lazy" src="assets/clean/icons/icons-set-16.png" alt="icons-set-16"></div>
+<div class="it alpha" title="icons-set-01"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-01.png" alt="icons-set-01"></div>
+<div class="it alpha" title="icons-set-02"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-02.png" alt="icons-set-02"></div>
+<div class="it alpha" title="icons-set-03"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-03.png" alt="icons-set-03"></div>
+<div class="it alpha" title="icons-set-04"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-04.png" alt="icons-set-04"></div>
+<div class="it alpha" title="icons-set-05"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-05.png" alt="icons-set-05"></div>
+<div class="it alpha" title="icons-set-06"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-06.png" alt="icons-set-06"></div>
+<div class="it alpha" title="icons-set-07"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-07.png" alt="icons-set-07"></div>
+<div class="it alpha" title="icons-set-08"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-08.png" alt="icons-set-08"></div>
+<div class="it alpha" title="icons-set-09"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-09.png" alt="icons-set-09"></div>
+<div class="it alpha" title="icons-set-10"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-10.png" alt="icons-set-10"></div>
+<div class="it alpha" title="icons-set-11"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-11.png" alt="icons-set-11"></div>
+<div class="it alpha" title="icons-set-12"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-12.png" alt="icons-set-12"></div>
+<div class="it alpha" title="icons-set-13"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-13.png" alt="icons-set-13"></div>
+<div class="it alpha" title="icons-set-14"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-14.png" alt="icons-set-14"></div>
+<div class="it alpha" title="icons-set-15"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-15.png" alt="icons-set-15"></div>
+<div class="it alpha" title="icons-set-16"><img height="78" loading="lazy" src="../../public/assets/icons/icons-set-16.png" alt="icons-set-16"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">objects</span><span class="n">12</span><span class="u">Spot illustrations</span></div><div class="lib-grid">
-<div class="it alpha" title="object-01"><img height="112" loading="lazy" src="assets/clean/objects/object-01.png" alt="object-01"></div>
-<div class="it alpha" title="object-02"><img height="112" loading="lazy" src="assets/clean/objects/object-02.png" alt="object-02"></div>
-<div class="it alpha" title="object-03"><img height="112" loading="lazy" src="assets/clean/objects/object-03.png" alt="object-03"></div>
-<div class="it alpha" title="object-04"><img height="112" loading="lazy" src="assets/clean/objects/object-04.png" alt="object-04"></div>
-<div class="it alpha" title="object-05"><img height="112" loading="lazy" src="assets/clean/objects/object-05.png" alt="object-05"></div>
-<div class="it alpha" title="object-06"><img height="112" loading="lazy" src="assets/clean/objects/object-06.png" alt="object-06"></div>
-<div class="it alpha" title="object-07"><img height="112" loading="lazy" src="assets/clean/objects/object-07.png" alt="object-07"></div>
-<div class="it alpha" title="object-08"><img height="112" loading="lazy" src="assets/clean/objects/object-08.png" alt="object-08"></div>
-<div class="it alpha" title="object-09"><img height="112" loading="lazy" src="assets/clean/objects/object-09.png" alt="object-09"></div>
-<div class="it alpha" title="object-10"><img height="112" loading="lazy" src="assets/clean/objects/object-10.png" alt="object-10"></div>
-<div class="it alpha" title="object-11"><img height="112" loading="lazy" src="assets/clean/objects/object-11.png" alt="object-11"></div>
-<div class="it alpha" title="object-12"><img height="112" loading="lazy" src="assets/clean/objects/object-12.png" alt="object-12"></div>
+<div class="it alpha" title="object-01"><img height="112" loading="lazy" src="../../public/assets/objects/object-01.png" alt="object-01"></div>
+<div class="it alpha" title="object-02"><img height="112" loading="lazy" src="../../public/assets/objects/object-02.png" alt="object-02"></div>
+<div class="it alpha" title="object-03"><img height="112" loading="lazy" src="../../public/assets/objects/object-03.png" alt="object-03"></div>
+<div class="it alpha" title="object-04"><img height="112" loading="lazy" src="../../public/assets/objects/object-04.png" alt="object-04"></div>
+<div class="it alpha" title="object-05"><img height="112" loading="lazy" src="../../public/assets/objects/object-05.png" alt="object-05"></div>
+<div class="it alpha" title="object-06"><img height="112" loading="lazy" src="../../public/assets/objects/object-06.png" alt="object-06"></div>
+<div class="it alpha" title="object-07"><img height="112" loading="lazy" src="../../public/assets/objects/object-07.png" alt="object-07"></div>
+<div class="it alpha" title="object-08"><img height="112" loading="lazy" src="../../public/assets/objects/object-08.png" alt="object-08"></div>
+<div class="it alpha" title="object-09"><img height="112" loading="lazy" src="../../public/assets/objects/object-09.png" alt="object-09"></div>
+<div class="it alpha" title="object-10"><img height="112" loading="lazy" src="../../public/assets/objects/object-10.png" alt="object-10"></div>
+<div class="it alpha" title="object-11"><img height="112" loading="lazy" src="../../public/assets/objects/object-11.png" alt="object-11"></div>
+<div class="it alpha" title="object-12"><img height="112" loading="lazy" src="../../public/assets/objects/object-12.png" alt="object-12"></div>
 </div></div>
 <div class="lib-band"><div class="bh"><span class="t">video</span><span class="n">4</span><span class="u">Ambient loops (autoplay, muted, seamless)</span></div><div class="lib-grid">
-<div class="it"><video height="170" autoplay muted loop playsinline poster="assets/clean/video/anim-candle-flicker-poster.webp"><source src="assets/clean/video/anim-candle-flicker.webm" type="video/webm"><source src="assets/clean/video/anim-candle-flicker.mp4" type="video/mp4"></video></div>
-<div class="it"><video height="170" autoplay muted loop playsinline poster="assets/clean/video/anim-coin-spin-poster.webp"><source src="assets/clean/video/anim-coin-spin.webm" type="video/webm"><source src="assets/clean/video/anim-coin-spin.mp4" type="video/mp4"></video></div>
-<div class="it"><video height="170" autoplay muted loop playsinline poster="assets/clean/video/anim-garden-sway-poster.webp"><source src="assets/clean/video/anim-garden-sway.webm" type="video/webm"><source src="assets/clean/video/anim-garden-sway.mp4" type="video/mp4"></video></div>
-<div class="it"><video height="170" autoplay muted loop playsinline poster="assets/clean/video/anim-prayer-light-poster.webp"><source src="assets/clean/video/anim-prayer-light.webm" type="video/webm"><source src="assets/clean/video/anim-prayer-light.mp4" type="video/mp4"></video></div>
+<div class="it"><video height="170" autoplay muted loop playsinline poster="../../public/assets/video/anim-candle-flicker-poster.webp"><source src="../../public/assets/video/anim-candle-flicker.webm" type="video/webm"><source src="../../public/assets/video/anim-candle-flicker.mp4" type="video/mp4"></video></div>
+<div class="it"><video height="170" autoplay muted loop playsinline poster="../../public/assets/video/anim-coin-spin-poster.webp"><source src="../../public/assets/video/anim-coin-spin.webm" type="video/webm"><source src="../../public/assets/video/anim-coin-spin.mp4" type="video/mp4"></video></div>
+<div class="it"><video height="170" autoplay muted loop playsinline poster="../../public/assets/video/anim-garden-sway-poster.webp"><source src="../../public/assets/video/anim-garden-sway.webm" type="video/webm"><source src="../../public/assets/video/anim-garden-sway.mp4" type="video/mp4"></video></div>
+<div class="it"><video height="170" autoplay muted loop playsinline poster="../../public/assets/video/anim-prayer-light-poster.webp"><source src="../../public/assets/video/anim-prayer-light.webm" type="video/webm"><source src="../../public/assets/video/anim-prayer-light.mp4" type="video/mp4"></video></div>
 </div></div>
 <p class="muted small" style="margin-top:18px">83 assets · ~38 MB total (from ~250 MB raw)</p>
 </div></section>
