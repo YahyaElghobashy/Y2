@@ -19,6 +19,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
   },
   {
     world: "Me", arabic: "أنا", accent: "#1F8A8A", items: [
+      { name: "Hub", href: "/preview/me", note: "body · soul · rituals" },
       { name: "Soul", href: "/preview/soul", note: "prayer-light · du'a · geometry" },
       { name: "Body", href: "/preview/body", note: "cycle ribbon · rose" },
       { name: "Rituals", href: "/preview/rituals", note: "habit journal · streaks" },
@@ -35,6 +36,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
   },
   {
     world: "Us", arabic: "نحن", accent: "#E5663C", items: [
+      { name: "Hub", href: "/preview/us", note: "the five rooms" },
       { name: "Connect", href: "/preview/connect", note: "prompt → reveal-both" },
       { name: "Play", href: "/preview/play", note: "games hub" },
       { name: "Plan", href: "/preview/plan", note: "warm calendar" },

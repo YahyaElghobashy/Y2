@@ -1,6 +1,8 @@
-import { WorldHub, type HubRoom } from "@/components/shared/WorldHub"
+"use client"
 
-// Rooms link to existing routes during migration (Connect→prompts, Play→games).
+import { WorldHub, type HubRoom } from "@/components/shared/WorldHub"
+import { BottomNav } from "@/components/shared/BottomNav"
+
 const ROOMS: HubRoom[] = [
   { label: "Connect", line: "today's question", href: "/us/prompts", emoji: "💬", accent: "coral" },
   { label: "Play", line: "games & the wheel", href: "/game/check-in", emoji: "🎲", accent: "indigo" },
@@ -9,6 +11,11 @@ const ROOMS: HubRoom[] = [
   { label: "Table", line: "places you love", href: "/our-table", emoji: "🍽️", accent: "terracotta" },
 ]
 
-export default function UsPage() {
-  return <WorldHub title="Together" arabic="نحن" intro="Everything you do together — talk, play, plan, watch, taste." rooms={ROOMS} />
+export default function PreviewUsPage() {
+  return (
+    <div className="relative mx-auto min-h-[100dvh] max-w-[430px]" style={{ background: "var(--background)" }}>
+      <WorldHub title="Together" arabic="نحن" intro="Everything you do together — talk, play, plan, watch, taste." rooms={ROOMS} />
+      <BottomNav />
+    </div>
+  )
 }
