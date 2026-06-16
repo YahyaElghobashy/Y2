@@ -30,6 +30,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Garden", href: "/preview/garden", note: "garden-sway · bloom field" },
       { name: "Snap", href: "/preview/snap", note: "polaroid feed" },
       { name: "Letters", href: "/preview/letters", note: "candle · Fraunces · seal" },
+      { name: "2026 Vision", href: "/preview/vision", note: "annual board · goals" },
     ],
   },
   {
@@ -38,6 +39,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Play", href: "/preview/play", note: "games hub" },
       { name: "Plan", href: "/preview/plan", note: "warm calendar" },
       { name: "Watch", href: "/preview/watch", note: "movies · both ratings" },
+      { name: "Table", href: "/preview/table", note: "food journal · map/list" },
     ],
   },
   { world: "Moments", arabic: "لحظات", accent: "#2B2F5E", items: [{ name: "Celebration", href: "/preview/celebration", note: "confetti · sunburst · seal" }] },
