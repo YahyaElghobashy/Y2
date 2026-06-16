@@ -37,6 +37,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Connect", href: "/preview/connect", note: "prompt → reveal-both" },
       { name: "Play", href: "/preview/play", note: "games hub" },
       { name: "Plan", href: "/preview/plan", note: "warm calendar" },
+      { name: "Watch", href: "/preview/watch", note: "movies · both ratings" },
     ],
   },
   { world: "Moments", arabic: "لحظات", accent: "#2B2F5E", items: [{ name: "Celebration", href: "/preview/celebration", note: "confetti · sunburst · seal" }] },
