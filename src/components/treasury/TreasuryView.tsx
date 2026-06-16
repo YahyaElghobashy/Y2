@@ -58,7 +58,7 @@ export function TreasuryView({ data }: { data: TreasuryViewData }) {
 const ROOMS: HubRoom[] = [
   { label: "Coupons", line: "Promises you can redeem", href: "/us/coupons", emoji: "🎟", accent: "coral" },
   { label: "Marketplace", line: "Spend CoYYns on each other", href: "/us/marketplace", emoji: "🛍", accent: "terracotta" },
-  { label: "Challenges", line: "Playful stakes & bounties", href: "/us/marketplace", emoji: "🏅", accent: "indigo" },
+  { label: "Challenges", line: "Playful stakes & bounties", href: "/us/coyyns", emoji: "🏅", accent: "indigo" },
   { label: "Wishlist", line: "Things you're dreaming of", href: "/us/wishlist", emoji: "✨", accent: "rose" },
 ]
 
