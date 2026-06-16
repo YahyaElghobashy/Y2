@@ -95,30 +95,26 @@ export function useMood(): UseMoodReturn {
   }, [user, partner, supabase])
 
   // ── Realtime subscription on mood_log ───────────────────────
+  // One channel with per-user_id-filtered listeners (matches use-coyyns):
+  // the user's own row drives todayMood, the partner's row drives partnerMood.
+  // The server-side filter scopes events, so no in-handler user_id check is
+  // needed. The mood_date guard is computed per-event so a day-boundary
+  // crossing while the subscription is alive doesn't strand it on yesterday.
   useEffect(() => {
     if (!user) return
 
     const channel = supabase
-      .channel("mood_log_realtime")
+      .channel(`mood_log_${user.id}`)
       .on(
         "postgres_changes" as never,
         {
           event: "INSERT",
           schema: "public",
           table: "mood_log",
+          filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: MoodLog }) => {
-          const newMood = payload.new
-          const today = getCairoToday()
-
-          if (newMood.mood_date === today) {
-            if (partner && newMood.user_id === partner.id) {
-              setPartnerMood(newMood)
-            }
-            if (newMood.user_id === user.id) {
-              setTodayMood(newMood)
-            }
-          }
+          if (payload.new.mood_date === getCairoToday()) setTodayMood(payload.new)
         }
       )
       .on(
@@ -127,21 +123,40 @@ export function useMood(): UseMoodReturn {
           event: "UPDATE",
           schema: "public",
           table: "mood_log",
+          filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: MoodLog }) => {
-          const updated = payload.new
-          const today = getCairoToday()
-
-          if (updated.mood_date === today) {
-            if (partner && updated.user_id === partner.id) {
-              setPartnerMood(updated)
-            }
-            if (updated.user_id === user.id) {
-              setTodayMood(updated)
-            }
-          }
+          if (payload.new.mood_date === getCairoToday()) setTodayMood(payload.new)
         }
       )
+
+    if (partner) {
+      channel
+        .on(
+          "postgres_changes" as never,
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "mood_log",
+            filter: `user_id=eq.${partner.id}`,
+          },
+          (payload: { new: MoodLog }) => {
+            if (payload.new.mood_date === getCairoToday()) setPartnerMood(payload.new)
+          }
+        )
+        .on(
+          "postgres_changes" as never,
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "mood_log",
+            filter: `user_id=eq.${partner.id}`,
+          },
+          (payload: { new: MoodLog }) => {
+            if (payload.new.mood_date === getCairoToday()) setPartnerMood(payload.new)
+          }
+        )
+    }
 
     channel.subscribe()
 
