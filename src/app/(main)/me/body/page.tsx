@@ -1,14 +1,16 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Settings, Dumbbell } from "lucide-react"
+import { Settings } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { BodyView, type BodyData } from "@/components/health/BodyView"
+import { FitnessView } from "@/components/health/FitnessView"
 import { CycleConfigForm } from "@/components/health/CycleConfigForm"
 import { useCycle } from "@/lib/hooks/use-cycle"
+import { useFitness } from "@/lib/hooks/use-fitness"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
 export default function BodyPage() {
@@ -22,6 +24,7 @@ export default function BodyPage() {
     isPMSWindow,
     isLoading,
   } = useCycle()
+  const fitness = useFitness()
   const isAdmin = authProfile?.role === "admin"
   const [configOpen, setConfigOpen] = useState(false)
 
@@ -96,10 +99,18 @@ export default function BodyPage() {
           }
         />
 
-        {/* Redesigned BodyView renders the phase hero, insights, ribbon, and fitness.
-            Fitness has no data source yet, so BodyView shows an honest "coming soon"
-            state (bodyData.fitness is null) — never fabricated kilograms. */}
-        <BodyView data={bodyData} />
+        {/* Redesigned BodyView renders the phase hero, insights, and ribbon. Its own
+            fitness block is suppressed (showFitness={false}); the real, data-backed
+            FitnessView is rendered just below in its own padded section. */}
+        <BodyView data={bodyData} showFitness={false} />
+        <div className="skin-aware px-5 pb-28" style={{ background: "var(--background)" }}>
+          <FitnessView
+            history={fitness.history}
+            isLoading={fitness.isLoading}
+            onLog={fitness.logWeight}
+            onDelete={fitness.deleteWeight}
+          />
+        </div>
 
         <CycleConfigForm
           open={configOpen}
@@ -128,11 +139,13 @@ export default function BodyPage() {
           />
         )}
 
-        {/* Fitness placeholder — visible to everyone (preserved from the old page). */}
-        <EmptyState
-          icon={<Dumbbell size={48} strokeWidth={1.25} />}
-          title="Fitness tracking coming soon"
-          subtitle="Tracking your journey to 85kg"
+        {/* Real fitness tracking — owner-only weight log, history + trend. Visible to
+            every authed user (each sees only their own rows via RLS). */}
+        <FitnessView
+          history={fitness.history}
+          isLoading={fitness.isLoading}
+          onLog={fitness.logWeight}
+          onDelete={fitness.deleteWeight}
         />
       </div>
 

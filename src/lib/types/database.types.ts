@@ -325,6 +325,41 @@ export interface Database {
           }
         ]
       }
+      weight_logs: {
+        Row: {
+          id: string
+          user_id: string
+          weight_kg: number
+          logged_at: string
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          weight_kg: number
+          logged_at?: string
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          weight_kg?: number
+          logged_at?: string
+          note?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weight_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       cycle_logs: {
         Row: {
           id: string

@@ -35,7 +35,7 @@ export type BodyData = {
   fitness?: { goalKg: number; currentKg: number; startKg: number } | null
 }
 
-export function BodyView({ data }: { data: BodyData }) {
+export function BodyView({ data, showFitness = true }: { data: BodyData; showFitness?: boolean }) {
   const fitness = data.fitness ?? null
   const fitPct = fitness
     ? Math.round(((fitness.startKg - fitness.currentKg) / (fitness.startKg - fitness.goalKg)) * 100)
@@ -96,6 +96,10 @@ export function BodyView({ data }: { data: BodyData }) {
       </div>
 
       {/* ── Fitness ── */}
+      {/* When showFitness is false, the page renders a real <FitnessView> below this
+          component instead — this inline block is the standalone/preview fallback. */}
+      {showFitness && (
+        <>
       <h2 className="mb-2 mt-6 text-[17px] font-bold tracking-tight" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
         {fitness ? `Toward ${fitness.goalKg}kg` : "Fitness"}
       </h2>
@@ -119,6 +123,8 @@ export function BodyView({ data }: { data: BodyData }) {
             A gentle place to follow the journey — once it&rsquo;s ready.
           </p>
         </PosterCard>
+      )}
+        </>
       )}
     </div>
   )
