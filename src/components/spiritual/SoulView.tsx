@@ -23,13 +23,29 @@ export type SoulData = {
   prayed: Record<string, boolean>
   ayah: { arabic: string; translation: string; ref: string }
   quran: { surah: string; pct: number }
-  azkar: { goal: number }
+  azkar: { goal: number; current?: number }
 }
 
-export function SoulView({ data }: { data: SoulData }) {
+export function SoulView({
+  data,
+  onTogglePrayer,
+  onIncrementAzkar,
+}: {
+  data: SoulData
+  /** Authed: persist the toggle/count. Preview leaves them undefined (demo). */
+  onTogglePrayer?: (key: string) => void
+  onIncrementAzkar?: () => void
+}) {
   const [prayed, setPrayed] = useState<Record<string, boolean>>(data.prayed)
-  const [azkar, setAzkar] = useState(0)
-  const toggle = (k: string) => setPrayed((p) => ({ ...p, [k]: !p[k] }))
+  const [azkar, setAzkar] = useState(data.azkar.current ?? 0)
+  const toggle = (k: string) => {
+    setPrayed((p) => ({ ...p, [k]: !p[k] }))
+    onTogglePrayer?.(k)
+  }
+  const countAzkar = () => {
+    setAzkar((c) => Math.min(data.azkar.goal, c + 1))
+    onIncrementAzkar?.()
+  }
 
   return (
     <div className="skin-aware texture-islamic min-h-[100dvh] pb-28" style={{ background: "var(--background)" }}>
@@ -108,7 +124,7 @@ export function SoulView({ data }: { data: SoulData }) {
 
           <PosterCard accent="amber" className="!p-4">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ fontFamily: "var(--font-nav)", color: "var(--color-terracotta)" }}>Azkar</p>
-            <button type="button" onClick={() => setAzkar((c) => Math.min(data.azkar.goal, c + 1))} className="mt-1 w-full text-left">
+            <button type="button" onClick={countAzkar} className="mt-1 w-full text-left">
               <span className="text-[34px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
                 {azkar}
               </span>

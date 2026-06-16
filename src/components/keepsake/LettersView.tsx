@@ -14,7 +14,16 @@ const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
 
 export type Letter = { id: string; from: string; date: string; body: string; signature: string }
 
-export function LettersView({ letters, partnerName = "Yara" }: { letters: Letter[]; partnerName?: string }) {
+export function LettersView({
+  letters,
+  partnerName = "Yara",
+  onWrite,
+}: {
+  letters: Letter[]
+  partnerName?: string
+  /** Authed: open the real composer. Preview leaves it undefined (demo). */
+  onWrite?: () => void
+}) {
   return (
     <div className="skin-aware min-h-[100dvh] pb-28" style={{ background: "var(--background)" }}>
       {/* ── Compose hero (candle ambient) ── */}
@@ -33,11 +42,18 @@ export function LettersView({ letters, partnerName = "Yara" }: { letters: Letter
       <div className="px-5 pt-5">
         <button
           type="button"
+          onClick={onWrite}
           className="mb-6 flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-[15px] font-bold"
           style={{ background: "var(--color-terracotta)", color: "#FFF7EF", fontFamily: "var(--font-body)", boxShadow: "var(--shadow-glow-copper)" }}
         >
           <PenLine size={18} /> Write {partnerName} this month&apos;s
         </button>
+
+        {letters.length === 0 && (
+          <p className="mb-6 text-center text-[15px]" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--color-ink-soft)" }}>
+            No letters yet — the first one is always the hardest, and the most kept.
+          </p>
+        )}
 
         <div className="grid gap-5">
           {letters.map((l, i) => (
