@@ -1,20 +1,24 @@
+import React from "react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 
 // ─── Mocks ───
-
-const mockPush = vi.fn()
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush, back: vi.fn() }),
-  useSearchParams: () => new URLSearchParams(),
-}))
+//
+// The /game page was redesigned. It now renders the presentational PlayView
+// (resume banner from activeSession + three mode links + wheel/bank), fed by
+// the useGameEngine domain hook. Navigation is via <Link href> — there is no
+// router.push and the page no longer reads useAuth directly (the hook does).
+// We mock useGameEngine to return controlled data so the page renders, and
+// mock AuthProvider defensively (imported transitively by the hook module).
 
 const mockLoadActiveSession = vi.fn()
-const mockActiveSession = null as any
+
+// Mutable holder so individual tests can flip activeSession before rendering.
+const engineState: { activeSession: unknown } = { activeSession: null }
 
 vi.mock("@/lib/hooks/use-game-engine", () => ({
   useGameEngine: () => ({
-    activeSession: mockActiveSession,
+    activeSession: engineState.activeSession,
     loadActiveSession: mockLoadActiveSession,
   }),
 }))
@@ -23,129 +27,188 @@ vi.mock("@/lib/providers/AuthProvider", () => ({
   useAuth: () => ({
     user: { id: "user-1" },
     partner: { id: "user-2", display_name: "Yara" },
+    profile: null,
     isLoading: false,
   }),
 }))
 
-// Minimal framer-motion mock
-vi.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...stripMotionProps(props)}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...stripMotionProps(props)}>{children}</button>,
-  },
-  AnimatePresence: ({ children }: any) => children,
+// next/link → plain anchor so we can assert real hrefs.
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    ...props
+  }: {
+    href: string
+    children: React.ReactNode
+    [key: string]: unknown
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
 }))
 
-function stripMotionProps(props: any) {
-  const { initial, animate, exit, transition, whileTap, whileHover, layout, ...rest } = props
-  return rest
-}
+// framer-motion → strip animation props, keep DOM (repo Proxy/strip pattern).
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: React.forwardRef(
+      (
+        { children, ...props }: { children?: React.ReactNode; [key: string]: unknown },
+        ref: React.Ref<HTMLDivElement>,
+      ) => {
+        const { initial, animate, exit, transition, variants, whileHover, whileTap, layout, layoutId, ...rest } = props
+        void initial; void animate; void exit; void transition; void variants
+        void whileHover; void whileTap; void layout; void layoutId
+        return <div ref={ref} {...rest}>{children}</div>
+      },
+    ),
+    button: React.forwardRef(
+      (
+        { children, ...props }: { children?: React.ReactNode; [key: string]: unknown },
+        ref: React.Ref<HTMLButtonElement>,
+      ) => {
+        const { initial, animate, exit, transition, whileHover, whileTap, layout, layoutId, ...rest } = props
+        void initial; void animate; void exit; void transition
+        void whileHover; void whileTap; void layout; void layoutId
+        return <button ref={ref} {...rest}>{children}</button>
+      },
+    ),
+  },
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}))
+
+vi.mock("@/components/animations", () => ({
+  PageTransition: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="page-transition">{children}</div>
+  ),
+}))
 
 import GameHomePage from "@/app/(main)/game/page"
 
-describe("GameHomePage", () => {
+// Helper: find the nearest enclosing <a> for a text node (mode/utility links).
+function linkFor(text: RegExp | string): HTMLAnchorElement {
+  const el = screen.getByText(text)
+  const anchor = el.closest("a")
+  if (!anchor) throw new Error(`No enclosing <a> for "${String(text)}"`)
+  return anchor as HTMLAnchorElement
+}
+
+describe("GameHomePage (/game → PlayView)", () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    engineState.activeSession = null
   })
 
-  // ─── Unit: Renders correctly ───
+  // ─── Unit: header + surface render from the new PlayView ───
 
-  it("renders the Together Time heading", () => {
+  it("renders the Play heading (not the removed 'Together Time')", () => {
     render(<GameHomePage />)
-    expect(screen.getByText(/Together Time/)).toBeTruthy()
+    expect(screen.getByRole("heading", { name: "Play" })).toBeInTheDocument()
+    expect(screen.getByText("نلعب")).toBeInTheDocument()
+    expect(screen.queryByText(/Together Time/)).toBeNull()
   })
 
-  it("renders all 3 game mode cards", () => {
+  it("renders the three game-mode cards with new names + Arabic + copy", () => {
     render(<GameHomePage />)
 
-    expect(screen.getByText(/Alignment Check-In/)).toBeTruthy()
-    expect(screen.getByText(/Deep Dive/)).toBeTruthy()
-    expect(screen.getByText(/Date Night Game/)).toBeTruthy()
+    // English names (redesigned, shortened)
+    expect(screen.getByText("Check-In")).toBeInTheDocument()
+    expect(screen.getByText("Deep Dive")).toBeInTheDocument()
+    expect(screen.getByText("Date Night")).toBeInTheDocument()
+
+    // Arabic labels (redesigned)
+    expect(screen.getByText("اطمئنان")).toBeInTheDocument()
+    expect(screen.getByText("غوص")).toBeInTheDocument()
+    expect(screen.getByText("ليلة")).toBeInTheDocument()
+
+    // Descriptions (redesigned copy)
+    expect(screen.getByText(/Five quick questions/)).toBeInTheDocument()
+    expect(screen.getByText(/One topic\. All the way down\./)).toBeInTheDocument()
+    expect(screen.getByText(/Truth, dare, and CoYYns on the line\./)).toBeInTheDocument()
   })
 
-  it("renders Arabic mode names", () => {
+  it("renders the Wheel and Question Bank utility cards", () => {
     render(<GameHomePage />)
-
-    expect(screen.getByText("الميزان")).toBeTruthy()
-    expect(screen.getByText("غوص")).toBeTruthy()
-    expect(screen.getByText("لعبة")).toBeTruthy()
+    expect(screen.getByText("Spin the Wheel")).toBeInTheDocument()
+    expect(screen.getByText("Question Bank")).toBeInTheDocument()
   })
 
-  it("renders mode descriptions", () => {
-    render(<GameHomePage />)
+  // ─── Integration: mode + utility links point at the live /game flows ───
 
-    expect(screen.getByText(/Answer the same questions independently/)).toBeTruthy()
-    expect(screen.getByText(/Pick a topic. Go deep/)).toBeTruthy()
-    expect(screen.getByText(/Questions, dares, CoYYns stakes/)).toBeTruthy()
+  it("links each mode card to its real route", () => {
+    render(<GameHomePage />)
+    expect(linkFor("Check-In")).toHaveAttribute("href", "/game/check-in")
+    expect(linkFor("Deep Dive")).toHaveAttribute("href", "/game/deep-dive")
+    expect(linkFor("Date Night")).toHaveAttribute("href", "/game/date-night")
   })
 
-  it("renders quick action buttons for each mode", () => {
+  it("links the wheel and question bank cards to their routes", () => {
     render(<GameHomePage />)
-
-    expect(screen.getByText(/Monthly Check-In/)).toBeTruthy()
-    expect(screen.getByText(/Start Exploring/)).toBeTruthy()
-    expect(screen.getByText(/Light & Fun/)).toBeTruthy()
-    expect(screen.getByText(/Full Experience/)).toBeTruthy()
+    expect(linkFor("Spin the Wheel")).toHaveAttribute("href", "/wheel")
+    expect(linkFor("Question Bank")).toHaveAttribute("href", "/game/bank")
   })
 
-  it("renders Question Bank link", () => {
+  // ─── Integration: the page drives the domain hook ───
+
+  it("calls loadActiveSession on mount (effect wiring)", () => {
     render(<GameHomePage />)
-    expect(screen.getByText(/Question Bank/)).toBeTruthy()
+    expect(mockLoadActiveSession).toHaveBeenCalledTimes(1)
   })
 
-  // ─── Interaction: Navigation ───
+  // ─── Unit: resume banner is derived from activeSession ───
 
-  it("navigates to check-in setup when Monthly Check-In is clicked", () => {
+  it("hides the resume banner when there is no active session", () => {
+    engineState.activeSession = null
     render(<GameHomePage />)
-
-    const btn = screen.getByText(/Monthly Check-In/)
-    fireEvent.click(btn)
-
-    expect(mockPush).toHaveBeenCalledWith("/game/check-in/setup")
+    expect(screen.queryByText("Resume")).toBeNull()
+    expect(screen.queryByText(/your turn|their turn/)).toBeNull()
   })
 
-  it("navigates to deep-dive setup when Start Exploring is clicked", () => {
+  it("shows the resume banner derived from an active date_night session", () => {
+    // completed_rounds 2 → round (2+1)=3; mode date_night → label 'Date Night Game';
+    // href built from mode.replace('_','-') + session id.
+    engineState.activeSession = {
+      id: "sess-9",
+      mode: "date_night",
+      completed_rounds: 2,
+    }
     render(<GameHomePage />)
 
-    const btn = screen.getByText(/Start Exploring/)
-    fireEvent.click(btn)
+    expect(screen.getByText("Resume")).toBeInTheDocument()
+    // mode label + round number are rendered together in the banner.
+    expect(screen.getByText(/Date Night Game · Round 3/)).toBeInTheDocument()
+    // yourTurn defaults to true in the page mapping.
+    expect(screen.getByText("your turn")).toBeInTheDocument()
 
-    expect(mockPush).toHaveBeenCalledWith("/game/deep-dive/setup")
+    // Banner deep-links into the in-progress session's play route.
+    const banner = linkFor("Resume")
+    expect(banner).toHaveAttribute(
+      "href",
+      "/game/date-night/play?session=sess-9",
+    )
   })
 
-  it("navigates to date-night setup when Light & Fun is clicked", () => {
+  it("derives round number and label for a check_in session with no completed rounds", () => {
+    // completed_rounds undefined → (0 ?? 0)+1 = round 1; mode check_in.
+    engineState.activeSession = {
+      id: "sess-1",
+      mode: "check_in",
+    }
     render(<GameHomePage />)
 
-    const btn = screen.getByText(/Light & Fun/)
-    fireEvent.click(btn)
-
-    expect(mockPush).toHaveBeenCalledWith("/game/date-night/setup")
+    expect(screen.getByText(/Alignment Check-In · Round 1/)).toBeInTheDocument()
+    expect(linkFor("Resume")).toHaveAttribute(
+      "href",
+      "/game/check-in/play?session=sess-1",
+    )
   })
 
-  it("navigates to question bank when link is clicked", () => {
+  // ─── Integration: rendered inside the page-transition wrapper ───
+
+  it("renders PlayView inside the PageTransition wrapper", () => {
     render(<GameHomePage />)
-
-    const btn = screen.getByText(/Question Bank/)
-    fireEvent.click(btn)
-
-    expect(mockPush).toHaveBeenCalledWith("/game/bank")
-  })
-
-  // ─── Integration: Active session detection ───
-
-  it("calls loadActiveSession on mount", () => {
-    render(<GameHomePage />)
-    expect(mockLoadActiveSession).toHaveBeenCalled()
-  })
-
-  // ─── Category pills for date_night ───
-
-  it("renders category pills for date night mode", () => {
-    render(<GameHomePage />)
-
-    // Pills render as "emoji label", e.g. "❤️ Love"
-    expect(screen.getByText(/Love/)).toBeTruthy()
-    expect(screen.getByText(/Finances/)).toBeTruthy()
-    expect(screen.getByText(/Family/)).toBeTruthy()
+    const wrapper = screen.getByTestId("page-transition")
+    expect(wrapper).toContainElement(screen.getByRole("heading", { name: "Play" }))
   })
 })
