@@ -28,12 +28,14 @@ export default function AuthLayout({
         }}
         aria-hidden="true"
       />
-      {/* Paper grain */}
+      {/* Paper grain — one non-repeating image (no tile seams) */}
       <div
-        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.5] mix-blend-multiply"
+        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.35] mix-blend-multiply"
         style={{
-          backgroundImage: "url('/assets/textures/texture-paper-cream.webp')",
-          backgroundSize: "420px",
+          backgroundImage: "url('/assets/textures/texture-cream-faint.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
         aria-hidden="true"
       />
