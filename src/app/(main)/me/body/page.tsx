@@ -1,25 +1,71 @@
 "use client"
 
-import { useState } from "react"
-import { Settings, ChevronDown, ChevronUp, Dumbbell } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useMemo, useState } from "react"
+import { Settings, Dumbbell } from "lucide-react"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
-import { CycleDayWidget } from "@/components/health/CycleDayWidget"
-import { CycleInsightCard } from "@/components/health/CycleInsightCard"
-import { CycleCalendarView } from "@/components/health/CycleCalendarView"
+import { BodyView, type BodyData } from "@/components/health/BodyView"
 import { CycleConfigForm } from "@/components/health/CycleConfigForm"
 import { useCycle } from "@/lib/hooks/use-cycle"
 import { useAuth } from "@/lib/providers/AuthProvider"
 
 export default function BodyPage() {
   const { profile: authProfile } = useAuth()
-  const { config, isLoading } = useCycle()
+  const {
+    config,
+    currentDay,
+    phase,
+    daysUntilBreak,
+    daysUntilActive,
+    isPMSWindow,
+    isLoading,
+  } = useCycle()
   const isAdmin = authProfile?.role === "admin"
-  const [calendarOpen, setCalendarOpen] = useState(false)
   const [configOpen, setConfigOpen] = useState(false)
+
+  // Admin gating: cycle data is only ever computed/rendered for admins WITH a config.
+  // useCycle itself returns a null state for non-admins, so `config` is always null
+  // for them — this guard is belt-and-braces so cycle data is never exposed.
+  const showCycle = isAdmin && !!config
+
+  // Map the pill-cycle hook (active/break) → BodyView's visual BodyData. We label
+  // on-pill days as "follicular" and break/period days as "menstrual"; we do NOT
+  // fabricate fertility/ovulation timing the hook doesn't model.
+  const bodyData: BodyData | null = useMemo(() => {
+    if (!showCycle || !config || currentDay === null || phase === null) return null
+
+    const activeDays = config.active_days
+    const breakDays = config.break_days
+    const cycleLength = activeDays + breakDays
+
+    const ribbon: BodyData["ribbon"] = Array.from({ length: cycleLength }, (_, i) =>
+      i < activeDays ? "follicular" : "menstrual",
+    )
+
+    // Days until the next period START (break begins). In the active phase that's
+    // daysUntilBreak; in the break phase the period is current, so the next one is
+    // after the upcoming active stretch.
+    const nextPeriodDays =
+      phase === "active" ? daysUntilBreak ?? 0 : (daysUntilActive ?? 0) + activeDays
+
+    const energy = phase === "break" ? "Gentle" : isPMSWindow ? "Winding down" : "Steady"
+
+    return {
+      day: currentDay,
+      cycleLength,
+      phase: phase === "break" ? "menstrual" : "follicular",
+      nextPeriodDays,
+      energy,
+      ribbon,
+      // TODO(wire): fitness has no hook source — the old page only ever showed a
+      // "coming soon" placeholder. Use the design's reference figures (85kg goal,
+      // matching the old placeholder copy) until a real fitness hook exists.
+      // Distinct start/current/goal avoid a 0/0 progress division.
+      fitness: { goalKg: 85, currentKg: 91, startKg: 98 },
+    }
+  }, [showCycle, config, currentDay, phase, daysUntilBreak, daysUntilActive, isPMSWindow])
 
   if (isLoading) {
     return (
@@ -32,79 +78,58 @@ export default function BodyPage() {
     )
   }
 
-  return (
-    <PageTransition>
-      <PageHeader
-        title="Body"
-        backHref="/me"
-        rightAction={
-          isAdmin && config ? (
+  // ── Admin WITH config: redesigned cycle companion ──
+  if (showCycle && bodyData) {
+    return (
+      <PageTransition>
+        <PageHeader
+          title="Body"
+          backHref="/me"
+          rightAction={
             <button
               type="button"
               onClick={() => setConfigOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-text-secondary"
+              className="flex h-9 w-9 items-center justify-center rounded-full"
+              style={{ color: "var(--color-ink-soft)" }}
               aria-label="Cycle settings"
             >
               <Settings size={20} strokeWidth={1.5} />
             </button>
-          ) : undefined
-        }
-      />
+          }
+        />
+
+        {/* Redesigned BodyView renders the phase hero, insights, ribbon, and fitness.
+            (Fitness shown with the design's goal until a real fitness hook exists.) */}
+        <BodyView data={bodyData} />
+
+        <CycleConfigForm
+          open={configOpen}
+          onClose={() => setConfigOpen(false)}
+          onSuccess={() => setConfigOpen(false)}
+          initialConfig={config ?? undefined}
+        />
+      </PageTransition>
+    )
+  }
+
+  // ── Non-admins, and admins without a config: NO cycle data exposed. ──
+  return (
+    <PageTransition>
+      <PageHeader title="Body" backHref="/me" />
 
       <div className="flex flex-col gap-6 px-5 py-6">
-        {/* Cycle Tracker Section (admin/Yahya only) */}
-        {isAdmin && (
-          config ? (
-            <>
-              {/* Hero: Cycle Day Widget */}
-              <div className="flex justify-center rounded-2xl border-l-4 border-l-[#F4A8B8] bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-[var(--shadow-soft)]">
-                <CycleDayWidget />
-              </div>
-
-              {/* Insight Card */}
-              <div className="rounded-2xl border-l-4 border-l-[#F4A8B8] bg-[var(--bg-elevated,#FFFFFF)] p-4 shadow-[var(--shadow-soft)]"><CycleInsightCard /></div>
-
-              {/* Expandable Calendar */}
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCalendarOpen((prev) => !prev)}
-                  className="flex items-center justify-between py-2 text-[14px] font-medium font-serif italic text-text-secondary"
-                >
-                  <span>{calendarOpen ? "Hide Calendar" : "View Calendar"}</span>
-                  {calendarOpen ? (
-                    <ChevronUp size={16} />
-                  ) : (
-                    <ChevronDown size={16} />
-                  )}
-                </button>
-                <AnimatePresence>
-                  {calendarOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="overflow-hidden"
-                    >
-                      <CycleCalendarView />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </>
-          ) : (
-            <EmptyState
-              icon={<Settings size={48} strokeWidth={1.25} />}
-              title="Set up cycle tracking"
-              subtitle="Configure pill cycle dates to get personalized insights"
-              actionLabel="Set Up"
-              onAction={() => setConfigOpen(true)}
-            />
-          )
+        {/* Admin without a config → setup prompt (preserved from the old page). */}
+        {isAdmin && !config && (
+          <EmptyState
+            icon={<Settings size={48} strokeWidth={1.25} />}
+            title="Set up cycle tracking"
+            subtitle="Configure pill cycle dates to get personalized insights"
+            actionLabel="Set Up"
+            onAction={() => setConfigOpen(true)}
+          />
         )}
 
-        {/* Fitness Placeholder (always visible) */}
+        {/* Fitness placeholder — visible to everyone (preserved from the old page). */}
         <EmptyState
           icon={<Dumbbell size={48} strokeWidth={1.25} />}
           title="Fitness tracking coming soon"
@@ -112,7 +137,7 @@ export default function BodyPage() {
         />
       </div>
 
-      {/* Config Form Modal (admin only) */}
+      {/* Config form only mounted for admins (setup flow). */}
       {isAdmin && (
         <CycleConfigForm
           open={configOpen}

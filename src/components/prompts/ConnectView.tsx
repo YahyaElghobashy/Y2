@@ -19,9 +19,22 @@ export type ConnectData = {
   history: { question: string; mine: string; hers: string; date: string }[]
 }
 
-export function ConnectView({ data }: { data: ConnectData }) {
-  const [answer, setAnswer] = useState("")
-  const [revealed, setRevealed] = useState(false)
+export function ConnectView({
+  data,
+  onSubmit,
+  initialAnswer = "",
+  initialRevealed = false,
+}: {
+  data: ConnectData
+  /** Authed page injects the real "submit answer" mutation; preview leaves it undefined (reveal stays demo-only). */
+  onSubmit?: (text: string) => void | Promise<void>
+  /** Seed the composer when the user has already answered today (authed page); preview leaves it empty. */
+  initialAnswer?: string
+  /** Show the reveal state immediately when both have answered (authed page); preview starts in compose. */
+  initialRevealed?: boolean
+}) {
+  const [answer, setAnswer] = useState(initialAnswer)
+  const [revealed, setRevealed] = useState(initialRevealed)
 
   return (
     <div className="skin-aware min-h-[100dvh] px-5 pb-28 pt-6" style={{ background: "var(--background)" }}>
@@ -59,7 +72,11 @@ export function ConnectView({ data }: { data: ConnectData }) {
               <button
                 type="button"
                 disabled={!answer.trim()}
-                onClick={() => setRevealed(true)}
+                onClick={() => {
+                  setRevealed(true)
+                  // Authed page persists via onSubmit; preview leaves it undefined → reveal stays local/demo-only.
+                  void onSubmit?.(answer)
+                }}
                 className="mt-3 w-full rounded-full py-3 text-[14px] font-bold disabled:opacity-45"
                 style={{ background: "var(--color-coral)", color: "#FFF7EF", fontFamily: "var(--font-body)" }}
               >

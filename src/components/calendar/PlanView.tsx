@@ -30,7 +30,14 @@ export type PlanData = {
 
 const TABS = ["Calendar", "Lists", "Events"]
 
-export function PlanView({ data }: { data: PlanData }) {
+export function PlanView({
+  data,
+  onAdd,
+}: {
+  data: PlanData
+  /** Authed page routes this to /us/calendar/create; preview leaves it undefined (FAB is inert there). */
+  onAdd?: () => void
+}) {
   const [tab, setTab] = useState("Calendar")
   const byDay = new Map<number, PlanEvent[]>()
   data.events.forEach((e) => byDay.set(e.day, [...(byDay.get(e.day) ?? []), e]))
@@ -114,7 +121,7 @@ export function PlanView({ data }: { data: PlanData }) {
         </div>
       )}
 
-      <button type="button" className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add">
+      <button type="button" onClick={onAdd} className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add">
         <Plus size={26} strokeWidth={2.5} />
       </button>
     </div>
