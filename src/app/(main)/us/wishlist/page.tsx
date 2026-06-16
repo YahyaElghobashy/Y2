@@ -13,6 +13,8 @@ import {
   WISHLIST_PRIORITIES,
   type WishlistCategory,
   type WishlistPriority,
+  type WishlistItem,
+  type AddWishlistItemData,
 } from "@/lib/types/wishlist.types"
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
@@ -43,6 +45,20 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   GBP: "\u00A3",
 }
 
+/** Map a stored item onto the editable form shape (drops claim/purchase/system fields). */
+function itemToFormData(item: WishlistItem): AddWishlistItemData {
+  return {
+    title: item.title,
+    description: item.description ?? undefined,
+    url: item.url ?? undefined,
+    image_url: item.image_url ?? undefined,
+    price: item.price ?? undefined,
+    currency: item.currency,
+    category: item.category,
+    priority: item.priority,
+  }
+}
+
 export default function WishlistPage() {
   const { user, partner } = useAuth()
   const {
@@ -62,6 +78,7 @@ export default function WishlistPage() {
 
   const [activeTab, setActiveTab] = useState<"mine" | "partner">("mine")
   const [showAddForm, setShowAddForm] = useState(false)
+  const [editItem, setEditItem] = useState<WishlistItem | null>(null)
   const [showPurchased, setShowPurchased] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<WishlistCategory | "all">("all")
   const [priorityFilter, setPriorityFilter] = useState<WishlistPriority | "all">("all")
@@ -219,6 +236,7 @@ export default function WishlistPage() {
               onUnclaim={unclaimItem}
               onMarkPurchased={markPurchased}
               onDelete={activeTab === "mine" ? removeItem : undefined}
+              onEdit={activeTab === "mine" ? setEditItem : undefined}
               userId={user?.id}
             />
           ))}
@@ -271,11 +289,19 @@ export default function WishlistPage() {
         </motion.button>
       )}
 
-      {/* Add item form */}
+      {/* Add / edit item form — one sheet, edit mode when an item is selected. */}
       <AddWishlistItemForm
-        open={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        onSubmit={addItem}
+        open={showAddForm || editItem !== null}
+        onClose={() => {
+          setShowAddForm(false)
+          setEditItem(null)
+        }}
+        onSubmit={
+          editItem
+            ? (data) => updateItem(editItem.id, data)
+            : addItem
+        }
+        initialData={editItem ? itemToFormData(editItem) : null}
         extractUrlMetadata={extractUrlMetadata}
       />
     </div>

@@ -214,4 +214,71 @@ describe("AddWishlistItemForm", () => {
       expect(onClose).toHaveBeenCalled()
     })
   })
+
+  // ── Edit mode ───────────────────────────────────────────────
+
+  describe("edit mode (initialData)", () => {
+    const initialData = {
+      title: "Sony Headphones",
+      description: "Noise cancelling",
+      url: "https://shop.com/wh1000",
+      image_url: "https://img.com/h.jpg",
+      price: 349.99,
+      currency: "USD",
+      category: "tech" as const,
+      priority: "must_have" as const,
+    }
+
+    it("shows 'Edit Item' header and 'Save Changes' CTA when initialData is given", () => {
+      render(<AddWishlistItemForm {...defaultProps} initialData={initialData} />)
+      expect(screen.getByRole("heading", { name: "Edit Item" })).toBeInTheDocument()
+      expect(screen.getByTestId("wishlist-submit-btn")).toHaveTextContent("Save Changes")
+    })
+
+    it("seeds the fields from initialData", () => {
+      render(<AddWishlistItemForm {...defaultProps} initialData={initialData} />)
+      expect(screen.getByTestId("wishlist-title-input")).toHaveValue("Sony Headphones")
+      expect(screen.getByTestId("wishlist-description-input")).toHaveValue("Noise cancelling")
+      expect(screen.getByTestId("wishlist-url-input")).toHaveValue("https://shop.com/wh1000")
+      expect(screen.getByTestId("wishlist-price-input")).toHaveValue(349.99)
+      expect(screen.getByTestId("wishlist-currency-select")).toHaveValue("USD")
+    })
+
+    it("submits the edited data through onSubmit", async () => {
+      const onSubmit = vi.fn().mockResolvedValue(undefined)
+      render(<AddWishlistItemForm {...defaultProps} onSubmit={onSubmit} initialData={initialData} />)
+
+      fireEvent.change(screen.getByTestId("wishlist-title-input"), { target: { value: "Sony XM5" } })
+      fireEvent.click(screen.getByTestId("wishlist-submit-btn"))
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: "Sony XM5",
+            price: 349.99,
+            currency: "USD",
+            category: "tech",
+            priority: "must_have",
+          })
+        )
+      })
+    })
+
+    it("re-seeds when reopened with different initialData", () => {
+      const { rerender } = render(
+        <AddWishlistItemForm {...defaultProps} open={false} initialData={initialData} />
+      )
+      // Open with a different item.
+      const other = { ...initialData, title: "Kindle", price: 120, category: "books" as const }
+      rerender(<AddWishlistItemForm {...defaultProps} open={true} initialData={other} />)
+      expect(screen.getByTestId("wishlist-title-input")).toHaveValue("Kindle")
+      expect(screen.getByTestId("wishlist-price-input")).toHaveValue(120)
+    })
+
+    it("renders ADD copy when initialData is null", () => {
+      render(<AddWishlistItemForm {...defaultProps} initialData={null} />)
+      expect(screen.getByRole("heading", { name: "Add Item" })).toBeInTheDocument()
+      expect(screen.getByTestId("wishlist-submit-btn")).toHaveTextContent("Add to Wishlist")
+    })
+  })
 })
