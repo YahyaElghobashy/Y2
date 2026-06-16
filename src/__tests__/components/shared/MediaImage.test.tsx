@@ -253,7 +253,7 @@ describe("MediaImage — integration", () => {
     expect(img.src).toContain("storage.supabase.co")
   })
 
-  it("constructs proxy URL for exported media", async () => {
+  it("routes exported media through the auth-gated resolver (no key in URL)", async () => {
     mockSelectResult = {
       data: {
         status: "exported",
@@ -271,8 +271,11 @@ describe("MediaImage — integration", () => {
     })
 
     const img = screen.getByTestId("media-img") as HTMLImageElement
-    expect(img.src).toContain("media-proxy")
-    expect(img.src).toContain("id=m-exported")
+    // Exported media now points at /api/media/[id] (server signs + redirects).
+    expect(img.src).toContain("/api/media/m-exported")
+    // The static proxy key must never appear in the client URL.
+    expect(img.src).not.toContain("key=")
+    expect(img.src).not.toContain("media-proxy")
   })
 
   it("falls back to fallbackUrl when media lookup fails", async () => {

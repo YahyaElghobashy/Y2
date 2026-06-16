@@ -25,11 +25,11 @@ type ResolvedState =
   | { status: "resolved"; url: string }
   | { status: "error" }
 
-const PROXY_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL
-const PROXY_KEY = process.env.NEXT_PUBLIC_MEDIA_PROXY_KEY
-
+// Exported (Drive-backed) media is served through the auth-gated resolver
+// route, which redirects the <img> to a short-lived, HMAC-signed media-proxy
+// URL. The signing secret stays server-side — nothing sensitive in the bundle.
 function buildProxyUrl(mediaId: string): string {
-  return `${PROXY_BASE}/functions/v1/media-proxy?id=${mediaId}&key=${PROXY_KEY}`
+  return `/api/media/${encodeURIComponent(mediaId)}`
 }
 
 export function MediaImage({
