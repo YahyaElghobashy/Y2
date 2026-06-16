@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Loader2 } from "lucide-react"
+import { X, Loader2, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
-import { useAuth } from "@/lib/providers/AuthProvider"
+import { useChallenges } from "@/lib/hooks/use-challenges"
+import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import { toast } from "sonner"
 
 const EMOJI_OPTIONS = ["⚡", "🏆", "💪", "🎯", "🔥", "✨", "🎮", "📚", "🏃‍♂️", "🧘"]
@@ -20,7 +20,7 @@ const challengeSchema = z.object({
   stakes: z
     .number({ error: "Stakes must be a number" })
     .int("Stakes must be a whole number")
-    .min(1, "Minimum stake is 1 CoYYn")
+    .min(5, "Minimum stake is 5 CoYYns")
     .max(1000, "Maximum stake is 1,000 CoYYns"),
   deadline: z.string().optional(),
 })
@@ -40,7 +40,8 @@ export function CreateChallengeForm({
   onClose,
   onCreated,
 }: CreateChallengeFormProps) {
-  const { user } = useAuth()
+  const { createChallenge } = useChallenges()
+  const { wallet } = useCoyyns()
   const [selectedEmoji, setSelectedEmoji] = useState("⚡")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -48,6 +49,7 @@ export function CreateChallengeForm({
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ChallengeFormData>({
     resolver: zodResolver(challengeSchema),
@@ -58,6 +60,13 @@ export function CreateChallengeForm({
       deadline: "",
     },
   })
+
+  const balance = wallet?.balance ?? 0
+  const stakesValue = watch("stakes")
+  const stakes = Number.isFinite(stakesValue) ? Number(stakesValue) : 0
+  // Creating a challenge escrows your stake up front, so block submission when
+  // the wallet can't cover it — mirrors the accept flow's affordability guard.
+  const canAfford = balance >= stakes
 
   useEffect(() => {
     if (open) {
@@ -73,26 +82,32 @@ export function CreateChallengeForm({
   }, [open, reset])
 
   const onSubmit = async (data: ChallengeFormData) => {
-    if (!user || isSubmitting) return
+    if (isSubmitting || !canAfford) return
     setIsSubmitting(true)
 
     try {
-      const supabase = getSupabaseBrowserClient()
-      const { error } = await supabase.from("challenges").insert({
-        creator_id: user.id,
+      const deadline =
+        data.deadline && new Date(data.deadline) > new Date()
+          ? new Date(data.deadline).toISOString()
+          : undefined
+
+      // Delegate to the canonical hook: it escrows the stake and inserts with
+      // status "pending_acceptance" so the partner must accept before it goes
+      // live. Never bypass it with a raw insert.
+      const ok = await createChallenge({
         title: data.title,
+        description: data.description || undefined,
         emoji: selectedEmoji,
         stakes: data.stakes,
-        status: "active",
-        description: data.description || null,
-        deadline: data.deadline && new Date(data.deadline) > new Date()
-          ? new Date(data.deadline).toISOString()
-          : null,
+        deadline,
       })
 
-      if (error) throw error
+      if (!ok) {
+        toast.error("Failed to create challenge")
+        return
+      }
 
-      toast.success("Challenge created!")
+      toast.success("Challenge sent — waiting for your partner to accept")
       onCreated?.()
       onClose()
     } catch {
@@ -273,10 +288,35 @@ export function CreateChallengeForm({
                 )}
               </div>
 
+              {/* Stake escrow note + affordability */}
+              <div
+                className="flex items-center justify-between rounded-xl bg-bg-primary px-3 py-2.5"
+                data-testid="stake-balance"
+              >
+                <span className="font-body text-[12px] text-text-secondary">
+                  You stake now · your love matches to accept
+                </span>
+                <span className="font-mono text-[13px] font-medium text-text-primary">
+                  {balance.toLocaleString()} &#x1FA99;
+                </span>
+              </div>
+
+              {!canAfford && (
+                <div
+                  className="flex items-center gap-2 rounded-xl bg-[#FFF8E8] p-3"
+                  data-testid="insufficient-funds-warning"
+                >
+                  <AlertTriangle size={16} className="text-[var(--warning)] shrink-0" />
+                  <span className="font-body text-[13px] text-[var(--warning)]">
+                    Not enough CoYYns to stake this challenge
+                  </span>
+                </div>
+              )}
+
               {/* Submit */}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !canAfford}
                 className="mt-2 h-12 w-full rounded-xl bg-accent-primary text-bg-elevated text-[15px] font-medium font-body transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 data-testid="challenge-submit"
               >

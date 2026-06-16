@@ -126,6 +126,17 @@ describe("useChallenges", () => {
       signOut: vi.fn(),
       refreshProfile: vi.fn(),
     })
+
+    useCoyyns.mockReturnValue({
+      wallet: { balance: 100 },
+      partnerWallet: null,
+      transactions: [],
+      isLoading: false,
+      error: null,
+      addCoyyns: vi.fn(),
+      spendCoyyns: mockSpendCoyyns,
+      refreshWallet: vi.fn(),
+    })
   })
 
   // ── Unit Tests ──────────────────────────────────────────
@@ -175,14 +186,54 @@ describe("useChallenges", () => {
     const { result } = renderHook(() => useChallenges())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
+    let returned: boolean | undefined
     await act(async () => {
-      await result.current.createChallenge({
+      returned = await result.current.createChallenge({
         title: "Test", stakes: 3,
       })
     })
 
+    expect(returned).toBe(false)
     expect(result.current.error).toBe("Minimum stake is 5 CoYYns")
     expect(mockSpendCoyyns).not.toHaveBeenCalled()
+  })
+
+  it("createChallenge rejects when wallet can't cover the stake", async () => {
+    useCoyyns.mockReturnValue({
+      wallet: { balance: 4 },
+      partnerWallet: null,
+      transactions: [],
+      isLoading: false,
+      error: null,
+      addCoyyns: vi.fn(),
+      spendCoyyns: mockSpendCoyyns,
+      refreshWallet: vi.fn(),
+    })
+
+    const { result } = renderHook(() => useChallenges())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    let returned: boolean | undefined
+    await act(async () => {
+      returned = await result.current.createChallenge({ title: "Pricey", stakes: 50 })
+    })
+
+    expect(returned).toBe(false)
+    expect(result.current.error).toBe("Insufficient CoYYns balance")
+    expect(mockSpendCoyyns).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
+  })
+
+  it("createChallenge returns true on success", async () => {
+    const { result } = renderHook(() => useChallenges())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    let returned: boolean | undefined
+    await act(async () => {
+      returned = await result.current.createChallenge({ title: "Win", stakes: 10 })
+    })
+
+    expect(returned).toBe(true)
   })
 
   it("createChallenge calls spendCoyyns with correct args", async () => {
