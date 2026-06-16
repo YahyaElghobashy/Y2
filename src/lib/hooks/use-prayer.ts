@@ -89,7 +89,8 @@ export function usePrayer(): UsePrayerReturn {
   useEffect(() => {
     if (!user) return
 
-    const date = getTodayDate()
+    // Compute "today" inside the handler so a day-boundary crossing while the
+    // subscription is alive doesn't strand it on yesterday's date.
     const channel = supabase
       .channel(`prayer_log_realtime_${user.id}`)
       .on(
@@ -101,7 +102,7 @@ export function usePrayer(): UsePrayerReturn {
           filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: PrayerLog }) => {
-          if (payload.new.date === date) setToday(payload.new)
+          if (payload.new.date === getTodayDate()) setToday(payload.new)
         }
       )
       .on(
@@ -113,7 +114,7 @@ export function usePrayer(): UsePrayerReturn {
           filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: PrayerLog }) => {
-          if (payload.new.date === date) setToday(payload.new)
+          if (payload.new.date === getTodayDate()) setToday(payload.new)
         }
       )
 

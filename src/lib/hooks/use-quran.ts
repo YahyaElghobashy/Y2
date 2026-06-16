@@ -110,10 +110,10 @@ export function useQuran(): UseQuranReturn {
   useEffect(() => {
     if (!user) return
 
-    const date = getTodayDate()
-
     function applyRow(row: QuranLog) {
-      if (row.date === date) setToday(row)
+      // Compute "today" per-event so a day-boundary crossing during the
+      // subscription's lifetime doesn't strand it on yesterday's date.
+      if (row.date === getTodayDate()) setToday(row)
       // Keep the monthly aggregate consistent for live totals.
       setMonthlyLogs((prev) => {
         const idx = prev.findIndex((l) => l.id === row.id)

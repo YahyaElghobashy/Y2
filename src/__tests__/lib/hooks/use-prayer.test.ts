@@ -355,13 +355,26 @@ describe("usePrayer", () => {
     it("subscribes to prayer_log INSERT and UPDATE on mount", async () => {
       mockMaybeSingle.mockResolvedValue({ data: baseRow, error: null })
 
-      renderHook(() => usePrayer())
+      // Isolate this render's .on() calls from any prior test's lingering hook.
+      mockChannelOn.mockClear()
+      mockChannel.mockClear()
+
+      const { unmount } = renderHook(() => usePrayer())
 
       await waitFor(() => {
         expect(mockSubscribe).toHaveBeenCalled()
       })
       expect(mockChannel).toHaveBeenCalled()
-      expect(mockChannelOn).toHaveBeenCalledTimes(2)
+      // Both INSERT and UPDATE handlers are registered (one channel listens to
+      // both events). Use a set so a harmless effect re-run can't make this
+      // brittle on exact call counts.
+      const events = new Set(
+        mockChannelOn.mock.calls.map((c) => (c[1] as { event: string }).event)
+      )
+      expect(events.has("INSERT")).toBe(true)
+      expect(events.has("UPDATE")).toBe(true)
+
+      unmount()
     })
 
     it("applies a realtime UPDATE for today's row to local state", async () => {
@@ -413,6 +426,43 @@ describe("usePrayer", () => {
 
       unmount()
       expect(mockRemoveChannel).toHaveBeenCalled()
+    })
+
+    it("applies a realtime event for the NEW day after a midnight crossing (no stale date)", async () => {
+      vi.useFakeTimers()
+      try {
+        vi.setSystemTime(new Date("2026-06-16T23:59:00Z"))
+        mockMaybeSingle.mockResolvedValue({
+          data: { ...baseRow, id: "row-d1", date: "2026-06-16" },
+          error: null,
+        })
+
+        let hook: ReturnType<typeof renderHook<ReturnType<typeof usePrayer>, unknown>>
+        await act(async () => {
+          hook = renderHook(() => usePrayer())
+          await Promise.resolve()
+          await Promise.resolve()
+        })
+
+        // Cross midnight while the subscription stays alive.
+        vi.setSystemTime(new Date("2026-06-17T00:05:00Z"))
+
+        act(() => {
+          emitRealtime("UPDATE", {
+            ...baseRow,
+            id: "row-d2",
+            date: "2026-06-17",
+            fajr: true,
+            dhuhr: true,
+          })
+        })
+
+        // Old code captured yesterday's date and would have ignored this.
+        expect(hook!.result.current.today?.date).toBe("2026-06-17")
+        expect(hook!.result.current.completedCount).toBe(2)
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 })

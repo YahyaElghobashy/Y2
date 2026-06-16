@@ -102,7 +102,8 @@ export function useAzkar(): UseAzkarReturn {
   useEffect(() => {
     if (!user) return
 
-    const date = getTodayDate()
+    // Compute "today" per-event so a day-boundary crossing during the
+    // subscription's lifetime doesn't strand it on yesterday's date.
     const channel = supabase
       .channel(`azkar_sessions_realtime_${user.id}_${sessionType}`)
       .on(
@@ -114,7 +115,7 @@ export function useAzkar(): UseAzkarReturn {
           filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: AzkarSession }) => {
-          if (payload.new.date === date && payload.new.session_type === sessionType) {
+          if (payload.new.date === getTodayDate() && payload.new.session_type === sessionType) {
             setSession(payload.new)
           }
         }
@@ -128,7 +129,7 @@ export function useAzkar(): UseAzkarReturn {
           filter: `user_id=eq.${user.id}`,
         },
         (payload: { new: AzkarSession }) => {
-          if (payload.new.date === date && payload.new.session_type === sessionType) {
+          if (payload.new.date === getTodayDate() && payload.new.session_type === sessionType) {
             setSession(payload.new)
           }
         }
