@@ -12,6 +12,7 @@ type UseRitualsReturn = {
   logRitual: (ritualId: string, note?: string, photoUrl?: string) => Promise<void>
   isLoggedThisPeriod: (ritualId: string) => boolean
   partnerLoggedThisPeriod: (ritualId: string) => boolean
+  getStreakForRitual: (ritualId: string) => number
   createRitual: (data: {
     title: string
     description?: string
@@ -52,6 +53,28 @@ export function getPeriodKey(cadence: Cadence, date: Date = new Date()): string 
     default:
       return `daily:${yyyy}-${mm}-${dd}`
   }
+}
+
+/**
+ * Return a new Date stepped back by exactly one period for the given cadence:
+ * one day, one week (7 days), or one month. Used to walk the streak backward.
+ */
+function stepBackOnePeriod(cadence: Cadence, date: Date): Date {
+  const prev = new Date(date)
+  switch (cadence) {
+    case "daily":
+      prev.setDate(prev.getDate() - 1)
+      break
+    case "weekly":
+      prev.setDate(prev.getDate() - 7)
+      break
+    case "monthly":
+      prev.setMonth(prev.getMonth() - 1)
+      break
+    default:
+      prev.setDate(prev.getDate() - 1)
+  }
+  return prev
 }
 
 export function useRituals(): UseRitualsReturn {
@@ -194,6 +217,38 @@ export function useRituals(): UseRitualsReturn {
       return partnerLogMap.has(`${ritualId}:${periodKey}`)
     },
     [rituals, partnerLogMap]
+  )
+
+  // Count consecutive periods (own logs only) the current user has logged a
+  // ritual, ending at the current period or the immediately previous one. We
+  // anchor the walk at the current period; if that period isn't logged we allow
+  // the streak to still count from the previous period (so a not-yet-logged-
+  // today daily ritual keeps showing its history). Any older gap breaks it.
+  const getStreakForRitual = useCallback(
+    (ritualId: string): number => {
+      const ritual = rituals.find((r) => r.id === ritualId)
+      if (!ritual) return 0
+      const cadence = ritual.cadence as Cadence
+
+      // Find the anchor: current period if logged, else the previous period.
+      let cursor = new Date()
+      const currentKey = getPeriodKey(cadence, cursor)
+      if (!ownLogMap.has(`${ritualId}:${currentKey}`)) {
+        cursor = stepBackOnePeriod(cadence, cursor)
+        if (!ownLogMap.has(`${ritualId}:${getPeriodKey(cadence, cursor)}`)) {
+          return 0 // neither current nor previous period logged → no streak
+        }
+      }
+
+      // Walk backward from the anchor, counting until the first gap.
+      let count = 0
+      while (ownLogMap.has(`${ritualId}:${getPeriodKey(cadence, cursor)}`)) {
+        count++
+        cursor = stepBackOnePeriod(cadence, cursor)
+      }
+      return count
+    },
+    [rituals, ownLogMap]
   )
 
   // ── Actions ─────────────────────────────────────────────────
@@ -354,6 +409,7 @@ export function useRituals(): UseRitualsReturn {
       logRitual: async () => {},
       isLoggedThisPeriod: () => false,
       partnerLoggedThisPeriod: () => false,
+      getStreakForRitual: () => 0,
       createRitual: async () => null,
       deleteRitual: async () => {},
       uploadRitualPhoto: async () => null,
@@ -369,6 +425,7 @@ export function useRituals(): UseRitualsReturn {
     logRitual,
     isLoggedThisPeriod,
     partnerLoggedThisPeriod,
+    getStreakForRitual,
     createRitual,
     deleteRitual,
     uploadRitualPhoto,

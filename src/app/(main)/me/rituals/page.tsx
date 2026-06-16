@@ -25,6 +25,7 @@ export default function RitualsPage() {
     logRitual,
     isLoggedThisPeriod,
     partnerLoggedThisPeriod,
+    getStreakForRitual,
     createRitual,
     uploadRitualPhoto,
   } = useRituals()
@@ -50,8 +51,7 @@ export default function RitualsPage() {
         id: r.id,
         emoji: r.icon,
         title: r.title,
-        // TODO(wire): streak has no hook source — default to 0 until a streak field exists.
-        streak: 0,
+        streak: getStreakForRitual(r.id),
         shared: r.is_shared,
         doneByPartner: r.is_shared ? partnerLoggedThisPeriod(r.id) : undefined,
         done: isLoggedThisPeriod(r.id),
@@ -61,7 +61,7 @@ export default function RitualsPage() {
       .filter(([, items]) => items.length > 0)
       .sort(([a], [b]) => (CADENCE_ORDER[a] ?? 0) - (CADENCE_ORDER[b] ?? 0))
       .map(([cadence, items]) => ({ cadence: CADENCE_LABEL[cadence] ?? cadence, items }))
-  }, [rituals, letterRitual, isLoggedThisPeriod, partnerLoggedThisPeriod])
+  }, [rituals, letterRitual, isLoggedThisPeriod, partnerLoggedThisPeriod, getStreakForRitual])
 
   const handleCreate = async (data: {
     title: string

@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/animations"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { WatchView, type WatchItem as WatchViewItem } from "@/components/watch/WatchView"
 import { AddWatchModal } from "@/components/watch/AddWatchModal"
+import { RatingSheet } from "@/components/watch/RatingSheet"
 import { useWatchLog } from "@/lib/hooks/use-watch-log"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import type { WatchItem } from "@/lib/types/watch.types"
@@ -23,14 +24,25 @@ export default function WatchLogPage() {
     isLoading,
     error,
     addItem,
+    submitRating,
     myRating,
     partnerRating,
     searchTMDB,
   } = useWatchLog()
 
   const [showAddModal, setShowAddModal] = useState(false)
+  const [rating, setRating] = useState<{ open: boolean; itemId: string; title: string }>({
+    open: false,
+    itemId: "",
+    title: "",
+  })
 
   const partnerName = partner?.display_name ?? "Yara"
+
+  const openRating = (id: string) => {
+    const item = [...watchlist, ...watching, ...watched].find((i) => i.id === id)
+    setRating({ open: true, itemId: id, title: item?.title ?? "" })
+  }
 
   const items: WatchViewItem[] = useMemo(() => {
     const all = [...watchlist, ...watching, ...watched]
@@ -66,7 +78,12 @@ export default function WatchLogPage() {
 
   return (
     <PageTransition>
-      <WatchView items={items} partnerName={partnerName} onAdd={() => setShowAddModal(true)} />
+      <WatchView
+        items={items}
+        partnerName={partnerName}
+        onAdd={() => setShowAddModal(true)}
+        onRate={openRating}
+      />
 
       {/* Preserve the working add flow (TMDB search → addItem) behind the redesigned FAB. */}
       <AddWatchModal
@@ -77,6 +94,18 @@ export default function WatchLogPage() {
           setShowAddModal(false)
         }}
         onSearch={searchTMDB}
+      />
+
+      {/* Rate a watched title — score 1–10 + optional reaction → submitRating. */}
+      <RatingSheet
+        open={rating.open}
+        title={rating.title}
+        initialScore={myRating(rating.itemId)?.score}
+        onClose={() => setRating((r) => ({ ...r, open: false }))}
+        onSubmit={async (score, reaction) => {
+          await submitRating(rating.itemId, score, reaction)
+          setRating((r) => ({ ...r, open: false }))
+        }}
       />
     </PageTransition>
   )

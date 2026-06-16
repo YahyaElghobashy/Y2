@@ -35,11 +35,14 @@ export function WatchView({
   items,
   partnerName = "Yara",
   onAdd,
+  onRate,
 }: {
   items: WatchItem[]
   partnerName?: string
   /** Authed page injects the real "add title" flow; preview leaves it undefined (FAB is inert there). */
   onAdd?: () => void
+  /** Authed page injects the rating flow; preview leaves it undefined (watched cards are inert there). */
+  onRate?: (id: string) => void
 }) {
   const [tab, setTab] = useState<WatchItem["status"]>("watchlist")
   const list = items.filter((i) => i.status === tab)
@@ -69,25 +72,40 @@ export function WatchView({
       </div>
 
       <div className="grid gap-2.5">
-        {list.map((w, i) => (
-          <motion.div key={w.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: i * 0.05 }}>
-            <PosterCard grain={false} className="flex items-center gap-3 !p-3">
-              <span className="grid h-16 w-12 shrink-0 place-items-center rounded-lg text-xl" style={{ background: GRAD[w.kind] }}>
-                {w.kind === "movie" ? "🎬" : "📺"}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>{w.title}</span>
-                <span className="block text-[12px] uppercase tracking-wide" style={{ fontFamily: "var(--font-nav)", color: "var(--color-ink-soft)" }}>{w.kind} · {w.year}</span>
-                {w.status === "watched" && (
-                  <span className="mt-1 flex items-center gap-3 text-[12px]">
-                    <Rating who="You" v={w.mine} dot="var(--color-preference-me)" />
-                    <Rating who={partnerName} v={w.theirs} dot="var(--color-preference-partner)" />
+        {list.map((w, i) => {
+          // A watched card is tappable only when the page wires onRate (preview leaves it inert).
+          const ratable = w.status === "watched" && !!onRate
+          const needsMine = w.status === "watched" && w.mine == null
+          return (
+            <motion.div key={w.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: i * 0.05 }}>
+              <PosterCard
+                grain={false}
+                interactive={ratable}
+                onClick={ratable ? () => onRate!(w.id) : undefined}
+                className="flex items-center gap-3 !p-3"
+              >
+                <span className="grid h-16 w-12 shrink-0 place-items-center rounded-lg text-xl" style={{ background: GRAD[w.kind] }}>
+                  {w.kind === "movie" ? "🎬" : "📺"}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>{w.title}</span>
+                  <span className="block text-[12px] uppercase tracking-wide" style={{ fontFamily: "var(--font-nav)", color: "var(--color-ink-soft)" }}>{w.kind} · {w.year}</span>
+                  {w.status === "watched" && (
+                    <span className="mt-1 flex items-center gap-3 text-[12px]">
+                      <Rating who="You" v={w.mine} dot="var(--color-preference-me)" />
+                      <Rating who={partnerName} v={w.theirs} dot="var(--color-preference-partner)" />
+                    </span>
+                  )}
+                </span>
+                {ratable && needsMine && (
+                  <span className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide" style={{ background: "var(--color-amber)", color: "#2A2018", fontFamily: "var(--font-nav)" }}>
+                    <Star size={11} fill="#2A2018" stroke="none" />Rate
                   </span>
                 )}
-              </span>
-            </PosterCard>
-          </motion.div>
-        ))}
+              </PosterCard>
+            </motion.div>
+          )
+        })}
       </div>
 
       <button type="button" onClick={onAdd} className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add title">
