@@ -90,7 +90,7 @@ describe("025_couple_prompts migration", () => {
   const fs = require("fs")
   const path = require("path")
   const sql = fs.readFileSync(
-    path.resolve(__dirname, "../../../supabase/migrations/025_couple_prompts.sql"),
+    path.resolve(__dirname, "../../../supabase/migrations/029_couple_prompts.sql"),
     "utf-8"
   )
 

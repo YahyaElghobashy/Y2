@@ -3,7 +3,7 @@ import { readFileSync } from "fs"
 import { resolve } from "path"
 
 const sql = readFileSync(
-  resolve(__dirname, "../../../supabase/migrations/024_watch_together.sql"),
+  resolve(__dirname, "../../../supabase/migrations/027_watch_together.sql"),
   "utf-8"
 )
 

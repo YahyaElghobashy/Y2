@@ -3,7 +3,7 @@ import * as fs from "fs"
 import * as path from "path"
 
 const sql = fs.readFileSync(
-  path.resolve(__dirname, "../../../supabase/migrations/026_spin_the_wheel.sql"),
+  path.resolve(__dirname, "../../../supabase/migrations/030_spin_the_wheel.sql"),
   "utf-8"
 )
 
