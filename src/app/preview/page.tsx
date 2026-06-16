@@ -29,6 +29,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Hub", href: "/preview/keepsake", note: "on this day" },
       { name: "Garden", href: "/preview/garden", note: "garden-sway · bloom field" },
       { name: "Snap", href: "/preview/snap", note: "polaroid feed" },
+      { name: "Letters", href: "/preview/letters", note: "candle · Fraunces · seal" },
     ],
   },
   {
