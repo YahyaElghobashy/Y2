@@ -5,12 +5,9 @@ import { useSnap } from "@/lib/hooks/use-snap"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
-import { SnapCard } from "@/components/snap/SnapCard"
-import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
-import { Camera } from "lucide-react"
-import Link from "next/link"
-import type { Snap, ReactionEmoji } from "@/lib/types/snap.types"
+import { SnapView, type SnapDay } from "@/components/snap/SnapView"
+import type { Snap } from "@/lib/types/snap.types"
 
 /**
  * Get today's date in Cairo timezone as YYYY-MM-DD.
@@ -55,20 +52,47 @@ export default function SnapFeedPage() {
 
   const sentinelRef = useRef<HTMLDivElement | null>(null)
 
-  // Group snaps by snap_date
-  const grouped = useMemo(() => {
+  const userName = profile?.display_name ?? "You"
+  const partnerName = partner?.display_name ?? "Partner"
+
+  // Group snaps by snap_date → the redesigned SnapView's SnapDay[] shape.
+  const days: SnapDay[] = useMemo(() => {
     if (!user) return []
-    const map = new Map<string, { user?: Snap; partner?: Snap }>()
+    const map = new Map<string, { mine?: Snap; theirs?: Snap }>()
     for (const snap of snapFeed) {
       const entry = map.get(snap.snap_date) ?? {}
-      if (snap.user_id === user.id) entry.user = snap
-      else entry.partner = snap
+      if (snap.user_id === user.id) entry.mine = snap
+      else entry.theirs = snap
       map.set(snap.snap_date, entry)
     }
-    return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a))
-  }, [snapFeed, user])
+    return Array.from(map.entries())
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([date, { mine, theirs }]) => ({
+        label: formatSnapDate(date),
+        mine: mine
+          ? {
+              photo: mine.photo_url ?? "",
+              who: userName,
+              reaction: mine.reaction_emoji ?? undefined,
+              id: mine.id,
+              // Own snap → no reaction picker.
+              canReact: false,
+            }
+          : undefined,
+        theirs: theirs
+          ? {
+              photo: theirs.photo_url ?? "",
+              who: partnerName,
+              reaction: theirs.reaction_emoji ?? undefined,
+              id: theirs.id,
+              // Partner's snap → I can react to it.
+              canReact: true,
+            }
+          : undefined,
+      }))
+  }, [snapFeed, user, userName, partnerName])
 
-  // Infinite scroll observer
+  // Infinite scroll observer — preserved from the old page.
   const handleLoadMore = useCallback(() => {
     if (hasMore) {
       loadMore()
@@ -92,113 +116,33 @@ export default function SnapFeedPage() {
     return () => observer.disconnect()
   }, [handleLoadMore])
 
-  const handleReact = useCallback(
-    (snapId: string, emoji: ReactionEmoji | null) => {
-      reactToSnap(snapId, emoji)
-    },
-    [reactToSnap]
-  )
+  if (isLoading) {
+    return (
+      <PageTransition>
+        <PageHeader title="Snaps" backHref="/keepsake" />
+        <div className="px-5 py-6">
+          <LoadingSkeleton variant="card" count={3} />
+        </div>
+      </PageTransition>
+    )
+  }
 
-  // Determine names for card display
-  const userName = profile?.display_name ?? "You"
-  const partnerName = partner?.display_name ?? "Partner"
-  const userAvatar = profile?.avatar_url ?? null
-  const partnerAvatar = partner?.avatar_url ?? null
+  if (error) {
+    return (
+      <PageTransition>
+        <PageHeader title="Snaps" backHref="/keepsake" />
+        <div className="py-12 text-center text-[14px] text-[var(--color-text-secondary)]">
+          Something went wrong. Please try again.
+        </div>
+      </PageTransition>
+    )
+  }
 
   return (
     <PageTransition>
-      <PageHeader
-        title="Snaps"
-        rightAction={
-          <Link href="/snap/capture" aria-label="Take a snap">
-            <Camera
-              size={22}
-              strokeWidth={1.75}
-              className="text-[var(--color-text-secondary)]"
-            />
-          </Link>
-        }
-      />
-
-      <div className="px-4 pb-24">
-        {isLoading ? (
-          <LoadingSkeleton variant="full-page" />
-        ) : error ? (
-          <div className="py-12 text-center text-[14px] text-[var(--color-text-secondary)]">
-            Something went wrong. Please try again.
-          </div>
-        ) : grouped.length === 0 ? (
-          <div data-testid="snap-empty-state">
-            <EmptyState
-              icon={<Camera size={48} strokeWidth={1.25} />}
-              title="No snaps yet"
-              subtitle="Take your first snap to start sharing moments"
-              actionLabel="Take a Snap"
-              actionHref="/snap/capture"
-            />
-          </div>
-        ) : (
-          <div data-testid="snap-feed" className="flex flex-col gap-6">
-            {grouped.map(([date, { user: userSnap, partner: partnerSnap }]) => (
-              <div key={date} data-testid="snap-date-group">
-                {/* Date header */}
-                <h2 className="mb-3 flex items-center gap-1.5 font-display text-[15px] font-semibold text-[var(--color-text-primary)]">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent-copper,#B87333)]" />
-                  {formatSnapDate(date)}
-                </h2>
-
-                {/* Snap cards */}
-                {userSnap && partnerSnap ? (
-                  // Side-by-side layout
-                  <div className="grid grid-cols-2 gap-2">
-                    <SnapCard
-                      snap={userSnap}
-                      authorName={userName}
-                      avatarUrl={userAvatar}
-                      isOwn
-                    />
-                    <SnapCard
-                      snap={partnerSnap}
-                      authorName={partnerName}
-                      avatarUrl={partnerAvatar}
-                      isOwn={false}
-                      onReact={handleReact}
-                    />
-                  </div>
-                ) : (
-                  // Single card centered
-                  <div className="mx-auto max-w-[200px]">
-                    {userSnap && (
-                      <SnapCard
-                        snap={userSnap}
-                        authorName={userName}
-                        avatarUrl={userAvatar}
-                        isOwn
-                      />
-                    )}
-                    {partnerSnap && (
-                      <SnapCard
-                        snap={partnerSnap}
-                        authorName={partnerName}
-                        avatarUrl={partnerAvatar}
-                        isOwn={false}
-                        onReact={handleReact}
-                      />
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Infinite scroll sentinel */}
-            <div
-              ref={sentinelRef}
-              data-testid="snap-sentinel"
-              className="h-4"
-            />
-          </div>
-        )}
-      </div>
+      <SnapView days={days} onReact={reactToSnap} />
+      {/* Infinite scroll sentinel — kept for the loadMore flow. */}
+      <div ref={sentinelRef} data-testid="snap-sentinel" className="h-4" />
     </PageTransition>
   )
 }

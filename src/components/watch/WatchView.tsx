@@ -31,7 +31,16 @@ const TABS: { id: WatchItem["status"]; label: string }[] = [
   { id: "watched", label: "Watched" },
 ]
 
-export function WatchView({ items, partnerName = "Yara" }: { items: WatchItem[]; partnerName?: string }) {
+export function WatchView({
+  items,
+  partnerName = "Yara",
+  onAdd,
+}: {
+  items: WatchItem[]
+  partnerName?: string
+  /** Authed page injects the real "add title" flow; preview leaves it undefined (FAB is inert there). */
+  onAdd?: () => void
+}) {
   const [tab, setTab] = useState<WatchItem["status"]>("watchlist")
   const list = items.filter((i) => i.status === tab)
   const watched = items.filter((i) => i.status === "watched" && i.mine && i.theirs)
@@ -81,7 +90,7 @@ export function WatchView({ items, partnerName = "Yara" }: { items: WatchItem[];
         ))}
       </div>
 
-      <button type="button" className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add title">
+      <button type="button" onClick={onAdd} className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add title">
         <Plus size={26} strokeWidth={2.5} />
       </button>
     </div>

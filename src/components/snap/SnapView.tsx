@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Camera } from "lucide-react"
+import { SnapReaction } from "@/components/snap/SnapReaction"
+import type { ReactionEmoji } from "@/lib/types/snap.types"
 
 /**
  * SnapView — the daily photo feed (docs/DESIGN_BLUEPRINT.md §6.1). Polaroids,
@@ -13,10 +15,23 @@ const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
   e.currentTarget.style.display = "none"
 }
 
-export type Snap = { photo: string; who: string; reaction?: string }
+/**
+ * `id` + `canReact` are present only in the authed context (real data), where
+ * the partner's polaroid gets a reaction picker wired via `onReact`. Preview
+ * mocks omit them, so the view stays display-only there.
+ */
+export type Snap = { photo: string; who: string; reaction?: string; id?: string; canReact?: boolean }
 export type SnapDay = { label: string; mine?: Snap; theirs?: Snap }
 
-function Polaroid({ snap, tilt }: { snap: Snap; tilt: number }) {
+function Polaroid({
+  snap,
+  tilt,
+  onReact,
+}: {
+  snap: Snap
+  tilt: number
+  onReact?: (snapId: string, emoji: ReactionEmoji | null) => void
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14, rotate: tilt * 1.5 }}
@@ -31,6 +46,16 @@ function Polaroid({ snap, tilt }: { snap: Snap; tilt: number }) {
         {snap.reaction && (
           <span className="absolute -bottom-1 right-1.5 text-[22px] drop-shadow-md">{snap.reaction}</span>
         )}
+        {snap.canReact && snap.id && onReact && (
+          <div className="absolute bottom-1.5 left-1.5 z-10">
+            <SnapReaction
+              snapId={snap.id}
+              currentReaction={snap.reaction}
+              onReact={onReact}
+              className="rounded-full bg-black/30 px-1.5 py-0.5 backdrop-blur-sm"
+            />
+          </div>
+        )}
       </div>
       <p className="mt-1.5 text-center text-[18px] leading-none" style={{ fontFamily: "var(--font-handwritten)", color: "var(--color-ink-soft)" }}>
         {snap.who}
@@ -39,7 +64,13 @@ function Polaroid({ snap, tilt }: { snap: Snap; tilt: number }) {
   )
 }
 
-export function SnapView({ days }: { days: SnapDay[] }) {
+export function SnapView({
+  days,
+  onReact,
+}: {
+  days: SnapDay[]
+  onReact?: (snapId: string, emoji: ReactionEmoji | null) => void
+}) {
   return (
     <div className="skin-aware min-h-[100dvh] px-5 pb-28 pt-6" style={{ background: "var(--background)" }}>
       <header className="mb-5 flex items-center justify-between">
@@ -67,7 +98,7 @@ export function SnapView({ days }: { days: SnapDay[] }) {
               </p>
               <div className={both ? "grid grid-cols-2 gap-3" : "mx-auto max-w-[64%]"}>
                 {d.mine && <Polaroid snap={d.mine} tilt={-2} />}
-                {d.theirs && <Polaroid snap={d.theirs} tilt={2} />}
+                {d.theirs && <Polaroid snap={d.theirs} tilt={2} onReact={onReact} />}
               </div>
             </div>
           )

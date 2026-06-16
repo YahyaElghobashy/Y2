@@ -14,7 +14,14 @@ export type Visit = { id: string; place: string; cuisine: string; score: number;
 
 const ORD = ["", "1st", "2nd", "3rd", "4th", "5th"]
 
-export function TableView({ visits }: { visits: Visit[] }) {
+export function TableView({
+  visits,
+  onAdd,
+}: {
+  visits: Visit[]
+  /** Authed page injects the real "log a visit" flow; preview leaves it undefined (FAB is inert there). */
+  onAdd?: () => void
+}) {
   const [view, setView] = useState<"list" | "map">("list")
   const cuisines = ["All", ...Array.from(new Set(visits.map((v) => v.cuisine)))]
   const [cuisine, setCuisine] = useState("All")
@@ -83,7 +90,7 @@ export function TableView({ visits }: { visits: Visit[] }) {
         </div>
       )}
 
-      <button type="button" className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Log a visit">
+      <button type="button" onClick={onAdd} className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Log a visit">
         <Plus size={26} strokeWidth={2.5} />
       </button>
     </div>

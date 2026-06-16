@@ -10,12 +10,39 @@ import { PosterCard } from "@/components/shared/PosterCard"
  * annual-report meets cork-board; theme hero, Mine/partner tabs, category
  * sections of goals. Presentational.
  */
-export type VisionItem = { text: string; done: boolean }
+// `id` is present only in the authed context (real data), where toggling an
+// item routes to the real mutation via `onToggleItem`. Preview mocks omit it.
+export type VisionItem = { text: string; done: boolean; id?: string }
 export type VisionCategory = { name: string; emoji: string; accent: "teal" | "amber" | "coral" | "rose" | "indigo"; items: VisionItem[] }
 export type Board = { theme: string; categories: VisionCategory[] }
 
-export function VisionView({ mine, partner, partnerName = "Yara" }: { mine: Board; partner: Board; partnerName?: string }) {
-  const [tab, setTab] = useState<"mine" | "partner">("mine")
+export function VisionView({
+  mine,
+  partner,
+  partnerName = "Yara",
+  activeTab,
+  onTabChange,
+  onToggleItem,
+  onAddGoal,
+}: {
+  mine: Board
+  partner: Board
+  partnerName?: string
+  /** Controlled tab — when provided, the parent owns tab state (authed page
+   *  drives the hook's active board). Falls back to internal state in preview. */
+  activeTab?: "mine" | "partner"
+  onTabChange?: (tab: "mine" | "partner") => void
+  /** Real toggle mutation (authed). Preview leaves it undefined → display-only. */
+  onToggleItem?: (itemId: string) => void
+  /** Real "add goal" entry point (authed). Preview leaves it undefined → no-op. */
+  onAddGoal?: () => void
+}) {
+  const [internalTab, setInternalTab] = useState<"mine" | "partner">("mine")
+  const tab = activeTab ?? internalTab
+  const setTab = (next: "mine" | "partner") => {
+    setInternalTab(next)
+    onTabChange?.(next)
+  }
   const board = tab === "mine" ? mine : partner
   const total = board.categories.reduce((s, c) => s + c.items.length, 0)
   const done = board.categories.reduce((s, c) => s + c.items.filter((i) => i.done).length, 0)
@@ -44,16 +71,34 @@ export function VisionView({ mine, partner, partnerName = "Yara" }: { mine: Boar
                 <span className="text-[16px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>{c.name}</span>
               </div>
               <ul className="grid gap-1.5">
-                {c.items.map((it, i) => (
-                  <li key={i} className="flex items-center gap-2.5">
+                {c.items.map((it, i) => {
+                  // Toggling is only offered on your own board, with a real id + handler.
+                  const canToggle = tab === "mine" && !!onToggleItem && !!it.id
+                  const checkbox = (
                     <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border" style={{ borderColor: it.done ? "var(--color-teal)" : "var(--border)", background: it.done ? "var(--color-teal)" : "transparent", color: "#FFF7EF" }}>
                       {it.done && <Check size={12} strokeWidth={3} />}
                     </span>
-                    <span className="text-[14px]" style={{ fontFamily: "var(--font-serif)", color: it.done ? "var(--color-ink-soft)" : "var(--foreground)", textDecoration: it.done ? "line-through" : "none" }}>
-                      {it.text}
-                    </span>
-                  </li>
-                ))}
+                  )
+                  return (
+                    <li key={it.id ?? i} className="flex items-center gap-2.5">
+                      {canToggle ? (
+                        <button
+                          type="button"
+                          onClick={() => onToggleItem!(it.id!)}
+                          aria-label={it.done ? "Mark not done" : "Mark done"}
+                          className="shrink-0"
+                        >
+                          {checkbox}
+                        </button>
+                      ) : (
+                        checkbox
+                      )}
+                      <span className="text-[14px]" style={{ fontFamily: "var(--font-serif)", color: it.done ? "var(--color-ink-soft)" : "var(--foreground)", textDecoration: it.done ? "line-through" : "none" }}>
+                        {it.text}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
             </PosterCard>
           </motion.div>
@@ -61,7 +106,7 @@ export function VisionView({ mine, partner, partnerName = "Yara" }: { mine: Boar
       </div>
 
       {tab === "mine" && (
-        <button type="button" className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add goal">
+        <button type="button" onClick={onAddGoal} className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-full" style={{ background: "var(--color-terracotta)", color: "#FFF7EF", boxShadow: "var(--shadow-glow-copper)" }} aria-label="Add goal">
           <Plus size={26} strokeWidth={2.5} />
         </button>
       )}
