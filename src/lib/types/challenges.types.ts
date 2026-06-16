@@ -50,7 +50,8 @@ export type UseChallengesReturn = {
   historyChallenges: Challenge[]
   isLoading: boolean
   error: string | null
-  createChallenge: (data: CreateChallengeData) => Promise<void>
+  /** Resolves true on success, false on validation/escrow/insert failure. */
+  createChallenge: (data: CreateChallengeData) => Promise<boolean>
   acceptChallenge: (challengeId: string) => Promise<void>
   declineChallenge: (challengeId: string) => Promise<void>
   claimVictory: (challengeId: string) => Promise<void>

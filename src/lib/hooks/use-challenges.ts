@@ -17,7 +17,7 @@ const HISTORY_STATUSES: ChallengeStatus[] = ["completed", "resolved", "expired",
 
 export function useChallenges(): UseChallengesReturn {
   const { user } = useAuth()
-  const { spendCoyyns } = useCoyyns()
+  const { spendCoyyns, wallet } = useCoyyns()
   const supabase = getSupabaseBrowserClient()
 
   const [challenges, setChallenges] = useState<Challenge[]>([])
@@ -110,13 +110,21 @@ export function useChallenges(): UseChallengesReturn {
   // ── Actions ────────────────────────────────────────────────
 
   const createChallenge = useCallback(
-    async (data: CreateChallengeData) => {
-      if (!user) return
+    async (data: CreateChallengeData): Promise<boolean> => {
+      if (!user) return false
       setError(null)
 
       if (data.stakes < 5) {
         setError("Minimum stake is 5 CoYYns")
-        return
+        return false
+      }
+
+      // Creating a challenge escrows the creator's stake immediately. Guard the
+      // balance here so we never insert a stake-less pending challenge when the
+      // wallet can't cover it (spendCoyyns swallows its own errors).
+      if (!wallet || wallet.balance < data.stakes) {
+        setError("Insufficient CoYYns balance")
+        return false
       }
 
       try {
@@ -129,17 +137,22 @@ export function useChallenges(): UseChallengesReturn {
           emoji: data.emoji ?? null,
           stakes: data.stakes,
           deadline: data.deadline ?? null,
+          // Partner must accept before a challenge goes live. Never insert
+          // "active" here — acceptChallenge() promotes it once the partner
+          // matches the stake.
           status: "pending_acceptance",
         })
 
         if (insertError) throw insertError
 
         await refreshChallenges()
+        return true
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to create challenge")
+        return false
       }
     },
-    [user, supabase, spendCoyyns, refreshChallenges]
+    [user, wallet, supabase, spendCoyyns, refreshChallenges]
   )
 
   const acceptChallenge = useCallback(
@@ -279,7 +292,7 @@ export function useChallenges(): UseChallengesReturn {
       historyChallenges: [],
       isLoading: false,
       error: null,
-      createChallenge: async () => {},
+      createChallenge: async () => false,
       acceptChallenge: async () => {},
       declineChallenge: async () => {},
       claimVictory: async () => {},
