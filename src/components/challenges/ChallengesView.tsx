@@ -59,6 +59,10 @@ export function ChallengesView({
   bounties: bountiesInit,
   initialBalance,
   partnerName = "Yara",
+  onAccept,
+  onDecline,
+  onClaim,
+  onClaimBounty,
 }: {
   pending: ChallengeItem[]
   active: ChallengeItem[]
@@ -66,6 +70,11 @@ export function ChallengesView({
   bounties: BountyItem[]
   initialBalance: number
   partnerName?: string
+  /** Authed real mutations; preview leaves them undefined (demo-only). */
+  onAccept?: (id: string) => void
+  onDecline?: (id: string) => void
+  onClaim?: (id: string) => void
+  onClaimBounty?: (id: string) => void
 }) {
   const [tab, setTab] = useState("challenges")
   const [balance, setBalance] = useState(initialBalance)
@@ -83,21 +92,27 @@ export function ChallengesView({
     setPending((list) => list.filter((x) => x.id !== c.id))
     setActive((list) => [{ ...c, from: undefined, deadline: "this week" }, ...list])
     setCelebrate({ open: true, tone: "quiet", title: "Challenge on ✦", subtitle: `"${c.title}" is live — ${c.stakes} CoYYns on the line` })
+    onAccept?.(c.id)
   }
 
-  const decline = (c: ChallengeItem) => setPending((list) => list.filter((x) => x.id !== c.id))
+  const decline = (c: ChallengeItem) => {
+    setPending((list) => list.filter((x) => x.id !== c.id))
+    onDecline?.(c.id)
+  }
 
   const claim = (c: ChallengeItem) => {
     const payout = c.stakes * 2
     setActive((list) => list.filter((x) => x.id !== c.id))
     setBalance((b) => b + payout)
     setCelebrate({ open: true, tone: "big", title: "Mabrouk! 🎉", subtitle: `You won "${c.title}" — ${payout} CoYYns to your pot` })
+    onClaim?.(c.id)
   }
 
   const claimBounty = (b: BountyItem) => {
     setBalance((bal) => bal + b.reward)
     if (!b.recurring) setBounties((list) => list.filter((x) => x.id !== b.id))
     setCelebrate({ open: true, tone: "quiet", title: "Bounty claimed ✦", subtitle: `+${b.reward} CoYYns — "${b.title}"` })
+    onClaimBounty?.(b.id)
   }
 
   return (
