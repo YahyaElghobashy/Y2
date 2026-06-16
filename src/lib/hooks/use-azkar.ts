@@ -95,6 +95,52 @@ export function useAzkar(): UseAzkarReturn {
     }
   }, [user, supabase, sessionType])
 
+  // ── Realtime: same user's other tab / device updates live ──
+  // RLS + user_id filter scope events to this user's rows; we only apply the
+  // row matching the active session type and today. We sync count/target only
+  // — completion celebration stays a local, intentional event.
+  useEffect(() => {
+    if (!user) return
+
+    const date = getTodayDate()
+    const channel = supabase
+      .channel(`azkar_sessions_realtime_${user.id}_${sessionType}`)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "azkar_sessions",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: AzkarSession }) => {
+          if (payload.new.date === date && payload.new.session_type === sessionType) {
+            setSession(payload.new)
+          }
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "azkar_sessions",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: AzkarSession }) => {
+          if (payload.new.date === date && payload.new.session_type === sessionType) {
+            setSession(payload.new)
+          }
+        }
+      )
+
+    channel.subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, supabase, sessionType])
+
   const increment = useCallback(() => {
     if (!user || !session) return
 

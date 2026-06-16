@@ -105,6 +105,55 @@ export function useQuran(): UseQuranReturn {
     }
   }, [user, supabase])
 
+  // ── Realtime: same user's other tab / device updates live ──
+  // RLS + user_id filter scope events to this user's own quran_log rows.
+  useEffect(() => {
+    if (!user) return
+
+    const date = getTodayDate()
+
+    function applyRow(row: QuranLog) {
+      if (row.date === date) setToday(row)
+      // Keep the monthly aggregate consistent for live totals.
+      setMonthlyLogs((prev) => {
+        const idx = prev.findIndex((l) => l.id === row.id)
+        if (idx === -1) return [...prev, row]
+        const next = [...prev]
+        next[idx] = row
+        return next
+      })
+    }
+
+    const channel = supabase
+      .channel(`quran_log_realtime_${user.id}`)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "quran_log",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: QuranLog }) => applyRow(payload.new)
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "quran_log",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: QuranLog }) => applyRow(payload.new)
+      )
+
+    channel.subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, supabase])
+
   const logPages = useCallback(
     (pages: number) => {
       if (!user || !today) return

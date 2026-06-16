@@ -83,6 +83,47 @@ export function usePrayer(): UsePrayerReturn {
     }
   }, [user, supabase])
 
+  // ── Realtime: same user's other tab / device updates live ──
+  // RLS (auth.uid() = user_id) plus the user_id filter scope events to this
+  // user's own rows. We only apply changes to today's row.
+  useEffect(() => {
+    if (!user) return
+
+    const date = getTodayDate()
+    const channel = supabase
+      .channel(`prayer_log_realtime_${user.id}`)
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "prayer_log",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: PrayerLog }) => {
+          if (payload.new.date === date) setToday(payload.new)
+        }
+      )
+      .on(
+        "postgres_changes" as never,
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "prayer_log",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: PrayerLog }) => {
+          if (payload.new.date === date) setToday(payload.new)
+        }
+      )
+
+    channel.subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, supabase])
+
   const togglePrayer = useCallback(
     (name: PrayerName) => {
       if (!user || !today) return

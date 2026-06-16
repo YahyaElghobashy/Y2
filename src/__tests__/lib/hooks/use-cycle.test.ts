@@ -28,6 +28,7 @@ const MOCK_CONFIG = {
   break_days: 7,
   pms_warning_days: 3,
   notes: null,
+  last_pms_notified_date: null,
 }
 
 // --- Supabase mock ---
@@ -39,27 +40,43 @@ let logsQueryResult: { data: unknown; error: unknown } = {
   data: [],
   error: null,
 }
+// Result of the atomic "claim this PMS window" update. data != null => won.
+let claimResult: { data: unknown; error: unknown } = { data: { id: "config-1" }, error: null }
+let notifInsertResult: { data: unknown; error: unknown } = { data: { id: "notif-1" }, error: null }
 
 const mockUpsert = vi.fn().mockResolvedValue({ error: null })
-const mockInsert = vi.fn().mockResolvedValue({ error: null })
+const insertCallsByTable: Record<string, unknown[]> = {}
+const mockFunctionsInvoke = vi.fn().mockResolvedValue({ data: null, error: null })
 
 const mockFrom = vi.fn((table: string) => {
   const chain: Record<string, ReturnType<typeof vi.fn>> = {}
   chain.select = vi.fn().mockReturnValue(chain)
   chain.eq = vi.fn().mockReturnValue(chain)
   chain.gte = vi.fn().mockReturnValue(chain)
+  chain.or = vi.fn().mockReturnValue(chain)
+  chain.update = vi.fn().mockReturnValue(chain)
   chain.order = vi.fn().mockResolvedValue(logsQueryResult)
-  chain.single = vi.fn().mockResolvedValue(
-    table === "cycle_config" ? configQueryResult : logsQueryResult
+  chain.single = vi.fn(() =>
+    Promise.resolve(table === "cycle_config" ? configQueryResult : notifInsertResult)
   )
+  // cycle_config claim uses .maybeSingle(); the config fetch uses .single().
+  chain.maybeSingle = vi.fn(() => Promise.resolve(claimResult))
   chain.upsert = mockUpsert
-  chain.insert = mockInsert
+  chain.insert = vi.fn((payload: unknown) => {
+    insertCallsByTable[table] = insertCallsByTable[table] ?? []
+    insertCallsByTable[table].push(payload)
+    return chain
+  })
+  // Awaitable so `await supabase.from(...).insert(...)` (addLog) resolves.
+  ;(chain as Record<string, unknown>).then = (resolve: (v: { error: null }) => void) =>
+    resolve({ error: null })
 
   return chain
 })
 
 const mockSupabase = {
   from: mockFrom,
+  functions: { invoke: mockFunctionsInvoke },
 }
 
 vi.mock("@/lib/supabase/client", () => ({
@@ -87,6 +104,9 @@ describe("useCycle", () => {
     vi.clearAllMocks()
     configQueryResult = { data: MOCK_CONFIG, error: null }
     logsQueryResult = { data: [], error: null }
+    claimResult = { data: { id: "config-1" }, error: null }
+    notifInsertResult = { data: { id: "notif-1" }, error: null }
+    for (const k of Object.keys(insertCallsByTable)) delete insertCallsByTable[k]
     mockAuthReturn = {
       user: { id: "yahya-1" },
       profile: MOCK_PROFILE as typeof MOCK_PROFILE | null,
@@ -313,5 +333,136 @@ describe("useCycle", () => {
         })
       })
     ).resolves.not.toThrow()
+  })
+
+  // ── PMS / period notification (owner-only, idempotent) ──────
+
+  describe("pms notification", () => {
+    it("fires a cycle_reminder push to Yahya (self) when inside the PMS window", async () => {
+      // Day 20 (19 elapsed) with pms_warning_days = 3 → PMS window.
+      configQueryResult = {
+        data: { ...MOCK_CONFIG, pill_start_date: makePillStartDate(19), last_pms_notified_date: null },
+        error: null,
+      }
+
+      const { result } = renderHook(() => useCycle())
+
+      await waitFor(() => {
+        expect(result.current.isPMSWindow).toBe(true)
+      })
+
+      await waitFor(() => {
+        expect(insertCallsByTable["notifications"]?.length).toBeGreaterThanOrEqual(1)
+      })
+
+      const payload = insertCallsByTable["notifications"][0] as Record<string, unknown>
+      expect(payload.type).toBe("cycle_reminder")
+      expect(payload.sender_id).toBe("yahya-1")
+      expect(payload.recipient_id).toBe("yahya-1")
+
+      await waitFor(() => {
+        expect(mockFunctionsInvoke).toHaveBeenCalledWith(
+          "send-notification",
+          expect.objectContaining({
+            body: expect.objectContaining({ notification_id: "notif-1", recipient_id: "yahya-1" }),
+          })
+        )
+      })
+    })
+
+    it("fires during the period (break) window", async () => {
+      configQueryResult = {
+        data: { ...MOCK_CONFIG, pill_start_date: makePillStartDate(23), last_pms_notified_date: null },
+        error: null,
+      }
+
+      renderHook(() => useCycle())
+
+      await waitFor(() => {
+        expect(insertCallsByTable["notifications"]?.length).toBeGreaterThanOrEqual(1)
+      })
+      const payload = insertCallsByTable["notifications"][0] as Record<string, unknown>
+      expect((payload.metadata as Record<string, unknown>).kind).toBe("period")
+    })
+
+    it("does NOT fire outside any window (active, non-PMS)", async () => {
+      // Day 6 (5 elapsed) → active, well before PMS.
+      configQueryResult = {
+        data: { ...MOCK_CONFIG, pill_start_date: makePillStartDate(5), last_pms_notified_date: null },
+        error: null,
+      }
+
+      const { result } = renderHook(() => useCycle())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(insertCallsByTable["notifications"]).toBeUndefined()
+      expect(mockFunctionsInvoke).not.toHaveBeenCalled()
+    })
+
+    it("does NOT fire for Yara (non-admin) even inside the PMS window", async () => {
+      mockAuthReturn.profile = { ...MOCK_PROFILE, id: "yara-1", role: "user" }
+      configQueryResult = {
+        data: { ...MOCK_CONFIG, pill_start_date: makePillStartDate(19), last_pms_notified_date: null },
+        error: null,
+      }
+
+      renderHook(() => useCycle())
+
+      // Give effects a tick.
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 0))
+      })
+
+      expect(insertCallsByTable["notifications"]).toBeUndefined()
+      expect(mockFunctionsInvoke).not.toHaveBeenCalled()
+    })
+
+    it("does NOT fire when the window was already claimed (claim returns no row)", async () => {
+      claimResult = { data: null, error: null } // another session already notified
+      configQueryResult = {
+        data: { ...MOCK_CONFIG, pill_start_date: makePillStartDate(19), last_pms_notified_date: null },
+        error: null,
+      }
+
+      const { result } = renderHook(() => useCycle())
+
+      await waitFor(() => {
+        expect(result.current.isPMSWindow).toBe(true)
+      })
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 0))
+      })
+
+      expect(insertCallsByTable["notifications"]).toBeUndefined()
+      expect(mockFunctionsInvoke).not.toHaveBeenCalled()
+    })
+
+    it("does NOT re-fire when last_pms_notified_date already matches this window", async () => {
+      // 18 elapsed → currentDay 19 = first PMS day → window start = today.
+      const windowStart = format(new Date(), "yyyy-MM-dd")
+      configQueryResult = {
+        data: {
+          ...MOCK_CONFIG,
+          pill_start_date: makePillStartDate(18),
+          last_pms_notified_date: windowStart,
+        },
+        error: null,
+      }
+
+      const { result } = renderHook(() => useCycle())
+
+      await waitFor(() => {
+        expect(result.current.isPMSWindow).toBe(true)
+      })
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 0))
+      })
+
+      expect(insertCallsByTable["notifications"]).toBeUndefined()
+      expect(mockFunctionsInvoke).not.toHaveBeenCalled()
+    })
   })
 })

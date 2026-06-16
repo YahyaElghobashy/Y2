@@ -290,6 +290,7 @@ export interface Database {
           break_days: number
           pms_warning_days: number
           notes: string | null
+          last_pms_notified_date: string | null
           created_at: string
           updated_at: string
         }
@@ -301,6 +302,7 @@ export interface Database {
           break_days?: number
           pms_warning_days?: number
           notes?: string | null
+          last_pms_notified_date?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -312,6 +314,7 @@ export interface Database {
           break_days?: number
           pms_warning_days?: number
           notes?: string | null
+          last_pms_notified_date?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -2285,6 +2288,19 @@ export interface Database {
           free_sends_used: number
           bonus_sends_used: number
           bonus_sends_available: number
+        }
+      }
+      record_garden_open: {
+        Args: {
+          p_user_column: string
+        }
+        Returns: {
+          id: string
+          garden_date: string
+          yahya_opened: boolean
+          yara_opened: boolean
+          flower_type: string | null
+          created_at: string
         }
       }
     }

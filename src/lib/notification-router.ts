@@ -20,6 +20,8 @@ export function getRouteForNotification(
       return "/"
     case "daily_bonus":
       return "/us/coyyns"
+    case "cycle_reminder":
+      return "/me/body"
     default:
       return "/"
   }

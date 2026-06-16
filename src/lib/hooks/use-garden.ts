@@ -4,12 +4,6 @@ import { useAuth } from "@/lib/providers/AuthProvider"
 import type { Database } from "@/lib/types/database.types"
 
 type GardenDay = Database["public"]["Tables"]["garden_days"]["Row"]
-type GardenDayInsert = Database["public"]["Tables"]["garden_days"]["Insert"]
-type GardenDayUpdate = Database["public"]["Tables"]["garden_days"]["Update"]
-
-const FLOWER_EMOJIS = [
-  "🌸", "🌻", "🌹", "🌺", "🌷", "🌼", "💐", "🌿", "🍀", "🌵", "🪻", "🪷",
-] as const
 
 export type UseGardenReturn = {
   gardenDays: GardenDay[]
@@ -17,18 +11,6 @@ export type UseGardenReturn = {
   isLoading: boolean
   error: string | null
   recordOpened: () => Promise<void>
-}
-
-/**
- * Get today's date in Cairo timezone as YYYY-MM-DD.
- */
-function getCairoToday(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Africa/Cairo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date())
 }
 
 export function useGarden(): UseGardenReturn {
@@ -123,108 +105,32 @@ export function useGarden(): UseGardenReturn {
   }, [user, supabase])
 
   // ── Record that the current user opened the app today ──────
+  // Atomic: a single ON CONFLICT upsert in record_garden_open() sets this
+  // user's column and blooms a flower when both have opened — no read-
+  // modify-write, so two concurrent first-opens can never drop an open or
+  // race on the flower (see migration 045).
   const recordOpened = useCallback(async () => {
     if (!user) return
     setError(null)
 
-    const today = getCairoToday()
+    const { data, error: rpcErr } = await supabase.rpc("record_garden_open", {
+      p_user_column: userColumn,
+    })
 
-    // Check if today's row exists
-    const { data: existing, error: fetchErr } = await supabase
-      .from("garden_days")
-      .select("*")
-      .eq("garden_date", today)
-      .maybeSingle()
-
-    if (fetchErr) {
-      setError(fetchErr.message)
+    if (rpcErr) {
+      setError(rpcErr.message)
       return
     }
 
-    if (existing) {
-      const row = existing as GardenDay
-      // Already recorded for this user?
-      if (row[userColumn]) return
+    if (!data) return
 
-      // Set this user's column to true
-      const updateData: GardenDayUpdate = { [userColumn]: true } as GardenDayUpdate
-
-      // If both users opened and no flower yet, pick a random flower
-      const otherColumn =
-        userColumn === "yahya_opened" ? "yara_opened" : "yahya_opened"
-      if (row[otherColumn] && !row.flower_type) {
-        updateData.flower_type =
-          FLOWER_EMOJIS[Math.floor(Math.random() * FLOWER_EMOJIS.length)]
+    const row = data as unknown as GardenDay
+    setGardenDays((prev) => {
+      if (prev.some((d) => d.id === row.id)) {
+        return prev.map((d) => (d.id === row.id ? row : d))
       }
-
-      let query = supabase
-        .from("garden_days")
-        .update(updateData)
-        .eq("id", row.id)
-
-      // Race-safe: only update if flower_type hasn't been set by someone else
-      if (row.flower_type === null) {
-        query = query.is("flower_type", null)
-      } else {
-        query = query.eq("flower_type", row.flower_type)
-      }
-
-      const { data: updated, error: updateErr } = await query
-        .select("*")
-        .single()
-
-      if (updateErr) {
-        // Race condition: try without flower_type guard
-        const { data: retryData, error: retryErr } = await supabase
-          .from("garden_days")
-          .update({ [userColumn]: true })
-          .eq("id", row.id)
-          .select("*")
-          .single()
-
-        if (retryErr) {
-          setError(retryErr.message)
-          return
-        }
-        if (retryData) {
-          setGardenDays((prev) =>
-            prev.map((d) =>
-              d.id === row.id ? (retryData as GardenDay) : d
-            )
-          )
-        }
-        return
-      }
-
-      if (updated) {
-        setGardenDays((prev) =>
-          prev.map((d) =>
-            d.id === row.id ? (updated as GardenDay) : d
-          )
-        )
-      }
-    } else {
-      // Insert new row for today
-      const insertData: GardenDayInsert = {
-        garden_date: today,
-        [userColumn]: true,
-      } as GardenDayInsert
-
-      const { data: inserted, error: insertErr } = await supabase
-        .from("garden_days")
-        .insert(insertData)
-        .select("*")
-        .single()
-
-      if (insertErr) {
-        setError(insertErr.message)
-        return
-      }
-
-      if (inserted) {
-        setGardenDays((prev) => [inserted as GardenDay, ...prev])
-      }
-    }
+      return [row, ...prev]
+    })
   }, [user, userColumn, supabase])
 
   // ── Derived: recent flowers ─────────────────────────────────

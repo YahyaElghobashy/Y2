@@ -16,7 +16,34 @@ function createSupabaseMock() {
   let upsertResult: { data: unknown; error: unknown } = { data: null, error: null }
   const upsertCalls: unknown[] = []
 
+  const realtimeHandlers: Array<{
+    config: { event: string }
+    cb: (payload: { new: unknown }) => void
+  }> = []
+  const subscribeMock = vi.fn()
+  const removeChannelMock = vi.fn()
+
   const mock = {
+    emit: (event: "INSERT" | "UPDATE", row: unknown) => {
+      for (const h of realtimeHandlers) {
+        if (h.config.event === event) h.cb({ new: row })
+      }
+    },
+    getSubscribe: () => subscribeMock,
+    getRemoveChannel: () => removeChannelMock,
+    channel: vi.fn(() => ({
+      on: vi.fn(function (
+        this: unknown,
+        _event: string,
+        config: { event: string },
+        cb: (payload: { new: unknown }) => void
+      ) {
+        realtimeHandlers.push({ config, cb })
+        return this
+      }),
+      subscribe: subscribeMock,
+    })),
+    removeChannel: removeChannelMock,
     setTodayResult: (r: { data: unknown; error: unknown }) => { todayResult = r },
     setMonthlyResult: (r: { data: unknown; error: unknown }) => { monthlyResult = r },
     setUpsertResult: (r: { data: unknown; error: unknown }) => { upsertResult = r },
@@ -294,6 +321,91 @@ describe("useQuran", () => {
         user_id: "user-1",
         pages_read: 8,
       })
+    })
+  })
+
+  // ── Realtime Tests ──────────────────────────────────────────
+
+  describe("realtime", () => {
+    const today = new Date().toISOString().split("T")[0]
+    const baseRow = {
+      id: "row-1",
+      user_id: "user-1",
+      date: today,
+      pages_read: 2,
+      daily_goal: 5,
+      notes: null,
+      created_at: "",
+      updated_at: "",
+    }
+
+    it("subscribes to quran_log INSERT and UPDATE on mount", async () => {
+      supabaseMock.setTodayResult({ data: baseRow, error: null })
+      supabaseMock.setMonthlyResult({ data: [baseRow], error: null })
+
+      const { result } = renderHook(() => useQuran())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(supabaseMock.channel).toHaveBeenCalled()
+      expect(supabaseMock.getSubscribe()).toHaveBeenCalled()
+    })
+
+    it("applies a realtime UPDATE for today's row and recomputes monthly total", async () => {
+      supabaseMock.setTodayResult({ data: baseRow, error: null })
+      supabaseMock.setMonthlyResult({ data: [baseRow], error: null })
+
+      const { result } = renderHook(() => useQuran())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+      expect(result.current.monthlyTotal).toBe(2)
+
+      act(() => {
+        supabaseMock.emit("UPDATE", { ...baseRow, pages_read: 9 })
+      })
+
+      expect(result.current.today?.pages_read).toBe(9)
+      expect(result.current.monthlyTotal).toBe(9)
+    })
+
+    it("ignores realtime UPDATE for a different date (today unchanged)", async () => {
+      supabaseMock.setTodayResult({ data: baseRow, error: null })
+      supabaseMock.setMonthlyResult({ data: [baseRow], error: null })
+
+      const { result } = renderHook(() => useQuran())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      act(() => {
+        supabaseMock.emit("UPDATE", {
+          ...baseRow,
+          id: "row-old",
+          date: "2000-01-01",
+          pages_read: 99,
+        })
+      })
+
+      expect(result.current.today?.pages_read).toBe(2)
+    })
+
+    it("removes the channel on unmount", async () => {
+      supabaseMock.setTodayResult({ data: baseRow, error: null })
+      supabaseMock.setMonthlyResult({ data: [baseRow], error: null })
+
+      const { unmount } = renderHook(() => useQuran())
+
+      await waitFor(() => {
+        expect(supabaseMock.getSubscribe()).toHaveBeenCalled()
+      })
+
+      unmount()
+      expect(supabaseMock.getRemoveChannel()).toHaveBeenCalled()
     })
   })
 })
