@@ -76,6 +76,26 @@ vi.mock("@/lib/hooks/use-azkar", () => ({
   useAzkar: () => mockUseAzkar(),
 }))
 
+// Prayer TIMES hook (location-based). Default here: NO location set, so the
+// times card (which would render prayer-name labels and collide with the
+// prayer-tracker name assertions below) is not shown. Times rendering is
+// covered separately in SoulView.prayer-times.test.tsx.
+const mockDetectLocation = vi.fn().mockResolvedValue(true)
+const mockUsePrayerTimes = vi.fn(() => ({
+  times: null,
+  rows: [],
+  next: null,
+  countdown: null,
+  needsLocation: true,
+  detectLocation: mockDetectLocation,
+  setLocation: vi.fn(),
+  isSaving: false,
+  error: null,
+}))
+vi.mock("@/lib/hooks/use-prayer-times", () => ({
+  usePrayerTimes: () => mockUsePrayerTimes(),
+}))
+
 vi.mock("@/lib/providers/AuthProvider", () => ({
   useAuth: () => ({
     user: { id: "u1" },
@@ -313,6 +333,15 @@ describe("SoulPage", () => {
       const counter = screen.getByText("7").closest("button") as HTMLElement
       await user.click(counter)
       expect(mockIncrement).toHaveBeenCalledTimes(1)
+    })
+
+    it("consumes usePrayerTimes and wires detectLocation to the location prompt", async () => {
+      const user = userEvent.setup()
+      render(<SoulPage />)
+      expect(mockUsePrayerTimes).toHaveBeenCalled()
+      // needsLocation=true in the default mock → the prompt is shown.
+      await user.click(screen.getByTestId("set-location-button"))
+      expect(mockDetectLocation).toHaveBeenCalledTimes(1)
     })
   })
 })

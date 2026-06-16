@@ -748,6 +748,10 @@ export interface Database {
           google_drive_connected_at: string | null
           onboarding_step: string
           onboarding_completed_at: string | null
+          latitude: number | null
+          longitude: number | null
+          prayer_method: string | null
+          timezone: string | null
           created_at: string
           updated_at: string
         }
@@ -767,6 +771,10 @@ export interface Database {
           google_drive_connected_at?: string | null
           onboarding_step?: string
           onboarding_completed_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          prayer_method?: string | null
+          timezone?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -786,6 +794,10 @@ export interface Database {
           google_drive_connected_at?: string | null
           onboarding_step?: string
           onboarding_completed_at?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          prayer_method?: string | null
+          timezone?: string | null
           created_at?: string
           updated_at?: string
         }
