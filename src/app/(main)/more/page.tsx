@@ -53,7 +53,7 @@ export default function MorePage() {
   if (isLoading) {
     return (
       <PageTransition>
-        <PageHeader title="More" />
+        <PageHeader title="Settings" />
         <div className="px-5 py-6">
           <LoadingSkeleton variant="card" count={3} />
         </div>
@@ -64,7 +64,7 @@ export default function MorePage() {
   if (!profile) {
     return (
       <PageTransition>
-        <PageHeader title="More" />
+        <PageHeader title="Settings" />
         <div className="flex flex-col gap-6 px-5 py-6">
           <div className="flex flex-col items-center gap-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-6 text-center">
             <UserCircle size={48} strokeWidth={1.25} className="text-[var(--color-text-muted)]" />
@@ -86,7 +86,7 @@ export default function MorePage() {
             <AlertDialogTrigger asChild>
               <button
                 type="button"
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-red-50 text-[15px] font-medium text-red-600 transition-colors active:bg-red-100"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-[color:var(--destructive)]/25 bg-[color:var(--destructive)]/10 text-[15px] font-medium text-[var(--destructive)] transition-colors active:bg-[color:var(--destructive)]/15"
               >
                 <LogOut size={18} strokeWidth={1.5} />
                 Log Out
@@ -103,7 +103,7 @@ export default function MorePage() {
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => signOut()}
-                  className="bg-red-600 text-white hover:bg-red-700"
+                  className="bg-[var(--destructive)] text-white hover:opacity-90"
                 >
                   Log Out
                 </AlertDialogAction>
@@ -117,34 +117,41 @@ export default function MorePage() {
 
   return (
     <PageTransition>
-      <PageHeader title="More" />
+      <PageHeader title="Settings" />
 
-      <div className="flex flex-col gap-6 px-5 py-5">
-        {/* Profile Card */}
-        <div className="flex items-center gap-4 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-4">
-          <Avatar
-            src={profile.avatar_url}
-            name={profile.display_name}
-            size="lg"
+      <div className="skin-aware flex flex-col gap-6 px-5 py-5">
+        {/* Profile poster — warm paper, golden-hour wash, wordmark whisper */}
+        <div className="texture-parchment relative overflow-hidden rounded-3xl border border-[var(--color-border-subtle)] p-5 shadow-warm-md" style={{ background: "linear-gradient(155deg, var(--color-bg-elevated, #FFFDF9) 0%, var(--color-sand, #EBDDC7) 140%)" }}>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: "radial-gradient(120% 80% at 100% -10%, rgba(242,169,59,0.16) 0%, transparent 60%)" }}
+            aria-hidden="true"
           />
-          <div className="flex-1">
-            <p className="font-display text-[17px] font-semibold text-[var(--color-text-primary)]">
-              {profile.display_name || "User"}
-            </p>
-            <p className="font-body text-[13px] text-[var(--color-text-secondary)]">
-              {profile.email || user?.email || ""}
-            </p>
-            {partner && (
-              <p className="mt-1 flex items-center gap-1 text-[12px] text-[var(--accent-copper,#B87333)]">
-                <Heart size={12} strokeWidth={1.75} className="fill-current" />
-                <span className="font-medium">Paired with {partner.display_name}</span>
+          <div className="relative flex items-center gap-4">
+            <Avatar
+              src={profile.avatar_url}
+              name={profile.display_name}
+              size="lg"
+            />
+            <div className="flex-1">
+              <p className="text-[19px] font-bold tracking-tight text-[var(--color-ink,#2A2018)]" style={{ fontFamily: "var(--font-display)" }}>
+                {profile.display_name || "User"}
               </p>
-            )}
-            {profile.role && (
-              <span className="inline-block mt-1 font-mono text-[10px] text-[var(--color-accent-primary)] bg-[var(--color-accent-soft)] px-2 py-0.5 rounded-md uppercase tracking-wide">
-                {profile.role}
-              </span>
-            )}
+              <p className="text-[13px] text-[var(--color-ink-soft,#6B5D4F)]" style={{ fontFamily: "var(--font-body)" }}>
+                {profile.email || user?.email || ""}
+              </p>
+              {partner && (
+                <p className="mt-1.5 flex items-center gap-1 text-[13px]" style={{ color: "var(--color-terracotta, #C8552B)", fontFamily: "var(--font-handwritten)" }}>
+                  <Heart size={13} strokeWidth={1.75} className="fill-current" />
+                  <span>paired with {partner.display_name}</span>
+                </p>
+              )}
+              {profile.role && (
+                <span className="mt-1.5 inline-block rounded-md bg-[var(--color-accent-soft)] px-2 py-0.5 text-[10px] uppercase tracking-wide text-[var(--color-accent-copper-dark,#8B5E2B)]" style={{ fontFamily: "var(--font-mono)" }}>
+                  {profile.role}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -210,17 +217,18 @@ export default function MorePage() {
             <GoogleDriveConnect />
             <SettingsRow
               icon={<Palette size={20} strokeWidth={1.5} />}
-              label="Theme"
+              label="Skin"
+              subtitle="Shifts with the Cairo day"
               rightElement={
                 <span className="font-body text-[13px] text-[var(--color-text-muted)]">
-                  Light
+                  Adaptive ☀️/🌙
                 </span>
               }
             />
             <SettingsRow
               icon={<Globe size={20} strokeWidth={1.5} />}
               label="Language"
-              subtitle="English"
+              subtitle="English · العربية"
               rightElement={
                 <span className="font-body text-[13px] text-[var(--color-text-muted)]">
                   Coming soon
@@ -275,13 +283,13 @@ export default function MorePage() {
                 </span>
               }
             />
-            <div className="px-4 py-3 text-center">
-              <Heart size={16} strokeWidth={1.75} className="mx-auto mb-1 text-[var(--accent-copper,#B87333)]" />
-              <p className="font-serif italic text-[13px] text-[var(--color-text-secondary)]">
-                Made with love for Yara
+            <div className="px-4 py-4 text-center">
+              <Heart size={16} strokeWidth={1.75} className="mx-auto mb-1.5" style={{ color: "var(--color-terracotta, #C8552B)" }} />
+              <p className="text-[16px]" style={{ fontFamily: "var(--font-handwritten)", color: "var(--color-terracotta, #C8552B)" }}>
+                made with love, for Yara
               </p>
-              <p className="font-mono text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                v{process.env.APP_VERSION ?? "0.1.0"}
+              <p className="mt-1 text-[11px] text-[var(--color-text-muted)]" style={{ fontFamily: "var(--font-mono)" }}>
+                Hayah · حياة · v{process.env.APP_VERSION ?? "0.1.0"}
               </p>
             </div>
           </div>
@@ -312,7 +320,7 @@ export default function MorePage() {
                     setClearCacheOpen(false)
                   }
                 }}
-                className="bg-red-600 text-white hover:bg-red-700"
+                className="bg-[var(--destructive)] text-white hover:opacity-90"
               >
                 {isClearing ? "Clearing..." : "Clear Cache"}
               </AlertDialogAction>
@@ -348,7 +356,7 @@ export default function MorePage() {
                     setUnpairing(false)
                   }
                 }}
-                className="bg-red-600 text-white hover:bg-red-700"
+                className="bg-[var(--destructive)] text-white hover:opacity-90"
                 data-testid="confirm-unpair-btn"
               >
                 <Link2Off size={16} className="me-1.5" />
@@ -381,7 +389,7 @@ export default function MorePage() {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => signOut()}
-                className="bg-red-600 text-white hover:bg-red-700"
+                className="bg-[var(--destructive)] text-white hover:opacity-90"
               >
                 Log Out
               </AlertDialogAction>

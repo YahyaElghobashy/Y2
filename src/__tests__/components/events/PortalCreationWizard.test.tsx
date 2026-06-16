@@ -134,7 +134,7 @@ describe("PortalCreationWizard", () => {
     expect(screen.getByText("3 / 5")).toBeInTheDocument()
   })
 
-  it("shows 4 theme presets in step 3", async () => {
+  it("shows theme presets in step 3", async () => {
     const user = userEvent.setup()
     render(
       <PortalCreationWizard onComplete={mockOnComplete} onCancel={mockOnCancel} />
@@ -145,6 +145,7 @@ describe("PortalCreationWizard", () => {
     await user.click(screen.getByText("Next"))
 
     expect(screen.getByTestId("theme-elegant_gold")).toBeInTheDocument()
+    expect(screen.getByTestId("theme-hayah_warm")).toBeInTheDocument()
     expect(screen.getByTestId("theme-garden_romance")).toBeInTheDocument()
     expect(screen.getByTestId("theme-minimalist")).toBeInTheDocument()
     expect(screen.getByTestId("theme-midnight_blue")).toBeInTheDocument()

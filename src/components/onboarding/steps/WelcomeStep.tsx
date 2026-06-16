@@ -50,15 +50,22 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
       className="relative flex min-h-dvh w-full flex-col items-center justify-center overflow-hidden p-6"
       style={{
         background:
-          "linear-gradient(135deg, var(--bg-warm-white, #FFFDF9) 0%, rgba(218,165,32,0.06) 50%, var(--bg-soft-cream, #F5EDE3) 100%)",
+          "linear-gradient(160deg, var(--color-paper, #F7EFE3) 0%, rgba(242,169,59,0.07) 48%, var(--color-sand, #EBDDC7) 100%)",
       }}
       data-testid="welcome-step"
     >
+      {/* Golden-hour halo behind the wordmark — the first breath of warmth */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "radial-gradient(90% 50% at 50% 32%, rgba(242,169,59,0.20) 0%, transparent 62%)" }}
+        aria-hidden="true"
+      />
       {/* Content */}
       <div className="relative z-10 flex max-w-lg w-full flex-col items-center text-center space-y-2">
         {/* Arabic text */}
         <motion.h1
-          className="font-arabic text-[72px] leading-none font-bold text-[var(--accent-copper,#B87333)]"
+          className="font-arabic text-[72px] leading-none font-bold"
+          style={{ color: "var(--color-terracotta, #C8552B)" }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
@@ -124,8 +131,8 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
             <motion.button
               className="group w-full rounded-full py-4 px-8 font-body text-[15px] font-semibold text-white shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
               style={{
-                backgroundColor: "var(--accent-copper, #B87333)",
-                boxShadow: "0 4px 14px rgba(184,115,51,0.25)",
+                backgroundColor: "var(--color-terracotta, #C8552B)",
+                boxShadow: "0 4px 16px rgba(200,85,43,0.28)",
               }}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -156,15 +163,15 @@ export function WelcomeStep({ onContinue }: WelcomeStepProps) {
       >
         <div
           className="h-1 w-8 rounded-full"
-          style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+          style={{ backgroundColor: "var(--color-terracotta, #C8552B)" }}
         />
         <div
           className="h-1 w-2 rounded-full"
-          style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+          style={{ backgroundColor: "var(--color-terracotta, #C8552B)" }}
         />
         <div
           className="h-1 w-2 rounded-full"
-          style={{ backgroundColor: "var(--accent-copper, #B87333)" }}
+          style={{ backgroundColor: "var(--color-terracotta, #C8552B)" }}
         />
       </motion.div>
     </div>

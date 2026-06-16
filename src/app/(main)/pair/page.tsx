@@ -32,8 +32,8 @@ export default function PairPage() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--color-bg-primary)]">
-        <div className="h-12 w-12 animate-pulse rounded-full bg-[var(--color-bg-secondary)]" />
+      <main className="flex min-h-screen items-center justify-center" style={{ background: "var(--color-paper, #F7EFE3)" }}>
+        <div className="h-12 w-12 animate-pulse rounded-full bg-[var(--color-sand,#EBDDC7)]" />
       </main>
     )
   }
@@ -45,9 +45,15 @@ export default function PairPage() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)] px-5 pb-24">
+      <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-5 pb-24" style={{ background: "var(--color-paper, #F7EFE3)" }}>
+        {/* Golden-hour wash — the first warmth of finding each other */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0"
+          style={{ background: "radial-gradient(120% 60% at 50% -6%, rgba(242,169,59,0.18) 0%, rgba(232,205,174,0.08) 40%, transparent 70%)" }}
+          aria-hidden="true"
+        />
         <PageTransition>
-          <div className="flex w-full max-w-sm flex-col items-center gap-10">
+          <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-10">
             {/* Header */}
             <div className="flex flex-col items-center gap-3">
               <motion.div
@@ -55,14 +61,14 @@ export default function PairPage() {
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent-soft)]">
-                  <Heart size={28} className="text-[var(--color-accent-primary)]" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-full shadow-warm-md" style={{ background: "radial-gradient(circle at 30% 25%, var(--color-amber,#F2A93B), var(--color-terracotta,#C8552B))" }}>
+                  <Heart size={28} className="fill-current text-[var(--color-bg-warm-white,#FFFDF9)]" />
                 </div>
               </motion.div>
-              <h1 className="font-display text-[26px] font-bold text-[var(--color-text-primary)]">
+              <h1 className="text-[28px] font-extrabold tracking-tight text-[var(--color-ink,#2A2018)]" style={{ fontFamily: "var(--font-display)" }}>
                 Find your partner
               </h1>
-              <p className="text-center font-body text-[14px] text-[var(--color-text-secondary)]">
+              <p className="text-center text-[15px] text-[var(--color-ink-soft,#6B5D4F)]" style={{ fontFamily: "var(--font-serif)" }}>
                 Share your QR code or scan theirs to connect
               </p>
             </div>
@@ -73,7 +79,7 @@ export default function PairPage() {
             {/* Divider */}
             <div className="flex w-full items-center gap-4">
               <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
-              <span className="font-body text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+              <span className="font-nav text-[11px] uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
                 or
               </span>
               <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
@@ -85,7 +91,7 @@ export default function PairPage() {
             {/* Divider */}
             <div className="flex w-full items-center gap-4">
               <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
-              <span className="font-body text-[12px] uppercase tracking-wider text-[var(--color-text-muted)]">
+              <span className="font-nav text-[11px] uppercase tracking-[0.2em] text-[var(--color-text-muted)]">
                 or
               </span>
               <div className="h-px flex-1 bg-[var(--color-border-subtle)]" />
