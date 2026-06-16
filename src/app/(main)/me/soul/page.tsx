@@ -7,12 +7,22 @@ import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { SoulView, type SoulData } from "@/components/spiritual/SoulView"
 import { getDailyAyah } from "@/lib/quran/daily-ayah"
 import { usePrayer } from "@/lib/hooks/use-prayer"
+import { usePrayerTimes } from "@/lib/hooks/use-prayer-times"
 import { useQuran } from "@/lib/hooks/use-quran"
 import { useAzkar } from "@/lib/hooks/use-azkar"
 import { PRAYER_NAMES, type PrayerName } from "@/lib/types/spiritual.types"
 
+const PRAYER_DISPLAY_NAMES: Record<string, string> = {
+  fajr: "Fajr",
+  dhuhr: "Dhuhr",
+  asr: "Asr",
+  maghrib: "Maghrib",
+  isha: "Isha",
+}
+
 export default function SoulPage() {
   const { today: prayerToday, togglePrayer, isLoading: prayerLoading } = usePrayer()
+  const { rows, next, countdown, needsLocation, detectLocation, isSaving } = usePrayerTimes()
   const { monthlyTotal, dailyGoal, isLoading: quranLoading } = useQuran()
   const { session, increment } = useAzkar()
 
@@ -26,13 +36,26 @@ export default function SoulPage() {
     const pct = Math.min(100, Math.round((monthlyTotal / monthlyGoal) * 100))
 
     const v = getDailyAyah()
+    const prayerTimes =
+      next && countdown && rows.length > 0
+        ? {
+            rows,
+            nextName: PRAYER_DISPLAY_NAMES[next.key] ?? next.key,
+            nextLabel: next.label,
+            countdown,
+          }
+        : null
+
     return {
       prayed,
       ayah: { arabic: v.arabic, translation: v.translation, ref: `${v.surahNameEn} ${v.ref}` },
       quran: { surah: "This month", pct },
       azkar: { goal: session?.target ?? 33, current: session?.count ?? 0 },
+      prayerTimes,
+      needsLocation,
+      locationSaving: isSaving,
     }
-  }, [prayerToday, monthlyTotal, dailyGoal, session])
+  }, [prayerToday, monthlyTotal, dailyGoal, session, rows, next, countdown, needsLocation, isSaving])
 
   if (prayerLoading || quranLoading) {
     return (
@@ -51,6 +74,7 @@ export default function SoulPage() {
         data={data}
         onTogglePrayer={(key) => togglePrayer(key as PrayerName)}
         onIncrementAzkar={increment}
+        onDetectLocation={() => void detectLocation()}
       />
     </PageTransition>
   )

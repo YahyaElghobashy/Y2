@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Check } from "lucide-react"
+import { Check, MapPin } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { getDailyAyah } from "@/lib/quran/daily-ayah"
 
@@ -11,9 +11,11 @@ import { getDailyAyah } from "@/lib/quran/daily-ayah"
  * register: prayer-light video, Islamic geometry, Amiri du'a, teal+amber
  * stillness. Presentational; real trackers (PrayerTracker/Quran/Azkar/Ayah)
  * wire in behind the same layout.
+ *
+ * Prayer TIMES, when present, are COMPUTED astronomically from the user's
+ * coordinates (adhan library) by usePrayerTimes — never fabricated. When no
+ * location is set the screen shows a clean prompt instead of any times.
  */
-// Names only — prayer TIMES are intentionally not shown until real,
-// location-based times are computed. Showing fabricated times is misleading.
 const PRAYERS = [
   { key: "fajr", name: "Fajr" },
   { key: "dhuhr", name: "Dhuhr" },
@@ -22,22 +24,54 @@ const PRAYERS = [
   { key: "isha", name: "Isha" },
 ]
 
+/** A formatted prayer-time row supplied by usePrayerTimes (or mock in preview). */
+export type PrayerTimeRow = { key: string; label: string; isNext: boolean }
+
+export type SoulPrayerTimes = {
+  /** Formatted rows for the 5 prayers (+ optionally sunrise). */
+  rows: PrayerTimeRow[]
+  /** Name of the next prayer (e.g. "Asr"). */
+  nextName: string
+  /** Localized clock time of the next prayer. */
+  nextLabel: string
+  /** Live "h:mm:ss" countdown to the next prayer. */
+  countdown: string
+}
+
 export type SoulData = {
   prayed: Record<string, boolean>
   ayah: { arabic: string; translation: string; ref: string }
   quran: { surah: string; pct: number }
   azkar: { goal: number; current?: number }
+  /** Computed prayer times, or null when no location is saved. */
+  prayerTimes?: SoulPrayerTimes | null
+  /** True when the user has not set a location yet → show the prompt. */
+  needsLocation?: boolean
+  /** True while a location save is in flight. */
+  locationSaving?: boolean
+}
+
+const PRAYER_LABELS: Record<string, string> = {
+  fajr: "Fajr",
+  sunrise: "Sunrise",
+  dhuhr: "Dhuhr",
+  asr: "Asr",
+  maghrib: "Maghrib",
+  isha: "Isha",
 }
 
 export function SoulView({
   data,
   onTogglePrayer,
   onIncrementAzkar,
+  onDetectLocation,
 }: {
   data: SoulData
   /** Authed: persist the toggle/count. Preview leaves them undefined (demo). */
   onTogglePrayer?: (key: string) => void
   onIncrementAzkar?: () => void
+  /** Authed: capture device location to compute real times. Preview omits it. */
+  onDetectLocation?: () => void
 }) {
   const [prayed, setPrayed] = useState<Record<string, boolean>>(data.prayed)
   const [azkar, setAzkar] = useState(data.azkar.current ?? 0)
@@ -99,6 +133,78 @@ export function SoulView({
           })}
         </div>
 
+        {/* ── Prayer times (computed from location) ── */}
+        {data.needsLocation ? (
+          <PosterCard accent="teal" className="mb-3 text-center">
+            <p className="text-[15px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
+              See today's prayer times
+            </p>
+            <p className="mt-1 text-[13px]" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: "var(--color-ink-soft)" }}>
+              Set your location and we'll compute the five daily times for where you are.
+            </p>
+            <motion.button
+              whileTap={{ scale: 0.96 }}
+              type="button"
+              onClick={() => onDetectLocation?.()}
+              disabled={data.locationSaving}
+              className="mt-3 inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[14px] font-bold disabled:opacity-60"
+              style={{ background: "var(--color-teal)", color: "#FFF7EF", fontFamily: "var(--font-nav)" }}
+              data-testid="set-location-button"
+            >
+              <MapPin size={16} strokeWidth={2.5} />
+              {data.locationSaving ? "Locating…" : "Use my location"}
+            </motion.button>
+          </PosterCard>
+        ) : data.prayerTimes ? (
+          <PosterCard accent="teal" className="mb-3">
+           <div data-testid="prayer-times-card">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ fontFamily: "var(--font-nav)", color: "var(--color-teal-deep)" }}>
+                Prayer Times
+              </p>
+              <div className="text-right" data-testid="next-prayer">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em]" style={{ fontFamily: "var(--font-nav)", color: "var(--color-amber)" }}>
+                  {data.prayerTimes.nextName} in {data.prayerTimes.countdown}
+                </p>
+                <p className="text-[12px]" style={{ color: "var(--color-ink-soft)" }}>at {data.prayerTimes.nextLabel}</p>
+              </div>
+            </div>
+            <ul className="space-y-1.5">
+              {data.prayerTimes.rows.map((r) => (
+                <li
+                  key={r.key}
+                  data-testid={`prayer-row-${r.key}`}
+                  data-next={r.isNext}
+                  className="flex items-center justify-between rounded-lg px-2.5 py-1.5"
+                  style={r.isNext ? { background: "var(--color-sand)" } : undefined}
+                >
+                  <span
+                    className="text-[14px]"
+                    style={{
+                      fontFamily: "var(--font-nav)",
+                      fontWeight: r.isNext ? 800 : 600,
+                      color: r.isNext ? "var(--color-teal-deep)" : "var(--color-ink)",
+                    }}
+                  >
+                    {PRAYER_LABELS[r.key] ?? r.key}
+                  </span>
+                  <span
+                    className="text-[14px] tabular-nums"
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontWeight: r.isNext ? 800 : 500,
+                      color: r.isNext ? "var(--color-teal-deep)" : "var(--color-ink-soft)",
+                    }}
+                  >
+                    {r.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+           </div>
+          </PosterCard>
+        ) : null}
+
         {/* ── Daily Ayah (centerpiece) ── */}
         <PosterCard grain={false} className="relative overflow-hidden text-center" accent="amber">
           <span aria-hidden className="absolute -right-4 -top-4 text-[64px] opacity-[0.06]">۞</span>
@@ -144,10 +250,30 @@ export function SoulView({
 }
 
 const MOCK_AYAH = getDailyAyah()
+
+// Preview/demo prayer times — fixed Cairo coordinates so /preview renders a
+// realistic card without geolocation. These are illustrative demo values for
+// the design preview only; the live screen computes real times via adhan.
+const MOCK_PRAYER_TIMES: SoulPrayerTimes = {
+  rows: [
+    { key: "fajr", label: "3:09 AM", isNext: false },
+    { key: "sunrise", label: "4:53 AM", isNext: false },
+    { key: "dhuhr", label: "11:57 AM", isNext: true },
+    { key: "asr", label: "3:33 PM", isNext: false },
+    { key: "maghrib", label: "6:58 PM", isNext: false },
+    { key: "isha", label: "8:29 PM", isNext: false },
+  ],
+  nextName: "Dhuhr",
+  nextLabel: "11:57 AM",
+  countdown: "1:24:00",
+}
+
 export const SOUL_MOCK: SoulData = {
   prayed: { fajr: true, dhuhr: true, asr: false, maghrib: false, isha: false },
   // Sourced from the vetted Qur'an dataset — never hand-typed.
   ayah: { arabic: MOCK_AYAH.arabic, translation: MOCK_AYAH.translation, ref: `${MOCK_AYAH.surahNameEn} ${MOCK_AYAH.ref}` },
   quran: { surah: "Al-Mulk", pct: 40 },
   azkar: { goal: 33 },
+  prayerTimes: MOCK_PRAYER_TIMES,
+  needsLocation: false,
 }
