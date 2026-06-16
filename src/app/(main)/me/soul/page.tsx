@@ -5,7 +5,7 @@ import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { SoulView, type SoulData } from "@/components/spiritual/SoulView"
-import { DAILY_VERSE } from "@/components/spiritual/DailyAyah"
+import { getDailyAyah } from "@/lib/quran/daily-ayah"
 import { usePrayer } from "@/lib/hooks/use-prayer"
 import { useQuran } from "@/lib/hooks/use-quran"
 import { useAzkar } from "@/lib/hooks/use-azkar"
@@ -25,9 +25,10 @@ export default function SoulPage() {
     const monthlyGoal = Math.max(1, (dailyGoal ?? 2) * 30)
     const pct = Math.min(100, Math.round((monthlyTotal / monthlyGoal) * 100))
 
+    const v = getDailyAyah()
     return {
       prayed,
-      ayah: { arabic: DAILY_VERSE.arabic, translation: DAILY_VERSE.translation, ref: DAILY_VERSE.reference },
+      ayah: { arabic: v.arabic, translation: v.translation, ref: `${v.surahNameEn} ${v.ref}` },
       quran: { surah: "This month", pct },
       azkar: { goal: session?.target ?? 33, current: session?.count ?? 0 },
     }
