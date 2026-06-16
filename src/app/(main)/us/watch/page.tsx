@@ -24,6 +24,7 @@ export default function WatchLogPage() {
     isLoading,
     error,
     addItem,
+    updateStatus,
     submitRating,
     myRating,
     partnerRating,
@@ -83,6 +84,8 @@ export default function WatchLogPage() {
         partnerName={partnerName}
         onAdd={() => setShowAddModal(true)}
         onRate={openRating}
+        onStartWatching={(id) => void updateStatus(id, "watching")}
+        onMarkWatched={(id) => void updateStatus(id, "watched")}
       />
 
       {/* Preserve the working add flow (TMDB search → addItem) behind the redesigned FAB. */}

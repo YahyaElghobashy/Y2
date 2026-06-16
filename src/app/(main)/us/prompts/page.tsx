@@ -55,6 +55,8 @@ export default function PromptsPage() {
       partnerName,
       // Only revealed once both have answered (hook returns null otherwise).
       partnerAnswer: partnerAnswer?.answer_text ?? "",
+      // Drives the reveal: show the partner's card only once they've actually answered.
+      partnerAnswered: !!partnerAnswer,
       history: historyItems,
     }
   }, [history, streak, todayPrompt, partnerName, partnerAnswer])

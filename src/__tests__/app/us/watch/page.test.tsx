@@ -319,4 +319,21 @@ describe("WatchLogPage (redesigned WatchView)", () => {
       )
     })
   })
+
+  // ── INTERACTION + INTEGRATION: track flow → updateStatus ───
+
+  it("advances a watchlist item to watching via updateStatus when Start is tapped", () => {
+    render(<WatchLogPage />)
+    // Default tab is Watchlist; item-1 (Inception) shows a Start action.
+    fireEvent.click(screen.getByRole("button", { name: "Start" }))
+    expect(mockHookReturn.updateStatus).toHaveBeenCalledWith("item-1", "watching")
+  })
+
+  it("advances a watching item to watched via updateStatus when Finished is tapped", () => {
+    mockHookReturn.watching = [makeItem({ id: "item-3", title: "The Bear", item_type: "series", status: "watching" })]
+    render(<WatchLogPage />)
+    fireEvent.click(screen.getByRole("button", { name: "Watching" }))
+    fireEvent.click(screen.getByRole("button", { name: "Finished" }))
+    expect(mockHookReturn.updateStatus).toHaveBeenCalledWith("item-3", "watched")
+  })
 })

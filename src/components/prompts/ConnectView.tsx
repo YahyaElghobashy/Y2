@@ -16,6 +16,8 @@ export type ConnectData = {
   question: string
   partnerName: string
   partnerAnswer: string
+  /** True once the partner has also answered (both_answered). When false, the reveal shows a waiting state instead of an empty card. */
+  partnerAnswered: boolean
   history: { question: string; mine: string; hers: string; date: string }[]
 }
 
@@ -86,7 +88,11 @@ export function ConnectView({
           ) : (
             <motion.div key="reveal" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4 grid gap-3">
               <Answer who="You" tint="var(--color-preference-me)" text={answer} />
-              <Answer who={data.partnerName} tint="var(--color-preference-partner)" text={data.partnerAnswer} />
+              {data.partnerAnswered ? (
+                <Answer who={data.partnerName} tint="var(--color-preference-partner)" text={data.partnerAnswer} />
+              ) : (
+                <WaitingForPartner name={data.partnerName} />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -122,6 +128,21 @@ function Answer({ who, tint, text }: { who: string; tint: string; text: string }
   )
 }
 
+/** Shown after you reveal but before your partner has answered — keeps their answer a surprise. */
+function WaitingForPartner({ name }: { name: string }) {
+  return (
+    <div className="rounded-2xl p-3.5" style={{ background: "var(--color-sand)" }} data-testid="connect-waiting-partner">
+      <span className="flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-full" style={{ background: "var(--color-preference-partner)" }} />
+        <span className="text-[12px] font-bold" style={{ fontFamily: "var(--font-body)", color: "var(--foreground)" }}>{name}</span>
+      </span>
+      <p className="mt-1 text-[15px] leading-snug" style={{ fontFamily: "var(--font-body)", color: "var(--color-ink-soft)" }}>
+        Waiting for {name}&apos;s answer… you&apos;ll both see it here once they reply.
+      </p>
+    </div>
+  )
+}
+
 function MiniAnswer({ tint, text }: { tint: string; text: string }) {
   return (
     <div className="rounded-xl p-2.5" style={{ background: "var(--color-sand)" }}>
@@ -137,6 +158,7 @@ export const CONNECT_MOCK: ConnectData = {
   question: "What did you think of me, the very first time?",
   partnerName: "Yara",
   partnerAnswer: "Honestly? That you were trouble — the good kind. I couldn't look away.",
+  partnerAnswered: true,
   history: [
     {
       date: "Yesterday",

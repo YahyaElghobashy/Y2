@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Plus, Star } from "lucide-react"
+import { Plus, Star, Play, Check } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 
 /**
@@ -36,6 +36,8 @@ export function WatchView({
   partnerName = "Yara",
   onAdd,
   onRate,
+  onStartWatching,
+  onMarkWatched,
 }: {
   items: WatchItem[]
   partnerName?: string
@@ -43,6 +45,10 @@ export function WatchView({
   onAdd?: () => void
   /** Authed page injects the rating flow; preview leaves it undefined (watched cards are inert there). */
   onRate?: (id: string) => void
+  /** Move a watchlist item → watching (real updateStatus on the authed page; undefined in preview). */
+  onStartWatching?: (id: string) => void
+  /** Move a watching item → watched (real updateStatus on the authed page; undefined in preview). */
+  onMarkWatched?: (id: string) => void
 }) {
   const [tab, setTab] = useState<WatchItem["status"]>("watchlist")
   const list = items.filter((i) => i.status === tab)
@@ -97,6 +103,13 @@ export function WatchView({
                     </span>
                   )}
                 </span>
+                {/* Track flow: advance status without leaving the list. */}
+                {w.status === "watchlist" && onStartWatching && (
+                  <StatusAction label="Start" Icon={Play} tint="var(--color-indigo)" onClick={() => onStartWatching(w.id)} />
+                )}
+                {w.status === "watching" && onMarkWatched && (
+                  <StatusAction label="Finished" Icon={Check} tint="var(--color-terracotta)" onClick={() => onMarkWatched(w.id)} />
+                )}
                 {ratable && needsMine && (
                   <span className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide" style={{ background: "var(--color-amber)", color: "#2A2018", fontFamily: "var(--font-nav)" }}>
                     <Star size={11} fill="#2A2018" stroke="none" />Rate
@@ -112,6 +125,35 @@ export function WatchView({
         <Plus size={26} strokeWidth={2.5} />
       </button>
     </div>
+  )
+}
+
+/** Compact pill button that advances an item's status (Start / Finished). */
+function StatusAction({
+  label,
+  Icon,
+  tint,
+  onClick,
+}: {
+  label: string
+  Icon: typeof Play
+  tint: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}
+      className="flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
+      style={{ borderColor: tint, color: tint, fontFamily: "var(--font-nav)" }}
+      aria-label={label}
+    >
+      <Icon size={11} strokeWidth={2.5} />
+      {label}
+    </button>
   )
 }
 

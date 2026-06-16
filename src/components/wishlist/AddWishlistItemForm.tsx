@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Link as LinkIcon, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -18,6 +18,8 @@ type AddWishlistItemFormProps = {
   onClose: () => void
   onSubmit: (data: AddWishlistItemData) => Promise<void>
   extractUrlMetadata?: (url: string) => Promise<UrlMetadata | null>
+  /** When present, the form opens in EDIT mode seeded with these values (header + CTA change to "Save Changes"). */
+  initialData?: AddWishlistItemData | null
   className?: string
 }
 
@@ -48,8 +50,10 @@ export function AddWishlistItemForm({
   onClose,
   onSubmit,
   extractUrlMetadata,
+  initialData = null,
   className,
 }: AddWishlistItemFormProps) {
+  const isEdit = initialData != null
   const [url, setUrl] = useState("")
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -61,6 +65,25 @@ export function AddWishlistItemForm({
   const [isExtracting, setIsExtracting] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Seed (edit) or clear (add) the fields each time the sheet opens. State is
+  // initialized once by useState, so re-opening with new initialData needs this.
+  useEffect(() => {
+    if (!open) return
+    setUrl(initialData?.url ?? "")
+    setTitle(initialData?.title ?? "")
+    setDescription(initialData?.description ?? "")
+    setImageUrl(initialData?.image_url ?? "")
+    setPrice(initialData?.price != null ? String(initialData.price) : "")
+    setCurrency(initialData?.currency ?? "EGP")
+    setCategory(initialData?.category ?? "other")
+    setPriority(initialData?.priority ?? "want")
+    setError(null)
+    setIsExtracting(false)
+    setIsSubmitting(false)
+    // initialData identity is stable per open (route memoizes it); re-seed only on open toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   const resetForm = useCallback(() => {
     setUrl("")
@@ -164,7 +187,7 @@ export function AddWishlistItemForm({
             {/* Header */}
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-display text-[20px] font-bold text-[var(--color-text-primary)]">
-                Add Item
+                {isEdit ? "Edit Item" : "Add Item"}
               </h2>
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -336,7 +359,9 @@ export function AddWishlistItemForm({
                 )}
                 data-testid="wishlist-submit-btn"
               >
-                {isSubmitting ? "Adding..." : "Add to Wishlist"}
+                {isSubmitting
+                  ? isEdit ? "Saving..." : "Adding..."
+                  : isEdit ? "Save Changes" : "Add to Wishlist"}
               </motion.button>
             </div>
           </motion.div>

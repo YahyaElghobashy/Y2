@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // ── Mocks ─────────────────────────────────────────────────────
@@ -218,6 +218,62 @@ describe("WishlistPage", () => {
       render(<WishlistPage />)
       fireEvent.click(screen.getByTestId("wishlist-add-fab"))
       expect(screen.getByTestId("add-wishlist-form")).toBeInTheDocument()
+    })
+
+    it("opens the add form in ADD mode (not edit) from the FAB", () => {
+      render(<WishlistPage />)
+      fireEvent.click(screen.getByTestId("wishlist-add-fab"))
+      expect(screen.getByRole("heading", { name: "Add Item" })).toBeInTheDocument()
+      // Composer starts blank in add mode.
+      expect(screen.getByTestId("wishlist-title-input")).toHaveValue("")
+    })
+  })
+
+  // ── Edit flow (U in CRUD) ───────────────────────────────────
+
+  describe("interaction: edit item", () => {
+    it("renders an edit button on my own unpurchased cards", () => {
+      render(<WishlistPage />)
+      expect(screen.getByTestId("wishlist-edit-btn")).toBeInTheDocument()
+    })
+
+    it("does NOT render an edit button on the partner tab", () => {
+      render(<WishlistPage />)
+      fireEvent.click(screen.getByTestId("tab-partner"))
+      expect(screen.queryByTestId("wishlist-edit-btn")).not.toBeInTheDocument()
+    })
+
+    it("opens the form in EDIT mode seeded with the item when edit is clicked", () => {
+      render(<WishlistPage />)
+      fireEvent.click(screen.getByTestId("wishlist-edit-btn"))
+      // Header + CTA switch to edit copy.
+      expect(screen.getByRole("heading", { name: "Edit Item" })).toBeInTheDocument()
+      expect(screen.getByTestId("wishlist-submit-btn")).toHaveTextContent("Save Changes")
+      // Fields are seeded from the item.
+      expect(screen.getByTestId("wishlist-title-input")).toHaveValue("Headphones")
+      expect(screen.getByTestId("wishlist-price-input")).toHaveValue(300)
+    })
+
+    it("calls updateItem(itemId, data) — not addItem — when saving an edit", async () => {
+      const updateItem = vi.fn().mockResolvedValue(undefined)
+      const addItem = vi.fn().mockResolvedValue(undefined)
+      mockUseWishlist.mockReturnValue({ ...defaultHookReturn, updateItem, addItem })
+
+      render(<WishlistPage />)
+      fireEvent.click(screen.getByTestId("wishlist-edit-btn"))
+
+      fireEvent.change(screen.getByTestId("wishlist-title-input"), {
+        target: { value: "Headphones Pro" },
+      })
+      fireEvent.click(screen.getByTestId("wishlist-submit-btn"))
+
+      await waitFor(() => {
+        expect(updateItem).toHaveBeenCalledWith(
+          "item-1",
+          expect.objectContaining({ title: "Headphones Pro", category: "tech", priority: "must_have" }),
+        )
+      })
+      expect(addItem).not.toHaveBeenCalled()
     })
   })
 })
