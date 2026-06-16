@@ -5,10 +5,29 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { colors } from "@/lib/theme"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Eye, GripVertical, ChevronDown } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Plus, Trash2, Eye, GripVertical, ChevronDown, FilePlus } from "lucide-react"
 import { usePortalPages } from "@/lib/hooks/use-portal-pages"
 import { SECTION_TYPE_META } from "@/lib/portal-section-schemas"
 import type { SectionType, PortalPage, PortalSection } from "@/lib/types/portal.types"
+
+// Turn a free-text page title into a URL slug, deduped against existing slugs.
+function slugifyPageTitle(title: string, existing: string[]): string {
+  const base =
+    title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "")
+      .substring(0, 40) || "page"
+  if (!existing.includes(base)) return base
+  let n = 2
+  while (existing.includes(`${base}-${n}`)) n++
+  return `${base}-${n}`
+}
 
 // ── Props ──
 
@@ -36,6 +55,7 @@ export function PortalEditor({ portalId, onPreview, renderSectionEditor }: Porta
     sections,
     isLoading,
     error,
+    createPage,
     addSection,
     updateSectionContent,
     deleteSectionImmediate,
@@ -44,6 +64,10 @@ export function PortalEditor({ portalId, onPreview, renderSectionEditor }: Porta
 
   const [activePageId, setActivePageId] = useState<string | null>(null)
   const [showAddPicker, setShowAddPicker] = useState(false)
+  const [showAddPage, setShowAddPage] = useState(false)
+  const [newPageTitle, setNewPageTitle] = useState("")
+  const [newPageIcon, setNewPageIcon] = useState("")
+  const [isCreatingPage, setIsCreatingPage] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "saving" | "idle">("idle")
 
   // Auto-select first page when pages load
@@ -59,6 +83,31 @@ export function PortalEditor({ portalId, onPreview, renderSectionEditor }: Porta
     },
     [effectivePageId, addSection]
   )
+
+  const handleCreatePage = useCallback(async () => {
+    const title = newPageTitle.trim()
+    if (!title) return
+    setIsCreatingPage(true)
+    try {
+      const slug = slugifyPageTitle(
+        title,
+        pages.map((p) => p.slug)
+      )
+      const created = await createPage({
+        slug,
+        title,
+        icon: newPageIcon.trim() || null,
+      })
+      if (created) {
+        setActivePageId(created.id)
+        setNewPageTitle("")
+        setNewPageIcon("")
+        setShowAddPage(false)
+      }
+    } finally {
+      setIsCreatingPage(false)
+    }
+  }, [newPageTitle, newPageIcon, pages, createPage])
 
   const handleContentChange = useCallback(
     (sectionId: string, content: Record<string, unknown>) => {
@@ -141,6 +190,17 @@ export function PortalEditor({ portalId, onPreview, renderSectionEditor }: Porta
             {page.title}
           </button>
         ))}
+
+        {/* Add Page */}
+        <button
+          onClick={() => setShowAddPage(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm whitespace-nowrap opacity-70 hover:opacity-100 transition-opacity"
+          style={{ color: colors.text.secondary }}
+          data-testid="add-page-button"
+        >
+          <FilePlus className="w-3.5 h-3.5" />
+          Page
+        </button>
 
         {/* Preview + Status */}
         <div className="ms-auto flex items-center gap-2">
@@ -317,6 +377,77 @@ export function PortalEditor({ portalId, onPreview, renderSectionEditor }: Porta
                     </div>
                   </div>
                 ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Add Page Sheet */}
+      <AnimatePresence>
+        {showAddPage && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/30 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAddPage(false)}
+              data-testid="add-page-backdrop"
+            />
+            <motion.div
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl max-h-[70vh] overflow-y-auto"
+              style={{ backgroundColor: colors.bg.elevated }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              data-testid="add-page-sheet"
+            >
+              <div className="p-4 space-y-4">
+                <div className="w-10 h-1 rounded-full mx-auto" style={{ backgroundColor: colors.bg.parchment }} />
+                <h3 className="text-base font-semibold" style={{ color: colors.text.primary }}>
+                  Add Page
+                </h3>
+                <div className="space-y-2">
+                  <Label htmlFor="new-page-title">Page Title *</Label>
+                  <Input
+                    id="new-page-title"
+                    placeholder="e.g. Travel & Stay"
+                    value={newPageTitle}
+                    onChange={(e) => setNewPageTitle(e.target.value)}
+                    data-testid="new-page-title-input"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-page-icon">Icon (emoji, optional)</Label>
+                  <Input
+                    id="new-page-icon"
+                    placeholder="✈️"
+                    value={newPageIcon}
+                    onChange={(e) => setNewPageIcon(e.target.value)}
+                    className="w-20"
+                    data-testid="new-page-icon-input"
+                  />
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAddPage(false)}
+                    disabled={isCreatingPage}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleCreatePage}
+                    disabled={!newPageTitle.trim() || isCreatingPage}
+                    data-testid="create-page-confirm"
+                  >
+                    {isCreatingPage ? "Adding..." : "Add Page"}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </>

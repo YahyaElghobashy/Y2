@@ -252,6 +252,15 @@
 | PortalThemeProvider | ✅ | `components/events/public/PortalThemeProvider.tsx` | `themeConfig, children` — resolves the host-chosen preset and injects `--portal-*` CSS vars + Google Fonts link. Theme-driven; all public portal chrome (nav, sections, PasswordGate, layout) reads these vars. |
 | PortalNotFound | ✅ | `app/e/[slug]/not-found.tsx` | Warm 404 — paper ground + golden-hour wash + lantern-dusk scene, Display heading, Fraunces subline, terracotta Go-Home pill. Constitution tokens (TB-system reskin). |
 
+## Event Portal Builder (`/us/events`) — W2
+
+| Component | Status | Path | Notes |
+|---|---|---|---|
+| portal-seed | ✅ | `lib/portal-seed.ts` | Pure row builders (`buildTemplatePageRows`, `buildSectionRowsForPage`, `buildSubEventRows`) + seeders (`seedPortalFromTemplate`, `seedPortalSubEvents`). Turns a chosen template into `portal_pages` + `portal_sections` rows (slug→id keyed) and persists wizard sub-events (empty date/time → null). 13 tests. |
+| useEventPortal.createPortalFromWizard | ✅ | `lib/hooks/use-event-portal.ts` | Wizard create path: inserts `event_portals` (with `template_id`), then seeds pages/sections + sub-events. Returns the portal even if seeding fails (error surfaced). |
+| PortalEditor (Add Page) | ✅ | `components/events/PortalEditor.tsx` | Added `+ Page` button + bottom-sheet form (title + optional emoji) → `createPage` with deduped slug; new page becomes active. Section editors wired via `getSectionEditor`. |
+| Portal edit route | ✅ | `app/(main)/us/events/[portalId]/edit/page.tsx` | Renders `PortalEditor` with `renderSectionEditor` from `SECTION_EDITOR_REGISTRY`; Preview opens `/e/[slug]`. Reachable from PortalDashboard "Edit Portal". |
+
 ## Auth Infrastructure
 
 | Component | Status | Path | Notes |

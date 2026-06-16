@@ -6,17 +6,19 @@ import { PortalCreationWizard } from "@/components/events/PortalCreationWizard"
 
 export default function NewPortalPage() {
   const router = useRouter()
-  const { createPortal } = useEventPortal()
+  const { createPortalFromWizard } = useEventPortal()
 
   return (
     <PortalCreationWizard
       onComplete={async (data) => {
-        const portal = await createPortal({
+        const portal = await createPortalFromWizard({
           title: data.title,
           event_type: data.event_type,
           event_date: data.event_date,
           location_name: data.location_name,
           theme_config: data.theme_config,
+          template: data.template,
+          subEvents: data.subEvents,
         })
         if (portal) {
           router.push(`/us/events/${portal.id}`)

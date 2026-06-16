@@ -384,4 +384,197 @@ describe("useEventPortal", () => {
 
     expect(created).toBeNull()
   })
+
+  // ── Integration: createPortalFromWizard (seed template + sub-events) ──
+
+  const SMALL_TEMPLATE = {
+    id: "wedding",
+    pages: [
+      {
+        slug: "main",
+        title: "Home",
+        icon: "💒",
+        sections: [
+          { section_type: "hero" as const, content: { heading: "Hi" } },
+          { section_type: "welcome" as const, content: { body: "Welcome" } },
+        ],
+      },
+      {
+        slug: "rsvp",
+        title: "RSVP",
+        icon: "✉️",
+        sections: [{ section_type: "rsvp_form" as const, content: {} }],
+      },
+    ],
+  }
+
+  function wizardMockFrom() {
+    const pagesInsert = vi.fn((rows: Array<Record<string, unknown>>) => ({
+      select: () =>
+        Promise.resolve({ data: rows.map((r, i) => ({ id: `page-${i}`, ...r })), error: null }),
+    }))
+    // Params are typed so `.mock.calls[0][0]` resolves to the inserted rows
+    // (a zero-arg vi.fn would give an empty-tuple call type — TS2493 on index 0).
+    const sectionsInsert = vi.fn((_rows: Array<Record<string, unknown>>) =>
+      Promise.resolve({ error: null })
+    )
+    const subEventsInsert = vi.fn((_rows: Array<Record<string, unknown>>) =>
+      Promise.resolve({ error: null })
+    )
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "event_portals") return buildChain(portalsData)
+      if (table === "portal_pages") return { insert: pagesInsert }
+      if (table === "portal_sections") return { insert: sectionsInsert }
+      if (table === "portal_sub_events") return { insert: subEventsInsert }
+      return buildChain([])
+    })
+
+    return { pagesInsert, sectionsInsert, subEventsInsert }
+  }
+
+  it("createPortalFromWizard inserts portal with template_id and seeds pages/sections", async () => {
+    insertResult = { data: { ...MOCK_PORTAL, id: "portal-new" }, error: null }
+    const { pagesInsert, sectionsInsert } = wizardMockFrom()
+
+    const { result } = renderHook(() => useEventPortal())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    let portal: unknown
+    await act(async () => {
+      portal = await result.current.createPortalFromWizard({
+        title: "Our Wedding",
+        event_type: "wedding",
+        event_date: "2026-09-15",
+        location_name: "Cairo",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        theme_config: {} as any,
+        template: SMALL_TEMPLATE,
+        subEvents: [],
+      })
+    })
+
+    // event_portals insert carries the template_id
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.objectContaining({ template_id: "wedding", title: "Our Wedding" })
+    )
+    // pages + sections seeded
+    expect(pagesInsert).toHaveBeenCalledTimes(1)
+    expect(pagesInsert.mock.calls[0][0]).toHaveLength(2)
+    expect(sectionsInsert).toHaveBeenCalledTimes(1)
+    expect(sectionsInsert.mock.calls[0][0]).toHaveLength(3) // 2 + 1
+    expect(portal).not.toBeNull()
+  })
+
+  it("createPortalFromWizard persists sub-events with portal id", async () => {
+    insertResult = { data: { ...MOCK_PORTAL, id: "portal-new" }, error: null }
+    const { subEventsInsert } = wizardMockFrom()
+
+    const { result } = renderHook(() => useEventPortal())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await result.current.createPortalFromWizard({
+        title: "Our Wedding",
+        event_type: "wedding",
+        event_date: null,
+        location_name: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        theme_config: {} as any,
+        template: null,
+        subEvents: [
+          { title: "Ceremony", date: "2026-09-15", startTime: "14:00" },
+          { title: "", date: "", startTime: "" },
+        ],
+      })
+    })
+
+    expect(subEventsInsert).toHaveBeenCalledTimes(1)
+    const rows = subEventsInsert.mock.calls[0][0]
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({ portal_id: "portal-new", title: "Ceremony" })
+  })
+
+  it("createPortalFromWizard skips seeding when no template and no sub-events", async () => {
+    insertResult = { data: { ...MOCK_PORTAL, id: "portal-new" }, error: null }
+    const { pagesInsert, sectionsInsert, subEventsInsert } = wizardMockFrom()
+
+    const { result } = renderHook(() => useEventPortal())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await result.current.createPortalFromWizard({
+        title: "Bare",
+        event_type: "custom",
+        event_date: null,
+        location_name: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        theme_config: {} as any,
+        template: null,
+        subEvents: [],
+      })
+    })
+
+    expect(pagesInsert).not.toHaveBeenCalled()
+    expect(sectionsInsert).not.toHaveBeenCalled()
+    expect(subEventsInsert).not.toHaveBeenCalled()
+  })
+
+  it("createPortalFromWizard returns null and skips seeding when portal insert fails", async () => {
+    insertResult = { data: null, error: { message: "Insert failed" } }
+    const { pagesInsert } = wizardMockFrom()
+
+    const { result } = renderHook(() => useEventPortal())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    let portal: unknown
+    await act(async () => {
+      portal = await result.current.createPortalFromWizard({
+        title: "Fail",
+        event_type: "wedding",
+        event_date: null,
+        location_name: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        theme_config: {} as any,
+        template: SMALL_TEMPLATE,
+        subEvents: [],
+      })
+    })
+
+    expect(portal).toBeNull()
+    expect(pagesInsert).not.toHaveBeenCalled()
+  })
+
+  it("createPortalFromWizard surfaces seeding error but still returns the portal", async () => {
+    insertResult = { data: { ...MOCK_PORTAL, id: "portal-new" }, error: null }
+
+    const pagesInsert = vi.fn(() => ({
+      select: () => Promise.resolve({ data: null, error: { message: "seed boom" } }),
+    }))
+    mockFrom.mockImplementation((table: string) => {
+      if (table === "event_portals") return buildChain(portalsData)
+      if (table === "portal_pages") return { insert: pagesInsert }
+      return buildChain([])
+    })
+
+    const { result } = renderHook(() => useEventPortal())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    let portal: unknown
+    await act(async () => {
+      portal = await result.current.createPortalFromWizard({
+        title: "Seed Fail",
+        event_type: "wedding",
+        event_date: null,
+        location_name: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        theme_config: {} as any,
+        template: SMALL_TEMPLATE,
+        subEvents: [],
+      })
+    })
+
+    expect(portal).not.toBeNull()
+    expect(result.current.error).toMatch(/seed boom/)
+  })
 })
