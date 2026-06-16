@@ -44,7 +44,29 @@ const upsertCalls: unknown[] = []
 
 const mockSubscribe = vi.fn()
 const mockRemoveChannel = vi.fn()
-const mockChannelOn = vi.fn(function (this: unknown) { return this })
+
+// Capture each registered realtime listener so tests can assert filters and
+// drive payloads through the exact handler.
+type RealtimeHandler = {
+  config: { event: string; filter?: string }
+  cb: (payload: { new: unknown }) => void
+}
+const realtimeHandlers: RealtimeHandler[] = []
+const mockChannelOn = vi.fn(function (
+  this: unknown,
+  _event: string,
+  config: { event: string; filter?: string },
+  cb: (payload: { new: unknown }) => void
+) {
+  realtimeHandlers.push({ config, cb })
+  return this
+})
+
+function emitRealtime(filter: string, event: "INSERT" | "UPDATE", row: unknown) {
+  for (const h of realtimeHandlers) {
+    if (h.config.filter === filter && h.config.event === event) h.cb({ new: row })
+  }
+}
 
 function buildChain() {
   const state = { userId: "" }
@@ -91,7 +113,16 @@ describe("useMood", () => {
     partnerMoodResult = { data: MOCK_PARTNER_MOOD, error: null }
     upsertResult = { data: MOCK_USER_MOOD, error: null }
     upsertCalls.length = 0
-    mockChannelOn.mockImplementation(function (this: unknown) { return this })
+    realtimeHandlers.length = 0
+    mockChannelOn.mockImplementation(function (
+      this: unknown,
+      _event: string,
+      config: { event: string; filter?: string },
+      cb: (payload: { new: unknown }) => void
+    ) {
+      realtimeHandlers.push({ config, cb })
+      return this
+    })
     // Reset mockFrom to default implementation
     mockFrom.mockImplementation(() => buildChain())
   })
@@ -289,15 +320,92 @@ describe("useMood", () => {
       expect(mockFrom).toHaveBeenCalledWith("mood_log")
     })
 
-    it("realtime subscription created for mood_log", async () => {
+    it("realtime subscription is scoped per user_id (user + partner)", async () => {
       const { result } = renderHook(() => useMood())
 
       await waitFor(() => expect(result.current.isLoading).toBe(false))
       await waitFor(() => expect(mockSubscribe).toHaveBeenCalled())
 
-      expect(stableSupabase.channel).toHaveBeenCalledWith("mood_log_realtime")
-      // Should register both INSERT and UPDATE handlers
-      expect(mockChannelOn).toHaveBeenCalledTimes(2)
+      // Channel is keyed by the user's id (not a shared global channel).
+      expect(stableSupabase.channel).toHaveBeenCalledWith("mood_log_user-1")
+
+      // Four filtered listeners: INSERT+UPDATE for self, INSERT+UPDATE for partner.
+      const filters = realtimeHandlers.map((h) => `${h.config.filter}:${h.config.event}`)
+      expect(filters).toContain("user_id=eq.user-1:INSERT")
+      expect(filters).toContain("user_id=eq.user-1:UPDATE")
+      expect(filters).toContain("user_id=eq.partner-1:INSERT")
+      expect(filters).toContain("user_id=eq.partner-1:UPDATE")
+
+      // Every listener MUST carry a user_id filter (no unfiltered global listener).
+      expect(realtimeHandlers.every((h) => h.config.filter?.startsWith("user_id=eq."))).toBe(true)
+    })
+
+    it("only the user's own listeners are registered when there is no partner", async () => {
+      mockUseAuth.mockReturnValue({ user: mockUser, partner: null })
+
+      const { result } = renderHook(() => useMood())
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+      await waitFor(() => expect(mockSubscribe).toHaveBeenCalled())
+
+      const filters = realtimeHandlers.map((h) => h.config.filter)
+      expect(filters).toEqual([
+        "user_id=eq.user-1",
+        "user_id=eq.user-1",
+      ])
+    })
+
+    it("applies a realtime partner UPDATE (today) to partnerMood", async () => {
+      partnerMoodResult = { data: MOCK_PARTNER_MOOD, error: null }
+      const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Africa/Cairo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date())
+
+      const { result } = renderHook(() => useMood())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      const updated = { ...MOCK_PARTNER_MOOD, mood: "loving", mood_date: today }
+      act(() => emitRealtime("user_id=eq.partner-1", "UPDATE", updated))
+
+      expect(result.current.partnerMood?.mood).toBe("loving")
+      // Partner event must NOT leak into the user's own mood.
+      expect(result.current.todayMood?.user_id).toBe("user-1")
+    })
+
+    it("applies a realtime self UPDATE (today) to todayMood", async () => {
+      const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Africa/Cairo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date())
+
+      const { result } = renderHook(() => useMood())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      const updated = { ...MOCK_USER_MOOD, mood: "calm", mood_date: today }
+      act(() => emitRealtime("user_id=eq.user-1", "UPDATE", updated))
+
+      expect(result.current.todayMood?.mood).toBe("calm")
+    })
+
+    it("ignores a realtime event whose mood_date is not today", async () => {
+      const { result } = renderHook(() => useMood())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      act(() =>
+        emitRealtime("user_id=eq.user-1", "UPDATE", {
+          ...MOCK_USER_MOOD,
+          mood: "low",
+          mood_date: "2000-01-01",
+        })
+      )
+
+      // Unchanged — still the originally fetched mood.
+      expect(result.current.todayMood).toEqual(MOCK_USER_MOOD)
     })
 
     it("channel cleanup on unmount", async () => {
