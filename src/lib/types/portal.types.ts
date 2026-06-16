@@ -425,6 +425,34 @@ export type UsePortalPagesReturn = {
   refreshPages: () => Promise<void>
 }
 
+// ── Create-from-wizard input ──
+// Imported lazily as a structural type to avoid a hard dep cycle with portal-templates.
+export type WizardSubEventInput = {
+  title: string
+  date: string
+  startTime: string
+}
+
+export type WizardTemplateInput = {
+  id: string
+  pages: Array<{
+    slug: string
+    title: string
+    icon: string
+    sections: Array<{ section_type: SectionType; content: Record<string, unknown> }>
+  }>
+}
+
+export type CreatePortalFromWizardInput = {
+  title: string
+  event_type: EventType
+  event_date: string | null
+  location_name: string | null
+  theme_config: PortalThemeConfig
+  template: WizardTemplateInput | null
+  subEvents: WizardSubEventInput[]
+}
+
 // ── Hook Return Type ──
 export type UseEventPortalReturn = {
   portals: EventPortal[]
@@ -433,6 +461,7 @@ export type UseEventPortalReturn = {
   isLoading: boolean
   error: string | null
   createPortal: (data: Omit<EventPortalInsert, "creator_id" | "slug">) => Promise<EventPortal | null>
+  createPortalFromWizard: (input: CreatePortalFromWizardInput) => Promise<EventPortal | null>
   updatePortal: (id: string, data: EventPortalUpdate) => Promise<void>
   deletePortal: (id: string) => Promise<void>
   addSubEvent: (data: Omit<PortalSubEventInsert, "portal_id">) => Promise<PortalSubEvent | null>

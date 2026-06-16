@@ -21,6 +21,7 @@ const mockAddSection = vi.fn().mockResolvedValue(null)
 const mockUpdateSectionContent = vi.fn()
 const mockDeleteSectionImmediate = vi.fn().mockResolvedValue(undefined)
 const mockReorderSections = vi.fn().mockResolvedValue(undefined)
+const mockCreatePage = vi.fn()
 
 let mockIsLoading = false
 let mockError: string | null = null
@@ -31,7 +32,7 @@ vi.mock("@/lib/hooks/use-portal-pages", () => ({
     sections: MOCK_SECTIONS,
     isLoading: mockIsLoading,
     error: mockError,
-    createPage: vi.fn(),
+    createPage: mockCreatePage,
     updatePage: vi.fn(),
     deletePage: vi.fn(),
     reorderPages: vi.fn(),
@@ -60,6 +61,17 @@ describe("PortalEditor", () => {
     vi.clearAllMocks()
     mockIsLoading = false
     mockError = null
+    mockCreatePage.mockResolvedValue({
+      id: "page-3",
+      portal_id: "portal-1",
+      slug: "travel-stay",
+      title: "Travel & Stay",
+      icon: "✈️",
+      position: 2,
+      is_visible: true,
+      created_at: "",
+      updated_at: "",
+    })
   })
 
   // ── Unit: Initial render ──
@@ -281,5 +293,112 @@ describe("PortalEditor", () => {
     await user.click(screen.getByTestId("add-first-section"))
 
     expect(screen.getByTestId("add-section-picker")).toBeInTheDocument()
+  })
+
+  // ── Interaction: Add Page ──
+
+  it("renders the Add Page button", () => {
+    render(<PortalEditor portalId="portal-1" />)
+    expect(screen.getByTestId("add-page-button")).toBeInTheDocument()
+  })
+
+  it("opens the Add Page sheet when Add Page clicked", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    expect(screen.getByTestId("add-page-sheet")).toBeInTheDocument()
+  })
+
+  it("Add Page confirm is disabled until a title is entered", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    expect(screen.getByTestId("create-page-confirm")).toBeDisabled()
+
+    await user.type(screen.getByTestId("new-page-title-input"), "Travel & Stay")
+    expect(screen.getByTestId("create-page-confirm")).not.toBeDisabled()
+  })
+
+  it("creating a page calls createPage with slugified slug, title and icon", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    await user.type(screen.getByTestId("new-page-title-input"), "Travel & Stay")
+    await user.type(screen.getByTestId("new-page-icon-input"), "✈️")
+    await user.click(screen.getByTestId("create-page-confirm"))
+
+    expect(mockCreatePage).toHaveBeenCalledWith({
+      slug: "travel-stay",
+      title: "Travel & Stay",
+      icon: "✈️",
+    })
+  })
+
+  it("dedupes the slug against existing pages", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    // "Travel" collides with existing page slug "travel"
+    await user.type(screen.getByTestId("new-page-title-input"), "Travel")
+    await user.click(screen.getByTestId("create-page-confirm"))
+
+    expect(mockCreatePage).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: "travel-2", title: "Travel" })
+    )
+  })
+
+  it("passes null icon when none entered", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    await user.type(screen.getByTestId("new-page-title-input"), "FAQ")
+    await user.click(screen.getByTestId("create-page-confirm"))
+
+    expect(mockCreatePage).toHaveBeenCalledWith(
+      expect.objectContaining({ icon: null })
+    )
+  })
+
+  it("closes the Add Page sheet after a successful create", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    await user.type(screen.getByTestId("new-page-title-input"), "Schedule")
+    await user.click(screen.getByTestId("create-page-confirm"))
+
+    expect(screen.queryByTestId("add-page-sheet")).not.toBeInTheDocument()
+  })
+
+  it("does not call createPage when title is empty", async () => {
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    // confirm is disabled, but guard also blocks programmatic calls
+    expect(screen.getByTestId("create-page-confirm")).toBeDisabled()
+    expect(mockCreatePage).not.toHaveBeenCalled()
+  })
+
+  it("keeps the Add Page sheet open and retains input when createPage fails", async () => {
+    mockCreatePage.mockResolvedValue(null) // simulate insert failure (RLS/network)
+    const user = userEvent.setup()
+    render(<PortalEditor portalId="portal-1" />)
+
+    await user.click(screen.getByTestId("add-page-button"))
+    await user.type(screen.getByTestId("new-page-title-input"), "Schedule")
+    await user.click(screen.getByTestId("create-page-confirm"))
+
+    expect(mockCreatePage).toHaveBeenCalled()
+    // Sheet stays open so the user can retry; the typed title is preserved.
+    expect(screen.getByTestId("add-page-sheet")).toBeInTheDocument()
+    expect(screen.getByTestId("new-page-title-input")).toHaveValue("Schedule")
+    // Confirm button is re-enabled (isCreatingPage reset via finally).
+    expect(screen.getByTestId("create-page-confirm")).not.toBeDisabled()
   })
 })

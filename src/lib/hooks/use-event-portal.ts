@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { seedPortalFromTemplate, seedPortalSubEvents } from "@/lib/portal-seed"
 import type {
   EventPortal,
   EventPortalInsert,
@@ -10,6 +11,7 @@ import type {
   PortalSubEventUpdate,
   PortalThemeConfig,
   PortalStats,
+  CreatePortalFromWizardInput,
   UseEventPortalReturn,
 } from "@/lib/types/portal.types"
 
@@ -136,6 +138,38 @@ const supabase = getSupabaseBrowserClient() as any
       return created as EventPortal
     },
     [user, supabase, fetchPortals]
+  )
+
+  // ── CRUD: Create portal from wizard (seeds template pages/sections + sub-events) ──
+  const createPortalFromWizard = useCallback(
+    async (input: CreatePortalFromWizardInput): Promise<EventPortal | null> => {
+      const portal = await createPortal({
+        title: input.title,
+        event_type: input.event_type,
+        event_date: input.event_date,
+        location_name: input.location_name,
+        theme_config: input.theme_config,
+        template_id: input.template?.id ?? null,
+      })
+
+      if (!portal) return null
+
+      try {
+        if (input.template) {
+          await seedPortalFromTemplate(supabase, portal.id, input.template)
+        }
+        if (input.subEvents.length > 0) {
+          await seedPortalSubEvents(supabase, portal.id, input.subEvents)
+        }
+      } catch (e) {
+        // Portal row exists; surface seeding failure but still return the portal
+        // so the user lands on its (possibly empty) editor rather than losing it.
+        setError(e instanceof Error ? e.message : "Failed to seed portal content")
+      }
+
+      return portal
+    },
+    [createPortal, supabase]
   )
 
   // ── CRUD: Update portal ──
@@ -306,6 +340,7 @@ const supabase = getSupabaseBrowserClient() as any
       isLoading: false,
       error: null,
       createPortal: async () => null,
+      createPortalFromWizard: async () => null,
       updatePortal: async () => {},
       deletePortal: async () => {},
       addSubEvent: async () => null,
@@ -333,6 +368,7 @@ const supabase = getSupabaseBrowserClient() as any
     isLoading,
     error,
     createPortal,
+    createPortalFromWizard,
     updatePortal,
     deletePortal,
     addSubEvent,
