@@ -1,8 +1,18 @@
 // ============================================================
-// TF07: Media Proxy Edge Function
+// TF07 / W4: Media Proxy Edge Function
 // Serves exported images from Google Drive via proxy.
-// Called with ?id={media_file_id}&key={MEDIA_PROXY_KEY}
-// Returns the image with long-lived Cache-Control headers.
+// Called with ?id={media_file_id}&exp={unix_seconds}&sig={hmac}
+//
+// Deployed with verify_jwt = false so a plain <img> (which cannot send a
+// Supabase JWT) can load. Access is instead gated by a SHORT-LIVED HMAC
+// signature minted server-side by the Next.js /api/media/[id] route. The
+// signing secret (MEDIA_PROXY_KEY) never leaves the server; a leaked URL is
+// good for ONE media id for at most its TTL, and no id can be forged.
+//
+// Signature: base64url( HMAC-SHA256( `${id}.${exp}`, MEDIA_PROXY_KEY ) )
+// Returns the image with a PRIVATE Cache-Control bounded to the signature's
+// remaining lifetime, so a shared/CDN cache can never keep serving a media id
+// past its signed expiry (which would defeat the short-lived guarantee).
 // ============================================================
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -15,10 +25,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Cache: 30 days (images are immutable after export)
-const CACHE_MAX_AGE = 86400 * 30;
-const STALE_WHILE_REVALIDATE = 86400 * 7;
-
 // ── Helpers ─────────────────────────────────────────────────
 
 function jsonResponse(body: unknown, status = 200) {
@@ -26,6 +32,42 @@ function jsonResponse(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+// base64url-encode raw bytes (matches Node's Buffer.toString("base64url")).
+function base64url(bytes: Uint8Array): string {
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// HMAC-SHA256(`${id}.${exp}`, secret) → base64url. Mirrors src/lib/media/signed-url.ts.
+async function signMediaToken(
+  id: string,
+  exp: string,
+  secret: string,
+): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const mac = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${id}.${exp}`),
+  );
+  return base64url(new Uint8Array(mac));
+}
+
+// Constant-time string compare.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 async function getAccessToken(refreshToken: string): Promise<string | null> {
@@ -62,16 +104,31 @@ serve(async (req: Request) => {
   try {
     const url = new URL(req.url);
     const mediaId = url.searchParams.get("id");
-    const proxyKey = url.searchParams.get("key");
+    const exp = url.searchParams.get("exp");
+    const sig = url.searchParams.get("sig");
 
     // Validate required params
     if (!mediaId) {
       return jsonResponse({ error: "id parameter required" }, 400);
     }
+    if (!exp || !sig) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
 
-    // Auth: verify proxy key (simple shared secret for private 2-user app)
-    const expectedKey = Deno.env.get("MEDIA_PROXY_KEY");
-    if (!expectedKey || proxyKey !== expectedKey) {
+    // Auth: short-lived HMAC signature (verify_jwt is off for this function).
+    const secret = Deno.env.get("MEDIA_PROXY_KEY");
+    if (!secret) {
+      return jsonResponse({ error: "Proxy not configured" }, 500);
+    }
+
+    const expSeconds = Number(exp);
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    if (!Number.isFinite(expSeconds) || expSeconds < nowSeconds) {
+      return jsonResponse({ error: "Link expired" }, 401);
+    }
+
+    const expectedSig = await signMediaToken(mediaId, exp, secret);
+    if (!timingSafeEqual(expectedSig, sig)) {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
@@ -125,13 +182,16 @@ serve(async (req: Request) => {
       return jsonResponse({ error: "Drive fetch failed" }, 502);
     }
 
-    // Stream the response with cache headers
+    // Stream the response. Cache is PRIVATE and lives only as long as the
+    // signature is still valid — never past `exp` — so a leaked/expired URL
+    // can't be replayed out of a shared cache.
+    const maxAge = Math.max(0, expSeconds - nowSeconds);
     return new Response(driveResponse.body, {
       status: 200,
       headers: {
         ...corsHeaders,
         "Content-Type": media.content_type || "image/webp",
-        "Cache-Control": `public, max-age=${CACHE_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
+        "Cache-Control": `private, max-age=${maxAge}`,
         "X-Media-Id": mediaId,
       },
     });

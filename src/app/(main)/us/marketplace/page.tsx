@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { PageTransition } from "@/components/animations"
@@ -20,6 +21,7 @@ import type { MarketplaceItem, Purchase } from "@/lib/types/marketplace.types"
 const ACCENTS: MarketItem["accent"][] = ["teal", "indigo", "amber", "coral", "terracotta", "rose"]
 
 export default function MarketplacePage() {
+  const router = useRouter()
   const { partner } = useAuth()
   const { wallet } = useCoyyns()
   const balance = wallet?.balance ?? 0
@@ -135,6 +137,7 @@ export default function MarketplacePage() {
         initialBalance={balance}
         partnerName={partner?.display_name ?? "your love"}
         onBuy={handleBuy}
+        onManage={() => router.push("/us/marketplace/admin")}
         topSlot={topSlot}
         bottomSlot={bottomSlot}
       />

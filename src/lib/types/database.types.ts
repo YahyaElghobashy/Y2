@@ -684,6 +684,7 @@ export interface Database {
           is_active: boolean
           sort_order: number
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -696,6 +697,7 @@ export interface Database {
           is_active?: boolean
           sort_order?: number
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -708,6 +710,7 @@ export interface Database {
           is_active?: boolean
           sort_order?: number
           created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

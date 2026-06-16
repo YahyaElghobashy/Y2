@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { SlidersHorizontal } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { Coin } from "@/components/shared/Coin"
 import { Celebration } from "@/components/shared/Celebration"
@@ -25,6 +26,7 @@ export function MarketplaceView({
   initialBalance,
   partnerName = "Yara",
   onBuy,
+  onManage,
   topSlot,
   bottomSlot,
 }: {
@@ -33,6 +35,8 @@ export function MarketplaceView({
   partnerName?: string
   /** Authed: open the real purchase modal. Preview: undefined → demo sheet. */
   onBuy?: (id: string) => void
+  /** Authed: open the item-admin screen. Preview: undefined → button hidden. */
+  onManage?: () => void
   /** Authed: active-purchase cards rendered above the grid. */
   topSlot?: React.ReactNode
   /** Authed: purchase history rendered below the grid. */
@@ -60,9 +64,23 @@ export function MarketplaceView({
             Spend CoYYns on each other.
           </p>
         </div>
-        <span className="rounded-full px-3 py-1.5" style={{ background: "var(--color-sand)" }}>
-          <Coin amount={balance} size={22} />
-        </span>
+        <div className="flex items-center gap-2">
+          {onManage && (
+            <button
+              type="button"
+              onClick={onManage}
+              aria-label="Manage items"
+              data-testid="marketplace-manage"
+              className="grid h-9 w-9 place-items-center rounded-full"
+              style={{ background: "var(--color-sand)", color: "var(--foreground)" }}
+            >
+              <SlidersHorizontal size={17} />
+            </button>
+          )}
+          <span className="rounded-full px-3 py-1.5" style={{ background: "var(--color-sand)" }}>
+            <Coin amount={balance} size={22} />
+          </span>
+        </div>
       </header>
 
       {topSlot}
