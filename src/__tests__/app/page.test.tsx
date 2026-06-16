@@ -1,260 +1,266 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { render, screen, within } from "@testing-library/react"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 
-// ── Mock child components to avoid deep import chains (OOM) ────
-vi.mock("@/components/animations", () => ({
-  PageTransition: ({ children }: { children: React.ReactNode }) => <div data-testid="page-transition">{children}</div>,
+/**
+ * Home Page (calm living-room redesign).
+ *
+ * The old test asserted a 23-widget firehose (SharedGarden compact,
+ * DaysTogetherCounter, QuickActionCards, MoodStrip, HomeSnapWidget, CoyynsWidget,
+ * HomeMarketplaceRow, HomeCouponInbox, FeelingGenerousCTA, prayer/cycle/calendar/
+ * rituals widgets, active-purchase cards, …). That markup is GONE — the page now
+ * renders the props-driven HomeView (greeting hero, "two of you" moods, today's
+ * one thing, keepsake peek, treasury peek with Coin, quick rooms). Those legacy
+ * assertions were deleted (see "deleted" notes at the bottom of this file).
+ *
+ * Here we render the REAL HomeView (not a stub) so we can assert that real
+ * profile name / wallet balance flow through the page's derivation, and that the
+ * redesigned surface is present. Only the hooks the page reads (useAuth,
+ * useCoyyns, useGarden) are mocked.
+ */
+
+// ── Hoisted hook mocks (factories reference these) ──────────────
+const { useAuth, useCoyyns, recordOpened } = vi.hoisted(() => ({
+  useAuth: vi.fn(),
+  useCoyyns: vi.fn(),
+  recordOpened: vi.fn(),
 }))
 
-vi.mock("@/components/home/HomeGreeting", () => ({
-  HomeGreeting: () => <div data-testid="home-greeting">Hello, Yahya — Monday, March 2</div>,
+// ── framer-motion — Proxy passthrough for any motion.* tag ──────
+vi.mock("framer-motion", () => {
+  const passthrough = (tag: string) =>
+    React.forwardRef(
+      (
+        { children, ...props }: { children?: React.ReactNode; [key: string]: unknown },
+        ref: React.Ref<HTMLElement>,
+      ) => {
+        const {
+          initial, animate, exit, transition, whileHover, whileTap,
+          whileInView, layout, layoutId, variants, drag, ...rest
+        } = props
+        void initial; void animate; void exit; void transition; void whileHover
+        void whileTap; void whileInView; void layout; void layoutId; void variants; void drag
+        return React.createElement(tag, { ref, ...rest }, children as React.ReactNode)
+      },
+    )
+  const motion = new Proxy({}, { get: (_t, tag: string) => passthrough(tag) })
+  return {
+    motion,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  }
+})
+
+// next/link → plain anchor so we can assert hrefs (rooms, treasury, settings).
+vi.mock("next/link", () => ({
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
+    <a href={href} {...props}>{children}</a>
+  ),
 }))
 
-vi.mock("@/components/mood/MoodPicker", () => ({
-  MoodPicker: ({ className }: { className?: string }) => <div data-testid="mood-picker" className={className}>MoodPicker</div>,
-}))
-
-vi.mock("@/components/home/PartnerMoodIndicator", () => ({
-  PartnerMoodIndicator: () => <div data-testid="partner-mood-indicator">PartnerMoodIndicator</div>,
-}))
-
-vi.mock("@/components/home/MoodStrip", () => ({
-  MoodStrip: ({ className }: { className?: string }) => <div data-testid="mood-strip" className={className}>MoodStrip</div>,
-}))
-
-vi.mock("@/components/home/HomeSnapWidget", () => ({
-  HomeSnapWidget: ({ className }: { className?: string }) => <div data-testid="home-snap-widget" className={className}>HomeSnapWidget</div>,
-}))
-
-vi.mock("@/components/home/CoyynsWidget", () => ({
-  CoyynsWidget: () => <div data-testid="coyyns-widget">CoYYns</div>,
-}))
-
-vi.mock("@/components/home/HomeMarketplaceRow", () => ({
-  HomeMarketplaceRow: ({ className }: { className?: string }) => <div data-testid="marketplace-row" className={className}>MarketplaceRow</div>,
-}))
-
-vi.mock("@/components/marketplace/ActivePurchaseCard", () => ({
-  ActivePurchaseCard: ({ purchase }: { purchase: { id: string } }) => <div data-testid={`purchase-${purchase.id}`}>ActivePurchase</div>,
-}))
-
-vi.mock("@/components/home/HomeCouponInbox", () => ({
-  HomeCouponInbox: () => <div data-testid="coupon-inbox">CouponInbox</div>,
-}))
-
-vi.mock("@/components/home/FeelingGenerousCTA", () => ({
-  FeelingGenerousCTA: () => <div data-testid="generous-cta">GenerousCTA</div>,
-}))
-
-vi.mock("@/components/home/HomeRitualsWidget", () => ({
-  HomeRitualsWidget: () => <div data-testid="rituals-widget">RitualsWidget</div>,
-}))
-
-vi.mock("@/components/home/HomeCalendarPeek", () => ({
-  HomeCalendarPeek: () => <div data-testid="calendar-peek">CalendarPeek</div>,
-}))
-
-vi.mock("@/components/home/HomeCycleWidget", () => ({
-  HomeCycleWidget: () => <div data-testid="cycle-widget">CycleWidget</div>,
-}))
-
-vi.mock("@/components/home/HomePrayerWidget", () => ({
-  HomePrayerWidget: () => <div data-testid="prayer-widget">PrayerWidget</div>,
-}))
-
-vi.mock("@/components/garden/SharedGarden", () => ({
-  SharedGarden: ({ compact }: { compact?: boolean }) => <div data-testid="shared-garden" data-compact={compact}>SharedGarden</div>,
-}))
-
-vi.mock("@/components/shared/DaysTogetherCounter", () => ({
-  DaysTogetherCounter: () => <div data-testid="days-together-counter">DaysTogetherCounter</div>,
-}))
-
-vi.mock("@/components/home/HomeLetterPrompt", () => ({
-  HomeLetterPrompt: () => <div data-testid="letter-prompt">LetterPrompt</div>,
-}))
-
-vi.mock("@/components/home/HomeEvaluationPrompt", () => ({
-  HomeEvaluationPrompt: () => <div data-testid="evaluation-prompt">EvaluationPrompt</div>,
-}))
-
-vi.mock("@/components/home/HomeCountdownWidget", () => ({
-  HomeCountdownWidget: () => <div data-testid="countdown-widget">CountdownWidget</div>,
-}))
-
-// ── Mock hooks used directly by the page ──────────────────────
-
-const mockRecordOpened = vi.fn()
+// The three hooks the page reads directly.
+vi.mock("@/lib/providers/AuthProvider", () => ({ useAuth: () => useAuth() }))
+vi.mock("@/lib/hooks/use-coyyns", () => ({ useCoyyns: () => useCoyyns() }))
 vi.mock("@/lib/hooks/use-garden", () => ({
   useGarden: () => ({
     gardenDays: [],
     recentFlowers: [],
     isLoading: false,
     error: null,
-    recordOpened: mockRecordOpened,
-  }),
-}))
-
-const MOCK_PURCHASES = [
-  { id: "p-1", item_name: "Test Purchase" },
-]
-
-let mockActivePurchases: unknown[] = []
-vi.mock("@/lib/hooks/use-active-purchases", () => ({
-  useActivePurchases: () => ({
-    activePurchases: mockActivePurchases,
-    acknowledgePurchase: vi.fn(),
-    completePurchase: vi.fn(),
-    declinePurchase: vi.fn(),
+    recordOpened,
   }),
 }))
 
 import Home from "@/app/(main)/page"
 
-describe("Home Page", () => {
+// ── Fixtures ────────────────────────────────────────────────────
+const PROFILE = {
+  id: "user-1",
+  display_name: "Yahya Elghobashy",
+  email: "yahya@test.com",
+  avatar_url: null,
+  partner_id: "user-2",
+  role: "user",
+  created_at: "",
+  updated_at: "",
+}
+const PARTNER = {
+  id: "user-2",
+  display_name: "Yara Mostafa",
+  email: "yara@test.com",
+  avatar_url: null,
+  partner_id: "user-1",
+  role: "user",
+  created_at: "",
+  updated_at: "",
+}
+
+function setAuth(over: Partial<{ profile: unknown; partner: unknown }> = {}) {
+  useAuth.mockReturnValue({
+    user: { id: "user-1", email: "yahya@test.com" },
+    profile: "profile" in over ? over.profile : PROFILE,
+    partner: "partner" in over ? over.partner : PARTNER,
+    isLoading: false,
+    profileNeedsSetup: false,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  })
+}
+
+function setWallet(balance: number | null) {
+  useCoyyns.mockReturnValue({
+    wallet: balance === null ? null : { id: "w-1", user_id: "user-1", balance },
+    partnerWallet: null,
+    transactions: [],
+    isLoading: false,
+    error: null,
+    addCoyyns: vi.fn(),
+    spendCoyyns: vi.fn(),
+    refreshWallet: vi.fn(),
+  })
+}
+
+describe("Home Page (calm living-room)", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockActivePurchases = []
+    setAuth()
+    setWallet(248)
   })
 
-  // ── Renders at all ──────────────────────────────────────────
+  // ── Surface: the redesigned hero renders ──────────────────────
 
-  it("renders without crashing", () => {
+  it("renders the greeting hero ('Welcome home, you two.')", () => {
     render(<Home />)
-    expect(screen.getByTestId("page-transition")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/Welcome home/i)
+    expect(screen.getByText("you two.")).toBeInTheDocument()
   })
 
-  // ── Section 1: Greeting + MoodPicker ────────────────────────
-
-  it("renders HomeGreeting", () => {
+  it("renders the Hayah wordmark and the Settings link", () => {
     render(<Home />)
-    expect(screen.getByTestId("home-greeting")).toBeInTheDocument()
+    expect(screen.getByText(/Ha/).closest("span")).toBeInTheDocument()
+    expect(screen.getByLabelText("Settings")).toHaveAttribute("href", "/settings")
+    expect(screen.getByLabelText("You")).toHaveAttribute("href", "/me")
   })
 
-  it("renders MoodPicker", () => {
+  // ── Unit: real profile names flow through the derivation ──────
+
+  it("derives the user's FIRST name from profile.display_name", () => {
+    // "Yahya Elghobashy" → "Yahya"
     render(<Home />)
-    expect(screen.getByTestId("mood-picker")).toBeInTheDocument()
+    expect(screen.getByText("Yahya")).toBeInTheDocument()
+    expect(screen.queryByText("Yahya Elghobashy")).not.toBeInTheDocument()
   })
 
-  // ── Section 2: PartnerMoodIndicator ─────────────────────────
-
-  it("renders PartnerMoodIndicator", () => {
+  it("derives the partner's FIRST name from partner.display_name", () => {
+    // "Yara Mostafa" → "Yara"
     render(<Home />)
-    expect(screen.getByTestId("partner-mood-indicator")).toBeInTheDocument()
+    expect(screen.getByText("Yara")).toBeInTheDocument()
+    expect(screen.queryByText("Yara Mostafa")).not.toBeInTheDocument()
   })
 
-  // ── Section 3: MoodStrip ────────────────────────────────────
-
-  it("renders MoodStrip", () => {
+  it("renders the avatar fallback initial when avatar_url is null", () => {
     render(<Home />)
-    expect(screen.getByTestId("mood-strip")).toBeInTheDocument()
+    // First letter of the user's first name, inside the /me avatar link.
+    const youLink = screen.getByLabelText("You")
+    expect(within(youLink).getByText("Y")).toBeInTheDocument()
   })
 
-  // ── Section 4: HomeSnapWidget ───────────────────────────────
-
-  it("renders HomeSnapWidget", () => {
+  it("falls back to 'You' / 'your love' when profile + partner are null", () => {
+    setAuth({ profile: null, partner: null })
     render(<Home />)
-    expect(screen.getByTestId("home-snap-widget")).toBeInTheDocument()
+    expect(screen.getByText("You")).toBeInTheDocument()
+    expect(screen.getByText("your love")).toBeInTheDocument()
   })
 
-  // ── Section 5: CoYYns Hero ──────────────────────────────────
+  // ── Unit: wallet balance flows into the treasury Coin ─────────
 
-  it("renders CoyynsWidget", () => {
+  it("renders the wallet balance (locale-formatted) in the treasury peek", () => {
+    setWallet(1248)
     render(<Home />)
-    expect(screen.getByTestId("coyyns-widget")).toBeInTheDocument()
+    expect(screen.getByText("1,248")).toBeInTheDocument()
+    expect(screen.getByText("our joy pot")).toBeInTheDocument()
   })
 
-  // ── Section 6: HomeMarketplaceRow ───────────────────────────
-
-  it("renders HomeMarketplaceRow", () => {
+  it("renders balance 0 when there is no wallet", () => {
+    setWallet(null)
     render(<Home />)
-    expect(screen.getByTestId("marketplace-row")).toBeInTheDocument()
+    const treasury = screen.getByText("our joy pot").closest("a")
+    expect(treasury).toHaveAttribute("href", "/treasury")
+    expect(within(treasury as HTMLElement).getByText("0")).toBeInTheDocument()
   })
 
-  // ── Section 7: Active Purchases ─────────────────────────────
+  // ── Surface: today's one thing card (from the page's data) ────
 
-  it("renders active purchases when present", () => {
-    mockActivePurchases = MOCK_PURCHASES
+  it("renders today's one thing card linking to /keepsake", () => {
     render(<Home />)
-    expect(screen.getByTestId("purchase-p-1")).toBeInTheDocument()
+    const today = screen.getByText(/Add a little something to your keepsake/i)
+    expect(today).toBeInTheDocument()
+    expect(today.closest("a")).toHaveAttribute("href", "/keepsake")
   })
 
-  it("hides active purchases when empty", () => {
-    mockActivePurchases = []
+  // ── Interaction / integration: quick rooms link to the right routes ──
+
+  it("renders the four quick rooms with correct hrefs", () => {
     render(<Home />)
-    expect(screen.queryByTestId("purchase-p-1")).not.toBeInTheDocument()
+    const expected: [string, string][] = [
+      ["Play", "/wheel"],
+      ["Soul", "/me/soul"],
+      ["Snap", "/snap"],
+      ["Plan", "/us/calendar"],
+    ]
+    for (const [label, href] of expected) {
+      const room = screen.getByText(label)
+      expect(room.closest("a")).toHaveAttribute("href", href)
+    }
   })
 
-  // ── Section 8: HomeCouponInbox ──────────────────────────────
-
-  it("renders HomeCouponInbox", () => {
+  it("links the 'two of you' moods to /us/prompts", () => {
     render(<Home />)
-    expect(screen.getByTestId("coupon-inbox")).toBeInTheDocument()
+    // Both mood rows (Yahya + Yara) link to the connect/prompts surface.
+    const yahyaRow = screen.getByText("Yahya").closest("a")
+    const yaraRow = screen.getByText("Yara").closest("a")
+    expect(yahyaRow).toHaveAttribute("href", "/us/prompts")
+    expect(yaraRow).toHaveAttribute("href", "/us/prompts")
   })
 
-  // ── Section 9: FeelingGenerousCTA ───────────────────────────
-
-  it("renders FeelingGenerousCTA", () => {
+  it("shows 'tap to share' placeholders since no moods are wired yet", () => {
     render(<Home />)
-    expect(screen.getByTestId("generous-cta")).toBeInTheDocument()
+    // page passes userMood/partnerMood = null → both fall back to "tap to share".
+    expect(screen.getAllByText("tap to share")).toHaveLength(2)
   })
 
-  // ── Section 10: HomeRitualsWidget ───────────────────────────
+  // ── Integration: recordOpened fires on mount (preserved garden behaviour) ──
 
-  it("renders HomeRitualsWidget", () => {
+  it("calls useGarden().recordOpened() exactly once on mount", () => {
     render(<Home />)
-    expect(screen.getByTestId("rituals-widget")).toBeInTheDocument()
+    expect(recordOpened).toHaveBeenCalledTimes(1)
   })
 
-  // ── Section 11: HomeCalendarPeek ────────────────────────────
+  // ── Regression: the removed 23-widget firehose is GONE ────────
 
-  it("renders HomeCalendarPeek", () => {
+  it("does NOT render the removed legacy widgets / copy", () => {
     render(<Home />)
-    expect(screen.getByTestId("calendar-peek")).toBeInTheDocument()
-  })
-
-  // ── Section 12: HomeCycleWidget ─────────────────────────────
-
-  it("renders HomeCycleWidget", () => {
-    render(<Home />)
-    expect(screen.getByTestId("cycle-widget")).toBeInTheDocument()
-  })
-
-  // ── Section 13: HomePrayerWidget ────────────────────────────
-
-  it("renders HomePrayerWidget", () => {
-    render(<Home />)
-    expect(screen.getByTestId("prayer-widget")).toBeInTheDocument()
-  })
-
-  // ── Section 14: SharedGarden (compact) ──────────────────────
-
-  it("renders SharedGarden in compact mode", () => {
-    render(<Home />)
-    const garden = screen.getByTestId("shared-garden")
-    expect(garden).toBeInTheDocument()
-    expect(garden).toHaveAttribute("data-compact", "true")
-  })
-
-  // ── Section 15: DaysTogetherCounter ─────────────────────────
-
-  it("renders DaysTogetherCounter", () => {
-    render(<Home />)
-    expect(screen.getByTestId("days-together-counter")).toBeInTheDocument()
-  })
-
-  // ── recordOpened called on mount ────────────────────────────
-
-  it("calls recordOpened on mount for shared garden", () => {
-    render(<Home />)
-    expect(mockRecordOpened).toHaveBeenCalled()
-  })
-
-  // ── QuickActionCards removed ────────────────────────────────
-
-  it("does not render QuickActionCards (removed in T1016)", () => {
-    render(<Home />)
+    // QuickActionCards heading (removed) + a few representative widgets.
     expect(screen.queryByText("Your shared space")).not.toBeInTheDocument()
+    expect(screen.queryByText("DaysTogetherCounter")).not.toBeInTheDocument()
+    expect(screen.queryByText("SharedGarden")).not.toBeInTheDocument()
+    expect(screen.queryByText("MoodStrip")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("shared-garden")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("days-together-counter")).not.toBeInTheDocument()
   })
 })
+
+/*
+ * DELETED (legacy assertions, with reasons):
+ * - "renders without crashing" → forbidden render-only assertion.
+ * - HomeGreeting / MoodPicker / PartnerMoodIndicator / MoodStrip / HomeSnapWidget /
+ *   CoyynsWidget / HomeMarketplaceRow / HomeCouponInbox / FeelingGenerousCTA /
+ *   HomeRitualsWidget / HomeCalendarPeek / HomeCycleWidget / HomePrayerWidget /
+ *   HomeLetterPrompt / HomeEvaluationPrompt / HomeCountdownWidget →
+ *   none of these components are rendered by the redesigned page anymore.
+ * - Active purchases (ActivePurchaseCard, useActivePurchases) → the page no longer
+ *   reads use-active-purchases or renders purchase cards.
+ * - SharedGarden (compact) + DaysTogetherCounter → removed from the Home surface
+ *   (the garden hook is still read only for recordOpened()).
+ * - "QuickActionCards removed (T1016)" → kept the intent as a regression check
+ *   ("Your shared space" must not appear) folded into the GONE test above.
+ */

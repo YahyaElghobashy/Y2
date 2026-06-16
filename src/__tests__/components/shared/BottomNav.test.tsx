@@ -1,20 +1,12 @@
 import React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import { BottomNav } from "@/components/shared/BottomNav"
 
 // Mock next/navigation
 const mockPathname = vi.fn(() => "/")
 vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname(),
-}))
-
-// Mock next/image
-vi.mock("next/image", () => ({
-  default: (props: Record<string, unknown>) => {
-    const { priority, ...rest } = props
-    return <img {...rest} />
-  },
 }))
 
 // Mock framer-motion with Proxy to handle all motion elements
@@ -60,174 +52,274 @@ vi.mock("framer-motion", () => ({
 }))
 
 describe("BottomNav", () => {
-  it("renders 4 side tab links plus center mascot button", () => {
+  beforeEach(() => {
     mockPathname.mockReturnValue("/")
+  })
+
+  // ── UNIT: derived rendered structure ──
+
+  it("renders exactly 4 world tab links plus the center Create button", () => {
     render(<BottomNav />)
 
-    // 4 side tab links (Home, Us, Me, More)
+    // 4 world links: Home, Us, Treasury, Keepsake
     const links = screen.getAllByRole("link")
     expect(links).toHaveLength(4)
 
-    // Center mascot button
-    const mascotBtn = screen.getByTestId("nav-mascot-btn")
-    expect(mascotBtn).toBeInTheDocument()
+    // Center terracotta Create button (not a link)
+    const createBtn = screen.getByTestId("nav-create-btn")
+    expect(createBtn).toBeInTheDocument()
+    expect(createBtn.tagName).toBe("BUTTON")
   })
 
-  it("each side tab has the correct label text", () => {
-    mockPathname.mockReturnValue("/")
+  it("each world tab renders its label from NAV_WORLDS", () => {
     render(<BottomNav />)
 
     expect(screen.getByText("Home")).toBeInTheDocument()
     expect(screen.getByText("Us")).toBeInTheDocument()
-    expect(screen.getByText("Me")).toBeInTheDocument()
-    expect(screen.getByText("More")).toBeInTheDocument()
+    expect(screen.getByText("Treasury")).toBeInTheDocument()
+    expect(screen.getByText("Keepsake")).toBeInTheDocument()
   })
 
-  it("each side tab links to the correct route", () => {
-    mockPathname.mockReturnValue("/")
+  it("each world tab links to the correct href", () => {
     render(<BottomNav />)
 
-    expect(screen.getByTestId("nav-tab-home")).toHaveAttribute("href", "/")
-    expect(screen.getByTestId("nav-tab-us")).toHaveAttribute("href", "/us")
-    expect(screen.getByTestId("nav-tab-me")).toHaveAttribute("href", "/me")
-    expect(screen.getByTestId("nav-tab-more")).toHaveAttribute("href", "/more")
-  })
-
-  it("active tab has accent color styling when pathname is /", () => {
-    mockPathname.mockReturnValue("/")
-    render(<BottomNav />)
-
-    const homeLink = screen.getByText("Home").closest("a")
-    expect(homeLink).toHaveAttribute("aria-current", "page")
-
-    const usLink = screen.getByText("Us").closest("a")
-    expect(usLink).not.toHaveAttribute("aria-current")
-  })
-
-  it("active tab has accent color styling when pathname is /us", () => {
-    mockPathname.mockReturnValue("/us")
-    render(<BottomNav />)
-
-    const usLink = screen.getByText("Us").closest("a")
-    expect(usLink).toHaveAttribute("aria-current", "page")
-
-    const homeLink = screen.getByText("Home").closest("a")
-    expect(homeLink).not.toHaveAttribute("aria-current")
-  })
-
-  it("active tab for /me route", () => {
-    mockPathname.mockReturnValue("/me")
-    render(<BottomNav />)
-
-    const link = screen.getByText("Me").closest("a")
-    expect(link).toHaveAttribute("aria-current", "page")
-  })
-
-  it("active tab for /more route", () => {
-    mockPathname.mockReturnValue("/more")
-    render(<BottomNav />)
-
-    const link = screen.getByText("More").closest("a")
-    expect(link).toHaveAttribute("aria-current", "page")
-  })
-
-  it("inactive tabs have secondary color styling", () => {
-    mockPathname.mockReturnValue("/")
-    render(<BottomNav />)
-
-    const usLabel = screen.getByText("Us")
-    expect(usLabel.className).toContain("text-text-secondary")
-  })
-
-  it("active tab label has accent color styling", () => {
-    mockPathname.mockReturnValue("/")
-    render(<BottomNav />)
-
-    const homeLabel = screen.getByText("Home")
-    expect(homeLabel.className).toContain("text-accent-primary")
-  })
-
-  it("center mascot button renders mascot image", () => {
-    mockPathname.mockReturnValue("/")
-    render(<BottomNav />)
-
-    const img = screen.getByAltText("Hayah")
-    expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute("src", "/mascot.png")
-  })
-
-  it("mascot button has correct aria-label", () => {
-    mockPathname.mockReturnValue("/")
-    render(<BottomNav />)
-
-    const btn = screen.getByTestId("nav-mascot-btn")
-    expect(btn).toHaveAttribute("aria-label", "Open quick menu")
-    expect(btn).toHaveAttribute("aria-expanded", "false")
-  })
-
-  it("side tab icons render as SVG elements", () => {
-    mockPathname.mockReturnValue("/")
-    const { container } = render(<BottomNav />)
-
-    // 4 side tabs have SVG icons (House, Heart, User, MoreHorizontal)
-    const svgs = container.querySelectorAll("svg")
-    expect(svgs).toHaveLength(4)
-  })
-
-  it("shows indicator only on the active tab", () => {
-    mockPathname.mockReturnValue("/us")
-    const { container } = render(<BottomNav />)
-
-    const indicators = container.querySelectorAll(
-      "[data-layoutid='bottomnav-indicator']"
+    expect(screen.getByTestId("nav-home")).toHaveAttribute("href", "/")
+    expect(screen.getByTestId("nav-us")).toHaveAttribute("href", "/us")
+    expect(screen.getByTestId("nav-treasury")).toHaveAttribute(
+      "href",
+      "/treasury"
     )
-    expect(indicators).toHaveLength(1)
+    expect(screen.getByTestId("nav-keepsake")).toHaveAttribute(
+      "href",
+      "/keepsake"
+    )
   })
 
-  it("old routes (Health, Spirit, Ops) are NOT present", () => {
-    mockPathname.mockReturnValue("/")
+  it("renders 4 world-tab icons as SVG elements (one per tab)", () => {
+    const { container } = render(<BottomNav />)
+
+    // House, Heart, Coins, BookHeart on the tabs + the Plus inside the
+    // Create button = 5 SVGs total when the sheet is closed.
+    const svgs = container.querySelectorAll("svg")
+    expect(svgs.length).toBe(5)
+  })
+
+  it("Create button is collapsed by default (aria-expanded false, Create label)", () => {
     render(<BottomNav />)
 
-    expect(screen.queryByText("Health")).not.toBeInTheDocument()
-    expect(screen.queryByText("Spirit")).not.toBeInTheDocument()
-    expect(screen.queryByText("Ops")).not.toBeInTheDocument()
+    const btn = screen.getByTestId("nav-create-btn")
+    expect(btn).toHaveAttribute("aria-expanded", "false")
+    expect(btn).toHaveAttribute("aria-label", "Create")
+    // Sheet actions are not in the DOM until opened
+    expect(screen.queryByTestId("create-snap")).not.toBeInTheDocument()
   })
 
-  it("no tab is highlighted on non-nav routes", () => {
-    mockPathname.mockReturnValue("/settings")
-    render(<BottomNav />)
-
-    const links = screen.getAllByRole("link")
-    links.forEach((link) => {
-      expect(link).not.toHaveAttribute("aria-current")
-    })
-  })
-
-  it("has proper navigation role and label", () => {
-    mockPathname.mockReturnValue("/")
+  it("exposes navigation role with accessible label", () => {
     render(<BottomNav />)
 
     const nav = screen.getByRole("navigation")
     expect(nav).toHaveAttribute("aria-label", "Main navigation")
   })
 
-  it("quick actions appear when mascot is clicked", () => {
+  // ── UNIT: active state per route ──
+
+  it("marks Home active (aria-current) on the / route and leaves others inactive", () => {
     mockPathname.mockReturnValue("/")
     render(<BottomNav />)
 
-    const btn = screen.getByTestId("nav-mascot-btn")
-    fireEvent.click(btn)
-
-    // Quick action links should appear (2026, Snap, Our Table, Wheel)
-    expect(screen.getByTestId("quick-action-2026")).toBeInTheDocument()
-    expect(screen.getByTestId("quick-action-snap")).toBeInTheDocument()
-    expect(screen.getByTestId("quick-action-our-table")).toBeInTheDocument()
-    expect(screen.getByTestId("quick-action-wheel")).toBeInTheDocument()
+    expect(screen.getByTestId("nav-home")).toHaveAttribute(
+      "aria-current",
+      "page"
+    )
+    expect(screen.getByTestId("nav-us")).not.toHaveAttribute("aria-current")
+    expect(screen.getByTestId("nav-treasury")).not.toHaveAttribute(
+      "aria-current"
+    )
+    expect(screen.getByTestId("nav-keepsake")).not.toHaveAttribute(
+      "aria-current"
+    )
   })
 
-  it("returns null during onboarding", () => {
+  it("marks Us active on /us and on nested Us-world routes (/game, /our-table, /wheel)", () => {
+    for (const route of ["/us", "/us/list", "/game", "/our-table", "/wheel"]) {
+      mockPathname.mockReturnValue(route)
+      const { unmount } = render(<BottomNav />)
+      expect(screen.getByTestId("nav-us")).toHaveAttribute(
+        "aria-current",
+        "page"
+      )
+      // Home must NOT be active on these (it only matches exact "/")
+      expect(screen.getByTestId("nav-home")).not.toHaveAttribute(
+        "aria-current"
+      )
+      unmount()
+    }
+  })
+
+  it("marks Treasury active on /treasury and its sub-routes", () => {
+    mockPathname.mockReturnValue("/treasury/coupons")
+    render(<BottomNav />)
+
+    expect(screen.getByTestId("nav-treasury")).toHaveAttribute(
+      "aria-current",
+      "page"
+    )
+    expect(screen.getByTestId("nav-keepsake")).not.toHaveAttribute(
+      "aria-current"
+    )
+  })
+
+  it("marks Keepsake active on /keepsake and nested Keepsake-world routes (/snap, /garden, /2026)", () => {
+    for (const route of ["/keepsake", "/snap/capture", "/garden", "/2026"]) {
+      mockPathname.mockReturnValue(route)
+      const { unmount } = render(<BottomNav />)
+      expect(screen.getByTestId("nav-keepsake")).toHaveAttribute(
+        "aria-current",
+        "page"
+      )
+      unmount()
+    }
+  })
+
+  it("highlights no tab on routes outside any world (e.g. /settings)", () => {
+    mockPathname.mockReturnValue("/settings")
+    render(<BottomNav />)
+
+    screen.getAllByRole("link").forEach((link) => {
+      expect(link).not.toHaveAttribute("aria-current")
+    })
+  })
+
+  // ── INTERACTION: Create button opens the 6-action sheet ──
+
+  it("opens the Create sheet with all 6 actions when the Create button is clicked", () => {
+    render(<BottomNav />)
+
+    // Closed first
+    expect(screen.queryByTestId("create-snap")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("nav-create-btn"))
+
+    // 6 actions: Snap, Coupon, Letter, List, Mood, Ping
+    expect(screen.getByTestId("create-snap")).toBeInTheDocument()
+    expect(screen.getByTestId("create-coupon")).toBeInTheDocument()
+    expect(screen.getByTestId("create-letter")).toBeInTheDocument()
+    expect(screen.getByTestId("create-list")).toBeInTheDocument()
+    expect(screen.getByTestId("create-mood")).toBeInTheDocument()
+    expect(screen.getByTestId("create-ping")).toBeInTheDocument()
+
+    // Labels visible
+    expect(screen.getByText("Snap")).toBeInTheDocument()
+    expect(screen.getByText("Coupon")).toBeInTheDocument()
+    expect(screen.getByText("Letter")).toBeInTheDocument()
+    expect(screen.getByText("List")).toBeInTheDocument()
+    expect(screen.getByText("Mood")).toBeInTheDocument()
+    expect(screen.getByText("Ping")).toBeInTheDocument()
+  })
+
+  it("each Create action links to its correct destination href", () => {
+    render(<BottomNav />)
+    fireEvent.click(screen.getByTestId("nav-create-btn"))
+
+    expect(screen.getByTestId("create-snap")).toHaveAttribute(
+      "href",
+      "/snap/capture"
+    )
+    expect(screen.getByTestId("create-coupon")).toHaveAttribute(
+      "href",
+      "/create-coupon"
+    )
+    expect(screen.getByTestId("create-letter")).toHaveAttribute(
+      "href",
+      "/me/rituals"
+    )
+    expect(screen.getByTestId("create-list")).toHaveAttribute(
+      "href",
+      "/us/list"
+    )
+    expect(screen.getByTestId("create-mood")).toHaveAttribute("href", "/")
+    expect(screen.getByTestId("create-ping")).toHaveAttribute(
+      "href",
+      "/us/ping"
+    )
+  })
+
+  it("toggles aria-expanded and aria-label as the Create sheet opens and closes", () => {
+    render(<BottomNav />)
+
+    // Re-query after each toggle: the motion.button mock re-creates the node.
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-label",
+      "Create"
+    )
+
+    fireEvent.click(screen.getByTestId("nav-create-btn"))
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-label",
+      "Close create menu"
+    )
+    expect(screen.getByTestId("create-snap")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("nav-create-btn"))
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
+    expect(screen.getByTestId("nav-create-btn")).toHaveAttribute(
+      "aria-label",
+      "Create"
+    )
+    expect(screen.queryByTestId("create-snap")).not.toBeInTheDocument()
+  })
+
+  // ── INTERACTION: active indicator dot ──
+
+  it("renders the active indicator dot only on the active tab", () => {
+    mockPathname.mockReturnValue("/treasury")
+    const { container } = render(<BottomNav />)
+
+    const indicators = container.querySelectorAll(
+      "[data-layoutid='nav-indicator']"
+    )
+    expect(indicators).toHaveLength(1)
+  })
+
+  // ── INTEGRATION / removed-feature guards ──
+
+  it("hides the nav entirely during onboarding", () => {
     mockPathname.mockReturnValue("/onboarding")
     const { container } = render(<BottomNav />)
     expect(container.innerHTML).toBe("")
+  })
+
+  it("does not render the removed mascot / old 5-tab scheme", () => {
+    render(<BottomNav />)
+
+    // No mascot button or image (removed in redesign)
+    expect(screen.queryByTestId("nav-mascot-btn")).not.toBeInTheDocument()
+    expect(screen.queryByAltText("Hayah")).not.toBeInTheDocument()
+
+    // Old tab labels are gone
+    expect(screen.queryByText("Me")).not.toBeInTheDocument()
+    expect(screen.queryByText("More")).not.toBeInTheDocument()
+    expect(screen.queryByText("Health")).not.toBeInTheDocument()
+    expect(screen.queryByText("Spirit")).not.toBeInTheDocument()
+    expect(screen.queryByText("Ops")).not.toBeInTheDocument()
+
+    // Old mascot-driven quick-action testids are gone
+    expect(screen.queryByTestId("quick-action-2026")).not.toBeInTheDocument()
+    expect(screen.queryByTestId("quick-action-snap")).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("quick-action-our-table")
+    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId("quick-action-wheel")).not.toBeInTheDocument()
   })
 })

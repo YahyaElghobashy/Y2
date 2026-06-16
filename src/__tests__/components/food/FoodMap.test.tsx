@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, within } from "@testing-library/react"
 
 // ── Hoist mocks ──────────────────────────────────────────────
+// The redesign replaced the old map/list page with a presentational <TableView>
+// fed by the page from useFoodJournal. The page maps FoodVisit rows → TableView
+// Visit shape: { id, place, cuisine (label), score (round of my rating), date, visitNo }.
 const mockUseFoodJournal = vi.hoisted(() =>
   vi.fn(() => ({
     visits: [],
@@ -47,17 +50,6 @@ vi.mock("next/link", () => ({
   ),
 }))
 
-vi.mock("next/dynamic", () => ({
-  default: (loader: () => Promise<{ default: React.ComponentType }>) => {
-    // Return the MapSkeleton for dynamic import (can't actually load Leaflet in tests)
-    const DynamicComponent = (props: Record<string, unknown>) => (
-      <div data-testid="food-map" {...props}>Map Component</div>
-    )
-    DynamicComponent.displayName = "DynamicFoodMap"
-    return DynamicComponent
-  },
-}))
-
 vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
@@ -67,7 +59,7 @@ vi.mock("framer-motion", () => ({
     },
     button: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => {
       const clean = { ...props }
-      for (const k of ["initial", "animate", "exit", "transition", "whileTap", "whileHover"]) delete clean[k]
+      for (const k of ["initial", "animate", "exit", "transition", "whileTap", "whileHover", "layoutId", "custom"]) delete clean[k]
       return <button {...(clean as React.ButtonHTMLAttributes<HTMLButtonElement>)}>{children}</button>
     },
   },
@@ -100,6 +92,7 @@ vi.mock("@/components/animations/PageTransition", () => ({
 import OurTablePage from "@/app/(main)/our-table/page"
 
 // ── Test data ───────────────────────────────────────────────
+// FoodVisit-shaped rows. The page derives the TableView Visit from these.
 const makeVisit = (overrides: Record<string, unknown> = {}) => ({
   id: "v1",
   user_id: "u1",
@@ -118,64 +111,47 @@ const makeVisit = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 })
 
+// Convenience: build the full hook return with sensible defaults so each test
+// only states the bits it cares about.
+const hookReturn = (overrides: Record<string, unknown> = {}) => ({
+  visits: [],
+  isLoading: false,
+  error: null,
+  getMyRating: vi.fn(() => null),
+  getPartnerRating: vi.fn(() => null),
+  getPhotos: vi.fn(() => []),
+  getPreferenceDot: vi.fn(() => null),
+  getVisitById: vi.fn(() => null),
+  filterByCuisine: vi.fn(() => []),
+  addVisit: vi.fn(),
+  updateVisit: vi.fn(),
+  toggleBookmark: vi.fn(),
+  addRating: vi.fn(),
+  addPhotos: vi.fn(),
+  removePhoto: vi.fn(),
+  stats: { totalVisits: 0, uniquePlaces: 0, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
+  ...overrides,
+})
+
 describe("OurTablePage", () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  // ── Unit Tests ──────────────────────────────────────────────
+  // ── Unit: derived values render ─────────────────────────────
 
   it("shows loading skeleton while loading", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [],
-      isLoading: true,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: {
-        totalVisits: 0,
-        uniquePlaces: 0,
-        avgOverall: 0,
-        topCuisine: null,
-        returnSpots: 0,
-        bookmarkedCount: 0,
-      },
-    })
+    mockUseFoodJournal.mockReturnValue(hookReturn({ isLoading: true }))
 
     const { container } = render(<OurTablePage />)
-    const skeletons = container.querySelectorAll(".animate-skeleton-warm")
-    expect(skeletons.length).toBeGreaterThan(0)
+    // Redesign: LoadingSkeleton renders pulsing placeholders (animate-pulse),
+    // not the visit list. (The old `.animate-skeleton-warm` class no longer exists.)
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0)
+    expect(screen.queryByText("Our Table")).not.toBeInTheDocument()
   })
 
-  it("shows empty state when no visits", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 0, uniquePlaces: 0, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
+  it("shows empty state with CTA to /our-table/new when no visits", () => {
+    mockUseFoodJournal.mockReturnValue(hookReturn({ visits: [] }))
 
     render(<OurTablePage />)
 
@@ -184,430 +160,154 @@ describe("OurTablePage", () => {
     expect(screen.getByText("Add First Visit")).toHaveAttribute("href", "/our-table/new")
   })
 
-  it("renders map/list toggle buttons", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
+  it("renders the Our Table header when visits exist", () => {
+    mockUseFoodJournal.mockReturnValue(hookReturn({ visits: [makeVisit()] }))
 
     render(<OurTablePage />)
 
-    expect(screen.getByTestId("toggle-map")).toBeInTheDocument()
-    expect(screen.getByTestId("toggle-list")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Our Table" })).toBeInTheDocument()
+    // Arabic kicker
+    expect(screen.getByText("طاولتنا")).toBeInTheDocument()
   })
 
-  it("shows FAB linking to /our-table/new", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    const fab = screen.getByTestId("add-visit-fab")
-    expect(fab).toHaveAttribute("href", "/our-table/new")
-  })
-
-  it("renders filter pills (8+, Returned, cuisine types)", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    expect(screen.getByTestId("filter-high-score")).toBeInTheDocument()
-    expect(screen.getByTestId("filter-return")).toBeInTheDocument()
-    expect(screen.getByTestId("filter-cuisine-italian")).toBeInTheDocument()
-    expect(screen.getByTestId("filter-cuisine-egyptian")).toBeInTheDocument()
-  })
-
-  it("displays visit count", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit(), makeVisit({ id: "v2", place_name: "Burger Joint" })],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 2, uniquePlaces: 2, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    expect(screen.getByTestId("visit-count")).toHaveTextContent("2 visits")
-  })
-
-  // ── Interaction Tests ─────────────────────────────────────
-
-  it("switches to list view when list toggle clicked", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    fireEvent.click(screen.getByTestId("toggle-list"))
-
-    // Should show the visit list item
-    expect(screen.getByTestId("visit-item-v1")).toBeInTheDocument()
-  })
-
-  it("shows visit list items with correct data in list view", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => ({ overall_average: 7.5 })),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 7.5, topCuisine: "italian", returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
-
-    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
-    expect(screen.getByTestId("cuisine-pill-v1")).toHaveTextContent("Italian")
-    expect(screen.getByTestId("score-badge-v1")).toHaveTextContent("7.5")
-  })
-
-  it("cuisine filter toggles and filters visits", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [
-        makeVisit({ id: "v1", cuisine_type: "italian", place_name: "Pizza Palace" }),
-        makeVisit({ id: "v2", cuisine_type: "egyptian", place_name: "Koshary King" }),
-      ],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 2, uniquePlaces: 2, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
-
-    // Both visits visible initially
-    expect(screen.getByTestId("visit-item-v1")).toBeInTheDocument()
-    expect(screen.getByTestId("visit-item-v2")).toBeInTheDocument()
-
-    // Filter by Italian
-    fireEvent.click(screen.getByTestId("filter-cuisine-italian"))
-
-    expect(screen.getByTestId("visit-item-v1")).toBeInTheDocument()
-    expect(screen.queryByTestId("visit-item-v2")).not.toBeInTheDocument()
-
-    // Un-filter
-    fireEvent.click(screen.getByTestId("filter-cuisine-italian"))
-    expect(screen.getByTestId("visit-item-v2")).toBeInTheDocument()
-  })
-
-  it("high score filter shows only 8+ visits", () => {
-    const getMyRating = vi.fn((visitId: string) =>
-      visitId === "v1"
-        ? { overall_average: 8.5 }
-        : { overall_average: 6.0 }
+  it("renders a visit card with place, cuisine label, visit ordinal and score (list is the default view)", () => {
+    mockUseFoodJournal.mockReturnValue(
+      hookReturn({
+        visits: [makeVisit({ id: "v1", place_name: "Pizza Palace", cuisine_type: "italian" })],
+        // page uses Math.round(getMyRating(id)?.overall_average ?? 0) as the headline score
+        getMyRating: vi.fn(() => ({ overall_average: 8.4 })),
+      })
     )
 
-    mockUseFoodJournal.mockReturnValue({
-      visits: [
-        makeVisit({ id: "v1", place_name: "Great Place" }),
-        makeVisit({ id: "v2", place_name: "OK Place" }),
-      ],
-      isLoading: false,
-      error: null,
-      getMyRating,
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 2, uniquePlaces: 2, avgOverall: 7.25, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
     render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
-    fireEvent.click(screen.getByTestId("filter-high-score"))
 
-    expect(screen.getByTestId("visit-item-v1")).toBeInTheDocument()
-    expect(screen.queryByTestId("visit-item-v2")).not.toBeInTheDocument()
+    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
+    // cuisine_type "italian" → CUISINE_LABELS → "Italian"; visitNo 1 → "1st visit"
+    expect(screen.getByText(/Italian · 1st visit ·/)).toBeInTheDocument()
+    // Math.round(8.4) === 8 → rendered headline score
+    expect(screen.getByText("8")).toBeInTheDocument()
   })
 
-  it("return filter shows only return visits", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [
-        makeVisit({ id: "v1", place_name: "Pizza Palace", place_id: "node/111", visit_date: "2026-02-01" }),
-        makeVisit({ id: "v2", place_name: "Pizza Palace", place_id: "node/111", visit_date: "2026-03-01" }),
-        makeVisit({ id: "v3", place_name: "Unique Spot", place_id: "node/999", visit_date: "2026-03-02" }),
-      ],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 3, uniquePlaces: 2, avgOverall: 0, topCuisine: null, returnSpots: 1, bookmarkedCount: 0 },
-    })
+  it("renders the stats line: places · cuisines · avg score", () => {
+    mockUseFoodJournal.mockReturnValue(
+      hookReturn({
+        visits: [
+          makeVisit({ id: "v1", cuisine_type: "italian" }),
+          makeVisit({ id: "v2", cuisine_type: "egyptian", place_name: "Koshary King" }),
+        ],
+        getMyRating: vi.fn(() => ({ overall_average: 8 })),
+      })
+    )
 
     render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
-    fireEvent.click(screen.getByTestId("filter-return"))
 
-    // v2 is the second visit to Pizza Palace (visit_number > 1)
-    expect(screen.getByTestId("visit-item-v2")).toBeInTheDocument()
-    // v1 is the first visit — won't show (visitNumber=1)
-    expect(screen.queryByTestId("visit-item-v1")).not.toBeInTheDocument()
-    // v3 is unique, should be hidden
-    expect(screen.queryByTestId("visit-item-v3")).not.toBeInTheDocument()
+    // The stats line is rendered as one span with bold <b> tokens:
+    //   "<b>2</b> places · <b>2</b> cuisines · <b>8.0</b> avg"
+    // 2 places, 2 distinct cuisines, avg score (8 + 8) / 2 = 8.0
+    const statsLine = screen.getByText(/places ·/).closest("span") as HTMLElement
+    expect(statsLine).toBeTruthy()
+    const stats = statsLine.textContent ?? ""
+    expect(stats).toContain("2 places")
+    expect(stats).toContain("2 cuisines")
+    expect(stats).toContain("8.0 avg")
   })
 
-  it("shows 'No visits match your filters' when filters exclude all", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit({ cuisine_type: "italian" })],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
+  it("renders one cuisine filter pill per distinct cuisine plus an 'All' pill", () => {
+    mockUseFoodJournal.mockReturnValue(
+      hookReturn({
+        visits: [
+          makeVisit({ id: "v1", cuisine_type: "italian", place_name: "Pizza Palace" }),
+          makeVisit({ id: "v2", cuisine_type: "egyptian", place_name: "Koshary King" }),
+        ],
+      })
+    )
 
     render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
 
-    // Filter by egyptian — no italian visit matches
-    fireEvent.click(screen.getByTestId("filter-cuisine-egyptian"))
-
-    expect(screen.getByText("No visits match your filters")).toBeInTheDocument()
+    // Cuisine labels in the data are already humanized by the page ("Italian", "Egyptian")
+    expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Italian" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Egyptian" })).toBeInTheDocument()
   })
 
-  // ── Integration Tests ─────────────────────────────────────
+  // ── Interaction: clicks do the right thing ──────────────────
 
-  it("calls useFoodJournal hook", () => {
+  it("filters the list down to the selected cuisine", () => {
+    mockUseFoodJournal.mockReturnValue(
+      hookReturn({
+        visits: [
+          makeVisit({ id: "v1", cuisine_type: "italian", place_name: "Pizza Palace" }),
+          makeVisit({ id: "v2", cuisine_type: "egyptian", place_name: "Koshary King" }),
+        ],
+      })
+    )
+
     render(<OurTablePage />)
+
+    // Both visible under default "All"
+    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
+    expect(screen.getByText("Koshary King")).toBeInTheDocument()
+
+    // Filter to Italian — only Pizza Palace remains
+    fireEvent.click(screen.getByRole("button", { name: "Italian" }))
+    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
+    expect(screen.queryByText("Koshary King")).not.toBeInTheDocument()
+
+    // Back to All — both return
+    fireEvent.click(screen.getByRole("button", { name: "All" }))
+    expect(screen.getByText("Koshary King")).toBeInTheDocument()
+  })
+
+  it("switches to the map view and back", () => {
+    mockUseFoodJournal.mockReturnValue(hookReturn({ visits: [makeVisit({ place_name: "Pizza Palace" })] }))
+
+    const { container } = render(<OurTablePage />)
+
+    // Default list view shows the card
+    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
+
+    // Toggle group holds the [list, map] icon buttons (no testids in the redesign)
+    const toggleGroup = container.querySelector(".pill-tab-group") as HTMLElement
+    expect(toggleGroup).toBeTruthy()
+    const [listBtn, mapBtn] = within(toggleGroup).getAllByRole("button")
+
+    // Map view replaces the list with the map placeholder
+    fireEvent.click(mapBtn)
+    expect(screen.getByText("your map of places, pinned")).toBeInTheDocument()
+    expect(screen.queryByText("Pizza Palace")).not.toBeInTheDocument()
+
+    // Back to list
+    fireEvent.click(listBtn)
+    expect(screen.getByText("Pizza Palace")).toBeInTheDocument()
+    expect(screen.queryByText("your map of places, pinned")).not.toBeInTheDocument()
+  })
+
+  // ── Integration: callbacks / router receive the right calls ─
+
+  it("routes to /our-table/new when the add (FAB) button is tapped", () => {
+    mockUseFoodJournal.mockReturnValue(hookReturn({ visits: [makeVisit()] }))
+
+    render(<OurTablePage />)
+
+    const fab = screen.getByRole("button", { name: "Log a visit" })
+    fireEvent.click(fab)
+
+    expect(mockPush).toHaveBeenCalledTimes(1)
+    expect(mockPush).toHaveBeenCalledWith("/our-table/new")
+  })
+
+  it("reads visit data from the useFoodJournal hook", () => {
+    mockUseFoodJournal.mockReturnValue(hookReturn({ visits: [makeVisit()] }))
+
+    render(<OurTablePage />)
+
     expect(mockUseFoodJournal).toHaveBeenCalled()
   })
-
-  it("shows map component in default map view", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    expect(screen.getByTestId("food-map")).toBeInTheDocument()
-  })
-
-  it("visit count updates with filters applied", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [
-        makeVisit({ id: "v1", cuisine_type: "italian" }),
-        makeVisit({ id: "v2", cuisine_type: "egyptian" }),
-        makeVisit({ id: "v3", cuisine_type: "italian" }),
-      ],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 3, uniquePlaces: 3, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    expect(screen.getByTestId("visit-count")).toHaveTextContent("3 visits")
-
-    fireEvent.click(screen.getByTestId("filter-cuisine-italian"))
-
-    expect(screen.getByTestId("visit-count")).toHaveTextContent("2 visits")
-  })
-
-  it("list items link to correct visit detail page", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit({ id: "visit-abc" })],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-    fireEvent.click(screen.getByTestId("toggle-list"))
-
-    const visitLink = screen.getByTestId("visit-item-visit-abc").closest("a")
-    expect(visitLink).toHaveAttribute("href", "/our-table/visit-abc")
-  })
-
-  it("singular 'visit' text for 1 visit", () => {
-    mockUseFoodJournal.mockReturnValue({
-      visits: [makeVisit()],
-      isLoading: false,
-      error: null,
-      getMyRating: vi.fn(() => null),
-      getPartnerRating: vi.fn(() => null),
-      getPhotos: vi.fn(() => []),
-      getPreferenceDot: vi.fn(() => null),
-      getVisitById: vi.fn(() => null),
-      filterByCuisine: vi.fn(() => []),
-      addVisit: vi.fn(),
-      updateVisit: vi.fn(),
-      toggleBookmark: vi.fn(),
-      addRating: vi.fn(),
-      addPhotos: vi.fn(),
-      removePhoto: vi.fn(),
-      stats: { totalVisits: 1, uniquePlaces: 1, avgOverall: 0, topCuisine: null, returnSpots: 0, bookmarkedCount: 0 },
-    })
-
-    render(<OurTablePage />)
-
-    expect(screen.getByTestId("visit-count")).toHaveTextContent("1 visit")
-    expect(screen.getByTestId("visit-count").textContent).not.toContain("visits")
-  })
 })
+
+// ── Component-level tests for the standalone food-journal pieces ──
+// These render the components directly and still match the current markup,
+// so they are left intact per the redesign brief.
 
 describe("VisitListItem", () => {
   it("renders place name, cuisine pill, date, and score", async () => {
@@ -663,6 +363,24 @@ describe("VisitListItem", () => {
     )
 
     expect(screen.queryByTestId("score-badge-v1")).not.toBeInTheDocument()
+  })
+
+  it("links to the visit detail page", async () => {
+    const { VisitListItem } = await import("@/components/food/VisitListItem")
+
+    render(
+      <VisitListItem
+        id="visit-abc"
+        placeName="Linked Spot"
+        cuisineType="seafood"
+        visitDate="2026-03-01"
+        overallScore={6.5}
+        visitNumber={1}
+      />
+    )
+
+    const link = screen.getByTestId("visit-item-visit-abc").closest("a")
+    expect(link).toHaveAttribute("href", "/our-table/visit-abc")
   })
 })
 
