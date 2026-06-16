@@ -40,9 +40,9 @@ export const colors = {
     warning: "#D4A040",
   },
   pink: {
-    primary: "#ec1349",
-    soft: "rgba(236, 19, 73, 0.08)",
-    hover: "#d41042",
+    primary: "#E5663C",
+    soft: "rgba(229, 102, 60, 0.08)",
+    hover: "#C8552B",
   },
   border: {
     subtle: "rgba(44, 40, 37, 0.08)",

@@ -8,7 +8,7 @@ type DailyAyahProps = {
 }
 
 // Static verse for now — in a future task, this could be fetched from an API
-const DAILY_VERSE = {
+export const DAILY_VERSE = {
   arabic: "فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ",
   translation:
     "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",

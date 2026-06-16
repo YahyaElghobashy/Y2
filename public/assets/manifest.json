@@ -1,0 +1,640 @@
+[
+ {
+  "id": "C01",
+  "name": "wordmark-set",
+  "cat": "wordmark",
+  "treat": "split",
+  "outputs": [
+   "docs/design/assets/clean/wordmark/wordmark-set-01.png",
+   "docs/design/assets/clean/wordmark/wordmark-set-02.png",
+   "docs/design/assets/clean/wordmark/wordmark-set-03.png",
+   "docs/design/assets/clean/wordmark/wordmark-set-04.png",
+   "docs/design/assets/clean/wordmark/wordmark-set-05.png",
+   "docs/design/assets/clean/wordmark/wordmark-set-06.png"
+  ],
+  "kb": [
+   150,
+   151,
+   155,
+   154,
+   140,
+   142
+  ]
+ },
+ {
+  "id": "C02",
+  "name": "scene-lantern-dusk",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-lantern-dusk.webp"
+  ],
+  "kb": [
+   186
+  ]
+ },
+ {
+  "id": "C03",
+  "name": "poster-mabrouk-vert",
+  "cat": "posters",
+  "treat": "poster",
+  "outputs": [
+   "docs/design/assets/clean/posters/poster-mabrouk-vert.webp"
+  ],
+  "kb": [
+   554
+  ]
+ },
+ {
+  "id": "C04",
+  "name": "seal-yy-wax",
+  "cat": "seals",
+  "treat": "trim",
+  "outputs": [
+   "docs/design/assets/clean/seals/seal-yy-wax.png",
+   "docs/design/assets/clean/seals/seal-yy-wax.webp"
+  ],
+  "kb": [
+   1598,
+   232
+  ]
+ },
+ {
+  "id": "C05",
+  "name": "avatar-couple-mickey",
+  "cat": "avatars",
+  "treat": "avatar",
+  "outputs": [
+   "docs/design/assets/clean/avatars/avatar-couple-mickey.webp"
+  ],
+  "kb": [
+   277
+  ]
+ },
+ {
+  "id": "C06",
+  "name": "stamps-set",
+  "cat": "stamps",
+  "treat": "split",
+  "outputs": [
+   "docs/design/assets/clean/stamps/stamps-set-01.png",
+   "docs/design/assets/clean/stamps/stamps-set-02.png",
+   "docs/design/assets/clean/stamps/stamps-set-03.png",
+   "docs/design/assets/clean/stamps/stamps-set-04.png"
+  ],
+  "kb": [
+   254,
+   277,
+   248,
+   250
+  ]
+ },
+ {
+  "id": "C07",
+  "name": "stamp-redeemed",
+  "cat": "stamps",
+  "treat": "trim",
+  "outputs": [
+   "docs/design/assets/clean/stamps/stamp-redeemed.png",
+   "docs/design/assets/clean/stamps/stamp-redeemed.webp"
+  ],
+  "kb": [
+   989,
+   212
+  ]
+ },
+ {
+  "id": "C08",
+  "name": "icons-set",
+  "cat": "icons",
+  "treat": "split",
+  "outputs": [
+   "docs/design/assets/clean/icons/icons-set-01.png",
+   "docs/design/assets/clean/icons/icons-set-02.png",
+   "docs/design/assets/clean/icons/icons-set-03.png",
+   "docs/design/assets/clean/icons/icons-set-04.png",
+   "docs/design/assets/clean/icons/icons-set-05.png",
+   "docs/design/assets/clean/icons/icons-set-06.png",
+   "docs/design/assets/clean/icons/icons-set-07.png",
+   "docs/design/assets/clean/icons/icons-set-08.png",
+   "docs/design/assets/clean/icons/icons-set-09.png",
+   "docs/design/assets/clean/icons/icons-set-10.png",
+   "docs/design/assets/clean/icons/icons-set-11.png",
+   "docs/design/assets/clean/icons/icons-set-12.png",
+   "docs/design/assets/clean/icons/icons-set-13.png",
+   "docs/design/assets/clean/icons/icons-set-14.png",
+   "docs/design/assets/clean/icons/icons-set-15.png",
+   "docs/design/assets/clean/icons/icons-set-16.png"
+  ],
+  "kb": [
+   58,
+   50,
+   50,
+   50,
+   57,
+   55,
+   56,
+   50,
+   61,
+   55,
+   40,
+   50,
+   47,
+   41,
+   30,
+   36
+  ]
+ },
+ {
+  "id": "C09",
+  "name": "backdrop-sun-smile",
+  "cat": "backdrops",
+  "treat": "backdrop",
+  "outputs": [
+   "docs/design/assets/clean/backdrops/backdrop-sun-smile.webp"
+  ],
+  "kb": [
+   449
+  ]
+ },
+ {
+  "id": "C10",
+  "name": "objects-set",
+  "cat": "objects",
+  "treat": "split",
+  "outputs": [],
+  "kb": []
+ },
+ {
+  "id": "C11",
+  "name": "scene-coffee-pourover",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-coffee-pourover.webp"
+  ],
+  "kb": [
+   539
+  ]
+ },
+ {
+  "id": "C12",
+  "name": "poster-cairo-night",
+  "cat": "posters",
+  "treat": "poster",
+  "outputs": [
+   "docs/design/assets/clean/posters/poster-cairo-night.webp"
+  ],
+  "kb": [
+   326
+  ]
+ },
+ {
+  "id": "C13",
+  "name": "poster-grow-garden",
+  "cat": "posters",
+  "treat": "poster",
+  "outputs": [
+   "docs/design/assets/clean/posters/poster-grow-garden.webp"
+  ],
+  "kb": [
+   536
+  ]
+ },
+ {
+  "id": "C14",
+  "name": "scene-datenight-balcony",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-datenight-balcony.webp"
+  ],
+  "kb": [
+   408
+  ]
+ },
+ {
+  "id": "C15",
+  "name": "scene-keepsake-open",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-keepsake-open.webp"
+  ],
+  "kb": [
+   486
+  ]
+ },
+ {
+  "id": "C16",
+  "name": "skin-day-golden",
+  "cat": "skins",
+  "treat": "skin",
+  "outputs": [
+   "docs/design/assets/clean/skins/skin-day-golden.webp"
+  ],
+  "kb": [
+   249
+  ]
+ },
+ {
+  "id": "C17",
+  "name": "badge-sunburst-01",
+  "cat": "badges",
+  "treat": "trim",
+  "outputs": [
+   "docs/design/assets/clean/badges/badge-sunburst-01.png",
+   "docs/design/assets/clean/badges/badge-sunburst-01.webp"
+  ],
+  "kb": [
+   1582,
+   241
+  ]
+ },
+ {
+  "id": "C18",
+  "name": "avatar-yara",
+  "cat": "avatars",
+  "treat": "avatar",
+  "outputs": [
+   "docs/design/assets/clean/avatars/avatar-yara.webp"
+  ],
+  "kb": [
+   246
+  ]
+ },
+ {
+  "id": "C19",
+  "name": "avatar-couple",
+  "cat": "avatars",
+  "treat": "avatar",
+  "outputs": [
+   "docs/design/assets/clean/avatars/avatar-couple.webp"
+  ],
+  "kb": [
+   335
+  ]
+ },
+ {
+  "id": "C20",
+  "name": "scene-home-rooftop-iftar",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-home-rooftop-iftar.webp"
+  ],
+  "kb": [
+   404
+  ]
+ },
+ {
+  "id": "C21",
+  "name": "texture-paper-cream",
+  "cat": "textures",
+  "treat": "texture",
+  "outputs": [
+   "docs/design/assets/clean/textures/texture-paper-cream.webp"
+  ],
+  "kb": [
+   119
+  ]
+ },
+ {
+  "id": "C22",
+  "name": "pattern-zellij-terracotta",
+  "cat": "patterns",
+  "treat": "pattern",
+  "outputs": [
+   "docs/design/assets/clean/patterns/pattern-zellij-terracotta.webp"
+  ],
+  "kb": [
+   400
+  ]
+ },
+ {
+  "id": "C23",
+  "name": "coin-yy",
+  "cat": "coins",
+  "treat": "bgremove",
+  "outputs": [
+   "docs/design/assets/clean/coins/coin-yy.png",
+   "docs/design/assets/clean/coins/coin-yy.webp"
+  ],
+  "kb": [
+   1731,
+   364
+  ]
+ },
+ {
+  "id": "C24",
+  "name": "scene-cards-flatlay",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-cards-flatlay.webp"
+  ],
+  "kb": [
+   472
+  ]
+ },
+ {
+  "id": "C25",
+  "name": "scene-soul-prayer",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-soul-prayer.webp"
+  ],
+  "kb": [
+   365
+  ]
+ },
+ {
+  "id": "C26",
+  "name": "scene-rooftop-cups",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-rooftop-cups.webp"
+  ],
+  "kb": [
+   427
+  ]
+ },
+ {
+  "id": "C27",
+  "name": "texture-cream-faint",
+  "cat": "textures",
+  "treat": "texture",
+  "outputs": [
+   "docs/design/assets/clean/textures/texture-cream-faint.webp"
+  ],
+  "kb": [
+   175
+  ]
+ },
+ {
+  "id": "C28",
+  "name": "scene-rooftop-night",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-rooftop-night.webp"
+  ],
+  "kb": [
+   494
+  ]
+ },
+ {
+  "id": "C29",
+  "name": "scene-keepsake-teal",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-keepsake-teal.webp"
+  ],
+  "kb": [
+   449
+  ]
+ },
+ {
+  "id": "C30",
+  "name": "ornament-star-coral",
+  "cat": "ornaments",
+  "treat": "bgremove",
+  "outputs": [
+   "docs/design/assets/clean/ornaments/ornament-star-coral.png",
+   "docs/design/assets/clean/ornaments/ornament-star-coral.webp"
+  ],
+  "kb": [
+   1245,
+   211
+  ]
+ },
+ {
+  "id": "C31",
+  "name": "ornament-star-outline",
+  "cat": "ornaments",
+  "treat": "bgremove",
+  "outputs": [
+   "docs/design/assets/clean/ornaments/ornament-star-outline.png",
+   "docs/design/assets/clean/ornaments/ornament-star-outline.webp"
+  ],
+  "kb": [
+   1303,
+   292
+  ]
+ },
+ {
+  "id": "G01",
+  "name": "poster-mabrouk-wide",
+  "cat": "posters",
+  "treat": "poster",
+  "outputs": [
+   "docs/design/assets/clean/posters/poster-mabrouk-wide.webp"
+  ],
+  "kb": [
+   192
+  ]
+ },
+ {
+  "id": "G02",
+  "name": "pattern-zellij-star",
+  "cat": "patterns",
+  "treat": "pattern",
+  "outputs": [
+   "docs/design/assets/clean/patterns/pattern-zellij-star.webp"
+  ],
+  "kb": [
+   181
+  ]
+ },
+ {
+  "id": "G03",
+  "name": "scene-garden-rooftop",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-garden-rooftop.webp"
+  ],
+  "kb": [
+   232
+  ]
+ },
+ {
+  "id": "G04",
+  "name": "badge-sunburst-74",
+  "cat": "badges",
+  "treat": "bgremove",
+  "outputs": [
+   "docs/design/assets/clean/badges/badge-sunburst-74.png",
+   "docs/design/assets/clean/badges/badge-sunburst-74.webp"
+  ],
+  "kb": [
+   1336,
+   209
+  ]
+ },
+ {
+  "id": "G05",
+  "name": "texture-halftone",
+  "cat": "textures",
+  "treat": "texture",
+  "outputs": [
+   "docs/design/assets/clean/textures/texture-halftone.webp"
+  ],
+  "kb": [
+   147
+  ]
+ },
+ {
+  "id": "G06",
+  "name": "backdrop-sunburst",
+  "cat": "backdrops",
+  "treat": "backdrop",
+  "outputs": [
+   "docs/design/assets/clean/backdrops/backdrop-sunburst.webp"
+  ],
+  "kb": [
+   162
+  ]
+ },
+ {
+  "id": "G07",
+  "name": "scene-coffee-vinyl",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-coffee-vinyl.webp"
+  ],
+  "kb": [
+   232
+  ]
+ },
+ {
+  "id": "G08",
+  "name": "scene-rooftop-couple-night",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-rooftop-couple-night.webp"
+  ],
+  "kb": [
+   258
+  ]
+ },
+ {
+  "id": "G09",
+  "name": "coin-yy-alt",
+  "cat": "coins",
+  "treat": "bgremove",
+  "outputs": [
+   "docs/design/assets/clean/coins/coin-yy-alt.png",
+   "docs/design/assets/clean/coins/coin-yy-alt.webp"
+  ],
+  "kb": [
+   1014,
+   184
+  ]
+ },
+ {
+  "id": "G10",
+  "name": "scene-soul-prayer-wide",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-soul-prayer-wide.webp"
+  ],
+  "kb": [
+   269
+  ]
+ },
+ {
+  "id": "G11",
+  "name": "icons-set-alt",
+  "cat": "icons",
+  "treat": "split",
+  "outputs": [],
+  "kb": []
+ },
+ {
+  "id": "G12",
+  "name": "scene-cairo-skyline-night",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-cairo-skyline-night.webp"
+  ],
+  "kb": [
+   211
+  ]
+ },
+ {
+  "id": "G13",
+  "name": "divider-arabesque",
+  "cat": "dividers",
+  "treat": "trim",
+  "outputs": [
+   "docs/design/assets/clean/dividers/divider-arabesque.png",
+   "docs/design/assets/clean/dividers/divider-arabesque.webp"
+  ],
+  "kb": [
+   581,
+   75
+  ]
+ },
+ {
+  "id": "G14",
+  "name": "seal-yy-wax-alt",
+  "cat": "seals",
+  "treat": "trim",
+  "outputs": [
+   "docs/design/assets/clean/seals/seal-yy-wax-alt.png",
+   "docs/design/assets/clean/seals/seal-yy-wax-alt.webp"
+  ],
+  "kb": [
+   686,
+   105
+  ]
+ },
+ {
+  "id": "G15",
+  "name": "objects-set-alt",
+  "cat": "objects",
+  "treat": "split",
+  "outputs": [],
+  "kb": []
+ },
+ {
+  "id": "G16",
+  "name": "pattern-mashrabiya-gold",
+  "cat": "patterns",
+  "treat": "pattern",
+  "outputs": [
+   "docs/design/assets/clean/patterns/pattern-mashrabiya-gold.webp"
+  ],
+  "kb": [
+   268
+  ]
+ },
+ {
+  "id": "G17",
+  "name": "scene-game-cards",
+  "cat": "scenes",
+  "treat": "scene",
+  "outputs": [
+   "docs/design/assets/clean/scenes/scene-game-cards.webp"
+  ],
+  "kb": [
+   389
+  ]
+ },
+ {
+  "id": "G18",
+  "name": "wordmark-set-alt",
+  "cat": "wordmark",
+  "treat": "split",
+  "outputs": [],
+  "kb": []
+ }
+]

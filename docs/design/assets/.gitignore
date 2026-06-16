@@ -1,0 +1,5 @@
+# Working/library dirs — heavy, reproducible. Deployed copy lives in public/assets/ (committed).
+_raw/
+_sheets/
+_review/
+clean/
