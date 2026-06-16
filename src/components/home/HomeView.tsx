@@ -1,8 +1,11 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none"
+}
 import { Settings, ChevronRight } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { Coin } from "@/components/shared/Coin"
@@ -49,7 +52,8 @@ export function HomeView({ data }: { data: HomeViewData }) {
             style={{ borderColor: "var(--border)", background: "var(--color-sand)" }}
           >
             {data.avatarUrl ? (
-              <Image src={data.avatarUrl} alt="" width={36} height={36} className="h-full w-full object-cover" />
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={data.avatarUrl} alt="" onError={hideOnError} width={36} height={36} className="h-full w-full object-cover" />
             ) : (
               <span style={{ fontFamily: "var(--font-display)", color: "var(--color-terracotta)" }} className="text-sm font-extrabold">
                 {data.userName.slice(0, 1)}
@@ -76,13 +80,12 @@ export function HomeView({ data }: { data: HomeViewData }) {
       {/* ── Greeting hero (the time of day, literally) ── */}
       <motion.section {...fadeUp(0)} className="px-5 pt-3">
         <div className="relative overflow-hidden rounded-[26px]" style={{ boxShadow: "var(--shadow-warm-lg)" }}>
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/assets/scenes/scene-home-rooftop-iftar.webp"
             alt=""
             aria-hidden
-            width={900}
-            height={1100}
-            priority
+            onError={hideOnError}
             className="h-[230px] w-full object-cover"
           />
           <div
@@ -168,7 +171,8 @@ export function HomeView({ data }: { data: HomeViewData }) {
           {data.keepsakes.map((k, i) => (
             <Link key={i} href="/keepsake" className="shrink-0">
               <div className="w-[132px] overflow-hidden rounded-2xl border" style={{ borderColor: "var(--border)", boxShadow: "var(--shadow-warm-sm)" }}>
-                <Image src={k.thumb} alt="" width={132} height={96} className="h-[96px] w-[132px] object-cover" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={k.thumb} alt="" onError={hideOnError} className="h-[96px] w-[132px] object-cover" />
                 <div className="px-2.5 py-2" style={{ background: "var(--card)" }}>
                   <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--color-ink-soft)" }}>{k.tag}</p>
                   <p className="mt-0.5 line-clamp-2 text-[12px] leading-snug" style={{ fontFamily: "var(--font-serif)", color: "var(--foreground)" }}>{k.line}</p>

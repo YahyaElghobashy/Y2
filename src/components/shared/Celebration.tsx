@@ -1,8 +1,12 @@
 "use client"
 
 import { useEffect, useMemo } from "react"
-import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+
+// Hide a decorative image if it ever fails to load (never show a broken-image icon).
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none"
+}
 
 /**
  * Celebration — the calibrated reward moment (docs/DESIGN_BLUEPRINT.md §1.4).
@@ -88,7 +92,8 @@ export function Celebration({
                 animate={{ opacity: 0.5, scale: 1, rotate: 360 }}
                 transition={{ opacity: { duration: 0.4 }, scale: { duration: 0.5 }, rotate: { duration: 26, repeat: Infinity, ease: "linear" } }}
               >
-                <Image src="/assets/backdrops/backdrop-sunburst.webp" alt="" aria-hidden fill className="scale-150 object-cover" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/backdrops/backdrop-sunburst.webp" alt="" aria-hidden onError={hideOnError} className="absolute inset-0 h-full w-full scale-150 object-cover" />
               </motion.div>
             )}
 
@@ -99,7 +104,8 @@ export function Celebration({
               style={{ width: 96, height: 96 }}
               className="relative drop-shadow-xl"
             >
-              <Image src="/assets/seals/seal-yy-wax.webp" alt="" aria-hidden width={96} height={96} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/seals/seal-yy-wax.png" alt="" aria-hidden onError={hideOnError} width={96} height={96} className="h-full w-full object-contain" />
             </motion.div>
 
             <motion.h2

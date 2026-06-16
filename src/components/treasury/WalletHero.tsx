@@ -1,8 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import { motion } from "framer-motion"
+
+const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = "none"
+}
 
 /**
  * WalletHero — the CoYYns wallet centerpiece (docs/DESIGN_BLUEPRINT.md §5.0).
@@ -44,12 +47,13 @@ export function WalletHero({ userName, partnerName, balance, partnerBalance }: W
       style={{ background: "linear-gradient(165deg, #2A2018 0%, #3A2B1A 60%, #5A3B1E 100%)", boxShadow: "var(--shadow-warm-xl)" }}
     >
       {/* sunburst backdrop */}
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/assets/backdrops/backdrop-sunburst.webp"
         alt=""
         aria-hidden
-        fill
-        className="pointer-events-none object-cover opacity-[0.16] mix-blend-screen"
+        onError={hideOnError}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.16] mix-blend-screen"
       />
       <div className="relative">
         <motion.div
@@ -59,7 +63,8 @@ export function WalletHero({ userName, partnerName, balance, partnerBalance }: W
           className="mx-auto"
           style={{ width: 72, height: 72 }}
         >
-          <Image src="/assets/coins/coin-yy.webp" alt="" aria-hidden width={72} height={72} priority />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/coins/coin-yy.webp" alt="" aria-hidden onError={hideOnError} width={72} height={72} className="h-full w-full object-contain" />
         </motion.div>
 
         <div className="mt-3 flex items-end justify-center gap-1.5">

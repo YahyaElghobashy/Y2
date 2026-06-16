@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { motion } from "framer-motion"
 
 /**
@@ -86,7 +85,8 @@ export function CouponTicket({
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
           style={{ width: 84, height: 84 }}
         >
-          <Image src="/assets/stamps/stamp-redeemed.png" alt="" width={84} height={84} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/stamps/stamp-redeemed.png" alt="" onError={(e) => { e.currentTarget.style.display = "none" }} width={84} height={84} className="h-full w-full object-contain" />
         </motion.div>
       )}
     </motion.div>

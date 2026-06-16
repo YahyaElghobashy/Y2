@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { FadeIn } from "@/components/animations"
 import { Button } from "@/components/ui/button"
@@ -39,12 +38,12 @@ export function EmptyState({
       )}
     >
       {scene ? (
-        <Image
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={`/assets/scenes/${scene}.webp`}
           alt=""
           aria-hidden
-          width={180}
-          height={220}
+          onError={(e) => { e.currentTarget.style.display = "none" }}
           className="mb-5 rounded-2xl object-cover"
           style={{ width: 168, height: 206, boxShadow: "var(--shadow-warm-md)" }}
         />
