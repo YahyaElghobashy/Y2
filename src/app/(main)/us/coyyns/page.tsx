@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Plus, ChevronDown, Swords, Gift } from "lucide-react"
 import { CoyynsWallet } from "@/components/relationship/CoyynsWallet"
 import { CoyynsHistory } from "@/components/relationship/CoyynsHistory"
+import { AddCoyynsForm } from "@/components/relationship/AddCoyynsForm"
+import { SpendCoyynsForm } from "@/components/relationship/SpendCoyynsForm"
 import { ChallengeCard } from "@/components/relationship/ChallengeCard"
 import { BountyCard } from "@/components/bounties/BountyCard"
 import { CreateChallengeForm } from "@/components/relationship/CreateChallengeForm"
@@ -49,6 +51,8 @@ export default function CoyynsTabPage() {
   } = useChallenges()
   const { activeBounties, pendingClaims, refreshBounties } = useBounties()
 
+  const [showAddCoyyns, setShowAddCoyyns] = useState(false)
+  const [showSpendCoyyns, setShowSpendCoyyns] = useState(false)
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
   const [showCreateBounty, setShowCreateBounty] = useState(false)
   const [selectedAcceptChallenge, setSelectedAcceptChallenge] =
@@ -109,7 +113,10 @@ export default function CoyynsTabPage() {
 
   return (
     <div className="flex flex-col gap-6 pb-8">
-      <CoyynsWallet />
+      <CoyynsWallet
+        onAdd={() => setShowAddCoyyns(true)}
+        onSpend={() => setShowSpendCoyyns(true)}
+      />
       <CoyynsHistory compact limit={5} />
 
       {/* Challenges Section */}
@@ -276,6 +283,16 @@ export default function CoyynsTabPage() {
       )}
 
       {/* Modals */}
+      <AddCoyynsForm
+        open={showAddCoyyns}
+        onClose={() => setShowAddCoyyns(false)}
+      />
+
+      <SpendCoyynsForm
+        open={showSpendCoyyns}
+        onClose={() => setShowSpendCoyyns(false)}
+      />
+
       <CreateChallengeForm
         open={showCreateChallenge}
         onClose={() => setShowCreateChallenge(false)}

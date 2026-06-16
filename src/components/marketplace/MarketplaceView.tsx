@@ -25,12 +25,18 @@ export function MarketplaceView({
   initialBalance,
   partnerName = "Yara",
   onBuy,
+  topSlot,
+  bottomSlot,
 }: {
   items: MarketItem[]
   initialBalance: number
   partnerName?: string
   /** Authed: open the real purchase modal. Preview: undefined → demo sheet. */
   onBuy?: (id: string) => void
+  /** Authed: active-purchase cards rendered above the grid. */
+  topSlot?: React.ReactNode
+  /** Authed: purchase history rendered below the grid. */
+  bottomSlot?: React.ReactNode
 }) {
   const [balance, setBalance] = useState(initialBalance)
   const [confirming, setConfirming] = useState<MarketItem | null>(null)
@@ -59,6 +65,8 @@ export function MarketplaceView({
         </span>
       </header>
 
+      {topSlot}
+
       <div className="grid grid-cols-2 gap-3">
         {items.map((item, i) => {
           const afford = balance >= item.price
@@ -85,6 +93,8 @@ export function MarketplaceView({
           )
         })}
       </div>
+
+      {bottomSlot}
 
       {/* Confirm sheet */}
       <AnimatePresence>

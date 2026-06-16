@@ -1,5 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest"
 import { renderHook, act, waitFor } from "@testing-library/react"
+
+// Pin "now" to a fixed date BEFORE the mock events (2026-04-15 / 2026-05-20)
+// so upcomingEvents (which filters to today-or-later) sees them as future,
+// independent of the real wall-clock date. Only Date is faked — timers and
+// microtasks stay real so waitFor/act resolve normally.
+const FIXED_NOW = new Date("2026-03-01T12:00:00Z")
+vi.useFakeTimers({ toFake: ["Date"] })
+vi.setSystemTime(FIXED_NOW)
 
 const MOCK_EVENTS = [
   {
@@ -174,6 +182,10 @@ describe("useCalendar", () => {
     currentAuth = stableAuthReturn
   })
 
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   // ── Unit Tests ──
 
   it("returns inert state when no user", () => {
@@ -202,8 +214,36 @@ describe("useCalendar", () => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    // Both mock events are in the future (2026-04 and 2026-05)
-    expect(result.current.upcomingEvents.length).toBeGreaterThanOrEqual(1)
+    // System time is pinned to 2026-03-01, so both mock events
+    // (2026-04-15 and 2026-05-20) are in the future and included,
+    // sorted ascending by date.
+    expect(result.current.upcomingEvents).toHaveLength(2)
+    expect(result.current.upcomingEvents[0].event_date).toBe("2026-04-15")
+    expect(result.current.upcomingEvents[1].event_date).toBe("2026-05-20")
+  })
+
+  it("upcomingEvents excludes events before today", async () => {
+    // Override the events to include a past event relative to FIXED_NOW.
+    mockSelect.mockReturnValueOnce({
+      order: vi.fn().mockResolvedValue({
+        data: [
+          { ...MOCK_EVENTS[0], id: "past", event_date: "2026-01-10" },
+          MOCK_EVENTS[0],
+          MOCK_EVENTS[1],
+        ],
+        error: null,
+      }),
+    })
+
+    const { result } = renderHook(() => useCalendar())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // The 2026-01-10 event is before 2026-03-01 and must be filtered out.
+    expect(result.current.upcomingEvents.some((e) => e.id === "past")).toBe(false)
+    expect(result.current.upcomingEvents).toHaveLength(2)
   })
 
   it("milestones filters to milestone category", async () => {

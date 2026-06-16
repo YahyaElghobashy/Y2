@@ -74,6 +74,20 @@ vi.mock("@/lib/hooks/use-calendar", () => ({
   useCalendar: () => mockCalendarReturn,
 }))
 
+// The page reads useAuth() for the current user id (passed to DayDetailSheet).
+// Mock it so the page can render without an AuthProvider wrapper.
+vi.mock("@/lib/providers/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1" },
+    profile: { id: "user-1" },
+    partner: { id: "user-2" },
+    isLoading: false,
+    profileNeedsSetup: false,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  }),
+}))
+
 vi.mock("next/link", () => ({
   default: ({ href, children, ...rest }: { href: string; children: React.ReactNode } & Record<string, unknown>) => (
     <a href={href} {...rest}>{children}</a>

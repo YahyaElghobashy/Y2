@@ -208,6 +208,22 @@ describe("CoyynsTabPage", () => {
 
   // ── Interaction Tests ───────────────────────────────────
 
+  it("opens the Add CoYYns form when wallet '+ Add' is clicked", () => {
+    render(<CoyynsTabPage />)
+    fireEvent.click(screen.getByText("+ Add"))
+    expect(
+      document.querySelector("[aria-label='Add CoYYns']")
+    ).toBeTruthy()
+  })
+
+  it("opens the Spend CoYYns form when wallet '− Spend' is clicked", () => {
+    render(<CoyynsTabPage />)
+    fireEvent.click(screen.getByText("− Spend"))
+    expect(
+      document.querySelector("[aria-label='Spend CoYYns']")
+    ).toBeTruthy()
+  })
+
   it("opens create challenge form on New button click", () => {
     render(<CoyynsTabPage />)
     fireEvent.click(screen.getByTestId("new-challenge-btn"))

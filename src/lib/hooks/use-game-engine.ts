@@ -440,6 +440,8 @@ export function useGameEngine(sessionId?: string): UseGameEngineReturn {
       }
     }
 
+    const wasCompleted = session.status === "completed"
+
     await supabase
       .from("game_sessions")
       .update({
@@ -452,8 +454,42 @@ export function useGameEngine(sessionId?: string): UseGameEngineReturn {
       })
       .eq("id", session.id)
 
+    // Transfer the CoYYns earned in this game into the real wallet. The score
+    // has lived only inside game_sessions until now; appending a
+    // coyyns_transactions row is what actually credits the balance. The atomic
+    // balance update + overdraft guard live in the handle_coyyn_transaction
+    // trigger (002_coyyns.sql) — we reuse it, not reinvent it. Guarded so a
+    // re-run (remount / double-complete) never double-credits.
+    const localEarned = isPlayer1 ? session.player1_score : session.player2_score
+    if (user && !wasCompleted && localEarned > 0) {
+      const modeLabels: Record<string, string> = {
+        check_in: "Check-In",
+        deep_dive: "Deep Dive",
+        date_night: "Date Night",
+      }
+
+      const { data: alreadyCredited } = await supabase
+        .from("coyyns_transactions")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("category", "game")
+        .filter("metadata->>session_id", "eq", session.id)
+        .maybeSingle()
+
+      if (!alreadyCredited) {
+        await supabase.from("coyyns_transactions").insert({
+          user_id: user.id,
+          amount: localEarned,
+          type: "earn",
+          category: "game",
+          description: `${modeLabels[session.mode] ?? "Game"} reward`,
+          metadata: { session_id: session.id, mode: session.mode },
+        })
+      }
+    }
+
     await loadSession(session.id)
-  }, [session, rounds, questions, supabase, loadSession])
+  }, [session, rounds, questions, supabase, loadSession, user, isPlayer1])
 
   const abandonSession = useCallback(async () => {
     if (!session) return

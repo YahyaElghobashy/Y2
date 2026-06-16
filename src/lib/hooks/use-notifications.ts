@@ -254,6 +254,27 @@ export function useNotifications(): UseNotificationsReturn {
 
         const insertedRow = insertedData as Notification
 
+        // Atomically debit one send from today's limit (free first, then
+        // a purchased bonus). consume_send raises 'send_limit_reached'
+        // (P0001) if the allowance is already exhausted — this is the
+        // authoritative server-side guard behind the optimistic UI check.
+        const { error: consumeError } = await supabase.rpc("consume_send", {
+          p_user_id: user.id,
+        })
+
+        if (consumeError) {
+          // Limit was already spent (e.g. a concurrent send won the race).
+          // Roll back the optimistic row and the inserted notification so the
+          // ledger stays consistent with the enforced quota.
+          setNotifications((prev) =>
+            prev.filter((n) => n.id !== optimisticNotification.id)
+          )
+          await supabase.from("notifications").delete().eq("id", insertedRow.id)
+          setError("Daily send limit reached")
+          await refreshLimits()
+          return
+        }
+
         // Replace optimistic row with real row
         setNotifications((prev) =>
           prev.map((n) =>
