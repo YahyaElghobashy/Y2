@@ -14,6 +14,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Hub + Wallet", href: "/preview/treasury", note: "coin · count-up · pots" },
       { name: "Coupons", href: "/preview/coupons", note: "redeem → big celebration" },
       { name: "Marketplace", href: "/preview/marketplace", note: "buy → quiet celebration" },
+      { name: "Wishlist", href: "/preview/wishlist", note: "warm catalog · claim" },
     ],
   },
   {
