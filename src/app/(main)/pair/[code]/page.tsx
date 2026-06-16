@@ -90,10 +90,15 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
   // Loading state
   if (state === "loading" || state === "pairing") {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)] px-5">
-        <div className="flex flex-col items-center gap-4" data-testid="pair-code-loading">
-          <Loader2 size={32} className="animate-spin text-[var(--color-accent-primary)]" />
-          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
+      <main className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ background: "var(--color-paper, #F7EFE3)" }}>
+        <div
+          className="pointer-events-none fixed inset-0"
+          style={{ background: "radial-gradient(120% 55% at 50% -6%, rgba(242,169,59,0.16) 0%, transparent 68%)" }}
+          aria-hidden="true"
+        />
+        <div className="relative z-10 flex flex-col items-center gap-4" data-testid="pair-code-loading">
+          <Loader2 size={32} className="animate-spin" style={{ color: "var(--color-terracotta, #C8552B)" }} />
+          <p className="text-[15px] text-[var(--color-ink-soft,#6B5D4F)]" style={{ fontFamily: "var(--font-serif)" }}>
             {state === "pairing" ? "Pairing you with your partner..." : "Loading..."}
           </p>
         </div>
@@ -120,22 +125,28 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
   // Already paired
   if (state === "already_paired") {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)] px-5">
-        <div className="flex flex-col items-center gap-6" data-testid="pair-code-already-paired">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-accent-soft)]">
-            <Heart size={28} className="text-[var(--color-accent-primary)]" />
+      <main className="relative flex min-h-screen flex-col items-center justify-center px-5" style={{ background: "var(--color-paper, #F7EFE3)" }}>
+        <div
+          className="pointer-events-none fixed inset-0"
+          style={{ background: "radial-gradient(120% 55% at 50% -6%, rgba(242,169,59,0.16) 0%, transparent 68%)" }}
+          aria-hidden="true"
+        />
+        <div className="relative z-10 flex flex-col items-center gap-6" data-testid="pair-code-already-paired">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full shadow-warm-md" style={{ background: "radial-gradient(circle at 30% 25%, var(--color-amber,#F2A93B), var(--color-terracotta,#C8552B))" }}>
+            <Heart size={28} className="fill-current text-[var(--color-bg-warm-white,#FFFDF9)]" />
           </div>
           <div className="text-center">
-            <h3 className="mb-2 font-display text-[22px] font-bold text-[var(--color-text-primary)]">
+            <h3 className="mb-2 text-[24px] font-extrabold tracking-tight text-[var(--color-ink,#2A2018)]" style={{ fontFamily: "var(--font-display)" }}>
               Already paired
             </h3>
-            <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
+            <p className="text-[15px] text-[var(--color-ink-soft,#6B5D4F)]" style={{ fontFamily: "var(--font-serif)" }}>
               You&apos;re already connected with your partner.
             </p>
           </div>
           <Button
             onClick={() => router.replace("/")}
-            className="h-12 rounded-xl bg-[var(--color-accent-primary)] px-8 font-body text-[15px] font-medium text-white"
+            className="h-12 rounded-full px-8 text-[15px] font-semibold text-white shadow-warm-md"
+            style={{ background: "var(--color-terracotta, #C8552B)", fontFamily: "var(--font-body)" }}
             data-testid="pair-go-home-btn"
           >
             Go Home
@@ -148,15 +159,15 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
   // Error state
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)] px-5">
-      <div className="flex flex-col items-center gap-6" data-testid="pair-code-error">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-          <AlertCircle size={28} className="text-[var(--error)]" />
+      <div className="relative z-10 flex flex-col items-center gap-6" data-testid="pair-code-error">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full" style={{ background: "color-mix(in srgb, var(--destructive) 12%, transparent)" }}>
+          <AlertCircle size={28} className="text-[var(--destructive)]" />
         </div>
         <div className="text-center">
-          <h3 className="mb-2 font-display text-[22px] font-bold text-[var(--color-text-primary)]">
+          <h3 className="mb-2 text-[24px] font-extrabold tracking-tight text-[var(--color-ink,#2A2018)]" style={{ fontFamily: "var(--font-display)" }}>
             Pairing failed
           </h3>
-          <p className="font-body text-[15px] text-[var(--color-text-secondary)]">
+          <p className="text-[15px] text-[var(--color-ink-soft,#6B5D4F)]" style={{ fontFamily: "var(--font-serif)" }}>
             {error}
           </p>
         </div>
@@ -164,7 +175,8 @@ export default function PairCodePage({ params }: { params: Promise<{ code: strin
           <Button
             variant="outline"
             onClick={() => router.replace("/pair")}
-            className="h-12 rounded-xl border-[var(--color-border-subtle)] px-6 font-body text-[15px] font-medium"
+            className="h-12 rounded-full border-[var(--color-border-subtle)] px-6 text-[15px] font-medium"
+            style={{ fontFamily: "var(--font-body)" }}
             data-testid="pair-try-manual-btn"
           >
             Enter Code Manually

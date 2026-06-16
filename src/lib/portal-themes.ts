@@ -12,6 +12,19 @@ const ELEGANT_GOLD_COLORS: PortalThemeColors = {
   border: "#E5D9CB",
 }
 
+// Hayah Constitution — "Cairo meets Los Santos, run through a risograph press".
+// Warm paper ground, terracotta accent, golden-hour secondary. The public-portal
+// expression of the DESIGN_BLUEPRINT §8.5 "light public theme".
+const HAYAH_WARM_COLORS: PortalThemeColors = {
+  primary: "#C8552B", // terracotta
+  secondary: "#F2A93B", // amber / golden-hour
+  background: "#F7EFE3", // paper
+  surface: "#FFFDF9", // warm white
+  text: "#2A2018", // ink
+  textMuted: "#6B5D4F", // soft ink
+  border: "#E4CDAE", // clay
+}
+
 const GARDEN_ROMANCE_COLORS: PortalThemeColors = {
   primary: "#6B8F6B",
   secondary: "#A8C5A8",
@@ -50,6 +63,13 @@ export const THEME_PRESETS: Record<string, PortalThemeConfig> = {
     borderRadius: "lg",
     spacing: "spacious",
   },
+  hayah_warm: {
+    preset: "hayah_warm",
+    colors: HAYAH_WARM_COLORS,
+    fonts: { heading: "Fraunces", body: "Space Grotesk" },
+    borderRadius: "lg",
+    spacing: "spacious",
+  },
   garden_romance: {
     preset: "garden_romance",
     colors: GARDEN_ROMANCE_COLORS,
@@ -80,6 +100,10 @@ export const THEME_PRESET_META: Record<
   elegant_gold: {
     label: "Elegant Gold",
     description: "Warm mineral tones with gold accents",
+  },
+  hayah_warm: {
+    label: "Hayah Warm",
+    description: "Risograph paper with terracotta & golden-hour glow",
   },
   garden_romance: {
     label: "Garden Romance",

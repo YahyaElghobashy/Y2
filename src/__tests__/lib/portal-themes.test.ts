@@ -13,12 +13,22 @@ import type { PortalThemeConfig } from "@/lib/types/portal.types"
 describe("Portal Theme Engine", () => {
   // ── Unit: Theme presets ──
 
-  it("has 4 theme presets", () => {
-    expect(Object.keys(THEME_PRESETS)).toHaveLength(4)
+  it("has 5 theme presets", () => {
+    expect(Object.keys(THEME_PRESETS)).toHaveLength(5)
     expect(THEME_PRESETS).toHaveProperty("elegant_gold")
+    expect(THEME_PRESETS).toHaveProperty("hayah_warm")
     expect(THEME_PRESETS).toHaveProperty("garden_romance")
     expect(THEME_PRESETS).toHaveProperty("minimalist")
     expect(THEME_PRESETS).toHaveProperty("midnight_blue")
+  })
+
+  it("hayah_warm preset carries the Constitution palette", () => {
+    const vars = generatePortalCSSVariables(THEME_PRESETS.hayah_warm)
+    expect(vars["--portal-primary"]).toBe("#C8552B") // terracotta
+    expect(vars["--portal-bg"]).toBe("#F7EFE3") // paper
+    expect(vars["--portal-text"]).toBe("#2A2018") // ink
+    expect(vars["--portal-font-heading"]).toContain("Fraunces")
+    expect(vars["--portal-font-body"]).toContain("Space Grotesk")
   })
 
   it("each preset has all required fields", () => {

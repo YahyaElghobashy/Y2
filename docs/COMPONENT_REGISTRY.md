@@ -169,6 +169,7 @@
 | Component | Status | Path | Props |
 |---|---|---|---|
 | SettingsPage | ✅ | `app/(main)/settings/page.tsx` | Redirect to `/more`. (V2: T117 — consolidated into More page) |
+| MorePage (Settings) | ✅ | `app/(main)/more/page.tsx` | The real Settings screen. Constitution reskin (TB-system): header "Settings", warm profile poster (paper gradient + golden-hour wash + texture-parchment, Display name, Hand-font "paired with…"), Account/Preferences/Data/About sections via `SettingsRow`, Skin row "Adaptive ☀️/🌙", Language "English · العربية" (coming soon), Hand-font "made with love, for Yara · Hayah حياة" footer, `skin-aware` root, destructive actions on `var(--destructive)`. Inline ProfileEditForm + ChangePasswordForm; unpair/clear-cache/logout AlertDialogs. |
 | NotificationsPage | ✅ | `app/(main)/more/notifications/page.tsx` | Push notification settings sub-page. Toggle push on/off, permission status banners (unsupported/denied/default/granted), registered device list with remove. Uses `usePushSettings` hook. 12 tests passing. |
 | PermissionBanner | ✅ | `components/settings/PermissionBanner.tsx` | `variant: "info" \| "warning" \| "success", icon: ReactNode, title: string, description: string, className?` — Reusable status banner with semantic background colors. |
 | GoogleDriveConnect | ✅ | `components/settings/GoogleDriveConnect.tsx` | `className?` — Google Drive connect/disconnect toggle. Mirrors GoogleCalendarConnect pattern. Checks `google_drive_connected_at`. Shares OAuth flow with Calendar. 6 tests passing. |
@@ -242,6 +243,14 @@
 | PairCodePage | ✅ | `app/(main)/pair/[code]/page.tsx` | Deep link handler. Unauthenticated → stores code in sessionStorage → redirects to login. Authenticated + unpaired → auto-calls pair_partners RPC. Authenticated + paired → shows "Already paired". On success plays the shared `PairingCelebration` keepsake; a `startedRef` makes the mount decision once so the post-pair `refreshProfile()` can't flip the screen to "Already paired" — redirect home is gated until "Enter Hayah". 14 tests passing. |
 | PairPage | ✅ | `app/(main)/pair/page.tsx` | Full-screen pairing flow. Heart icon header, QRCodeDisplay, "or" divider, QRCodeScanner, "or" divider, PairPartnerForm. Redirects to home if already paired. 8 tests passing. |
 | pairing-link | ✅ | `lib/pairing-link.ts` | `generatePairingLink(code) → URL`, `parsePairingCode(url) → code\|null`, `storePendingPairCode(code)`, `consumePendingPairCode() → code\|null`. SessionStorage bridge for unauthenticated deep link flow. 15 tests passing. |
+
+## Public Event Portal (`/e/[slug]`)
+
+| Component | Status | Path | Props |
+|---|---|---|---|
+| portal-themes | ✅ | `lib/portal-themes.ts` | `THEME_PRESETS` (5: `elegant_gold` [locked default], `hayah_warm`, `garden_romance`, `minimalist`, `midnight_blue`) + `THEME_PRESET_META`, `resolveTheme`, `generatePortalCSSVariables`, `getGoogleFontsUrl`. **`hayah_warm`** (TB-system) is the Constitution's public-theme expression — terracotta #C8552B / amber #F2A93B / paper #F7EFE3 / ink #2A2018 + Fraunces + Space Grotesk; selectable in PortalCreationWizard. 19 tests passing. |
+| PortalThemeProvider | ✅ | `components/events/public/PortalThemeProvider.tsx` | `themeConfig, children` — resolves the host-chosen preset and injects `--portal-*` CSS vars + Google Fonts link. Theme-driven; all public portal chrome (nav, sections, PasswordGate, layout) reads these vars. |
+| PortalNotFound | ✅ | `app/e/[slug]/not-found.tsx` | Warm 404 — paper ground + golden-hour wash + lantern-dusk scene, Display heading, Fraunces subline, terracotta Go-Home pill. Constitution tokens (TB-system reskin). |
 
 ## Auth Infrastructure
 

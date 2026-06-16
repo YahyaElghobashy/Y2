@@ -37,7 +37,8 @@ export function OnboardingShell({
       {/* Progress bar */}
       <div className="relative z-10 h-[3px] w-full bg-[var(--color-border-subtle)]">
         <motion.div
-          className="h-full bg-[var(--color-accent-primary)]"
+          className="h-full"
+          style={{ background: "linear-gradient(90deg, var(--color-amber,#F2A93B), var(--color-terracotta,#C8552B))" }}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: EASE_OUT }}

@@ -84,8 +84,16 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
       transition={{ duration: 0.3, ease: EASE_OUT }}
       data-testid="ready-step"
     >
-      {/* Avatars */}
+      {/* Avatars — the keepsake seal glows behind, sealing the two of you in */}
       <div className="relative flex items-center justify-center" data-testid="ready-avatars">
+        <motion.div
+          className="pointer-events-none absolute -z-10 h-44 w-44 rounded-full bg-cover bg-center opacity-[0.16]"
+          style={{ backgroundImage: "url('/assets/seals/seal-yy-wax.webp')" }}
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.16 }}
+          transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }}
+          aria-hidden
+        />
         {/* User avatar */}
         <div
           className="rounded-full"
@@ -166,9 +174,9 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
           <div
             key={i}
             className="flex h-10 w-10 items-center justify-center rounded-full"
-            style={{ backgroundColor: "rgba(184,115,51,0.1)" }}
+            style={{ backgroundColor: "rgba(200,85,43,0.10)" }}
           >
-            <Icon size={18} style={{ color: "var(--accent-copper, #B87333)" }} />
+            <Icon size={18} style={{ color: "var(--color-terracotta, #C8552B)" }} />
           </div>
         ))}
       </motion.div>
@@ -176,7 +184,8 @@ export function ReadyStep({ onComplete }: ReadyStepProps) {
       {/* Launch button */}
       {showButton && (
         <motion.button
-          className="mt-2 rounded-xl bg-[var(--color-accent-primary)] px-8 py-3.5 font-body text-[15px] font-medium text-white shadow-[0_0_16px_rgba(196,149,106,0.3)] disabled:opacity-50"
+          className="mt-2 rounded-full px-8 py-3.5 font-body text-[15px] font-semibold text-white shadow-[0_4px_16px_rgba(200,85,43,0.28)] disabled:opacity-50"
+          style={{ backgroundColor: "var(--color-terracotta, #C8552B)" }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: EASE_OUT }}
