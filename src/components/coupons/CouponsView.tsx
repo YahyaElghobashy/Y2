@@ -21,15 +21,18 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "history", label: "History" },
 ]
 
-export function CouponsView({ initial }: { initial: CouponItem[] }) {
+export function CouponsView({ initial, onRedeem }: { initial: CouponItem[]; onRedeem?: (id: string) => void }) {
   const [coupons, setCoupons] = useState(initial)
   const [tab, setTab] = useState<Tab>("forme")
   const [celebrate, setCelebrate] = useState<{ open: boolean; title: string }>({ open: false, title: "" })
 
   const redeem = (id: string) => {
     const c = coupons.find((x) => x.id === id)
+    // Optimistic stamp + celebration; the authed page injects the real
+    // mutation via onRedeem (preview leaves it undefined → demo-only).
     setCoupons((cs) => cs.map((x) => (x.id === id ? { ...x, status: "redeemed" } : x)))
     setCelebrate({ open: true, title: c?.title ?? "" })
+    onRedeem?.(id)
   }
 
   const list = coupons.filter((c) =>

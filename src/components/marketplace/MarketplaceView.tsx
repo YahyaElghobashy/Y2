@@ -24,10 +24,13 @@ export function MarketplaceView({
   items,
   initialBalance,
   partnerName = "Yara",
+  onBuy,
 }: {
   items: MarketItem[]
   initialBalance: number
   partnerName?: string
+  /** Authed: open the real purchase modal. Preview: undefined → demo sheet. */
+  onBuy?: (id: string) => void
 }) {
   const [balance, setBalance] = useState(initialBalance)
   const [confirming, setConfirming] = useState<MarketItem | null>(null)
@@ -71,7 +74,7 @@ export function MarketplaceView({
                 <button
                   type="button"
                   disabled={!afford}
-                  onClick={() => setConfirming(item)}
+                  onClick={() => (onBuy ? onBuy(item.id) : setConfirming(item))}
                   className="mt-3 flex items-center justify-center gap-1 rounded-full py-2 text-[13px] font-bold disabled:opacity-45"
                   style={{ background: afford ? "var(--color-terracotta)" : "var(--color-clay)", color: "#FFF7EF", fontFamily: "var(--font-body)" }}
                 >
