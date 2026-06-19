@@ -13,12 +13,14 @@ type AuthCallback = (event: string, session: { user: { id: string } } | null) =>
 let authCallback: AuthCallback | null = null
 const mockUnsubscribe = vi.fn()
 const mockSignOut = vi.fn().mockResolvedValue({ error: null })
+const mockGetSession = vi.fn()
 const mockSelect = vi.fn()
 const mockEq = vi.fn()
 const mockSingle = vi.fn()
 
 const mockSupabase = {
   auth: {
+    getSession: mockGetSession,
     onAuthStateChange: vi.fn((cb: AuthCallback) => {
       authCallback = cb
       return { data: { subscription: { unsubscribe: mockUnsubscribe } } }
@@ -59,6 +61,8 @@ describe("AuthProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     authCallback = null
+    // Default: no persisted session on mount.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSingle.mockResolvedValue({ data: null, error: { message: "not found" } })
   })
 
@@ -255,6 +259,111 @@ describe("AuthProvider", () => {
       expect(screen.getByTestId("profile")).toHaveTextContent("null")
       expect(screen.getByTestId("loading")).toHaveTextContent("false")
     })
+  })
+
+  it("clears isLoading on mount from getSession without any auth event", async () => {
+    // getSession resolves null (no session). isLoading must clear on its own —
+    // the shell can't depend on an async onAuthStateChange event that may be
+    // slow or contend on the auth lock.
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    )
+
+    expect(mockGetSession).toHaveBeenCalledOnce()
+    await waitFor(() => {
+      expect(screen.getByTestId("loading")).toHaveTextContent("false")
+      expect(screen.getByTestId("user")).toHaveTextContent("null")
+    })
+    // No auth event was ever fired in this test.
+    expect(authCallback).not.toBeNull()
+  })
+
+  it("hydrates an existing session from getSession on mount", async () => {
+    const mockProfile = {
+      id: "user-1",
+      display_name: "Yahya",
+      email: "yahya@test.com",
+      avatar_url: null,
+      partner_id: null,
+      role: "user",
+      created_at: "",
+      updated_at: "",
+    }
+    mockGetSession.mockResolvedValue({ data: { session: { user: { id: "user-1" } } } })
+    mockSingle.mockResolvedValueOnce({ data: mockProfile, error: null })
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    )
+
+    // Populated purely from getSession — no onAuthStateChange event fired.
+    await waitFor(() => {
+      expect(screen.getByTestId("user")).toHaveTextContent("user-1")
+      expect(screen.getByTestId("profile")).toHaveTextContent("Yahya")
+      expect(screen.getByTestId("loading")).toHaveTextContent("false")
+    })
+  })
+
+  it("clears isLoading even when the profile fetch never resolves (no deadlock)", async () => {
+    // Regression: profile fetch hanging used to leave isLoading stuck true
+    // forever (perpetual spinner until hard refresh) because loading only
+    // cleared after the awaited fetch inside the auth callback.
+    mockSingle.mockReturnValue(new Promise(() => {}))
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    )
+
+    await act(async () => {
+      authCallback?.("SIGNED_IN", { user: { id: "user-1" } })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId("user")).toHaveTextContent("user-1")
+      expect(screen.getByTestId("loading")).toHaveTextContent("false")
+    })
+    // Profile never resolves, but the app is interactive (not spinning).
+    expect(screen.getByTestId("profile")).toHaveTextContent("null")
+  })
+
+  it("does not re-fetch profile for repeated events with the same user", async () => {
+    const mockProfile = {
+      id: "user-1",
+      display_name: "Yahya",
+      email: "yahya@test.com",
+      avatar_url: null,
+      partner_id: null,
+      role: "user",
+      created_at: "",
+      updated_at: "",
+    }
+    mockSingle.mockResolvedValue({ data: mockProfile, error: null })
+
+    render(
+      <AuthProvider>
+        <TestConsumer />
+      </AuthProvider>
+    )
+
+    await act(async () => {
+      authCallback?.("INITIAL_SESSION", { user: { id: "user-1" } })
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId("profile")).toHaveTextContent("Yahya")
+    })
+
+    // A token refresh re-emits the same user — must not churn a new fetch.
+    await act(async () => {
+      authCallback?.("TOKEN_REFRESHED", { user: { id: "user-1" } })
+    })
+
+    expect(mockSingle).toHaveBeenCalledTimes(1)
   })
 
   it("throws when useAuth is used outside AuthProvider", () => {

@@ -1,9 +1,17 @@
 import React from "react"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // ── Mocks ─────────────────────────────────────────────────────
+
+const { mockToastSuccess, mockToastError } = vi.hoisted(() => ({
+  mockToastSuccess: vi.fn(),
+  mockToastError: vi.fn(),
+}))
+vi.mock("sonner", () => ({
+  toast: { success: mockToastSuccess, error: mockToastError },
+}))
 
 const mockUser = { id: "user-1", email: "yahya@test.com" }
 
@@ -324,6 +332,37 @@ describe("SharedListPage", () => {
 
       await user.type(screen.getByTestId("new-list-input"), "Shopping{Enter}")
       expect(mockCreateList).toHaveBeenCalledWith("Shopping")
+    })
+
+    it("confirms list creation with a success toast", async () => {
+      mockCreateList.mockResolvedValueOnce("list-new")
+      const user = userEvent.setup()
+      render(<SharedListPage />)
+
+      await user.click(screen.getByTestId("new-list-button"))
+      await user.type(screen.getByTestId("new-list-input"), "Shopping{Enter}")
+
+      await waitFor(() => {
+        expect(mockToastSuccess).toHaveBeenCalledWith('"Shopping" created')
+      })
+      expect(mockToastError).not.toHaveBeenCalled()
+    })
+
+    it("surfaces a failed list creation via toast and keeps the form open", async () => {
+      // createList returns null on failure (e.g. unauthenticated / RLS reject).
+      mockCreateList.mockResolvedValueOnce(null)
+      const user = userEvent.setup()
+      render(<SharedListPage />)
+
+      await user.click(screen.getByTestId("new-list-button"))
+      await user.type(screen.getByTestId("new-list-input"), "Shopping{Enter}")
+
+      await waitFor(() => {
+        expect(mockToastError).toHaveBeenCalledWith("Couldn't create the list. Please try again.")
+      })
+      // Form stays open so the typed name isn't lost.
+      expect(screen.getByTestId("new-list-form")).toBeInTheDocument()
+      expect(mockToastSuccess).not.toHaveBeenCalled()
     })
 
     it("shows completed section with toggle", async () => {
