@@ -7,6 +7,8 @@ function isProtectedRoute(pathname: string): boolean {
   // Allow unauthenticated access to public routes
   if (pathname.startsWith("/e")) return false
   if (pathname.startsWith("/pair")) return false
+  // PKCE email-confirmation callback must run without a session (it creates one).
+  if (pathname.startsWith("/auth/callback")) return false
   if (pathname === "/") return true
   return PROTECTED_PREFIXES.some(
     (prefix) => prefix !== "/" && (pathname === prefix || pathname.startsWith(prefix + "/"))

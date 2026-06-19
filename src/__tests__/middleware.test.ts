@@ -156,4 +156,21 @@ describe("middleware", () => {
     const redirectUrl = mockRedirect.mock.calls[0][0] as URL
     expect(redirectUrl.searchParams.get("redirectTo")).toBe("/spirit")
   })
+
+  it("allows unauthenticated user through /auth/callback (PKCE exchange runs without a session)", async () => {
+    const request = createMockRequest("/auth/callback")
+    const result = await middleware(request)
+
+    expect(mockRedirect).not.toHaveBeenCalled()
+    expect(result).toBe(mockResponse)
+  })
+
+  it("does not redirect /auth/callback even on a session-refresh error", async () => {
+    mockUpdateSession.mockRejectedValue(new Error("Network error"))
+    const request = createMockRequest("/auth/callback")
+    await middleware(request)
+
+    expect(mockNext).toHaveBeenCalled()
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
 })

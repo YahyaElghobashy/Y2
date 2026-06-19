@@ -53,6 +53,9 @@ export default function SignupPage() {
         password: data.password,
         options: {
           data: { display_name: data.name },
+          // Free-tier sends a confirmation LINK, not an OTP. Point it at our
+          // PKCE callback so exchangeCodeForSession runs and the user lands signed in.
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/`,
         },
       })
 

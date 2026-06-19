@@ -4,15 +4,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // --- Mocks ---
 const mockResetPasswordForEmail = vi.fn()
-const mockVerifyOtp = vi.fn()
-const mockUpdateUser = vi.fn()
-const mockPush = vi.fn()
 
 const mockSupabase = {
   auth: {
     resetPasswordForEmail: mockResetPasswordForEmail,
-    verifyOtp: mockVerifyOtp,
-    updateUser: mockUpdateUser,
   },
 }
 
@@ -21,7 +16,7 @@ vi.mock("@/lib/supabase/client", () => ({
 }))
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: mockPush, replace: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }))
 
 vi.mock("framer-motion", () => ({
@@ -46,19 +41,21 @@ vi.mock("@/components/animations/HayahWordmark", () => ({
 
 import ForgotPasswordPage from "@/app/(auth)/forgot-password/page"
 
-describe("ForgotPasswordPage", () => {
+const EXPECTED_REDIRECT = "http://localhost:3000/auth/callback?next=/reset-password"
+
+describe("ForgotPasswordPage (recovery-link flow)", () => {
   const user = userEvent.setup()
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockResetPasswordForEmail.mockResolvedValue({ error: null })
   })
 
-  // --- Step 1: Email Form — Unit tests ---
-
-  it("renders the email form with input and submit button", () => {
+  // ── Step 1: Email form — Unit ──
+  it("renders the email form with input and 'Send Reset Link' button", () => {
     render(<ForgotPasswordPage />)
     expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "Send Code" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Send Reset Link" })).toBeInTheDocument()
     expect(screen.getByText("Forgot your password?")).toBeInTheDocument()
   })
 
@@ -69,299 +66,93 @@ describe("ForgotPasswordPage", () => {
     await waitFor(() => {
       expect(screen.getByText("Enter a valid email")).toBeInTheDocument()
     })
+    expect(mockResetPasswordForEmail).not.toHaveBeenCalled()
   })
 
   it("renders 'Remember your password? Sign In' link", () => {
     render(<ForgotPasswordPage />)
-    const link = screen.getByRole("link", { name: "Sign In" })
-    expect(link).toHaveAttribute("href", "/login")
+    expect(screen.getByRole("link", { name: "Sign In" })).toHaveAttribute("href", "/login")
   })
 
-  // --- Step 1 → Step 2: Interaction tests ---
-
-  it("submits email and transitions to OTP step", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-
+  // ── Step 1 → Step 2: Interaction ──
+  it("submits email and transitions to the 'check your email' step", async () => {
     render(<ForgotPasswordPage />)
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
       expect(screen.getByText("Check your email")).toBeInTheDocument()
-      expect(screen.getByText(/test@example.com/)).toBeInTheDocument()
+      expect(screen.getByText("test@example.com")).toBeInTheDocument()
     })
   })
 
-  it("shows resend cooldown timer after sending", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-
+  it("no longer renders a 6-digit OTP input", async () => {
     render(<ForgotPasswordPage />)
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
-    await waitFor(() => {
-      expect(screen.getByText(/Resend code in \d+s/)).toBeInTheDocument()
-    })
-  })
-
-  it("shows 'Back to Sign In' link in OTP step", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-
-    await waitFor(() => {
-      const link = screen.getByRole("link", { name: "Back to Sign In" })
-      expect(link).toHaveAttribute("href", "/login")
-    })
-  })
-
-  // --- Step 2 → Step 3: OTP Verification ---
-
-  it("transitions to password step after valid OTP", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-
-    render(<ForgotPasswordPage />)
-    // Step 1: enter email
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-
-    await waitFor(() => {
-      expect(screen.getByText("Check your email")).toBeInTheDocument()
-    })
-
-    // Step 2: enter OTP (type into individual digit inputs)
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-
-    await waitFor(() => {
-      expect(screen.getByText("Set new password")).toBeInTheDocument()
-    })
-  })
-
-  it("shows error for invalid OTP code", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({
-      error: { message: "Invalid OTP token" },
-    })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-
-    await waitFor(() => {
-      expect(screen.getByText("Check your email")).toBeInTheDocument()
-    })
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], "9")
-    }
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid code. Please try again.")).toBeInTheDocument()
-    })
-  })
-
-  it("shows expired error for expired OTP", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({
-      error: { message: "Token has expired" },
-    })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-
-    await waitFor(() => {
-      expect(screen.getByText("Check your email")).toBeInTheDocument()
-    })
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], "0")
-    }
-
-    await waitFor(() => {
-      expect(screen.getByText("Code expired. Please request a new one.")).toBeInTheDocument()
-    })
-  })
-
-  // --- Step 3: Password — Interaction tests ---
-
-  it("validates passwords match before submitting", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-
-    render(<ForgotPasswordPage />)
-    // Navigate to password step
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
     await waitFor(() => expect(screen.getByText("Check your email")).toBeInTheDocument())
+    expect(screen.queryByText(/6-digit code/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Verify" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
+  })
 
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-
-    await waitFor(() => expect(screen.getByText("Set new password")).toBeInTheDocument())
-
-    // Enter mismatched passwords
-    await user.type(screen.getByPlaceholderText("Create a new password"), "NewPassword1!")
-    await user.type(screen.getByPlaceholderText("Repeat your new password"), "DifferentPass1!")
-    await user.click(screen.getByRole("button", { name: "Update Password" }))
+  it("shows a resend cooldown after sending", async () => {
+    render(<ForgotPasswordPage />)
+    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
-      expect(screen.getByText("Passwords don't match")).toBeInTheDocument()
+      expect(screen.getByText(/Resend link in \d+s/)).toBeInTheDocument()
     })
   })
 
-  it("shows success state after successful password update", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-    mockUpdateUser.mockResolvedValue({ error: null })
-
+  it("shows 'Back to Sign In' link on the sent step", async () => {
     render(<ForgotPasswordPage />)
-    // Navigate to password step
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-    await waitFor(() => expect(screen.getByText("Check your email")).toBeInTheDocument())
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-
-    await waitFor(() => expect(screen.getByText("Set new password")).toBeInTheDocument())
-
-    // Enter matching passwords
-    await user.type(screen.getByPlaceholderText("Create a new password"), "NewPassword1!")
-    await user.type(screen.getByPlaceholderText("Repeat your new password"), "NewPassword1!")
-    await user.click(screen.getByRole("button", { name: "Update Password" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
-      expect(screen.getByText("Password updated!")).toBeInTheDocument()
+      expect(screen.getByRole("link", { name: "Back to Sign In" })).toHaveAttribute("href", "/login")
     })
   })
 
-  // --- Integration tests ---
-
-  it("calls resetPasswordForEmail with correct email (no redirectTo)", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-
+  // ── Integration — recovery LINK contract ──
+  it("calls resetPasswordForEmail with the PKCE callback redirectTo", async () => {
     render(<ForgotPasswordPage />)
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
-      expect(mockResetPasswordForEmail).toHaveBeenCalledWith("test@example.com")
-    })
-  })
-
-  it("calls verifyOtp with recovery type and correct args", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-    await waitFor(() => expect(screen.getByText("Check your email")).toBeInTheDocument())
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-
-    await waitFor(() => {
-      expect(mockVerifyOtp).toHaveBeenCalledWith({
-        email: "test@example.com",
-        token: "123456",
-        type: "recovery",
+      expect(mockResetPasswordForEmail).toHaveBeenCalledWith("test@example.com", {
+        redirectTo: EXPECTED_REDIRECT,
       })
     })
   })
 
-  it("calls updateUser with the new password after OTP verification", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-    mockUpdateUser.mockResolvedValue({ error: null })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-    await waitFor(() => expect(screen.getByText("Check your email")).toBeInTheDocument())
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-    await waitFor(() => expect(screen.getByText("Set new password")).toBeInTheDocument())
-
-    await user.type(screen.getByPlaceholderText("Create a new password"), "SecurePass123!")
-    await user.type(screen.getByPlaceholderText("Repeat your new password"), "SecurePass123!")
-    await user.click(screen.getByRole("button", { name: "Update Password" }))
-
-    await waitFor(() => {
-      expect(mockUpdateUser).toHaveBeenCalledWith({ password: "SecurePass123!" })
-    })
-  })
-
-  it("shows rate limit error message", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({
+  // ── Unit — error paths ──
+  it("shows a rate-limit message", async () => {
+    mockResetPasswordForEmail.mockResolvedValueOnce({
       error: { message: "For security purposes, you can only request this after 60 seconds rate limit" },
     })
-
     render(<ForgotPasswordPage />)
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
-      expect(screen.getByText("Please wait before requesting another code.")).toBeInTheDocument()
+      expect(screen.getByText("Please wait before requesting another link.")).toBeInTheDocument()
     })
+    expect(screen.queryByText("Check your email")).not.toBeInTheDocument()
   })
 
-  it("shows generic error message for other Supabase errors", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({
-      error: { message: "User not found" },
-    })
-
+  it("shows a generic error for other Supabase errors", async () => {
+    mockResetPasswordForEmail.mockResolvedValueOnce({ error: { message: "User not found" } })
     render(<ForgotPasswordPage />)
     await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
+    await user.click(screen.getByRole("button", { name: "Send Reset Link" }))
 
     await waitFor(() => {
       expect(screen.getByText("User not found")).toBeInTheDocument()
-    })
-  })
-
-  it("shows Supabase error when updateUser fails", async () => {
-    mockResetPasswordForEmail.mockResolvedValue({ error: null })
-    mockVerifyOtp.mockResolvedValue({ error: null })
-    mockUpdateUser.mockResolvedValue({
-      error: { message: "Password should be at least 6 characters" },
-    })
-
-    render(<ForgotPasswordPage />)
-    await user.type(screen.getByPlaceholderText("you@example.com"), "test@example.com")
-    await user.click(screen.getByRole("button", { name: "Send Code" }))
-    await waitFor(() => expect(screen.getByText("Check your email")).toBeInTheDocument())
-
-    const digitInputs = screen.getAllByRole("textbox")
-    for (let i = 0; i < 6; i++) {
-      await user.type(digitInputs[i], String(i + 1))
-    }
-    await waitFor(() => expect(screen.getByText("Set new password")).toBeInTheDocument())
-
-    await user.type(screen.getByPlaceholderText("Create a new password"), "NewPass123!")
-    await user.type(screen.getByPlaceholderText("Repeat your new password"), "NewPass123!")
-    await user.click(screen.getByRole("button", { name: "Update Password" }))
-
-    await waitFor(() => {
-      expect(screen.getByText("Password should be at least 6 characters")).toBeInTheDocument()
     })
   })
 })
