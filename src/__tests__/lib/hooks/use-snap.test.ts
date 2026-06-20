@@ -260,6 +260,69 @@ describe("useSnap", () => {
       expect(mockUpdate).toHaveBeenCalled()
     })
 
+    it("reactToSnap notifies the partner when reacting to THEIR snap", async () => {
+      snapQueryResult = {
+        data: [{
+          id: "snap-p", user_id: "partner-1", snap_date: "2026-03-05",
+          photo_url: "x", caption: null, reaction_emoji: null, window_opened_at: null, created_at: "",
+        }],
+        error: null,
+      }
+      const { result } = renderHook(() => useSnap())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      await act(async () => {
+        await result.current.reactToSnap("snap-p", "❤️")
+      })
+
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sender_id: "user-1",
+          recipient_id: "partner-1",
+          type: "snap_reaction",
+          emoji: "❤️",
+          status: "sent",
+          metadata: { snap_id: "snap-p" },
+        })
+      )
+    })
+
+    it("reactToSnap does NOT notify when clearing a reaction (null emoji)", async () => {
+      snapQueryResult = {
+        data: [{
+          id: "snap-p", user_id: "partner-1", snap_date: "2026-03-05",
+          photo_url: "x", caption: null, reaction_emoji: "❤️", window_opened_at: null, created_at: "",
+        }],
+        error: null,
+      }
+      const { result } = renderHook(() => useSnap())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      await act(async () => {
+        await result.current.reactToSnap("snap-p", null)
+      })
+
+      expect(mockInsert).not.toHaveBeenCalled()
+    })
+
+    it("reactToSnap does NOT notify when reacting to your OWN snap", async () => {
+      snapQueryResult = {
+        data: [{
+          id: "snap-mine", user_id: "user-1", snap_date: "2026-03-05",
+          photo_url: "x", caption: null, reaction_emoji: null, window_opened_at: null, created_at: "",
+        }],
+        error: null,
+      }
+      const { result } = renderHook(() => useSnap())
+      await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+      await act(async () => {
+        await result.current.reactToSnap("snap-mine", "❤️")
+      })
+
+      expect(mockInsert).not.toHaveBeenCalled()
+    })
+
     it("loadMore fetches older snaps using lt filter", async () => {
       // Need 28 items (FEED_PAGE_SIZE * 2) to keep hasMore=true
       const fullFeed = Array.from({ length: 28 }, (_, i) => ({

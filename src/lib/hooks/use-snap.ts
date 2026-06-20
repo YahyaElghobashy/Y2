@@ -337,9 +337,31 @@ export function useSnap(): UseSnapReturn {
 
       if (updateErr) {
         setError(updateErr.message)
+        return
+      }
+
+      // Notify the partner when you react to their snap (not when clearing a
+      // reaction, and not on your own snap). Non-fatal — the reaction is saved
+      // regardless of the notification.
+      if (emoji && user && partner) {
+        const reacted = snapFeed.find((s) => s.id === snapId)
+        const isPartnerSnap = reacted ? reacted.user_id === partner.id : false
+        if (isPartnerSnap) {
+          const { error: notifErr } = await supabase.from("notifications").insert({
+            sender_id: user.id,
+            recipient_id: partner.id,
+            title: `Reacted ${emoji} to your snap`,
+            body: "Open Snap to see.",
+            emoji,
+            type: "snap_reaction",
+            status: "sent",
+            metadata: { snap_id: snapId },
+          })
+          if (notifErr) console.warn("[snap] reaction notification failed", notifErr)
+        }
       }
     },
-    [partnerTodaySnap, supabase]
+    [user, partner, partnerTodaySnap, snapFeed, supabase]
   )
 
   const loadMore = useCallback(async () => {
