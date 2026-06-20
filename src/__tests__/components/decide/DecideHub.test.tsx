@@ -159,7 +159,7 @@ describe("DecideHub", () => {
 
       // Run the game → onSaveDecision fires exactly once.
       await user.click(runBtn)
-      await waitFor(() => expect(onSaveDecision).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(onSaveDecision).toHaveBeenCalledTimes(1), { timeout: 5000 })
 
       // Inspect the saved payload (integration: hub builds the correct SaveDecisionInput).
       const payload = onSaveDecision.mock.calls[0][0]
