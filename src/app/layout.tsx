@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Bricolage_Grotesque, Fraunces, Space_Grotesk, JetBrains_Mono, Amiri, Caveat, Cormorant_Garamond } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/lib/providers/AuthProvider"
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
 // ── Hayah Voice Map (see docs/DESIGN_BLUEPRINT.md §1.2) ──
@@ -97,6 +98,10 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        {/* App-wide toast outlet. Top-center keeps confirmations clear of the
+            fixed BottomNav on mobile. Without this mount, every toast() call in
+            the app silently no-ops. */}
+        <Toaster position="top-center" />
         <Analytics />
       </body>
     </html>

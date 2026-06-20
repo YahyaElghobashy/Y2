@@ -13,8 +13,16 @@ declare const self: ServiceWorkerGlobalScope & WorkerGlobalScope
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
-  clientsClaim: true,
+  // A freshly deployed worker must NOT take over a tab that is already running
+  // the previous build. skipWaiting:true + clientsClaim:true did exactly that —
+  // the new SW activated and claimed open clients mid-session, then served its
+  // new precache against the old loaded JS, surfacing as a stale shell / chunk
+  // mismatch on soft-nav until a hard refresh. Letting the new worker wait until
+  // every tab for this app is closed keeps each session on one consistent build.
+  // Offline support is unaffected: precaching still happens at install time and
+  // the /offline document fallback below is unchanged.
+  skipWaiting: false,
+  clientsClaim: false,
   navigationPreload: true,
   runtimeCaching: defaultCache,
   fallbacks: {

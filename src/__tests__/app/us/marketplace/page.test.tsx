@@ -55,6 +55,12 @@ vi.mock("@/lib/providers/AuthProvider", () => ({
   }),
 }))
 
+// The page calls useRouter() for onManage -> push to the admin route.
+const { mockRouterPush } = vi.hoisted(() => ({ mockRouterPush: vi.fn() }))
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockRouterPush, replace: vi.fn(), prefetch: vi.fn() }),
+}))
+
 // next/link is only reached via PageHeader in the loading branch.
 vi.mock("next/link", () => ({
   default: ({
@@ -312,6 +318,12 @@ describe("MarketplacePage", () => {
 
     fireEvent.click(screen.getByTestId("purchase-cancel"))
     expect(screen.queryByTestId("purchase-dialog")).not.toBeInTheDocument()
+  })
+
+  it("wires the manage action to navigate to the admin route", () => {
+    render(<MarketplacePage />)
+    fireEvent.click(screen.getByTestId("marketplace-manage"))
+    expect(mockRouterPush).toHaveBeenCalledWith("/us/marketplace/admin")
   })
 
   // ── Active purchases (topSlot) ─────────────────────────

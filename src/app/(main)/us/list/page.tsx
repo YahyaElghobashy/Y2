@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ListChecks, ChevronDown, Plus } from "lucide-react"
+import { toast } from "sonner"
 import { useSharedList } from "@/lib/hooks/use-shared-list"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { QuickAddInput } from "@/components/list/QuickAddInput"
@@ -55,9 +56,18 @@ export default function SharedListPage() {
   const handleCreateList = async () => {
     const trimmed = newListTitle.trim()
     if (!trimmed) return
-    await createList(trimmed)
-    setNewListTitle("")
-    setShowNewList(false)
+    const id = await createList(trimmed)
+    if (id) {
+      // Confirm the action explicitly — the new list also appears in the
+      // selector and is auto-selected, but the toast removes the "did it work?"
+      // ambiguity that made this feel broken.
+      toast.success(`"${trimmed}" created`)
+      setNewListTitle("")
+      setShowNewList(false)
+    } else {
+      // Keep the form open so the typed name isn't lost on a transient failure.
+      toast.error("Couldn't create the list. Please try again.")
+    }
   }
 
   if (isLoading) {
@@ -73,7 +83,10 @@ export default function SharedListPage() {
     )
   }
 
-  if (error) {
+  // Only take over the whole screen for an initial-load failure (nothing to
+  // show). Mutation failures (e.g. createList) surface via toast and must not
+  // wipe an already-populated list.
+  if (error && lists.length === 0) {
     return (
       <div data-testid="list-error" className="text-center text-[14px] text-red-500">
         {error}
