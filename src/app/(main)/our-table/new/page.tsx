@@ -4,11 +4,13 @@ import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Clock, Calendar } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { RestaurantSearch } from "@/components/food/RestaurantSearch"
 import { RatingSlider } from "@/components/food/RatingSlider"
+import { useFoodJournal } from "@/lib/hooks/use-food-journal"
 import {
   CUISINE_TYPES,
   CUISINE_LABELS,
@@ -41,7 +43,9 @@ const DEFAULT_FORM: VisitFormData = {
 
 export default function NewVisitPage() {
   const router = useRouter()
+  const { addVisit, addRating } = useFoodJournal()
   const [step, setStep] = useState(1)
+  const [isSaving, setIsSaving] = useState(false)
   const formRef = useRef<VisitFormData>({ ...DEFAULT_FORM })
   const [formState, setFormState] = useState<VisitFormData>({ ...DEFAULT_FORM })
   const [userLat, setUserLat] = useState<number | null>(null)
@@ -98,6 +102,65 @@ export default function NewVisitPage() {
     setStep(2)
   }
 
+  // Step 3 submit: persist the visit + rating to Supabase, THEN navigate.
+  // Previously this only wrote to sessionStorage and navigated, so a new visit
+  // was never saved. The visit is the source of truth; the rating is attached
+  // best-effort (a visit with no rating is still valid — it can be rated later).
+  const handleRatingSubmit = async (rawScore: number) => {
+    if (isSaving) return
+    const form = formRef.current
+    // RatingSlider uses 0.5 steps; rating columns are integers 1–10.
+    const score = Math.max(1, Math.min(10, Math.round(rawScore)))
+    setIsSaving(true)
+    try {
+      const visitId = await addVisit({
+        place_name: form.placeName,
+        place_id: form.placeId,
+        lat: form.lat,
+        lng: form.lng,
+        cuisine_type: form.cuisineType,
+        visit_date: form.visitDate,
+        visit_time: form.visitTime || null,
+        notes: form.notes || null,
+      })
+
+      if (!visitId) {
+        toast.error("Couldn't save your visit. Try again.")
+        return
+      }
+
+      // The form collects a single overall food score; seed every rating
+      // dimension from it (all columns are NOT NULL, 1–10). A richer per-
+      // dimension flow can refine these later from the visit detail screen.
+      try {
+        await addRating({
+          visit_id: visitId,
+          location_score: score,
+          parking_score: score,
+          service_score: score,
+          food_quality: score,
+          quantity_score: score,
+          price_score: score,
+          cuisine_score: score,
+          bathroom_score: score,
+          vibe_score: score,
+        })
+      } catch {
+        // Visit saved; only the rating failed. Don't lose the visit.
+        toast.error("Visit saved, but the rating didn't. Add it from the visit.")
+        if (typeof window !== "undefined") sessionStorage.removeItem("newVisitForm")
+        router.push("/our-table")
+        return
+      }
+
+      if (typeof window !== "undefined") sessionStorage.removeItem("newVisitForm")
+      toast.success("Visit saved")
+      router.push("/our-table")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   // Step 3: Full-screen immersive rating experience
   if (step === 3) {
     return (
@@ -106,18 +169,8 @@ export default function NewVisitPage() {
         stepLabel="Step 3 of 3"
         stepProgress={1}
         initialScore={7}
-        onNext={(score) => {
-          // Store score and navigate (full submit flow built in future task)
-          if (typeof window !== "undefined") {
-            const stored = sessionStorage.getItem("newVisitForm")
-            if (stored) {
-              const data = JSON.parse(stored)
-              data.foodScore = score
-              sessionStorage.setItem("newVisitForm", JSON.stringify(data))
-            }
-          }
-          router.push("/our-table")
-        }}
+        isSubmitting={isSaving}
+        onNext={handleRatingSubmit}
         onClose={() => setStep(2)}
       />
     )
