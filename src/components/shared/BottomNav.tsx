@@ -37,7 +37,7 @@ const EASE_OUT: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
 
 export const NAV_WORLDS: World[] = [
   { label: "Home", href: "/", icon: House, accent: "var(--color-amber)", match: (p) => p === "/" },
-  { label: "Us", href: "/us", icon: Heart, accent: "var(--color-coral)", match: (p) => p.startsWith("/us") || p.startsWith("/game") || p.startsWith("/our-table") || p.startsWith("/wheel") },
+  { label: "Us", href: "/us", icon: Heart, accent: "var(--color-coral)", match: (p) => p.startsWith("/us") || p.startsWith("/game") || p.startsWith("/our-table") || p.startsWith("/wheel") || p.startsWith("/decide") },
   { label: "Treasury", href: "/treasury", icon: Coins, accent: "var(--color-terracotta)", match: (p) => p.startsWith("/treasury") },
   { label: "Keepsake", href: "/keepsake", icon: BookHeart, accent: "var(--color-teal)", match: (p) => p.startsWith("/keepsake") || p.startsWith("/snap") || p.startsWith("/garden") || p.startsWith("/2026") },
 ]
