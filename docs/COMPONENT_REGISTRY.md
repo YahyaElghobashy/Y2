@@ -511,3 +511,38 @@
 |---|---|---|---|
 | screenshot.mjs | ✅ | `scripts/screenshot.mjs` | Puppeteer headless screenshot capture. Args: url (default localhost:3000), output (default /tmp/y2-audit-home.png). Viewport 375×812 (iPhone). waitUntil networkidle0. Full-page screenshot. No npm dependency — uses npx cached puppeteer. |
 | visual-audit.sh | ✅ | `scripts/visual-audit.sh` | Bash wrapper: builds app if needed, starts next start on port 3099, waits for server (max 15s), calls screenshot.mjs, kills server. Args: $1=route (default /), $2=output path. 7 tests passing. |
+
+## Decide Together (selector suite — D0 foundation)
+
+> Net-new, additive suite. Each game is a self-contained module at `components/decide/games/<id>/index.tsx` default-exporting a `SelectorGame`. Registry imports every game; D1–D5 only replace their own stub. Contract frozen in `components/decide/contract.ts`.
+
+| Component | Status | Path | Notes |
+|---|---|---|---|
+| SelectorGame contract | ✅ | `components/decide/contract.ts` | The suite contract (HANDOVER). `SelectorGame` `{id,label,arabicLabel,whenToUse,kind,asset,Component}`, `DecideOption`, `DecideResult`, `SelectorKind` = binary\|many\|weigh\|playful, `SelectorGameProps` `{options,onResult}`. Frozen. |
+| registry | ✅ | `components/decide/registry.ts` | Imports the 5 game modules; exports `GAMES`, `GAMES_BY_ID`, `getGame`, `gamesForKind`. Re-exports the contract. |
+| decider (THE DECIDER) | ✅ | `components/decide/decider.ts` | Pure meta-picker. `classifyKind`/`recommendTool`: description + option count → best tool (binary→rps, many→wheel, weigh→proscons, playful→dice). 36 tests. |
+| DecideHub | ✅ | `components/decide/DecideHub.tsx` | Props-driven hub (View). Hero, "Let fate decide", selector grid, The Decider, recent decisions, setup→play→result game-runner modal + Celebration. Exports `DECIDE_MOCK`. 10 tests. |
+| TheDecider | ✅ | `components/decide/TheDecider.tsx` | The Decider card — describe + options → live recommendation + alternatives + auto-run. 11 tests. |
+| OptionInput | ✅ | `components/decide/OptionInput.tsx` | Add/remove/weight options + presets (controlled). `showWeights`, `min`/`max`. 16 tests. |
+| Result | ✅ | `components/decide/Result.tsx` | Decided-outcome panel — wax-seal stamp, winner, summary, replay/done, saved flag. |
+| DecisionHistory | ✅ | `components/decide/DecisionHistory.tsx` | Recent decisions list (you/partner, time-ago, per-tool, owner clear). Loading + empty states. |
+| shared/random | ✅ | `components/decide/shared/random.ts` | Pure helpers: `uid`, `makeOption`, `weightedPick`, `shuffle`, `winnerSummary` (injectable rng). 22 tests. |
+| shared/primitives | ✅ | `components/decide/shared/primitives.tsx` | Riso `RisoBurst` (reduced-motion aware) + WebAudio `playDecideSound`/`useDecideSound` + `haptic`. SSR-safe, fail-silent. |
+| games/wheel (stub) | 🔨 | `components/decide/games/wheel/index.tsx` | STUB → D1. kind many. Working weighted-pick placeholder. |
+| games/dice (stub) | 🔨 | `components/decide/games/dice/index.tsx` | STUB → D2. kind playful. |
+| games/rps (stub) | 🔨 | `components/decide/games/rps/index.tsx` | STUB → D3. kind binary. |
+| games/proscons (stub) | 🔨 | `components/decide/games/proscons/index.tsx` | STUB → D4. kind weigh (respects option weights). |
+| games/bonus (stub) | 🔨 | `components/decide/games/bonus/index.tsx` | STUB → D5. kind playful (8-ball / fate). |
+
+## Decide Hooks
+
+| Hook | Status | Path | Notes |
+|---|---|---|---|
+| useDecisions | ✅ | `lib/hooks/use-decisions.ts` | Couple-shared `decision_history` CRUD via RLS. Fetch (newest first) + realtime INSERT/DELETE + optimistic `saveDecision({kind,toolId,options,result})` + owner `clearDecision`. Inert no-user return. 7 tests. |
+
+## Decide Routes
+
+| Route | Status | Path | Notes |
+|---|---|---|---|
+| /decide | ✅ | `app/(main)/decide/page.tsx` | Client Component. Wires `useDecisions` + `useAuth` into `DecideHub`. |
+| /preview/decide | ✅ | `app/preview/decide/page.tsx` | Public mock — `DecideHub` + `DECIDE_MOCK` + `BottomNav` in a phone frame. Listed in the preview gallery (Us). |

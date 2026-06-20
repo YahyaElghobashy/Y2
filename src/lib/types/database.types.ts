@@ -12,6 +12,44 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      decision_history: {
+        Row: {
+          id: string
+          created_by: string
+          kind: string
+          tool_id: string
+          options: Json
+          result: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          created_by: string
+          kind: string
+          tool_id: string
+          options?: Json
+          result?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          created_by?: string
+          kind?: string
+          tool_id?: string
+          options?: Json
+          result?: Json
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "decision_history_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       coyyns_wallets: {
         Row: {
           id: string

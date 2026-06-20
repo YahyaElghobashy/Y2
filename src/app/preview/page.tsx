@@ -40,6 +40,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Hub", href: "/preview/us", note: "the five rooms" },
       { name: "Connect", href: "/preview/connect", note: "prompt → reveal-both" },
       { name: "Play", href: "/preview/play", note: "games hub" },
+      { name: "Decide", href: "/preview/decide", note: "selectors · the decider · let fate decide" },
       { name: "Plan", href: "/preview/plan", note: "warm calendar" },
       { name: "Watch", href: "/preview/watch", note: "movies · both ratings" },
       { name: "Table", href: "/preview/table", note: "food journal · map/list" },
