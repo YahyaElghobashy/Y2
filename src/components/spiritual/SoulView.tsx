@@ -244,7 +244,7 @@ export function SoulView({
           <PosterCard accent="amber" className="!p-4">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ fontFamily: "var(--font-nav)", color: "var(--color-terracotta)" }}>Azkar</p>
             <button type="button" onClick={countAzkar} className="mt-1 w-full text-left">
-              <span className="text-[34px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
+              <span data-testid="azkar-count" className="text-[34px] font-extrabold tabular-nums leading-none" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>
                 {azkar}
               </span>
               <span className="ml-1 text-[14px]" style={{ color: "var(--color-ink-soft)" }}>/ {data.azkar.goal}</span>

@@ -76,6 +76,13 @@ vi.mock("@/lib/hooks/use-azkar", () => ({
   useAzkar: () => mockUseAzkar(),
 }))
 
+// MoodPicker (mounted below SoulView) reads useMood — controlled empty default.
+const mockSetMood = vi.fn()
+const mockUseMood = vi.fn(() => ({ todayMood: null, partnerMood: null, isLoading: false, setMood: mockSetMood }))
+vi.mock("@/lib/hooks/use-mood", () => ({
+  useMood: () => mockUseMood(),
+}))
+
 // Prayer TIMES hook (location-based). Default here: NO location set, so the
 // times card (which would render prayer-name labels and collide with the
 // prayer-tracker name assertions below) is not shown. Times rendering is
@@ -262,8 +269,8 @@ describe("SoulPage", () => {
       mockUseAzkar.mockReturnValue(buildAzkarReturn({ session: null }))
       render(<SoulPage />)
       expect(screen.getByText("/ 33")).toBeInTheDocument()
-      // No session → current defaults to 0
-      expect(screen.getByText("0")).toBeInTheDocument()
+      // No session → current defaults to 0 (scope to azkar; QuranTracker also shows 0)
+      expect(screen.getByTestId("azkar-count")).toHaveTextContent("0")
     })
   })
 
@@ -299,6 +306,25 @@ describe("SoulPage", () => {
       await user.click(counter) // stays at 3 (goal)
       expect(screen.getByText("3")).toBeInTheDocument()
       expect(screen.getByText("/ 3")).toBeInTheDocument()
+    })
+  })
+
+  // ── Mounted interactive trackers (mood + quran logging) ──────
+  describe("mounted trackers", () => {
+    it("logs a mood via the mounted MoodPicker (mood was otherwise unreachable)", async () => {
+      const user = userEvent.setup()
+      render(<SoulPage />)
+      await user.click(screen.getByTestId("mood-button-loving"))
+      expect(mockSetMood).toHaveBeenCalledWith("loving")
+    })
+
+    it("logs a Qur'an page via the mounted QuranTracker", async () => {
+      const user = userEvent.setup()
+      const logPages = vi.fn()
+      mockUseQuran.mockReturnValue(buildQuranReturn({ logPages }))
+      render(<SoulPage />)
+      await user.click(screen.getByTestId("add-page-button"))
+      expect(logPages).toHaveBeenCalledWith(1)
     })
   })
 
