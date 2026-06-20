@@ -1,18 +1,35 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
 
-const PROTECTED_PREFIXES = ["/", "/us", "/health", "/spirit", "/ops", "/settings"]
+// DEFAULT-PROTECT: every route requires a session UNLESS it matches the public
+// allowlist below. The previous explicit PROTECTED_PREFIXES list silently left
+// /me, /treasury, /keepsake, /snap, /garden, /game/*, /our-table, /more, /2026,
+// /create-coupon, /onboarding (everything not enumerated) reachable logged-out.
+//
+// Public surfaces:
+//  - (auth) screens: /login, /forgot-password, /reset-password
+//  - /auth/* : the PKCE callback must run WITHOUT a session (it creates one)
+//  - /e/*    : the shareable public event portal
+//  - /offline: the PWA offline fallback page
+//  - /preview: the local design/preview harness (kept per project guardrails)
+const PUBLIC_PREFIXES = [
+  "/login",
+  "/forgot-password",
+  "/reset-password",
+  "/auth",
+  "/e",
+  "/offline",
+  "/preview",
+]
+
+function isPublicRoute(pathname: string): boolean {
+  return PUBLIC_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + "/")
+  )
+}
 
 function isProtectedRoute(pathname: string): boolean {
-  // Allow unauthenticated access to public routes
-  if (pathname.startsWith("/e")) return false
-  if (pathname.startsWith("/pair")) return false
-  // PKCE email-confirmation callback must run without a session (it creates one).
-  if (pathname.startsWith("/auth/callback")) return false
-  if (pathname === "/") return true
-  return PROTECTED_PREFIXES.some(
-    (prefix) => prefix !== "/" && (pathname === prefix || pathname.startsWith(prefix + "/"))
-  )
+  return !isPublicRoute(pathname)
 }
 
 export async function middleware(request: NextRequest) {

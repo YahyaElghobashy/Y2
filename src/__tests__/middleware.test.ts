@@ -157,6 +157,50 @@ describe("middleware", () => {
     expect(redirectUrl.searchParams.get("redirectTo")).toBe("/spirit")
   })
 
+  // ── Default-protect inversion: routes the old allowlist silently left open ──
+  it.each([
+    "/me",
+    "/me/soul",
+    "/treasury",
+    "/keepsake",
+    "/keepsake/letters",
+    "/snap",
+    "/garden",
+    "/game",
+    "/game/check-in",
+    "/our-table",
+    "/our-table/new",
+    "/more",
+    "/2026",
+    "/create-coupon",
+    "/pair",
+    "/onboarding",
+  ])("redirects unauthenticated user from %s to /login (was wrongly public)", async (path) => {
+    const request = createMockRequest(path)
+    await middleware(request)
+
+    expect(mockRedirect).toHaveBeenCalledOnce()
+    const redirectUrl = mockRedirect.mock.calls[0][0] as URL
+    expect(redirectUrl.pathname).toBe("/login")
+    expect(redirectUrl.searchParams.get("redirectTo")).toBe(path)
+  })
+
+  // ── Public allowlist stays open without a session ──
+  it.each([
+    "/e/some-event",
+    "/e/some-event/page-2",
+    "/offline",
+    "/preview",
+    "/forgot-password",
+    "/reset-password",
+  ])("allows unauthenticated user through public route %s", async (path) => {
+    const request = createMockRequest(path)
+    const result = await middleware(request)
+
+    expect(mockRedirect).not.toHaveBeenCalled()
+    expect(result).toBe(mockResponse)
+  })
+
   it("allows unauthenticated user through /auth/callback (PKCE exchange runs without a session)", async () => {
     const request = createMockRequest("/auth/callback")
     const result = await middleware(request)

@@ -24,6 +24,16 @@ export default function AppLayout({
   const isPairing = pathname.startsWith("/pair")
   const onboardingDone = !!profile?.onboarding_completed_at
 
+  // Client-side auth guard. The middleware default-protects (main) routes, but
+  // a cached service-worker shell can render this layout without a live session
+  // (see the SW skipWaiting history). Belt-and-suspenders: once auth resolves
+  // with no user, bounce to /login preserving the intended path.
+  useEffect(() => {
+    if (isLoading || user) return
+    const target = pathname && pathname !== "/" ? `/login?redirectTo=${encodeURIComponent(pathname)}` : "/login"
+    router.replace(target)
+  }, [isLoading, user, pathname, router])
+
   // Onboarding guard — new/incomplete users are guided into the (skippable)
   // onboarding flow. Pairing is NOT hard-gated: unpaired users are encouraged
   // via the PairingNudge banner below, never blocked.
