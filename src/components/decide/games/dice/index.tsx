@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
+import type { TargetAndTransition, Transition } from "framer-motion"
 import type { DecideOption, DecideResult, SelectorGame, SelectorGameProps } from "../../contract"
 import { weightedPick, winnerSummary } from "../../shared/random"
 import { haptic, playDecideSound, RisoBurst } from "../../shared/primitives"
@@ -133,6 +134,20 @@ function DieFace({ value, faceColor, pipColor }: { value: number; faceColor: str
   )
 }
 
+// ── Timings (ms) ──────────────────────────────────────────────────────────────
+
+const ROLL_MS = 1300
+const REVEAL_MS = 700
+const CYCLE_MS = 90
+const REDUCED_ROLL_MS = 220
+const REDUCED_REVEAL_MS = 260
+
+// ── Die theming + animation ───────────────────────────────────────────────────
+// Keyframes are hoisted to stable module refs: the per-tick face flicker
+// re-renders the die many times while rolling, and a fresh `animate` object
+// each render would make framer restart (stutter) the tumble. Constant refs
+// keep the spin smooth and uninterrupted.
+
 type DieTheme = { face: string; pip: string; offset: string }
 
 const DIE_THEMES: DieTheme[] = [
@@ -141,6 +156,18 @@ const DIE_THEMES: DieTheme[] = [
 ]
 
 type Phase = "idle" | "rolling" | "settled"
+
+// Face: spin + a little 3D wobble, lifting off the table then landing.
+const STILL: TargetAndTransition = { rotate: 0, rotateX: 0, y: 0, scale: 1 }
+const TUMBLE: TargetAndTransition = { rotate: [0, 380, 760, 1140, 1480], rotateX: [0, 38, -26, 16, 0], y: [0, -38, 6, -18, 0] }
+const SETTLE: TargetAndTransition = { rotate: 0, rotateX: 0, y: 0, scale: [1, 1.18, 0.93, 1.04, 1] }
+const TUMBLE_T: Transition = { duration: ROLL_MS / 1000, ease: "easeInOut", times: [0, 0.25, 0.5, 0.75, 1] }
+const SETTLE_T: Transition = { type: "spring", stiffness: 320, damping: 12 }
+
+// Ground shadow: faint + small when the die is up, broad + dark when it lands.
+const SHADOW_STILL: TargetAndTransition = { scaleX: 1, opacity: 0.26 }
+const SHADOW_TUMBLE: TargetAndTransition = { scaleX: [1, 0.5, 1.08, 0.62, 1], opacity: [0.26, 0.1, 0.3, 0.14, 0.26] }
+const SHADOW_SETTLE: TargetAndTransition = { scaleX: [1, 1.22, 0.9, 1], opacity: [0.26, 0.34, 0.24, 0.3] }
 
 function Die({
   value,
@@ -158,43 +185,39 @@ function Die({
   delay: number
 }) {
   const rolling = phase === "rolling"
+  const faceAnim = reduce ? STILL : rolling ? TUMBLE : SETTLE
+  const shadowAnim = reduce ? SHADOW_STILL : rolling ? SHADOW_TUMBLE : SHADOW_SETTLE
+  const faceT = rolling ? { ...TUMBLE_T, delay } : SETTLE_T
   return (
-    <motion.div
-      data-testid="die"
-      data-face={value}
-      data-phase={phase}
-      style={{
-        width: size,
-        height: size,
-        borderRadius: "22%",
-        border: "1.5px solid var(--color-ink)",
-        boxShadow: `4px 4px 0 0 ${theme.offset}`,
-      }}
-      animate={
-        reduce
-          ? { rotate: 0, y: 0 }
-          : rolling
-            ? { rotate: [0, 360, 760, 1140, 1480], y: [0, -30, 6, -16, 0] }
-            : { rotate: 0, y: 0, scale: [1, 1.16, 0.94, 1] }
-      }
-      transition={
-        rolling
-          ? { duration: ROLL_MS / 1000, ease: "easeInOut", times: [0, 0.25, 0.5, 0.75, 1], delay }
-          : { type: "spring", stiffness: 280, damping: 13 }
-      }
-    >
-      <DieFace value={value} faceColor={theme.face} pipColor={theme.pip} />
-    </motion.div>
+    <div className="relative flex flex-col items-center" style={{ width: size }}>
+      <motion.div
+        data-testid="die"
+        data-face={value}
+        data-phase={phase}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "24%",
+          border: "1.5px solid var(--color-ink)",
+          boxShadow: `4px 5px 0 0 ${theme.offset}`,
+          transformPerspective: 520,
+        }}
+        animate={faceAnim}
+        transition={faceT}
+      >
+        <DieFace value={value} faceColor={theme.face} pipColor={theme.pip} />
+      </motion.div>
+      {/* Ground shadow — sells the weight of the toss. */}
+      <motion.span
+        aria-hidden
+        className="mt-2 block rounded-[50%]"
+        style={{ width: size * 0.74, height: Math.max(8, size * 0.12), background: "var(--color-ink)", filter: "blur(5px)" }}
+        animate={shadowAnim}
+        transition={rolling ? TUMBLE_T : SETTLE_T}
+      />
+    </div>
   )
 }
-
-// ── Timings (ms) ──────────────────────────────────────────────────────────────
-
-const ROLL_MS = 1300
-const REVEAL_MS = 700
-const CYCLE_MS = 90
-const REDUCED_ROLL_MS = 220
-const REDUCED_REVEAL_MS = 260
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -277,7 +300,7 @@ function RollTheDice({ options, onResult }: SelectorGameProps) {
     )
   }, [phase, options, count, reduce, clearTimers, onResult])
 
-  const dieSize = count === 1 ? 92 : 76
+  const dieSize = count === 1 ? 96 : 80
   const revealText = outcome?.winner ? outcome.winner.label : outcome ? `Rolled ${outcome.total}` : ""
 
   return (
@@ -313,10 +336,22 @@ function RollTheDice({ options, onResult }: SelectorGameProps) {
         })}
       </div>
 
-      {/* Dice stage */}
-      <div className="relative flex min-h-[120px] items-center justify-center">
+      {/* Dice stage — a riso "table" the dice are tossed onto */}
+      <div
+        className="relative flex min-h-[172px] w-full max-w-[300px] items-center justify-center overflow-hidden rounded-3xl"
+        style={{ background: "var(--color-sand)", border: "1px solid var(--color-clay)", boxShadow: "var(--shadow-warm-inner)" }}
+      >
+        {/* faint zellij texture overlay */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/assets/patterns/pattern-zellij-terracotta.webp"
+          alt=""
+          aria-hidden
+          onError={(e) => (e.currentTarget.style.display = "none")}
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.1]"
+        />
         <RisoBurst active={phase === "settled"} size={200} />
-        <div className="relative z-10 flex items-center gap-4">
+        <div className="relative z-10 flex items-end gap-5">
           {faces.map((value, i) => (
             <Die
               key={i}
@@ -325,25 +360,37 @@ function RollTheDice({ options, onResult }: SelectorGameProps) {
               theme={DIE_THEMES[i % DIE_THEMES.length]}
               size={dieSize}
               reduce={reduce}
-              delay={i * 0.06}
+              delay={i * 0.07}
             />
           ))}
         </div>
       </div>
 
       {/* Settle reveal (brief — the hub's Result panel does the full reveal) */}
-      <div className="min-h-[34px]">
-        {phase === "settled" && revealText && (
-          <motion.p
+      <div className="flex min-h-[52px] flex-col items-center justify-center gap-0.5">
+        {phase === "settled" && outcome && (
+          <motion.div
             initial={{ y: 6, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.28 }}
-            className="text-[20px] font-extrabold"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-indigo)" }}
-            data-testid="dice-reveal"
+            className="flex flex-col items-center gap-0.5"
           >
-            {revealText}
-          </motion.p>
+            <p
+              className="text-[22px] font-extrabold leading-none"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-indigo)" }}
+              data-testid="dice-reveal"
+            >
+              {revealText}
+            </p>
+            {outcome.winner && (
+              <p
+                className="text-[12px] font-semibold uppercase tracking-wide"
+                style={{ fontFamily: "var(--font-nav)", color: "var(--color-ink-soft)" }}
+              >
+                {`rolled ${outcome.dice.join(" + ")}${outcome.dice.length > 1 ? ` = ${outcome.total}` : ""}`}
+              </p>
+            )}
+          </motion.div>
         )}
       </div>
 
