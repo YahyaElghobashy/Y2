@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Check, MapPin } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
@@ -75,6 +75,14 @@ export function SoulView({
 }) {
   const [prayed, setPrayed] = useState<Record<string, boolean>>(data.prayed)
   const [azkar, setAzkar] = useState(data.azkar.current ?? 0)
+
+  // Re-sync from props when the source data changes (the page memoizes `data`
+  // from realtime hook state, so these fire only on a real change). Without
+  // this, a prayer your partner logged — or a fresh fetch — left the local
+  // toggles/count stale.
+  useEffect(() => { setPrayed(data.prayed) }, [data.prayed])
+  useEffect(() => { setAzkar(data.azkar.current ?? 0) }, [data.azkar.current])
+
   const toggle = (k: string) => {
     setPrayed((p) => ({ ...p, [k]: !p[k] }))
     onTogglePrayer?.(k)
@@ -115,7 +123,7 @@ export function SoulView({
           {PRAYERS.map((p) => {
             const done = prayed[p.key]
             return (
-              <button key={p.key} type="button" onClick={() => toggle(p.key)} className="flex flex-1 flex-col items-center gap-1">
+              <button key={p.key} type="button" onClick={() => toggle(p.key)} data-testid={`prayer-toggle-${p.key}`} data-prayed={done} className="flex flex-1 flex-col items-center gap-1">
                 <motion.span
                   whileTap={{ scale: 0.88 }}
                   className="grid h-11 w-11 place-items-center rounded-full border-2 transition-colors"

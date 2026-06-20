@@ -7,6 +7,7 @@ import { ProfileSetupOverlay } from "@/components/shared/ProfileSetupOverlay"
 import { InstallPrompt } from "@/components/shared/InstallPrompt"
 import { PairingNudge } from "@/components/pairing/PairingNudge"
 import { CouponReceiveAnimation } from "@/components/coupons/CouponReceiveAnimation"
+import { DailyBonusToast } from "@/components/shared/DailyBonusToast"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { useNewCouponDetection } from "@/lib/hooks/use-new-coupon-detection"
 
@@ -80,6 +81,9 @@ export default function AppLayout({
         !isOnboarding &&
         !isPairing && <PairingNudge />}
       {!isOnboarding && <InstallPrompt />}
+      {/* Self-managing: claims the daily +5 CoYYns bonus and shows the toast
+          once per day. Mount-once at the shell so it fires on any landing. */}
+      {!isOnboarding && user && <DailyBonusToast />}
       {!isOnboarding && showAnimation && newCoupon && (
         <CouponReceiveAnimation
           visible={showAnimation}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { PillTabBar } from "@/components/shared/PillTabBar"
@@ -81,6 +81,16 @@ export function ChallengesView({
   const [pending, setPending] = useState(pendingInit)
   const [active, setActive] = useState(activeInit)
   const [bounties, setBounties] = useState(bountiesInit)
+
+  // Re-sync local lists/balance when the parent's props change. The parent
+  // memoizes these from realtime hook state, so these effects fire only on a
+  // real data change (realtime event / mutation refetch), reconciling optimistic
+  // edits rather than clobbering them every render. Without this, a challenge
+  // accepted/resolved by the partner never appeared.
+  useEffect(() => { setPending(pendingInit) }, [pendingInit])
+  useEffect(() => { setActive(activeInit) }, [activeInit])
+  useEffect(() => { setBounties(bountiesInit) }, [bountiesInit])
+  useEffect(() => { setBalance(initialBalance) }, [initialBalance])
   const [celebrate, setCelebrate] = useState<{ open: boolean; tone: "big" | "quiet"; title: string; subtitle: string }>({
     open: false,
     tone: "quiet",
