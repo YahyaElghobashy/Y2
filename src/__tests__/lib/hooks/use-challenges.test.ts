@@ -266,6 +266,45 @@ describe("useChallenges", () => {
     })
   })
 
+  it("acceptChallenge rejects (no spend, no status change) when wallet can't cover the stake", async () => {
+    mockLimit.mockReturnValue({ data: SAMPLE_CHALLENGES, error: null })
+    useCoyyns.mockReturnValue({
+      wallet: { balance: 4 }, // ch-2 stakes = 20
+      partnerWallet: null, transactions: [], isLoading: false, error: null,
+      addCoyyns: vi.fn(), spendCoyyns: mockSpendCoyyns, refreshWallet: vi.fn(),
+    })
+
+    const { result } = renderHook(() => useChallenges())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await result.current.acceptChallenge("ch-2")
+    })
+
+    expect(result.current.error).toBe("Insufficient CoYYns balance")
+    expect(mockSpendCoyyns).not.toHaveBeenCalled()
+    // Never promote a challenge to active without escrowing the stake.
+    expect(mockUpdate).not.toHaveBeenCalled()
+  })
+
+  it("acceptChallenge does NOT promote the challenge to active when spendCoyyns throws", async () => {
+    mockLimit.mockReturnValue({ data: SAMPLE_CHALLENGES, error: null })
+    // Wallet looks sufficient optimistically, but the spend fails server-side
+    // (e.g. the balance>=0 CHECK rolls it back). The throw must abort the update.
+    mockSpendCoyyns.mockRejectedValueOnce(new Error("Insufficient CoYYns balance"))
+
+    const { result } = renderHook(() => useChallenges())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await result.current.acceptChallenge("ch-2")
+    })
+
+    expect(mockSpendCoyyns).toHaveBeenCalled()
+    expect(mockUpdate).not.toHaveBeenCalled()
+    expect(result.current.error).toBe("Insufficient CoYYns balance")
+  })
+
   it("claimVictory updates status to pending_resolution with claimed_by", async () => {
     const { result } = renderHook(() => useChallenges())
     await waitFor(() => expect(result.current.isLoading).toBe(false))

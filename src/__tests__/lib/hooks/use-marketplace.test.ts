@@ -2,8 +2,6 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 // ── Mocks ──────────────────────────────────────────────
-const mockSpendCoyyns = vi.fn()
-
 const { useAuth } = vi.hoisted(() => ({
   useAuth: vi.fn(() => ({
     user: { id: "user-1" } as { id: string } | null,
@@ -16,28 +14,16 @@ const { useAuth } = vi.hoisted(() => ({
   })),
 }))
 
-const { useCoyyns } = vi.hoisted(() => ({
-  useCoyyns: vi.fn(() => ({
-    wallet: { balance: 100 },
-    partnerWallet: null,
-    transactions: [],
-    isLoading: false,
-    error: null,
-    addCoyyns: vi.fn(),
-    spendCoyyns: mockSpendCoyyns,
-    refreshWallet: vi.fn(),
-  })),
-}))
-
 const mockSelect = vi.fn()
 const mockInsert = vi.fn()
-const mockSingle = vi.fn()
 const mockOrder = vi.fn()
 const mockLimit = vi.fn()
 const mockEq = vi.fn()
 const mockUpdate = vi.fn()
 const mockUpdateEq = vi.fn()
 const mockInvoke = vi.fn()
+// The atomic purchase RPC replaces the old spendCoyyns + purchases.insert flow.
+const mockRpc = vi.fn()
 
 const mockFrom = vi.fn(() => ({
   select: mockSelect,
@@ -49,17 +35,16 @@ mockSelect.mockReturnValue({ eq: mockEq, order: mockOrder })
 mockEq.mockReturnValue({ order: mockOrder, data: [], error: null })
 mockOrder.mockReturnValue({ limit: mockLimit, data: [], error: null })
 mockLimit.mockReturnValue({ data: [], error: null })
-mockInsert.mockReturnValue({ select: vi.fn(() => ({ single: mockSingle })) })
-mockSingle.mockResolvedValue({ data: { id: "purchase-1" }, error: null })
+mockInsert.mockReturnValue({ select: vi.fn(() => ({ single: vi.fn().mockResolvedValue({ data: null, error: null }) })) })
 mockUpdate.mockReturnValue({ eq: mockUpdateEq })
 mockUpdateEq.mockResolvedValue({ data: null, error: null })
 mockInvoke.mockResolvedValue({ data: null, error: null })
 
 vi.mock("@/lib/providers/AuthProvider", () => ({ useAuth }))
-vi.mock("@/lib/hooks/use-coyyns", () => ({ useCoyyns }))
 const mockSupabaseClient = {
   from: mockFrom,
   functions: { invoke: mockInvoke },
+  rpc: mockRpc,
 }
 vi.mock("@/lib/supabase/client", () => ({
   getSupabaseBrowserClient: () => mockSupabaseClient,
@@ -67,10 +52,25 @@ vi.mock("@/lib/supabase/client", () => ({
 
 import { useMarketplace } from "@/lib/hooks/use-marketplace"
 
+const TEST_ITEM = {
+  id: "item-1", name: "Extra Notification", description: "Send more",
+  price: 10, icon: "🔔", effect_type: "extra_ping",
+  effect_config: {}, is_active: true, sort_order: 1, created_at: "",
+}
+
+function authAs(user: unknown, partner: unknown) {
+  useAuth.mockReturnValue({
+    user, partner, profile: null, isLoading: false,
+    profileNeedsSetup: false, signOut: vi.fn(), refreshProfile: vi.fn(),
+  } as never)
+}
+
 describe("useMarketplace", () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSpendCoyyns.mockResolvedValue(undefined)
+    // RPC succeeds by default, returning the created purchase row.
+    mockRpc.mockResolvedValue({ data: { id: "purchase-1" }, error: null })
+    authAs({ id: "user-1" }, { id: "partner-1" })
   })
 
   it("returns loading state initially", () => {
@@ -93,16 +93,7 @@ describe("useMarketplace", () => {
   })
 
   it("returns inert state when user is null", () => {
-    useAuth.mockReturnValue({
-      user: null,
-      partner: null,
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
-
+    authAs(null, null)
     const { result } = renderHook(() => useMarketplace())
     expect(result.current.items).toEqual([])
     expect(result.current.purchases).toEqual([])
@@ -111,130 +102,83 @@ describe("useMarketplace", () => {
   })
 
   it("createPurchase throws when user is null", async () => {
-    useAuth.mockReturnValue({
-      user: null,
-      partner: null,
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
-
+    authAs(null, null)
     const { result } = renderHook(() => useMarketplace())
     await expect(result.current.createPurchase("item-1")).rejects.toThrow("Not authenticated")
   })
 
   it("createPurchase throws when partner is null", async () => {
-    useAuth.mockReturnValue({
-      user: { id: "user-1" },
-      partner: null,
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
-
-    // Return an item so it passes the item lookup
-    mockOrder.mockReturnValueOnce({
-      limit: mockLimit,
-      data: [{ id: "item-1", name: "Test", price: 10, effect_type: "extra_ping", effect_config: {}, is_active: true, sort_order: 1, created_at: "" }],
-      error: null,
-    })
+    authAs({ id: "user-1" }, null)
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [TEST_ITEM], error: null })
 
     const { result } = renderHook(() => useMarketplace())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
     await expect(result.current.createPurchase("item-1")).rejects.toThrow("No partner connected")
   })
 
-  it("createPurchase calls spendCoyyns with item price and name", async () => {
-    const testItem = {
-      id: "item-1", name: "Extra Notification", description: "Send more",
-      price: 10, icon: "🔔", effect_type: "extra_ping",
-      effect_config: {}, is_active: true, sort_order: 1, created_at: "",
-    }
-
-    useAuth.mockReturnValue({
-      user: { id: "user-1" },
-      partner: { id: "partner-1" },
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
-
-    mockOrder.mockReturnValueOnce({
-      limit: mockLimit,
-      data: [testItem],
-      error: null,
-    })
+  it("createPurchase calls the atomic purchase RPC with item, target, and effect payload", async () => {
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [TEST_ITEM], error: null })
 
     const { result } = renderHook(() => useMarketplace())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    await result.current.createPurchase("item-1")
-    expect(mockSpendCoyyns).toHaveBeenCalledWith(10, "Extra Notification", "marketplace")
+    await result.current.createPurchase("item-1", { foo: "bar" })
+
+    expect(mockRpc).toHaveBeenCalledWith("purchase_marketplace_item", {
+      p_item_id: "item-1",
+      p_target_id: "partner-1",
+      p_effect_payload: { foo: "bar" },
+    })
   })
 
-  it("createPurchase inserts purchase row with correct buyer, target, item, cost, and status", async () => {
-    const testItem = {
-      id: "item-1", name: "Extra Notification", description: "Send more",
-      price: 10, icon: "🔔", effect_type: "extra_ping",
-      effect_config: {}, is_active: true, sort_order: 1, created_at: "",
-    }
+  it("createPurchase returns the purchase row produced by the RPC", async () => {
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [TEST_ITEM], error: null })
+    mockRpc.mockResolvedValueOnce({ data: { id: "purchase-xyz" }, error: null })
 
-    useAuth.mockReturnValue({
-      user: { id: "user-1" },
-      partner: { id: "partner-1" },
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    const { result } = renderHook(() => useMarketplace())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    mockOrder.mockReturnValueOnce({
-      limit: mockLimit,
-      data: [testItem],
-      error: null,
+    const purchase = await result.current.createPurchase("item-1")
+    expect(purchase).toEqual({ id: "purchase-xyz" })
+  })
+
+  // ── P0 REGRESSION: no item delivered without a charge ──────────
+  it("createPurchase REJECTS and never invokes the effect when the RPC reports INSUFFICIENT_FUNDS", async () => {
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [TEST_ITEM], error: null })
+    mockRpc.mockResolvedValueOnce({
+      data: null,
+      error: { message: 'INSUFFICIENT_FUNDS' },
     })
 
     const { result } = renderHook(() => useMarketplace())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    await result.current.createPurchase("item-1")
-
-    expect(mockInsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        buyer_id: "user-1",
-        target_id: "partner-1",
-        item_id: "item-1",
-        cost: 10,
-        status: "pending",
-      })
+    await expect(result.current.createPurchase("item-1")).rejects.toThrow(
+      "Insufficient CoYYns balance"
     )
+
+    // The effect must NOT run — the partner never receives an uncharged item.
+    expect(mockInvoke).not.toHaveBeenCalled()
+    // No purchase row written outside the (failed, atomic) RPC.
+    expect(mockFrom).not.toHaveBeenCalledWith("notifications")
   })
 
-  it("createPurchase invokes the process-purchase edge function with the effect payload", async () => {
-    const testItem = {
-      id: "item-1", name: "Movie Night Veto", description: "Pick a movie",
-      price: 25, icon: "🎬", effect_type: "veto",
-      effect_config: {}, is_active: true, sort_order: 2, created_at: "",
-    }
+  it("createPurchase REJECTS and never invokes the effect on a generic RPC failure", async () => {
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [TEST_ITEM], error: null })
+    mockRpc.mockResolvedValueOnce({ data: null, error: { message: "boom" } })
 
-    useAuth.mockReturnValue({
-      user: { id: "user-1" },
-      partner: { id: "partner-1" },
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    const { result } = renderHook(() => useMarketplace())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [testItem], error: null })
+    await expect(result.current.createPurchase("item-1")).rejects.toThrow(
+      "Failed to complete purchase"
+    )
+    expect(mockInvoke).not.toHaveBeenCalled()
+  })
+
+  it("createPurchase invokes the process-purchase edge function on success", async () => {
+    const vetoItem = { ...TEST_ITEM, id: "item-1", name: "Movie Night Veto", price: 25, effect_type: "veto" }
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [vetoItem], error: null })
 
     const { result } = renderHook(() => useMarketplace())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -257,24 +201,9 @@ describe("useMarketplace", () => {
   })
 
   it("createPurchase falls back to an in-app notification + activates when the edge function fails", async () => {
-    const testItem = {
-      id: "item-1", name: "Breakfast in Bed", description: "Make breakfast",
-      price: 40, icon: "🍳", effect_type: "task_order",
-      effect_config: {}, is_active: true, sort_order: 3, created_at: "",
-    }
-
-    useAuth.mockReturnValue({
-      user: { id: "user-1" },
-      partner: { id: "partner-1" },
-      profile: null,
-      isLoading: false,
-      profileNeedsSetup: false,
-      signOut: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
-
-    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [testItem], error: null })
-    // Edge function reports a failure (e.g. push delivery failed)
+    const taskItem = { ...TEST_ITEM, id: "item-1", name: "Breakfast in Bed", price: 40, icon: "🍳", effect_type: "task_order" }
+    mockOrder.mockReturnValueOnce({ limit: mockLimit, data: [taskItem], error: null })
+    // RPC (spend + purchase) succeeded; only the effect/push failed.
     mockInvoke.mockResolvedValueOnce({ data: null, error: { message: "push failed" } })
 
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
@@ -284,7 +213,6 @@ describe("useMarketplace", () => {
 
     await result.current.createPurchase("item-1")
 
-    // In-app notification row inserted for the partner (no silent swallow)
     expect(mockFrom).toHaveBeenCalledWith("notifications")
     const notifInsert = mockInsert.mock.calls
       .map((c) => c[0])
@@ -294,7 +222,6 @@ describe("useMarketplace", () => {
     expect(notifInsert.metadata.fallback).toBe(true)
     expect(notifInsert.status).toBe("sent")
 
-    // Purchase activated so it is still actionable rather than stuck pending
     expect(mockUpdate).toHaveBeenCalledWith({ status: "active" })
 
     warnSpy.mockRestore()

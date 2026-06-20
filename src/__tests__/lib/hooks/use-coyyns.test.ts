@@ -236,15 +236,20 @@ describe("useCoyyns", () => {
     })
   })
 
-  it("spendCoyyns does NOT call Supabase insert when balance is insufficient", async () => {
+  it("spendCoyyns THROWS and does NOT call Supabase insert when balance is insufficient (overspend rejected)", async () => {
     const { result } = renderHook(() => useCoyyns())
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
 
+    // A swallowed insufficient-balance failure is the P0 economy bug: callers
+    // (marketplace/ping/challenge) would proceed to deliver with no charge.
+    // spendCoyyns must reject so the caller's try/catch aborts the side effect.
     await act(async () => {
-      await result.current.spendCoyyns(999, "Too expensive")
+      await expect(
+        result.current.spendCoyyns(999, "Too expensive")
+      ).rejects.toThrow("Insufficient CoYYns balance")
     })
 
     expect(mockInsert).not.toHaveBeenCalled()
@@ -258,10 +263,50 @@ describe("useCoyyns", () => {
     })
 
     await act(async () => {
-      await result.current.spendCoyyns(999, "Too expensive")
+      await expect(
+        result.current.spendCoyyns(999, "Too expensive")
+      ).rejects.toThrow()
     })
 
     expect(result.current.error).toBe("Insufficient CoYYns balance")
+  })
+
+  it("spendCoyyns THROWS when the DB rejects the spend insert (balance>=0 CHECK backstop)", async () => {
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // Simulate the ledger trigger's CHECK (balance >= 0) rolling back the INSERT
+    // — e.g. a concurrent spend drained the wallet after the optimistic guard.
+    mockInsert.mockResolvedValueOnce({
+      error: { message: 'new row for relation "coyyns_wallets" violates check constraint "coyyns_wallets_balance_check"' },
+    })
+
+    await act(async () => {
+      await expect(
+        result.current.spendCoyyns(20, "Buy something", "marketplace")
+      ).rejects.toThrow(/check constraint/)
+    })
+
+    expect(result.current.error).toMatch(/check constraint/)
+  })
+
+  it("addCoyyns THROWS when the DB rejects the earn insert", async () => {
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    mockInsert.mockResolvedValueOnce({ error: { message: "row level security" } })
+
+    await act(async () => {
+      await expect(
+        result.current.addCoyyns(10, "Earn", "manual")
+      ).rejects.toThrow("row level security")
+    })
   })
 
   it("error is cleared to null at the start of each new addCoyyns or spendCoyyns call", async () => {
@@ -273,7 +318,9 @@ describe("useCoyyns", () => {
 
     // Trigger an error first
     await act(async () => {
-      await result.current.spendCoyyns(999, "Too expensive")
+      await expect(
+        result.current.spendCoyyns(999, "Too expensive")
+      ).rejects.toThrow()
     })
     expect(result.current.error).toBe("Insufficient CoYYns balance")
 
@@ -284,7 +331,7 @@ describe("useCoyyns", () => {
     expect(result.current.error).toBeNull()
   })
 
-  it("addCoyyns sets error if the amount is not a positive integer", async () => {
+  it("addCoyyns THROWS and sets error if the amount is not a positive integer", async () => {
     const { result } = renderHook(() => useCoyyns())
 
     await waitFor(() => {
@@ -293,19 +340,21 @@ describe("useCoyyns", () => {
 
     // Test non-integer
     await act(async () => {
-      await result.current.addCoyyns(1.5, "Fractional")
+      await expect(result.current.addCoyyns(1.5, "Fractional")).rejects.toThrow(
+        "Amount must be a positive integer"
+      )
     })
     expect(result.current.error).toBe("Amount must be a positive integer")
 
     // Test zero
     await act(async () => {
-      await result.current.addCoyyns(0, "Zero")
+      await expect(result.current.addCoyyns(0, "Zero")).rejects.toThrow()
     })
     expect(result.current.error).toBe("Amount must be a positive integer")
 
     // Test negative
     await act(async () => {
-      await result.current.addCoyyns(-5, "Negative")
+      await expect(result.current.addCoyyns(-5, "Negative")).rejects.toThrow()
     })
     expect(result.current.error).toBe("Amount must be a positive integer")
 
