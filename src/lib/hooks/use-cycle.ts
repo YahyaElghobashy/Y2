@@ -187,16 +187,28 @@ export function useCycle(): UseCycleReturn {
 
   const updateConfig = useCallback(
     async (updates: Partial<CycleConfig>) => {
-      if (!profile || !config) return
+      // First-run setup has no config row yet — only `profile` is required.
+      // Gating on `!config` here made initial setup silently no-op.
+      if (!profile) return
 
       setError(null)
+      // Spread (config ?? {}) so a null config still produces a valid insert.
+      // Explicit onConflict keeps the upsert keyed on the owner_id UNIQUE.
       const { error: upsertError } = await supabase
         .from("cycle_config")
-        .upsert({ ...config, ...updates, owner_id: profile.id })
+        // First-run setup always provides pill_start_date via the form; the
+        // (config ?? {}) spread widens it to optional for the type-checker, so
+        // bridge with a cast. owner_id is the upsert conflict key.
+        .upsert(
+          { ...(config ?? {}), ...updates, owner_id: profile.id } as CycleConfig,
+          { onConflict: "owner_id" }
+        )
 
       if (upsertError) {
         setError("Failed to update cycle config")
-        return
+        // Throw so callers can distinguish failure from success and never show
+        // a false-success toast on a swallowed save error.
+        throw new Error(upsertError.message)
       }
 
       await refreshCycle()
@@ -215,7 +227,7 @@ export function useCycle(): UseCycleReturn {
 
       if (insertError) {
         setError("Failed to save cycle log")
-        return
+        throw new Error(insertError.message)
       }
 
       await refreshCycle()

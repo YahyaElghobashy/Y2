@@ -12,6 +12,8 @@ interface RatingSliderProps {
   onNext: (score: number) => void
   onClose: () => void
   initialScore?: number
+  /** Disables the submit button while the parent persists the visit. */
+  isSubmitting?: boolean
 }
 
 const SCORE_EMOJIS: { range: [number, number]; emoji: string }[] = [
@@ -52,6 +54,7 @@ export function RatingSlider({
   onNext,
   onClose,
   initialScore = 5,
+  isSubmitting = false,
 }: RatingSliderProps) {
   const [score, setScore] = useState(initialScore)
 
@@ -160,9 +163,10 @@ export function RatingSlider({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleNext}
+          disabled={isSubmitting}
           data-testid="rating-next-btn"
         >
-          Next
+          {isSubmitting ? "Saving…" : "Next"}
           <span className="transition-transform group-hover:translate-x-1">
             →
           </span>

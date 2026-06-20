@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { ArrowUp, Lock } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useNotifications } from "@/lib/hooks/use-notifications"
 
@@ -25,8 +26,9 @@ export function CustomPingComposer({ className }: { className?: string }) {
       await sendNotification("Ping", trimmed)
       setMessage("")
       inputRef.current?.focus()
-    } catch {
-      // Error handled by hook
+    } catch (err) {
+      // Keep the message so the user can retry; tell them it didn't send.
+      toast.error(err instanceof Error ? err.message : "Couldn't send ping. Try again.")
     } finally {
       setIsSending(false)
     }

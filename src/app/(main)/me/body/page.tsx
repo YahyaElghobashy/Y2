@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/shared/EmptyState"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { BodyView, type BodyData } from "@/components/health/BodyView"
 import { FitnessView } from "@/components/health/FitnessView"
+import { CycleCalendarView } from "@/components/health/CycleCalendarView"
 import { CycleConfigForm } from "@/components/health/CycleConfigForm"
 import { useCycle } from "@/lib/hooks/use-cycle"
 import { useFitness } from "@/lib/hooks/use-fitness"
@@ -110,6 +111,11 @@ export default function BodyPage() {
             onLog={fitness.logWeight}
             onDelete={fitness.deleteWeight}
           />
+          {/* Interactive month calendar — browse cycle phases/logs beyond
+              BodyView's single ribbon. Self-guards on config. */}
+          <div className="mt-6">
+            <CycleCalendarView />
+          </div>
         </div>
 
         <CycleConfigForm

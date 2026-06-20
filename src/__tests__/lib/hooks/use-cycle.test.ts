@@ -318,6 +318,43 @@ describe("useCycle", () => {
     ).resolves.not.toThrow()
   })
 
+  it("updateConfig UPSERTS on first-run when no config row exists yet", async () => {
+    // No existing config — first-time setup. The old `!config` guard made this
+    // a silent no-op, so cycle tracking could never be started.
+    configQueryResult = { data: null, error: null }
+
+    const { result } = renderHook(() => useCycle())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(result.current.config).toBeNull()
+
+    await act(async () => {
+      await result.current.updateConfig({ pill_start_date: "2026-06-01", active_days: 21 })
+    })
+
+    expect(mockUpsert).toHaveBeenCalledTimes(1)
+    const [row, opts] = mockUpsert.mock.calls[0]
+    expect(row).toMatchObject({
+      owner_id: "yahya-1",
+      pill_start_date: "2026-06-01",
+      active_days: 21,
+    })
+    expect(opts).toEqual({ onConflict: "owner_id" })
+  })
+
+  it("updateConfig THROWS on a save error so the caller shows no false-success toast", async () => {
+    mockUpsert.mockResolvedValueOnce({ error: { message: "row level security" } })
+
+    const { result } = renderHook(() => useCycle())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await expect(
+        result.current.updateConfig({ pms_warning_days: 5 })
+      ).rejects.toThrow("row level security")
+    })
+    expect(result.current.error).toBe("Failed to update cycle config")
+  })
+
   it("addLog no-op resolves without throwing when profile is null", async () => {
     mockAuthReturn.profile = null
 

@@ -166,6 +166,14 @@ export function useChallenges(): UseChallengesReturn {
         return
       }
 
+      // Accepting escrows the acceptor's matching stake. Guard affordability
+      // up front so we never promote a challenge to "active" when the wallet
+      // can't cover the stake. spendCoyyns also throws below as the backstop.
+      if (!wallet || wallet.balance < challenge.stakes) {
+        setError("Insufficient CoYYns balance")
+        return
+      }
+
       try {
         await spendCoyyns(challenge.stakes, `Challenge: ${challenge.title}`, "challenge_stake")
 
@@ -184,7 +192,7 @@ export function useChallenges(): UseChallengesReturn {
         setError(err instanceof Error ? err.message : "Failed to accept challenge")
       }
     },
-    [user, supabase, challenges, spendCoyyns, refreshChallenges]
+    [user, wallet, supabase, challenges, spendCoyyns, refreshChallenges]
   )
 
   const declineChallenge = useCallback(

@@ -73,7 +73,24 @@ export default function LettersPage() {
         is_shared: true,
       })
     }
-    if (ritualId) await logRitual(ritualId, content, photoUrl)
+    if (ritualId) {
+      await logRitual(ritualId, content, photoUrl)
+      // Notify the partner that a letter is waiting. Couple-write → partner ping.
+      if (user && partner) {
+        const { error: notifError } = await supabase.from("notifications").insert({
+          sender_id: user.id,
+          recipient_id: partner.id,
+          title: `${myName} wrote you a letter`,
+          body: content.length > 120 ? `${content.slice(0, 117)}…` : content,
+          emoji: "💌",
+          type: "letter",
+          status: "sent",
+          metadata: { ritual_id: ritualId },
+        })
+        // Non-fatal: the letter is saved regardless of the notification.
+        if (notifError) console.warn("[letters] partner notification failed", notifError)
+      }
+    }
     setShowComposer(false)
     await fetchLogs()
   }

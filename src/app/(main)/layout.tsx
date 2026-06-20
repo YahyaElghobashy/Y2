@@ -7,6 +7,7 @@ import { ProfileSetupOverlay } from "@/components/shared/ProfileSetupOverlay"
 import { InstallPrompt } from "@/components/shared/InstallPrompt"
 import { PairingNudge } from "@/components/pairing/PairingNudge"
 import { CouponReceiveAnimation } from "@/components/coupons/CouponReceiveAnimation"
+import { DailyBonusToast } from "@/components/shared/DailyBonusToast"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { useNewCouponDetection } from "@/lib/hooks/use-new-coupon-detection"
 
@@ -23,6 +24,16 @@ export default function AppLayout({
   const isOnboarding = pathname.startsWith("/onboarding")
   const isPairing = pathname.startsWith("/pair")
   const onboardingDone = !!profile?.onboarding_completed_at
+
+  // Client-side auth guard. The middleware default-protects (main) routes, but
+  // a cached service-worker shell can render this layout without a live session
+  // (see the SW skipWaiting history). Belt-and-suspenders: once auth resolves
+  // with no user, bounce to /login preserving the intended path.
+  useEffect(() => {
+    if (isLoading || user) return
+    const target = pathname && pathname !== "/" ? `/login?redirectTo=${encodeURIComponent(pathname)}` : "/login"
+    router.replace(target)
+  }, [isLoading, user, pathname, router])
 
   // Onboarding guard — new/incomplete users are guided into the (skippable)
   // onboarding flow. Pairing is NOT hard-gated: unpaired users are encouraged
@@ -70,6 +81,9 @@ export default function AppLayout({
         !isOnboarding &&
         !isPairing && <PairingNudge />}
       {!isOnboarding && <InstallPrompt />}
+      {/* Self-managing: claims the daily +5 CoYYns bonus and shows the toast
+          once per day. Mount-once at the shell so it fires on any landing. */}
+      {!isOnboarding && user && <DailyBonusToast />}
       {!isOnboarding && showAnimation && newCoupon && (
         <CouponReceiveAnimation
           visible={showAnimation}

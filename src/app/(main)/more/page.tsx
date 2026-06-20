@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import {
   UserCircle,
   Heart,
@@ -318,6 +319,7 @@ export default function MorePage() {
                   } catch {
                     setIsClearing(false)
                     setClearCacheOpen(false)
+                    toast.error("Couldn't clear the cache.")
                   }
                 }}
                 className="bg-[var(--destructive)] text-white hover:opacity-90"
@@ -347,11 +349,16 @@ export default function MorePage() {
                   setUnpairing(true)
                   try {
                     const supabase = getSupabaseBrowserClient()
-                    await supabase.rpc("unpair_partners", { my_id: user.id })
+                    // supabase-js returns RPC errors in .error (does not throw),
+                    // so check it explicitly — the dialog used to close as if
+                    // unpairing succeeded even when it failed.
+                    const { error: rpcError } = await supabase.rpc("unpair_partners", { my_id: user.id })
+                    if (rpcError) throw new Error(rpcError.message)
                     await refreshProfile()
                     setUnpairOpen(false)
+                    toast.success("Unpaired")
                   } catch {
-                    // silent fail
+                    toast.error("Couldn't unpair. Try again.")
                   } finally {
                     setUnpairing(false)
                   }

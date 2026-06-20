@@ -143,6 +143,11 @@ export function useCoyyns(): UseCoyynsReturn {
     }
   }, [user, partner, supabase])
 
+  // NOTE: addCoyyns / spendCoyyns THROW on failure. A swallowed failure
+  // (setError + return void) let callers proceed as if the transaction
+  // succeeded — e.g. delivering a marketplace item with no CoYYns charged.
+  // Every caller awaits inside a try/catch and must gate its side effects
+  // on success. Do not revert to silent returns.
   const addCoyyns = useCallback(async (
     amount: number,
     description: string,
@@ -150,11 +155,12 @@ export function useCoyyns(): UseCoyynsReturn {
   ) => {
     setError(null)
 
-    if (!user) return
+    if (!user) throw new Error("Not authenticated")
 
     if (!Number.isInteger(amount) || amount <= 0) {
-      setError("Amount must be a positive integer")
-      return
+      const message = "Amount must be a positive integer"
+      setError(message)
+      throw new Error(message)
     }
 
     const { error: insertError } = await supabase
@@ -169,7 +175,7 @@ export function useCoyyns(): UseCoyynsReturn {
 
     if (insertError) {
       setError(insertError.message)
-      return
+      throw new Error(insertError.message)
     }
 
     await refreshWallet()
@@ -182,16 +188,21 @@ export function useCoyyns(): UseCoyynsReturn {
   ) => {
     setError(null)
 
-    if (!user) return
+    if (!user) throw new Error("Not authenticated")
 
     if (!Number.isInteger(amount) || amount <= 0) {
-      setError("Amount must be a positive integer")
-      return
+      const message = "Amount must be a positive integer"
+      setError(message)
+      throw new Error(message)
     }
 
+    // Optimistic local guard. The authoritative check is the balance >= 0
+    // CHECK constraint enforced by the DB trigger, which rejects the INSERT
+    // (and surfaces as insertError below) if the wallet can't cover the spend.
     if (!wallet || wallet.balance < amount) {
-      setError("Insufficient CoYYns balance")
-      return
+      const message = "Insufficient CoYYns balance"
+      setError(message)
+      throw new Error(message)
     }
 
     const { error: insertError } = await supabase
@@ -206,7 +217,7 @@ export function useCoyyns(): UseCoyynsReturn {
 
     if (insertError) {
       setError(insertError.message)
-      return
+      throw new Error(insertError.message)
     }
 
     await refreshWallet()

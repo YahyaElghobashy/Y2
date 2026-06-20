@@ -2260,6 +2260,14 @@ export interface Database {
         }
         Returns: Json
       }
+      purchase_marketplace_item: {
+        Args: {
+          p_item_id: string
+          p_target_id: string
+          p_effect_payload?: Json
+        }
+        Returns: Database["public"]["Tables"]["purchases"]["Row"]
+      }
       resolve_challenge_payout: {
         Args: {
           p_challenge_id: string

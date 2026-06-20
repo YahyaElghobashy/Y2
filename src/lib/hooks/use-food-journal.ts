@@ -364,7 +364,9 @@ export function useFoodJournal(): UseFoodJournalReturn {
 
       if (insertErr) {
         setError(insertErr.message)
-        return
+        // Throw so callers can distinguish a saved rating from a failed one
+        // (the new-visit flow relies on this to report partial failures).
+        throw new Error(insertErr.message)
       }
 
       if (inserted) {

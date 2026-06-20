@@ -13,6 +13,7 @@ const mockSubmitAnswer = vi.fn()
 const mockNextRound = vi.fn()
 const mockPauseSession = vi.fn()
 const mockCompleteSession = vi.fn()
+const mockAbandonSession = vi.fn()
 const mockGetAnswerHistory = vi.fn().mockResolvedValue([])
 
 const mockEngineReturn = {
@@ -36,6 +37,7 @@ const mockEngineReturn = {
   nextRound: mockNextRound,
   pauseSession: mockPauseSession,
   completeSession: mockCompleteSession,
+  abandonSession: mockAbandonSession,
   isWaitingForPartner: false,
   partnerHasAnswered: false,
   getAnswerHistory: mockGetAnswerHistory,
@@ -140,6 +142,15 @@ describe("CheckInPlayScreen", () => {
         expect(mockPauseSession).toHaveBeenCalled()
       })
     }
+  })
+
+  it("calls abandonSession when Abandon Game clicked (no more dead-end)", async () => {
+    render(<CheckInPlayScreen />)
+    fireEvent.click(screen.getByTestId("pause-btn"))
+    fireEvent.click(screen.getByTestId("abandon-game-btn"))
+    await waitFor(() => {
+      expect(mockAbandonSession).toHaveBeenCalled()
+    })
   })
 
   it("shows loading state when isLoading is true", () => {

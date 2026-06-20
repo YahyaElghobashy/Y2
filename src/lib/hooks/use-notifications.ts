@@ -203,14 +203,17 @@ export function useNotifications(): UseNotificationsReturn {
 
       if (!user) return
 
+      // Throw on every failure path. These used to setError + return, so the
+      // composer/builder's try/catch never fired — the input was cleared (and
+      // a "sent" state shown) even when nothing was delivered.
       if (!partner) {
         setError("Partner not connected")
-        return
+        throw new Error("Partner not connected")
       }
 
       if (!canSend) {
         setError("Daily send limit reached")
-        return
+        throw new Error("Daily send limit reached")
       }
 
       if (isSending.current) return
@@ -245,11 +248,8 @@ export function useNotifications(): UseNotificationsReturn {
           .single()
 
         if (insertError || !insertedData) {
-          setNotifications((prev) =>
-            prev.filter((n) => n.id !== optimisticNotification.id)
-          )
           setError("Failed to send notification")
-          return
+          throw new Error(insertError?.message ?? "Failed to send notification")
         }
 
         const insertedRow = insertedData as Notification
@@ -264,15 +264,13 @@ export function useNotifications(): UseNotificationsReturn {
 
         if (consumeError) {
           // Limit was already spent (e.g. a concurrent send won the race).
-          // Roll back the optimistic row and the inserted notification so the
-          // ledger stays consistent with the enforced quota.
-          setNotifications((prev) =>
-            prev.filter((n) => n.id !== optimisticNotification.id)
-          )
+          // Roll back the inserted notification so the ledger stays consistent
+          // with the enforced quota, then throw (the catch rolls back the
+          // optimistic row + re-throws to the caller).
           await supabase.from("notifications").delete().eq("id", insertedRow.id)
           setError("Daily send limit reached")
           await refreshLimits()
-          return
+          throw new Error("Daily send limit reached")
         }
 
         // Replace optimistic row with real row
@@ -287,11 +285,14 @@ export function useNotifications(): UseNotificationsReturn {
         })
 
         await refreshLimits()
-      } catch {
+      } catch (err) {
         setNotifications((prev) =>
           prev.filter((n) => n.id !== optimisticNotification.id)
         )
-        setError("Failed to send notification. Please check your connection.")
+        // Keep a specific message if a throw site already set one.
+        setError((prev) => prev ?? "Failed to send notification. Please check your connection.")
+        // Re-throw so the caller's catch can react (don't clear input / mark sent).
+        throw err instanceof Error ? err : new Error("Failed to send notification")
       } finally {
         isSending.current = false
       }

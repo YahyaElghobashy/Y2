@@ -247,6 +247,42 @@ describe("useCoupons", () => {
     )
   })
 
+  it("redeemCoupon THROWS when the coupon isn't redeemable (so the modal shows no false success)", async () => {
+    const { result } = renderHook(() => useCoupons())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      // coupon-1 is one of *my* coupons (not received) → not redeemable by me.
+      await expect(result.current.redeemCoupon("coupon-1")).rejects.toThrow("Coupon is not redeemable")
+    })
+  })
+
+  it("redeemCoupon THROWS when the DB update fails", async () => {
+    mockUpdate.mockReturnValueOnce({
+      eq: vi.fn().mockResolvedValue({ error: { message: "update boom" } }),
+    })
+    const { result } = renderHook(() => useCoupons())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      // coupon-3 is received + active → redeemable, but the update errors.
+      await expect(result.current.redeemCoupon("coupon-3")).rejects.toThrow("update boom")
+    })
+  })
+
+  it("approveCoupon THROWS when the DB update fails", async () => {
+    mockUpdate.mockReturnValueOnce({
+      eq: vi.fn().mockResolvedValue({ error: { message: "approve boom" } }),
+    })
+    const { result } = renderHook(() => useCoupons())
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      // coupon-2 is mine + pending_approval → approvable, but the update errors.
+      await expect(result.current.approveCoupon("coupon-2")).rejects.toThrow("approve boom")
+    })
+  })
+
   it("error is set when a Supabase query fails", async () => {
     mockFrom.mockImplementationOnce(() => {
       const chain: Record<string, ReturnType<typeof vi.fn>> = {}

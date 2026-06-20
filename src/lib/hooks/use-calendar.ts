@@ -121,7 +121,9 @@ export function useCalendar(): UseCalendarReturn {
 
       if (insertError) {
         setError(insertError.message)
-        return null
+        // Throw so the form's catch can surface the failure and not navigate
+        // away as if the save succeeded.
+        throw new Error(insertError.message)
       }
 
       await fetchEvents()
@@ -146,7 +148,7 @@ export function useCalendar(): UseCalendarReturn {
 
       if (updateError) {
         setError(updateError.message)
-        return
+        throw new Error(updateError.message)
       }
 
       await fetchEvents()
@@ -176,7 +178,7 @@ export function useCalendar(): UseCalendarReturn {
 
       if (deleteError) {
         setError(deleteError.message)
-        return
+        throw new Error(deleteError.message)
       }
 
       await fetchEvents()

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useAuth } from "@/lib/providers/AuthProvider"
-import { useCoyyns } from "@/lib/hooks/use-coyyns"
 import type { MarketplaceItem, Purchase } from "@/lib/types/marketplace.types"
 import type { Json } from "@/lib/types/database.types"
 
@@ -22,7 +21,6 @@ const PURCHASE_LIMIT = 50
 
 export function useMarketplace(): UseMarketplaceReturn {
   const { user, partner } = useAuth()
-  const { spendCoyyns } = useCoyyns()
   const supabase = getSupabaseBrowserClient()
 
   const [items, setItems] = useState<MarketplaceItem[]>([])
@@ -105,25 +103,29 @@ export function useMarketplace(): UseMarketplaceReturn {
       const item = items.find((i) => i.id === itemId)
       if (!item) throw new Error("Item not found")
 
-      // 1. Spend CoYYns (validates balance internally)
-      await spendCoyyns(item.price, item.name, "marketplace")
+      // 1+2. Atomic spend + purchase insert in a single DB transaction.
+      //   purchase_marketplace_item() debits the buyer's CoYYns and inserts
+      //   the purchase row together, so an item can never be delivered
+      //   without a charge (or charged without a purchase). It raises
+      //   INSUFFICIENT_FUNDS / ITEM_NOT_FOUND / etc. on failure.
+      const { data, error: rpcError } = await supabase.rpc(
+        "purchase_marketplace_item",
+        {
+          p_item_id: itemId,
+          p_target_id: partner.id,
+          p_effect_payload: (effectPayload ?? null) as Json,
+        }
+      )
 
-      // 2. Insert purchase record
-      const { data, error: insertError } = await supabase
-        .from("purchases")
-        .insert({
-          buyer_id: user.id,
-          target_id: partner.id,
-          item_id: itemId,
-          cost: item.price,
-          effect_payload: (effectPayload ?? null) as Json,
-          status: "pending",
-        })
-        .select()
-        .single()
-
-      if (insertError || !data) {
-        throw new Error("Failed to create purchase record")
+      if (rpcError || !data) {
+        const code = rpcError?.message ?? ""
+        if (code.includes("INSUFFICIENT_FUNDS")) {
+          throw new Error("Insufficient CoYYns balance")
+        }
+        if (code.includes("ITEM_NOT_FOUND")) {
+          throw new Error("Item is no longer available")
+        }
+        throw new Error("Failed to complete purchase")
       }
 
       const purchase = data as Purchase
@@ -193,7 +195,7 @@ export function useMarketplace(): UseMarketplaceReturn {
 
       return purchase
     },
-    [user, partner, items, spendCoyyns, supabase, refreshPurchases]
+    [user, partner, items, supabase, refreshPurchases]
   )
 
   // Auth-safe: inert state when user is null

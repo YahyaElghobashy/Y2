@@ -38,6 +38,7 @@ export function CheckInPlayScreen() {
     nextRound,
     pauseSession,
     completeSession,
+    abandonSession,
     isWaitingForPartner,
     partnerHasAnswered,
     getAnswerHistory,
@@ -144,6 +145,14 @@ export function CheckInPlayScreen() {
     router.push("/game")
   }
 
+  // Handle abandon — explicit exit when a partner never answers (the waiting
+  // phase used to be a dead-end with only a pause). Marks the session abandoned
+  // and returns to the hub.
+  const handleAbandon = async () => {
+    await abandonSession()
+    router.push("/game")
+  }
+
   // Loading state
   if (isLoading) {
     return (
@@ -199,6 +208,8 @@ export function CheckInPlayScreen() {
               className="w-8 h-8 rounded-full bg-white/70 border border-white/80 flex items-center justify-center shadow-sm"
               whileTap={{ scale: 0.92 }}
               onClick={() => setShowPauseMenu(true)}
+              aria-label="Pause"
+              data-testid="pause-btn"
             >
               <Pause size={14} className="text-[#8C8279]" />
             </motion.button>
@@ -377,6 +388,13 @@ export function CheckInPlayScreen() {
                   onClick={() => setShowPauseMenu(false)}
                 >
                   Continue Playing
+                </button>
+                <button
+                  className="w-full py-3 rounded-full text-[#C75050] font-medium text-sm"
+                  onClick={handleAbandon}
+                  data-testid="abandon-game-btn"
+                >
+                  Abandon Game
                 </button>
               </div>
             </motion.div>

@@ -20,10 +20,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
  */
 
 // ── Hoisted hook mocks (factories reference these) ──────────────
-const { useAuth, useCoyyns, recordOpened } = vi.hoisted(() => ({
+const { useAuth, useCoyyns, recordOpened, useMood, useSnap, useCoupons } = vi.hoisted(() => ({
   useAuth: vi.fn(),
   useCoyyns: vi.fn(),
   recordOpened: vi.fn(),
+  useMood: vi.fn(),
+  useSnap: vi.fn(),
+  useCoupons: vi.fn(),
 }))
 
 // ── framer-motion — Proxy passthrough for any motion.* tag ──────
@@ -69,6 +72,10 @@ vi.mock("@/lib/hooks/use-garden", () => ({
     recordOpened,
   }),
 }))
+// Mood / snap / coupon feed the home peeks; default to empty (overridable per test).
+vi.mock("@/lib/hooks/use-mood", () => ({ useMood: () => useMood() }))
+vi.mock("@/lib/hooks/use-snap", () => ({ useSnap: () => useSnap() }))
+vi.mock("@/lib/hooks/use-coupons", () => ({ useCoupons: () => useCoupons() }))
 
 import Home from "@/app/(main)/page"
 
@@ -119,11 +126,48 @@ function setWallet(balance: number | null) {
   })
 }
 
+function setMood(today: string | null, partnerM: string | null = null) {
+  useMood.mockReturnValue({
+    todayMood: today ? { mood: today } : null,
+    partnerMood: partnerM ? { mood: partnerM } : null,
+    setMood: vi.fn(),
+  })
+}
+function setSnaps(feed: unknown[]) {
+  useSnap.mockReturnValue({ snapFeed: feed })
+}
+function setCoupons(received: unknown[]) {
+  useCoupons.mockReturnValue({ receivedCoupons: received, myCoupons: [] })
+}
+
 describe("Home Page (calm living-room)", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setAuth()
     setWallet(248)
+    setMood(null)
+    setSnaps([])
+    setCoupons([])
+  })
+
+  // ── Wiring: real mood / keepsake / coupon flow into the page ──
+  it("renders the user's real mood emoji + label from useMood", () => {
+    setMood("loving")
+    render(<Home />)
+    expect(screen.getByText("🥰")).toBeInTheDocument()
+    expect(screen.getByText("Loving")).toBeInTheDocument()
+  })
+
+  it("shows a snap from the feed as a keepsake peek", () => {
+    setSnaps([{ id: "s1", user_id: "user-2", snap_date: "2026-06-19", photo_url: "/x.jpg", caption: "sunset walk", reaction_emoji: null }])
+    render(<Home />)
+    expect(screen.getByText("sunset walk")).toBeInTheDocument()
+  })
+
+  it("shows the partner's active coupon in the treasury peek", () => {
+    setCoupons([{ id: "c1", title: "Breakfast in bed", status: "active" }])
+    render(<Home />)
+    expect(screen.getByText(/Breakfast in bed/)).toBeInTheDocument()
   })
 
   // ── Surface: the redesigned hero renders ──────────────────────

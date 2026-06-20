@@ -61,7 +61,7 @@ import UsPage from "@/app/(main)/us/page"
 // The 5 rooms the hub must surface, in order, with their migration hrefs.
 const EXPECTED_ROOMS = [
   { label: "Connect", line: "today's question", href: "/us/prompts" },
-  { label: "Play", line: "games & the wheel", href: "/game/check-in" },
+  { label: "Play", line: "games & the wheel", href: "/game" },
   { label: "Plan", line: "calendar & lists", href: "/us/calendar" },
   { label: "Watch", line: "what's next, together", href: "/us/watch" },
   { label: "Table", line: "places you love", href: "/our-table" },

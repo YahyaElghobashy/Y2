@@ -5,6 +5,8 @@ import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
 import { SoulView, type SoulData } from "@/components/spiritual/SoulView"
+import { MoodPicker } from "@/components/mood/MoodPicker"
+import { QuranTracker } from "@/components/spiritual/QuranTracker"
 import { getDailyAyah } from "@/lib/quran/daily-ayah"
 import { usePrayer } from "@/lib/hooks/use-prayer"
 import { usePrayerTimes } from "@/lib/hooks/use-prayer-times"
@@ -76,6 +78,25 @@ export default function SoulPage() {
         onIncrementAzkar={increment}
         onDetectLocation={() => void detectLocation()}
       />
+
+      {/* Interactive trackers SoulView's glances don't cover: logging today's
+          mood (otherwise unreachable) and logging Qur'an pages. Rendered as an
+          additive section below the view. */}
+      <section
+        className="skin-aware px-5 pb-28 pt-6"
+        style={{ background: "var(--background)" }}
+      >
+        <h2
+          className="mb-3 px-1 text-[13px] font-bold uppercase tracking-[0.2em]"
+          style={{ color: "var(--color-ink-soft)" }}
+        >
+          How are you feeling?
+        </h2>
+        <MoodPicker />
+        <div className="mt-6">
+          <QuranTracker />
+        </div>
+      </section>
     </PageTransition>
   )
 }

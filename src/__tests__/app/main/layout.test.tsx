@@ -40,6 +40,9 @@ vi.mock("@/components/pairing/PairingNudge", () => ({
 vi.mock("@/components/coupons/CouponReceiveAnimation", () => ({
   CouponReceiveAnimation: () => null,
 }))
+vi.mock("@/components/shared/DailyBonusToast", () => ({
+  DailyBonusToast: () => <div data-testid="daily-bonus-toast" />,
+}))
 
 import AppLayout from "@/app/(main)/layout"
 
@@ -73,6 +76,33 @@ beforeEach(() => {
   vi.clearAllMocks()
   mockPathname = "/"
   window.history.replaceState({}, "", "/")
+})
+
+describe("AppLayout — client auth guard", () => {
+  it("redirects to /login when auth resolves with no user", () => {
+    setAuth({ user: null, profile: null })
+    render(<AppLayout><div /></AppLayout>)
+    expect(mockReplace).toHaveBeenCalledWith("/login")
+  })
+
+  it("preserves the intended path as redirectTo for a deep route", () => {
+    mockPathname = "/treasury"
+    setAuth({ user: null, profile: null })
+    render(<AppLayout><div /></AppLayout>)
+    expect(mockReplace).toHaveBeenCalledWith("/login?redirectTo=%2Ftreasury")
+  })
+
+  it("does NOT redirect to /login while auth is still loading", () => {
+    setAuth({ user: null, profile: null, isLoading: true })
+    render(<AppLayout><div /></AppLayout>)
+    expect(mockReplace).not.toHaveBeenCalledWith("/login")
+  })
+
+  it("does NOT redirect to /login when a user is present", () => {
+    setAuth({ profile: profile() })
+    render(<AppLayout><div /></AppLayout>)
+    expect(mockReplace).not.toHaveBeenCalled()
+  })
 })
 
 describe("AppLayout — onboarding guard", () => {

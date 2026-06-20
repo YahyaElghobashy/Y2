@@ -496,7 +496,7 @@ describe("useCalendar", () => {
     expect(mockDelete).toHaveBeenCalled()
   })
 
-  it("createEvent sets error on insert failure", async () => {
+  it("createEvent THROWS and sets error on insert failure", async () => {
     mockInsert.mockReturnValueOnce({
       select: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
@@ -513,17 +513,20 @@ describe("useCalendar", () => {
     })
 
     await act(async () => {
-      const res = await result.current.createEvent({
-        title: "Bad",
-        event_date: "2026-01-01",
-        event_time: null,
-        end_time: null,
-        is_all_day: true,
-        recurrence: "none",
-        category: "other",
-        is_shared: false,
-      })
-      expect(res).toBeNull()
+      // createEvent now throws so the form's catch can keep the user on the
+      // page and toast, instead of navigating away as if the save worked.
+      await expect(
+        result.current.createEvent({
+          title: "Bad",
+          event_date: "2026-01-01",
+          event_time: null,
+          end_time: null,
+          is_all_day: true,
+          recurrence: "none",
+          category: "other",
+          is_shared: false,
+        })
+      ).rejects.toThrow("Insert failed")
     })
 
     expect(result.current.error).toBe("Insert failed")
