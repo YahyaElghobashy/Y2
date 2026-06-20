@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { ChevronLeft, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -143,7 +144,9 @@ export function CreateEventForm({
 
       router.back()
     } catch {
-      // error is set on the hook
+      // Mutation failed (error also set on the hook) — stay on the form and
+      // tell the user rather than navigating away as if it saved.
+      toast.error(mode === "edit" ? "Couldn't save changes. Try again." : "Couldn't create event. Try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -161,7 +164,7 @@ export function CreateEventForm({
       await deleteEvent(initialEvent.id)
       router.back()
     } catch {
-      // error handled by hook
+      toast.error("Couldn't delete event. Try again.")
     } finally {
       setIsSubmitting(false)
     }

@@ -196,8 +196,11 @@ export function useCycle(): UseCycleReturn {
       // Explicit onConflict keeps the upsert keyed on the owner_id UNIQUE.
       const { error: upsertError } = await supabase
         .from("cycle_config")
+        // First-run setup always provides pill_start_date via the form; the
+        // (config ?? {}) spread widens it to optional for the type-checker, so
+        // bridge with a cast. owner_id is the upsert conflict key.
         .upsert(
-          { ...(config ?? {}), ...updates, owner_id: profile.id },
+          { ...(config ?? {}), ...updates, owner_id: profile.id } as CycleConfig,
           { onConflict: "owner_id" }
         )
 

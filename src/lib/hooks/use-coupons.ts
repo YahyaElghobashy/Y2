@@ -140,17 +140,21 @@ export function useCoupons(): UseCouponsReturn {
     [user, partner, supabase, refreshCoupons]
   )
 
+  // redeem/approve/reject THROW on any failure (guard or DB error). They were
+  // swallowing (setError + return), so RedeemConfirmModal's try/catch always
+  // hit the success path and showed a false-success toast on failure.
   const redeemCoupon = useCallback(
     async (couponId: string) => {
       setError(null)
 
-      if (!user || !partner) return
+      if (!user || !partner) throw new Error("Not connected")
 
       // Find the coupon
       const coupon = receivedCoupons.find((c) => c.id === couponId)
       if (!coupon || coupon.status !== "active") {
-        setError("Coupon is not redeemable")
-        return
+        const msg = "Coupon is not redeemable"
+        setError(msg)
+        throw new Error(msg)
       }
 
       const { error: updateError } = await supabase
@@ -160,7 +164,7 @@ export function useCoupons(): UseCouponsReturn {
 
       if (updateError) {
         setError(updateError.message)
-        return
+        throw new Error(updateError.message)
       }
 
       await refreshCoupons()
@@ -172,12 +176,13 @@ export function useCoupons(): UseCouponsReturn {
     async (couponId: string) => {
       setError(null)
 
-      if (!user || !partner) return
+      if (!user || !partner) throw new Error("Not connected")
 
       const coupon = myCoupons.find((c) => c.id === couponId)
       if (!coupon || coupon.status !== "pending_approval") {
-        setError("Coupon is not awaiting approval")
-        return
+        const msg = "Coupon is not awaiting approval"
+        setError(msg)
+        throw new Error(msg)
       }
 
       const { error: updateError } = await supabase
@@ -187,7 +192,7 @@ export function useCoupons(): UseCouponsReturn {
 
       if (updateError) {
         setError(updateError.message)
-        return
+        throw new Error(updateError.message)
       }
 
       await refreshCoupons()
@@ -199,12 +204,13 @@ export function useCoupons(): UseCouponsReturn {
     async (couponId: string, reason?: string) => {
       setError(null)
 
-      if (!user || !partner) return
+      if (!user || !partner) throw new Error("Not connected")
 
       const coupon = myCoupons.find((c) => c.id === couponId)
       if (!coupon || coupon.status !== "pending_approval") {
-        setError("Coupon is not awaiting approval")
-        return
+        const msg = "Coupon is not awaiting approval"
+        setError(msg)
+        throw new Error(msg)
       }
 
       const { error: updateError } = await supabase
@@ -218,7 +224,7 @@ export function useCoupons(): UseCouponsReturn {
 
       if (updateError) {
         setError(updateError.message)
-        return
+        throw new Error(updateError.message)
       }
 
       await refreshCoupons()

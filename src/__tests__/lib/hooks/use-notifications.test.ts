@@ -312,7 +312,8 @@ describe("useNotifications", () => {
     const countBefore = result.current.notifications.length
 
     await act(async () => {
-      await result.current.sendNotification("Test", "Body")
+      // sendNotification now THROWS on every failure path so callers can react.
+      await expect(result.current.sendNotification("Test", "Body")).rejects.toThrow()
     })
 
     // Optimistic row removed, inserted notification deleted, push NOT sent.
@@ -336,7 +337,8 @@ describe("useNotifications", () => {
     })
 
     await act(async () => {
-      await result.current.sendNotification("Test", "Body")
+      // sendNotification now THROWS on every failure path so callers can react.
+      await expect(result.current.sendNotification("Test", "Body")).rejects.toThrow()
     })
 
     expect(mockRpc).not.toHaveBeenCalled()
@@ -360,7 +362,8 @@ describe("useNotifications", () => {
     })
 
     await act(async () => {
-      await result.current.sendNotification("Test", "Body")
+      // sendNotification now THROWS on every failure path so callers can react.
+      await expect(result.current.sendNotification("Test", "Body")).rejects.toThrow()
     })
 
     expect(result.current.error).toBe("Daily send limit reached")
@@ -383,7 +386,8 @@ describe("useNotifications", () => {
     const countBefore = result.current.notifications.length
 
     await act(async () => {
-      await result.current.sendNotification("Test", "Body")
+      // sendNotification now THROWS on every failure path so callers can react.
+      await expect(result.current.sendNotification("Test", "Body")).rejects.toThrow()
     })
 
     expect(result.current.error).toBe("Failed to send notification")
@@ -400,7 +404,8 @@ describe("useNotifications", () => {
     })
 
     await act(async () => {
-      await result.current.sendNotification("Test", "Body")
+      // sendNotification now THROWS on every failure path so callers can react.
+      await expect(result.current.sendNotification("Test", "Body")).rejects.toThrow()
     })
 
     expect(result.current.error).toBe("Partner not connected")

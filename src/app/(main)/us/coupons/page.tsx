@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { toast } from "sonner"
 import { PageTransition } from "@/components/animations"
 import { PageHeader } from "@/components/shared/PageHeader"
 import { LoadingSkeleton } from "@/components/shared/LoadingSkeleton"
@@ -55,7 +56,16 @@ export default function CouponWalletPage() {
 
   return (
     <PageTransition>
-      <CouponsView initial={items} onRedeem={(id) => void redeemCoupon(id)} />
+      <CouponsView
+        initial={items}
+        onRedeem={(id) => {
+          // Promise.resolve guards against a non-thenable return; redeemCoupon
+          // throws on failure so the .catch surfaces it instead of a silent fail.
+          Promise.resolve(redeemCoupon(id))
+            .then(() => toast.success("Redemption requested!"))
+            .catch(() => toast.error("Failed to redeem coupon"))
+        }}
+      />
     </PageTransition>
   )
 }
