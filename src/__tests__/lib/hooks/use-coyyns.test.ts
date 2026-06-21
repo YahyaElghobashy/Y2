@@ -85,11 +85,19 @@ function buildQueryMock(resolvedValue: { data: unknown; error: unknown }) {
 
 let queryResults: Map<string, { data: unknown; error: unknown }>
 
+// The partner-wallet fetch resolves to this. Tests can reassign it (e.g. to a
+// null/406 result) to simulate a partner who has no wallet row yet.
+let PARTNER_WALLET_RESULT: { data: unknown; error: unknown } = {
+  data: MOCK_PARTNER_WALLET,
+  error: null,
+}
+
 function setupQueryResults() {
   queryResults = new Map([
     ["coyyns_wallets", { data: MOCK_WALLET, error: null }],
     ["coyyns_transactions", { data: MOCK_TRANSACTIONS, error: null }],
   ])
+  PARTNER_WALLET_RESULT = { data: MOCK_PARTNER_WALLET, error: null }
 }
 
 const mockFrom = vi.fn((table: string) => {
@@ -101,15 +109,21 @@ const mockFrom = vi.fn((table: string) => {
   const chain: Record<string, ReturnType<typeof vi.fn>> = {}
   chain.select = vi.fn().mockReturnValue(chain)
   chain.eq = vi.fn((col: string, val: string) => {
-    // If querying partner wallet
+    // If querying partner wallet, resolve to the partner's wallet (or the
+    // partner override the test installed via PARTNER_WALLET_RESULT).
     if (isWallet && col === "user_id" && val === MOCK_PARTNER.id) {
-      chain.single = vi.fn().mockResolvedValue({ data: MOCK_PARTNER_WALLET, error: null })
+      chain.maybeSingle = vi.fn().mockResolvedValue(PARTNER_WALLET_RESULT)
+      chain.single = vi.fn().mockResolvedValue(PARTNER_WALLET_RESULT)
     }
     return chain
   })
   chain.order = vi.fn().mockReturnValue(chain)
   chain.limit = vi.fn().mockResolvedValue(result)
+  // The wallet hook fetches with maybeSingle() (resilient to a missing row →
+  // PostgREST 406). Both single + maybeSingle are mocked so the test mirrors
+  // the real chain regardless of which terminal is used.
   chain.single = vi.fn().mockResolvedValue(result)
+  chain.maybeSingle = vi.fn().mockResolvedValue(result)
   chain.insert = mockInsert
 
   return chain
@@ -413,5 +427,90 @@ describe("useCoyyns", () => {
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({ category: "manual" })
     )
+  })
+
+  // ── Resilience to a missing wallet row (migration 051 defense-in-depth) ──
+  // Pre-051 accounts (and the transient gap before the signup trigger fires)
+  // have no coyyns_wallets row. The fetch uses maybeSingle(), so a 0-row
+  // result must resolve to null wallet (balance 0) — NOT a 406 error that
+  // poisons the UI and disables every buy button.
+
+  it("resolves wallet to null (no error/throw) when the user's wallet row is absent", async () => {
+    // maybeSingle() on 0 rows returns { data: null, error: null }
+    queryResults.set("coyyns_wallets", { data: null, error: null })
+
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.wallet).toBeNull()
+    expect(result.current.error).toBeNull()
+    // Consumers derive balance via `wallet?.balance ?? 0` → 0, not an error state.
+    expect(result.current.wallet?.balance ?? 0).toBe(0)
+    expect(result.current.wallet?.lifetime_earned ?? 0).toBe(0)
+  })
+
+  it("does NOT throw when maybeSingle reports a 406-style fetch error for a missing wallet", async () => {
+    // Defensive: even if PostgREST surfaces an error for the missing row, the
+    // hook swallows it to null rather than letting it bubble and break render.
+    queryResults.set("coyyns_wallets", {
+      data: null,
+      error: { code: "PGRST116", message: "JSON object requested, multiple (or no) rows returned" },
+    })
+
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.wallet).toBeNull()
+    expect(result.current.error).toBeNull()
+  })
+
+  it("keeps the funded user's own wallet intact even when the PARTNER has no wallet row", async () => {
+    // The exact P0 scenario: a funded user whose partner has 0 CoYYns and thus
+    // no wallet row. The partner fetch resolving to null must NOT clobber the
+    // current user's balance — buy-enable keys off the user's OWN balance.
+    PARTNER_WALLET_RESULT = { data: null, error: null }
+
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // Own wallet still funded → marketplace buy stays enabled (balance 100).
+    expect(result.current.wallet).toEqual(MOCK_WALLET)
+    expect(result.current.wallet?.balance).toBe(100)
+    // Partner wallet absent → null, surfaced as balance 0 by consumers.
+    expect(result.current.partnerWallet).toBeNull()
+    expect(result.current.error).toBeNull()
+  })
+
+  it("spendCoyyns still works for a funded user when the partner wallet is missing", async () => {
+    // Buy/spend must succeed off the user's own balance regardless of the
+    // partner's missing wallet (no cross-poisoning).
+    PARTNER_WALLET_RESULT = { data: null, error: null }
+
+    const { result } = renderHook(() => useCoyyns())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.spendCoyyns(20, "Buy something", "marketplace")
+    })
+
+    expect(mockInsert).toHaveBeenCalledWith({
+      user_id: "user-1",
+      amount: -20,
+      type: "spend",
+      category: "marketplace",
+      description: "Buy something",
+    })
   })
 })

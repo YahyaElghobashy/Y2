@@ -27,11 +27,15 @@ export function useCoyyns(): UseCoyynsReturn {
   const [error, setError] = useState<string | null>(null)
 
   const fetchUserWallet = useCallback(async (userId: string) => {
+    // maybeSingle() (not single()) so a missing wallet row resolves to null
+    // instead of a PostgREST 406 error. A user/partner may legitimately have
+    // no wallet row yet (pre-051 accounts, or a transient gap before the
+    // signup trigger fires); callers treat null as balance 0 / lifetime 0.
     const { data, error: fetchError } = await supabase
       .from("coyyns_wallets")
       .select("*")
       .eq("user_id", userId)
-      .single()
+      .maybeSingle()
 
     if (fetchError || !data) return null
     return data as CoyynsWallet
