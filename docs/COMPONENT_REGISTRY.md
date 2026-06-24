@@ -546,3 +546,29 @@
 |---|---|---|---|
 | /decide | ✅ | `app/(main)/decide/page.tsx` | Client Component. Wires `useDecisions` + `useAuth` into `DecideHub`. |
 | /preview/decide | ✅ | `app/preview/decide/page.tsx` | Public mock — `DecideHub` + `DECIDE_MOCK` + `BottomNav` in a phone frame. Listed in the preview gallery (Us). |
+
+## Travels
+
+| Component | Status | Path | Notes |
+|---|---|---|---|
+| TravelsView | ✅ | `components/travels/TravelsView.tsx` | Props-driven list (View). Header + status-ordered trip posters (PosterCard cover hero, status chip, hosted "Trip site" badge, dates, CompanionStack). EmptyState + loading skeletons. Optional `onLogTravel`/`onOpenTrip` (omitted in /preview → inert). Exports `TRAVELS_MOCK`. |
+| TripDetailView | ✅ | `components/travels/TripDetailView.tsx` | Single-trip detail (View). Cover hero, dates, companions, italic summary. Hosted → "Open the trip" links to `/travels/<id>/site` (the gated serve route — `hosted_path` is a bundle folder KEY, not a URL). Native → photos area (v2 TODO). Owner-only `onDelete`; native `onAddPhoto`. Exports `TRIP_DETAIL_HOSTED_MOCK`/`TRIP_DETAIL_NATIVE_MOCK`. |
+| CompanionStack | ✅ | `components/travels/CompanionStack.tsx` | Overlapping avatar row for a trip's companions (free-form people, initial-on-sand fallback). Presentational, safe with empty list. |
+| LogTravelForm | ✅ | `components/travels/LogTravelForm.tsx` | Bottom-sheet create form (portal). Cover upload, title/destination/dates, status + kind chips, hosted bundle-key field, summary, companion rows. `onSubmit(LogTravelSubmit = CreateTripData & {coverFile?})` (upload happens on the page). |
+| format | ✅ | `components/travels/format.ts` | `formatDateRange(start,end)` — collapses same-month/day, single-bound, empty. |
+
+## Travels Hooks
+
+| Hook | Status | Path | Notes |
+|---|---|---|---|
+| useTrips | ✅ | `lib/hooks/use-trips.ts` | Couple-shared `trips` + `trip_companions` via RLS (own + partner-read). Fetch (newest first) + realtime trips INSERT/UPDATE/DELETE + companions INSERT/DELETE. `createTrip`→id (with inline companions), `updateTrip`, `deleteTrip` (cascade), `addCompanion`, `removeCompanion`, `getTrip`. Inert no-user return. 17 tests. |
+
+## Travels Routes
+
+| Route | Status | Path | Notes |
+|---|---|---|---|
+| /travels | ✅ | `app/(main)/travels/page.tsx` | Client Component. `useTrips`→`TravelsView`; create flow = createTrip → uploadMedia(`trip-covers`) → updateTrip(cover_image); open → router push `/travels/<id>`. 6 tests. |
+| /travels/[tripId] | ✅ | `app/(main)/travels/[tripId]/page.tsx` | `getTrip(id)`→`TripDetailView`; owner-only delete → back to /travels; skeleton while loading, not-found state. Native photo gallery = v2 TODO. 6 tests. |
+| /travels/[tripId]/site/[[...path]] | ✅ | `app/(main)/travels/[tripId]/site/[[...path]]/route.ts` | Auth-gated static-file server (nodejs, force-dynamic) for hosted-trip bundles under `content/trips/<hosted_path>/`. 401 no-session, 404 not-found/not-hosted, path-traversal guard, default doc `UK Trip.dc.html`, correct Content-Type, `Cache-Control: private, max-age=3600`. Mirrors `api/media/[id]`. 14 tests. |
+| /preview/travels | ✅ | `app/preview/travels/page.tsx` | Public mock — `TravelsView` + `TRAVELS_MOCK` (inert). In the preview gallery (Travels). |
+| /preview/travels/hosted, /native | ✅ | `app/preview/travels/{hosted,native}/page.tsx` | Public mocks — `TripDetailView` + hosted/native mock (inert). In the preview gallery (Travels). |
