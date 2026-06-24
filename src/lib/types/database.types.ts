@@ -2278,6 +2278,94 @@ export interface Database {
           }
         ]
       }
+      trips: {
+        Row: {
+          id: string
+          created_by: string
+          title: string
+          destination: string | null
+          start_date: string | null
+          end_date: string | null
+          cover_image: string | null
+          summary: string | null
+          kind: string
+          hosted_path: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          created_by: string
+          title: string
+          destination?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          cover_image?: string | null
+          summary?: string | null
+          kind?: string
+          hosted_path?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          created_by?: string
+          title?: string
+          destination?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          cover_image?: string | null
+          summary?: string | null
+          kind?: string
+          hosted_path?: string | null
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      trip_companions: {
+        Row: {
+          id: string
+          trip_id: string
+          name: string
+          relation: string | null
+          avatar_url: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          trip_id: string
+          name: string
+          relation?: string | null
+          avatar_url?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          trip_id?: string
+          name?: string
+          relation?: string | null
+          avatar_url?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_companions_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {
