@@ -1,0 +1,26 @@
+# Vercel deploy excludes — keep the upload small + under the 15k-file limit.
+# Build only needs src/, public/, content/, and root config files.
+
+# Agent/session scratch (8.5GB of git worktrees — by far the biggest offender)
+.claude/
+
+# Python tooling / orchestrator (not part of the Next.js build)
+.venv/
+orchestrator/
+__pycache__/
+*.pyc
+*.pyo
+
+# Design source assets + docs (raw gen images, ~295MB; build ships only public/assets)
+docs/
+reports/
+
+# One-off scripts (manually run to generate committed data; not needed at build)
+scripts/
+Vendor Crawler/
+
+# Local creds / backups (already gitignored, belt-and-suspenders)
+.env.local.oldproject.bak
+.hayah-creds.tmp
+*.tsbuildinfo
+supabase/.temp/
