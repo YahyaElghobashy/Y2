@@ -63,6 +63,26 @@ function contentTypeFor(filePath: string): string {
   return CONTENT_TYPES[ext] ?? "application/octet-stream"
 }
 
+// The hosted bundle is authored to be served from a directory root: it uses
+// relative refs (e.g. `./support.js`, the dc-runtime). But this route serves the
+// document at /travels/<id>/site (NO trailing slash), so the browser resolves
+// those relatives against /travels/<id>/ and requests /travels/<id>/support.js —
+// a 404. The dc-runtime then never loads, React never mounts, and the raw `{{ }}`
+// template tokens show. Injecting a <base> makes every relative ref resolve into
+// the bundle regardless of trailing slash. Absolute URLs (unpkg, open-meteo) are
+// unaffected. Idempotent: skips if the document already declares a <base>.
+function injectBaseHref(html: string, baseHref: string): string {
+  if (/<base\b/i.test(html)) return html
+  const tag = `<base href="${baseHref}">`
+  if (/<head\b[^>]*>/i.test(html)) {
+    return html.replace(/<head\b[^>]*>/i, (m) => `${m}\n${tag}`)
+  }
+  if (/<html\b[^>]*>/i.test(html)) {
+    return html.replace(/<html\b[^>]*>/i, (m) => `${m}\n<head>${tag}</head>`)
+  }
+  return tag + html
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ tripId: string; path?: string[] }> }
@@ -119,6 +139,26 @@ export async function GET(
     file = await fs.readFile(resolved)
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
+  // HTML documents get a <base> injected so the bundle's relative refs resolve
+  // into /travels/<id>/site/ even though the route has no trailing slash. The
+  // base points at the bundle root plus any nested dir of the requested file, so
+  // sub-pages resolve their own relatives too.
+  const ext = path.extname(resolved).toLowerCase()
+  if (ext === ".html" || ext === ".htm") {
+    const reqDir = path.posix.dirname(requested)
+    const baseHref =
+      `/travels/${encodeURIComponent(tripId)}/site/` +
+      (reqDir && reqDir !== "." ? `${reqDir}/` : "")
+    const html = injectBaseHref(file.toString("utf-8"), baseHref)
+    return new NextResponse(html, {
+      status: 200,
+      headers: {
+        "Content-Type": contentTypeFor(resolved),
+        "Cache-Control": "private, max-age=3600",
+      },
+    })
   }
 
   return new NextResponse(new Uint8Array(file), {
