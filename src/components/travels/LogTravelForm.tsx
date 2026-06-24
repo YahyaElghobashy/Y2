@@ -312,13 +312,15 @@ export function LogTravelForm({ open, onClose, onSubmit }: LogTravelFormProps) {
             </div>
           </Field>
 
-          {/* Hosted path (only for hosted trips) */}
+          {/* Hosted bundle key (only for hosted trips). This is the folder
+              name under content/trips/ that the gated serve route resolves —
+              not a URL. */}
           {kind === "hosted" && (
-            <Field label="Trip site link">
+            <Field label="Trip site bundle">
               <Input
                 value={hostedPath}
                 onChange={(e) => setHostedPath(e.target.value)}
-                placeholder="/e/cambridge-london"
+                placeholder="cambridge-london"
                 data-testid="hosted-path-input"
               />
             </Field>

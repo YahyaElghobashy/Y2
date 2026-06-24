@@ -224,9 +224,13 @@ export function TripDetailView({
             {trip.hosted_path ? (
               <div className="mt-4 flex justify-center">
                 <Button variant="copper" asChild>
-                  {/* Plain anchor: hosted_path may be an external/static route
-                      outside Next's router. Opens the gated trip site. */}
-                  <a href={trip.hosted_path}>Open the trip</a>
+                  {/* Plain anchor (not Next <Link>): the gated trip site is
+                      served by a route handler that streams static files, so
+                      we want a real navigation, not a client transition.
+                      `hosted_path` stores the BUNDLE FOLDER KEY (e.g.
+                      "cambridge-london"); the auth-gated serve route lives at
+                      /travels/<id>/site and resolves files under that key. */}
+                  <a href={`/travels/${trip.id}/site`}>Open the trip</a>
                 </Button>
               </div>
             ) : (
@@ -360,7 +364,9 @@ export const TRIP_DETAIL_HOSTED_MOCK: TripWithCompanions = {
   cover_image: "/assets/scenes/scene-cairo-skyline-night.webp",
   summary: "A week of colleges, river punting and rainy bookshops with Mum.",
   kind: "hosted",
-  hosted_path: "/e/cambridge-london",
+  // Bundle folder key under content/trips/ — the serve route resolves files
+  // here. NOT a URL; the "Open the trip" button links to /travels/<id>/site.
+  hosted_path: "cambridge-london",
   status: "past",
   created_at: "2025-08-20T00:00:00Z",
   companions: [

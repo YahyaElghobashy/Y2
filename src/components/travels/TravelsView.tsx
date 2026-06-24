@@ -287,7 +287,8 @@ export const TRAVELS_MOCK: TripWithCompanions[] = [
     cover_image: "/assets/scenes/scene-cairo-skyline-night.webp",
     summary: "A week of colleges, river punting and rainy bookshops with Mum.",
     kind: "hosted",
-    hosted_path: "/e/cambridge-london",
+    // Bundle folder key under content/trips/ (not a URL) — see the serve route.
+    hosted_path: "cambridge-london",
     status: "past",
     created_at: "2025-08-20T00:00:00Z",
     companions: [

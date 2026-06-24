@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Plane } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 
 /**
@@ -79,6 +79,25 @@ export function KeepsakeView({ data }: { data: KeepsakeData }) {
           </Link>
         ))}
       </div>
+
+      {/* ── Travels ── a dedicated room for trips, own + partner's ── */}
+      <Link href="/travels" aria-label="Travels" className="mt-3 block">
+        <PosterCard accent="teal" interactive className="flex items-center justify-between !p-4">
+          <div className="flex items-center gap-3">
+            <span
+              className="grid h-11 w-11 place-items-center rounded-2xl"
+              style={{ background: "var(--color-sand)", color: "var(--color-teal-deep)" }}
+            >
+              <Plane size={22} strokeWidth={2} />
+            </span>
+            <span>
+              <span className="block text-[15px] font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}>Travels</span>
+              <span className="block text-[12px]" style={{ color: "var(--color-ink-soft)" }}>everywhere you&apos;ve wandered, together</span>
+            </span>
+          </div>
+          <ChevronRight size={16} style={{ color: "var(--color-ink-soft)" }} />
+        </PosterCard>
+      </Link>
     </div>
   )
 }

@@ -46,6 +46,13 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
       { name: "Table", href: "/preview/table", note: "food journal · map/list" },
     ],
   },
+  {
+    world: "Travels", arabic: "رحلاتنا", accent: "#1F8A8A", items: [
+      { name: "Travels list", href: "/preview/travels", note: "trip posters · companions · status" },
+      { name: "Trip — hosted", href: "/preview/travels/hosted", note: "trip site · open the world" },
+      { name: "Trip — native", href: "/preview/travels/native", note: "photos · companions · summary" },
+    ],
+  },
   { world: "Moments", arabic: "لحظات", accent: "#2B2F5E", items: [{ name: "Celebration", href: "/preview/celebration", note: "confetti · sunburst · seal" }] },
 ]
 

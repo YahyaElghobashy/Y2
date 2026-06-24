@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
   e.currentTarget.style.display = "none"
 }
-import { Settings, ChevronRight } from "lucide-react"
+import { Settings, ChevronRight, Plane } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { Coin } from "@/components/shared/Coin"
 import { cn } from "@/lib/utils"
@@ -202,8 +202,36 @@ export function HomeView({ data }: { data: HomeViewData }) {
         </Link>
       </motion.section>
 
+      {/* ── Travels ── */}
+      <motion.section {...fadeUp(5)} className="px-5 pt-3">
+        <Link href="/travels" aria-label="Travels">
+          <PosterCard accent="teal" interactive className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span
+                className="grid h-10 w-10 place-items-center rounded-xl"
+                style={{ background: "var(--color-sand)", color: "var(--color-teal-deep)" }}
+              >
+                <Plane size={20} strokeWidth={2} />
+              </span>
+              <span>
+                <span
+                  className="block text-[15px] font-bold"
+                  style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}
+                >
+                  Travels
+                </span>
+                <span className="block text-[12px]" style={{ color: "var(--color-ink-soft)" }}>
+                  everywhere you&apos;ve wandered
+                </span>
+              </span>
+            </div>
+            <ChevronRight size={18} style={{ color: "var(--color-ink-soft)" }} />
+          </PosterCard>
+        </Link>
+      </motion.section>
+
       {/* ── Quick rooms ── */}
-      <motion.section {...fadeUp(5)} className="px-5 pt-4">
+      <motion.section {...fadeUp(6)} className="px-5 pt-4">
         <div className="grid grid-cols-2 gap-3">
           {data.rooms.map((r) => (
             <Link key={r.href} href={r.href}>
