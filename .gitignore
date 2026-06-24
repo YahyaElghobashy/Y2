@@ -1,6 +1,9 @@
 node_modules/
 .next/
 out/
+# serwist-generated service worker (swDest build artifact, regenerated on every build)
+public/sw.js
+public/sw.js.map
 .env
 .env.local
 .env*.local
