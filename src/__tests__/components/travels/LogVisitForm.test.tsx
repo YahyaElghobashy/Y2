@@ -53,6 +53,25 @@ describe("LogVisitForm", () => {
     await waitFor(() => expect(onClose).toHaveBeenCalled())
   })
 
+  it("hides the Who-went chips when unpaired (solo only)", () => {
+    render(<LogVisitForm open onClose={() => {}} onSubmit={vi.fn()} hasPartner={false} presetCountry="EG" />)
+    expect(screen.queryByText("Who went?")).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Together" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("button", { name: "Partner" })).not.toBeInTheDocument()
+    // solo fields are shown by default
+    expect(screen.getByText(/What should we do there together/i)).toBeInTheDocument()
+  })
+
+  it("unpaired submit logs as your own solo visit", async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<LogVisitForm open onClose={() => {}} onSubmit={onSubmit} hasPartner={false} presetCountry="EG" />)
+    fireEvent.click(screen.getByRole("button", { name: /Save visit/i }))
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ countryCode: "EG", traveler: "me", isTogether: false })
+    )
+  })
+
   it("a throwing onSubmit keeps the sheet open (no false success)", async () => {
     const onSubmit = vi.fn().mockRejectedValue(new Error("boom"))
     const onClose = vi.fn()

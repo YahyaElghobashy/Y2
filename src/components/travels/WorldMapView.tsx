@@ -222,6 +222,7 @@ export function WorldMapView({
         presetCountry={preset}
         meName={meName}
         partnerName={partnerName}
+        hasPartner={partnerId != null}
       />
     </div>
   )

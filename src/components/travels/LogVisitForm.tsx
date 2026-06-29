@@ -21,6 +21,8 @@ export type LogVisitFormProps = {
   presetCountry?: string | null
   meName?: string
   partnerName?: string
+  /** When false (no partner paired yet), hide Together/Partner — solo only. */
+  hasPartner?: boolean
 }
 
 export function LogVisitForm({
@@ -30,11 +32,12 @@ export function LogVisitForm({
   presetCountry = null,
   meName = "Me",
   partnerName = "Partner",
+  hasPartner = true,
 }: LogVisitFormProps) {
   const [mounted, setMounted] = useState(false)
   const [code, setCode] = useState(presetCountry ?? "")
   const [query, setQuery] = useState(presetCountry ? COUNTRY_NAME[presetCountry] ?? "" : "")
-  const [who, setWho] = useState<Who>("together")
+  const [who, setWho] = useState<Who>(hasPartner ? "together" : "me")
   const [place, setPlace] = useState("")
   const [year, setYear] = useState("")
   const [companions, setCompanions] = useState("")
@@ -47,14 +50,14 @@ export function LogVisitForm({
     if (open) {
       setCode(presetCountry ?? "")
       setQuery(presetCountry ? COUNTRY_NAME[presetCountry] ?? "" : "")
-      setWho("together")
+      setWho(hasPartner ? "together" : "me")
       setPlace("")
       setYear("")
       setCompanions("")
       setMemorable("")
       setRecommendation("")
     }
-  }, [open, presetCountry])
+  }, [open, presetCountry, hasPartner])
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -181,30 +184,34 @@ export function LogVisitForm({
             )}
           </div>
 
-          {/* Who */}
-          <label className="mb-1 block text-[12px] font-semibold" style={{ fontFamily: "var(--font-nav)" }}>
-            Who went?
-          </label>
-          <div className="mb-3 flex gap-2">
-            {whoChips.map((c) => (
-              <button
-                key={c.key}
-                type="button"
-                onClick={() => setWho(c.key)}
-                className={cn(
-                  "flex-1 rounded-full px-3 py-2 text-[13px] font-semibold transition",
-                  who === c.key ? "text-white" : ""
-                )}
-                style={{
-                  background: who === c.key ? "var(--color-coral)" : "var(--background)",
-                  border: "1px solid var(--border)",
-                  color: who === c.key ? "#fff" : "var(--color-ink)",
-                }}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+          {/* Who — only when a partner is paired (else it's implicitly you). */}
+          {hasPartner && (
+            <>
+              <label className="mb-1 block text-[12px] font-semibold" style={{ fontFamily: "var(--font-nav)" }}>
+                Who went?
+              </label>
+              <div className="mb-3 flex gap-2">
+                {whoChips.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => setWho(c.key)}
+                    className={cn(
+                      "flex-1 rounded-full px-3 py-2 text-[13px] font-semibold transition",
+                      who === c.key ? "text-white" : ""
+                    )}
+                    style={{
+                      background: who === c.key ? "var(--color-coral)" : "var(--background)",
+                      border: "1px solid var(--border)",
+                      color: who === c.key ? "#fff" : "var(--color-ink)",
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Place + year */}
           <div className="mb-3 grid grid-cols-2 gap-3">
