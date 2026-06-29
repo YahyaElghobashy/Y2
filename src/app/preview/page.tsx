@@ -48,6 +48,7 @@ const GROUPS: { world: string; arabic: string; accent: string; items: { name: st
   },
   {
     world: "Travels", arabic: "رحلاتنا", accent: "#1F8A8A", items: [
+      { name: "World map", href: "/preview/travels/map", note: "interactive · visited · pins · our next" },
       { name: "Travels list", href: "/preview/travels", note: "trip posters · companions · status" },
       { name: "Trip — hosted", href: "/preview/travels/hosted", note: "trip site · open the world" },
       { name: "Trip — native", href: "/preview/travels/native", note: "photos · companions · summary" },
