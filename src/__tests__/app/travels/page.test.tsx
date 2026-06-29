@@ -22,6 +22,27 @@ vi.mock("@/lib/hooks/use-trips", () => ({
   useTrips: () => mockUseTrips(),
 }))
 
+// The world map hero is exercised by its own tests; stub it here so this file
+// stays focused on the trip-list wiring (and avoids the d3/topojson map).
+vi.mock("@/lib/hooks/use-world-map", () => ({
+  useWorldMap: () => ({
+    countries: new Map(),
+    myPins: [],
+    partnerPins: [],
+    mutualPins: [],
+    ourNextTrip: null,
+    visitsFor: () => [],
+    addVisit: vi.fn(),
+    addPin: vi.fn(),
+    removePin: vi.fn(),
+    addPartnerNote: vi.fn(),
+    isLoading: false,
+  }),
+}))
+vi.mock("@/components/travels/WorldMapView", () => ({
+  WorldMapView: () => <div data-testid="world-map-view" />,
+}))
+
 // ── uploadMedia ──
 const uploadMedia = vi.fn()
 vi.mock("@/lib/media-upload", () => ({

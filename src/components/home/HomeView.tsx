@@ -9,6 +9,8 @@ const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
 import { Settings, ChevronRight, Plane } from "lucide-react"
 import { PosterCard } from "@/components/shared/PosterCard"
 import { Coin } from "@/components/shared/Coin"
+import { OurNextTrip } from "@/components/travels/OurNextTrip"
+import type { OurNextTrip as OurNextTripData } from "@/lib/types/world-map.types"
 import { cn } from "@/lib/utils"
 
 /**
@@ -32,6 +34,8 @@ export type HomeViewData = {
   coupon: { title: string; from: string } | null
   rooms: { label: string; icon: string; href: string; accent: string }[]
   avatarUrl?: string | null
+  /** A shared dream both partners pinned → highlighted here. */
+  ourNextTrip?: OurNextTripData | null
 }
 
 const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1]
@@ -145,6 +149,15 @@ export function HomeView({ data }: { data: HomeViewData }) {
           </div>
         </PosterCard>
       </motion.section>
+
+      {/* ── Our next adventure (a shared dream) ── */}
+      {data.ourNextTrip && (
+        <motion.section {...fadeUp(2)} className="px-5 pt-3">
+          <Link href="/travels" aria-label="Our next adventure">
+            <OurNextTrip next={data.ourNextTrip} compact />
+          </Link>
+        </motion.section>
+      )}
 
       {/* ── Today's one thing ── */}
       {data.today && (

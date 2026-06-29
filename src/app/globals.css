@@ -602,3 +602,21 @@ h1, h2, h3, h4, h5, h6 {
 @media (prefers-reduced-motion: reduce) {
   .skin-aware { transition: none; }
 }
+
+/* ── Travels world map ─────────────────────────────────────── */
+.wm-country {
+  transition: fill-opacity 0.18s ease, stroke-opacity 0.18s ease;
+  cursor: pointer;
+  outline: none;
+}
+.wm-country:hover { fill-opacity: 1; }
+.wm-country:focus-visible { stroke: var(--color-ink); stroke-width: 1.1; stroke-opacity: 0.9; }
+.wm-pin-halo { animation: wmPinPulse 2.4s ease-in-out infinite; transform-origin: center; }
+@keyframes wmPinPulse {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.36; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wm-country { transition: none; }
+  .wm-pin-halo { animation: none; }
+}

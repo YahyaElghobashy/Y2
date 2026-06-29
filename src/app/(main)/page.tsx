@@ -7,6 +7,7 @@ import { useGarden } from "@/lib/hooks/use-garden"
 import { useMood } from "@/lib/hooks/use-mood"
 import { useSnap } from "@/lib/hooks/use-snap"
 import { useCoupons } from "@/lib/hooks/use-coupons"
+import { useWorldMap } from "@/lib/hooks/use-world-map"
 import { MOOD_EMOJI, MOOD_LABELS, type Mood } from "@/lib/types/mood.types"
 import { HomeView, type HomeViewData } from "@/components/home/HomeView"
 
@@ -37,6 +38,7 @@ export default function Home() {
   const { todayMood, partnerMood } = useMood()
   const { snapFeed } = useSnap()
   const { receivedCoupons } = useCoupons()
+  const { ourNextTrip } = useWorldMap()
 
   // Record an "opened together" day for the shared garden (preserved behaviour).
   useEffect(() => {
@@ -79,8 +81,9 @@ export default function Home() {
       coupon: activeCoupon ? { title: activeCoupon.title, from: partnerName } : null,
       rooms: ROOMS,
       avatarUrl: profile?.avatar_url ?? null,
+      ourNextTrip,
     }
-  }, [profile, partner, wallet, todayMood, partnerMood, snapFeed, receivedCoupons])
+  }, [profile, partner, wallet, todayMood, partnerMood, snapFeed, receivedCoupons, ourNextTrip])
 
   return <HomeView data={data} />
 }

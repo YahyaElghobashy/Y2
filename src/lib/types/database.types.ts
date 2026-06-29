@@ -2366,6 +2366,114 @@ export interface Database {
           }
         ]
       }
+      country_visits: {
+        Row: {
+          id: string
+          created_by: string
+          traveler_id: string
+          country_code: string
+          is_together: boolean
+          place: string | null
+          visited_year: number | null
+          visited_on: string | null
+          companions: string | null
+          memorable: string | null
+          recommendation: string | null
+          partner_note: string | null
+          trip_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          created_by: string
+          traveler_id: string
+          country_code: string
+          is_together?: boolean
+          place?: string | null
+          visited_year?: number | null
+          visited_on?: string | null
+          companions?: string | null
+          memorable?: string | null
+          recommendation?: string | null
+          partner_note?: string | null
+          trip_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          created_by?: string
+          traveler_id?: string
+          country_code?: string
+          is_together?: boolean
+          place?: string | null
+          visited_year?: number | null
+          visited_on?: string | null
+          companions?: string | null
+          memorable?: string | null
+          recommendation?: string | null
+          partner_note?: string | null
+          trip_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "country_visits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "country_visits_traveler_id_fkey"
+            columns: ["traveler_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "country_visits_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      country_pins: {
+        Row: {
+          id: string
+          owner_id: string
+          country_code: string
+          note: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          owner_id: string
+          country_code: string
+          note?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          owner_id?: string
+          country_code?: string
+          note?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "country_pins_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: Record<string, never>
     Functions: {

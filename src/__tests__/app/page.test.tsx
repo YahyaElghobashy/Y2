@@ -76,6 +76,9 @@ vi.mock("@/lib/hooks/use-garden", () => ({
 vi.mock("@/lib/hooks/use-mood", () => ({ useMood: () => useMood() }))
 vi.mock("@/lib/hooks/use-snap", () => ({ useSnap: () => useSnap() }))
 vi.mock("@/lib/hooks/use-coupons", () => ({ useCoupons: () => useCoupons() }))
+vi.mock("@/lib/hooks/use-world-map", () => ({
+  useWorldMap: () => ({ ourNextTrip: null }),
+}))
 
 import Home from "@/app/(main)/page"
 
