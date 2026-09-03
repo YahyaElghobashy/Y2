@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- dc-runtime host deps (provided by the Claude "dc" viewer originally; required when self-hosted) -->
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500;1,6..72,600&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+(function(){
+  function pascal(n){ return n.replace(/(^|-)([a-z0-9])/g, function(_,a,c){ return c.toUpperCase(); }); }
+  function build(name){
+    var L = window.lucide; if(!L || !L.icons) return null;
+    var data = L.icons[pascal(name)]; if(!data) return null;
+    var kids = data.map(function(c){
+      var tag = c[0], a = c[1] || {}, at = '';
+      for(var k in a){ at += ' ' + k + '="' + a[k] + '"'; }
+      return '<' + tag + at + '></' + tag + '>';
+    }).join('');
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display:block">' + kids + '</svg>';
+  }
+  class SvgIcon extends HTMLElement {
+    static get observedAttributes(){ return ['data-lucide']; }
+    constructor(){ super(); this._root = this.attachShadow({ mode:'open' }); }
+    connectedCallback(){ this.style.display='inline-flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.flexShrink='0'; this._draw(); }
+    attributeChangedCallback(){ if(this._root) this._draw(); }
+    _draw(){
+      var name = this.getAttribute('data-lucide'); if(!name) return;
+      var svg = build(name); var self = this;
+      if(svg){ if(this._t){ clearInterval(this._t); this._t=null; } this._root.innerHTML = svg; return; }
+      if(this._t) return;
+      this._t = setInterval(function(){ var s = build(name); if(s){ self._root.innerHTML = s; clearInterval(self._t); self._t=null; } }, 80);
+      setTimeout(function(){ if(self._t){ clearInterval(self._t); self._t=null; } }, 5000);
+    }
+  }
+  if(!customElements.get('svg-icon')) customElements.define('svg-icon', SvgIcon);
+})();
+</script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #20251F; font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #2B2722; -webkit-font-smoothing: antialiased; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  .noscroll::-webkit-scrollbar { display: none; }
+  i[data-lucide] { display: inline-flex; }
+  svg.lucide { stroke-width: 1.75; }
+  @keyframes fadeUp { from { transform: translateY(16px); } to { transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @keyframes spinSlow { to { transform: rotate(360deg); } }
+  @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(181,101,63,.45); } 70% { box-shadow: 0 0 0 9px rgba(181,101,63,0); } 100% { box-shadow: 0 0 0 0 rgba(181,101,63,0); } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  @keyframes kenburns { 0% { transform: scale(1.05) translate(0,0); } 100% { transform: scale(1.18) translate(-2%,-3%); } }
+  @keyframes sweep { from { transform: translateX(-120%); } to { transform: translateX(120%); } }
+  @keyframes revealUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(72px,86px) scale(1.18); } }
+  @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-82px,72px) scale(1.2); } }
+  @keyframes drift3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(58px,-74px) scale(1.16); } }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .reveal-on [data-reveal] { animation: revealUp .85s cubic-bezier(.2,.6,.2,1) both; animation-timeline: view(); animation-range: entry 0% cover 15%; }
+    }
+  }
+  .grain { position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .4; mix-blend-mode: multiply; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E"); }
+  @media (min-width: 481px) { .appcol { box-shadow: 0 0 0 1px rgba(0,0,0,.04), 0 40px 120px -40px rgba(0,0,0,.7); } }
+  .appcol.no-photos img { display: none !important; }
+</style>
+</helmet>
+<div style="position:relative;width:100%;max-width:480px;margin:0 auto;min-height:100vh;background:#F5EFE3;overflow:hidden;--accent:{{ accentVar }}" class="appcol {{ photoClass }} {{ revealClass }}">
+
+  <div class="grain"></div>
+
+  <!-- TOP BAR -->
+  <div style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(245,239,227,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #E8E0CE">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:9px;height:9px;border-radius:50%;background:var(--accent,#B5653F);box-shadow:0 0 0 3px rgba(181,101,63,.18)"></span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:#6B6358;font-weight:500">KUALA LUMPUR · CYBERJAYA</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;color:#6B6358">
+      <span ref="{{ tzRef }}" style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;font-weight:700;color:var(--accent,#B5653F);background:#F7E9DF;padding:2px 5px;border-radius:5px">CAI</span>
+      <svg-icon data-lucide="clock" style="width:13px;height:13px"></svg-icon>
+      <span ref="{{ clockRef }}" style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#3C4B3E;font-variant-numeric:tabular-nums">--:--:--</span>
+    </div>
+  </div>
+
+  <!-- VIEW AREA -->
+  <main style="padding:0 0 110px 0;min-height:60vh">
+
+    <!-- ============ TODAY ============ -->
+    <sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease">
+
+        <!-- HERO -->
+        <div style="position:relative;margin:0;padding:26px 20px 22px;overflow:hidden;background:linear-gradient(150deg,#C99A4E 0%,var(--accent,#B5653F) 52%,#3C4B3E 122%)">
+          <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=900&q=70" onError="{{ hideImg }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42;animation:kenburns 28s ease forwards"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(201,154,78,.5) 0%,rgba(181,101,63,.74) 52%,rgba(60,75,62,.93) 122%)"></div>
+          <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 80% 0%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.78);margin-bottom:10px">CONFERENCE + THE CITY, SQUEEZED DRY</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1.0;color:#FBF7EE;margin:0 0 6px;letter-spacing:-.01em">Two Weeks<br><span style="font-style:italic;font-weight:400">East</span></h1>
+            <div style="color:rgba(255,255,255,.86);font-size:13.5px;font-weight:500;margin-top:10px;display:flex;align-items:center;gap:8px">
+              <svg-icon data-lucide="calendar-days" style="width:14px;height:14px"></svg-icon>
+              23 Sep – 7 Oct 2026 · Malaysia now · Vietnam guide coming
+            </div>
+          </div>
+        </div>
+
+        <!-- DAY ARC + PROGRESS -->
+        <div style="margin:12px 16px 0;position:relative;z-index:6;background:#FBF7EE;border:1px solid #E8E0CE;border-radius:20px;padding:18px;box-shadow:0 1px 2px rgba(43,39,34,.04),0 18px 40px -26px rgba(43,39,34,.4)">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;color:#9C9486;margin-bottom:3px">{{ phaseLabel }}</div>
+              <div style="font-family:'Newsreader',serif;font-size:24px;color:#2B2722">{{ todayTitle }}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:'Newsreader',serif;font-size:30px;color:var(--accent,#B5653F);line-height:1">{{ dayNum }}<span style="font-size:15px;color:#B9B0A0">/{{ totalDays }}</span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#9C9486">DAY</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <sc-for list="{{ dots }}" as="d" hint-placeholder-count="9">
+              <div style="flex:1;height:6px;border-radius:3px;background:{{ d.bg }}"></div>
+            </sc-for>
+          </div>
+          <div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid #EFE7D7">
+            <span style="width:34px;height:34px;border-radius:10px;background:#F2E7D2;display:flex;align-items:center;justify-content:center;color:var(--accent,#B5653F);flex-shrink:0"><svg-icon data-lucide="hourglass" style="width:17px;height:17px"></svg-icon></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;color:#9C9486;font-weight:600;letter-spacing:.02em">{{ cdLabel }}</div>
+              <div ref="{{ cdRef }}" style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:#3C4B3E;font-variant-numeric:tabular-nums">--:--:--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TODAY'S PLAN -->
+        <div data-reveal style="padding:24px 16px 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg-icon data-lucide="route" style="width:17px;height:17px;color:var(--accent,#B5653F)"></svg-icon>
+              <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Today's plan</span>
+            </div>
+            <button onClick="{{ goItin }}" style="border:none;background:none;color:#5E7257;font-family:'Hanken Grotesk';font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:3px;cursor:pointer;padding:4px">Full itinerary <svg-icon data-lucide="chevron-right" style="width:14px;height:14px"></svg-icon></button>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:20px;padding:6px 16px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <sc-for list="{{ todayBlocks }}" as="b" hint-placeholder-count="4">
+              <div style="display:flex;gap:13px;padding:13px 0;border-bottom:1px solid #F0E8D8">
+                <div style="flex-shrink:0;width:52px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;color:var(--accent,#B5653F);padding-top:2px">{{ b.time }}</div>
+                <div style="flex-shrink:0;width:30px;height:30px;border-radius:9px;background:#F2EADb;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="{{ b.icon }}" style="width:15px;height:15px"></svg-icon></div>
+                <div style="flex:1;min-width:0;padding-top:1px">
+                  <div style="font-size:14px;font-weight:700;color:#2B2722;line-height:1.25">{{ b.title }}</div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.4;margin-top:2px">{{ b.detail }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- PRAYER TIMES -->
+        <div data-reveal style="padding:24px 16px 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <svg-icon data-lucide="moon-star" style="width:17px;height:17px;color:#5E7257"></svg-icon>
+              <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Prayer today</span>
+            </div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#9C9486">KUALA LUMPUR · MYT</span>
+          </div>
+          <div class="noscroll" style="display:flex;gap:10px;overflow-x:auto;padding:2px 0 6px;scroll-snap-type:x mandatory">
+            <sc-for list="{{ prayers }}" as="p" hint-placeholder-count="6">
+              <div style="scroll-snap-align:start;flex-shrink:0;width:96px;background:{{ p.bg }};border:1px solid {{ p.border }};border-radius:16px;padding:13px 12px;position:relative">
+                <sc-if value="{{ p.isNext }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;top:9px;right:9px;font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.1em;font-weight:600;color:#fff;background:var(--accent,#B5653F);padding:2px 5px;border-radius:5px">NEXT</span>
+                </sc-if>
+                <svg-icon data-lucide="{{ p.icon }}" style="width:16px;height:16px;color:{{ p.ink }}"></svg-icon>
+                <div style="font-size:13px;font-weight:700;color:{{ p.ink }};margin-top:10px">{{ p.name }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:{{ p.ink }};margin-top:1px;font-variant-numeric:tabular-nums">{{ p.time }}</div>
+                <div style="font-size:9.5px;color:{{ p.sub2 }};margin-top:3px">{{ p.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:8px;display:flex;align-items:flex-start;gap:8px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:13px;padding:11px 13px">
+            <svg-icon data-lucide="info" style="width:14px;height:14px;color:#5E7257;flex-shrink:0;margin-top:1px"></svg-icon>
+            <div style="font-size:11.5px;color:#5A6353;line-height:1.45">Malaysia makes this effortless — a <b>surau (prayer room) in every mall, airport and rest stop</b>, and mosques everywhere. Times shown are late-Sep KL approximations; local apps (JAKIM e-Solat, Muslim Pro) are accurate here. Tourist visiting hours at mosques never apply to worshippers.</div>
+          </div>
+        </div>
+
+        <!-- LIVE WEATHER -->
+        <div data-reveal style="padding:24px 16px 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Live weather</span>
+            <button onClick="{{ onRefreshWx }}" style="border:1px solid #E8E0CE;background:#F2EAD9;border-radius:20px;padding:5px 12px;cursor:pointer;color:#6B6358;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;display:flex;align-items:center;gap:5px" style-active="transform:scale(0.94);background:#E8DCC4"><span style="font-size:12px;line-height:1">&#8635;</span><span style="white-space:nowrap">REFRESH &middot; {{ wxUpdated }}</span></button>
+          </div>
+
+          <div style="border:1px solid #E8E0CE;border-radius:16px;overflow:hidden;background:#FBF7EE;box-shadow:0 1px 2px rgba(43,39,34,.04),0 18px 42px -30px rgba(43,39,34,.45)">
+
+            <div style="display:flex;gap:5px;padding:9px 9px 0">
+              <sc-for list="{{ cityList }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.onClick }}" style="{{ c.pillStyle }}">{{ c.name }}</button>
+              </sc-for>
+            </div>
+
+            <sc-if value="{{ wx }}" hint-placeholder-val="{{ false }}">
+              <div style="background:{{ wx.grad }};padding:15px 16px;color:#FBF7EE">
+                <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.13em;opacity:.82">
+                  <span>{{ cityName }}</span><span style="opacity:.5">&middot;</span><span ref="{{ wxClockRef }}">--:--</span>
+                </div>
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:7px">
+                  <div style="display:flex;align-items:flex-start;gap:2px;line-height:1">
+                    <span style="font-family:'Newsreader',serif;font-size:48px;line-height:.8;font-weight:500">{{ wx.temp }}</span>
+                    <span style="font-family:'Newsreader',serif;font-size:19px;margin-top:3px">&deg;</span>
+                  </div>
+                  <span style="font-family:'Newsreader',serif;font-style:italic;font-size:19px;white-space:nowrap;padding-bottom:3px">{{ wx.label }}</span>
+                </div>
+                <div style="display:flex;gap:18px;margin-top:9px;font-family:'Hanken Grotesk',sans-serif;font-size:11.5px;font-weight:600;opacity:.95;white-space:nowrap">
+                  <span>Feels {{ wx.feels }}&deg;</span><span>&uarr; {{ wx.hi }}&deg;</span><span>&darr; {{ wx.lo }}&deg;</span>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#EEE6D4">
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">HUMIDITY</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.humidity }}<span style="font-size:12px;color:#9A9286">%</span></div>
+                </div>
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">WIND</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.wind }}<span style="font-size:10px;color:#9A9286"> km/h</span></div>
+                  <div style="color:#6B6358;font-family:'Hanken Grotesk',sans-serif;font-size:10px;font-weight:600">from {{ wx.windDir }}</div>
+                </div>
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">UV INDEX</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.uv }} <span style="color:{{ wx.uvColor }};font-family:'Hanken Grotesk',sans-serif;font-size:10px;font-weight:700">{{ wx.uvCat }}</span></div>
+                </div>
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">RAIN</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.rainProb }}<span style="font-size:12px;color:#9A9286">%</span></div>
+                  <div style="color:#6B6358;font-family:'Hanken Grotesk',sans-serif;font-size:10px;font-weight:600">{{ wx.rain }} mm now</div>
+                </div>
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">CLOUD</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.cloud }}<span style="font-size:12px;color:#9A9286">%</span></div>
+                </div>
+                <div style="background:#FBF7EE;padding:9px 11px">
+                  <div style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">PRESSURE</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:#2B2722;margin-top:2px">{{ wx.pressure }}<span style="font-size:10px;color:#9A9286"> hPa</span></div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid #EEE6D4;background:#FBF7EE;font-family:'Hanken Grotesk',sans-serif;font-size:12px;color:#6B6358;font-weight:600">
+                <span><span style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">SUNRISE </span>{{ wx.sunrise }}</span>
+                <span><span style="color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.09em;font-weight:700">SUNSET </span>{{ wx.sunset }}</span>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;background:#F5EFE3;border-top:1px solid #EEE6D4;color:#9A9286;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.07em">
+                <span style="width:6px;height:6px;border-radius:50%;background:#5E7257;animation:pulseRing 2.4s infinite"></span>
+                LIVE &middot; OPEN-METEO &middot; 30 MIN
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ wxSkeleton }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:34px 20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:#9A9286">FETCHING WEATHER&hellip;</div>
+            </sc-if>
+
+            <sc-if value="{{ wxShowErr }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+                <span style="font-family:'Hanken Grotesk',sans-serif;font-size:13px;color:#6B6358">Couldn't reach the weather service.</span>
+                <button onClick="{{ onRefreshWx }}" style="border:1px solid var(--accent,#B5653F);background:none;color:var(--accent,#B5653F);border-radius:20px;padding:6px 16px;font-family:'Hanken Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer">Try again</button>
+              </div>
+            </sc-if>
+
+          </div>
+        </div>
+
+        <!-- AROUND YOU -->
+        <div data-reveal style="padding:24px 16px 0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <svg-icon data-lucide="sparkles" style="width:17px;height:17px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Happening around you</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ todayEvents }}" as="e" hint-placeholder-count="2">
+              <div style="display:flex;gap:13px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <div style="flex-shrink:0;width:40px;height:40px;border-radius:12px;background:{{ e.tint }};display:flex;align-items:center;justify-content:center;color:#fff"><svg-icon data-lucide="{{ e.icon }}" style="width:19px;height:19px"></svg-icon></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:14px;font-weight:700;color:#2B2722">{{ e.title }}</div>
+                  <div style="font-size:12px;color:#7A7163;margin-top:2px;line-height:1.4">{{ e.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div data-reveal style="padding:24px 16px 8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <sc-for list="{{ quickLinks }}" as="q" hint-placeholder-count="4">
+              <button onClick="{{ q.go }}" style="text-align:left;border:1px solid #E8E0CE;background:rgba(251,247,238,.8);border-radius:16px;padding:15px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:36px;height:36px;border-radius:11px;background:{{ q.tint }};display:flex;align-items:center;justify-content:center;color:#fff"><svg-icon data-lucide="{{ q.icon }}" style="width:18px;height:18px"></svg-icon></span>
+                <span style="font-size:13.5px;font-weight:700;color:#2B2722">{{ q.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <!-- ============ ITINERARY ============ -->
+    <sc-if value="{{ isItin }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease;position:relative;z-index:0">
+        <div aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1">
+          <div style="position:absolute;top:90px;left:-70px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(110,138,104,.55),transparent 68%);animation:drift1 26s ease-in-out infinite"></div>
+          <div style="position:absolute;top:660px;right:-90px;width:430px;height:430px;border-radius:50%;background:radial-gradient(circle,rgba(192,108,68,.5),transparent 68%);animation:drift2 31s ease-in-out infinite"></div>
+          <div style="position:absolute;top:1200px;left:-50px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(206,160,82,.56),transparent 68%);animation:drift3 36s ease-in-out infinite"></div>
+          <div style="position:absolute;top:1820px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(110,138,104,.5),transparent 68%);animation:drift1 29s ease-in-out infinite"></div>
+        </div>
+
+        <!-- MASTHEAD -->
+        <div style="padding:26px 20px 18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:var(--accent,#B5653F);margin-bottom:9px">FIFTEEN DAYS · DAY BY DAY</div>
+          <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:34px;line-height:1.02;color:#2B2722;margin:0 0 8px;letter-spacing:-.01em">The <span style="font-style:italic">Itinerary</span></h1>
+          <p style="font-size:13px;color:#7A7163;line-height:1.5;margin:0">Tap a day to open it; tick off each moment as it happens. Cyberjaya is home base for the conference — KL gets Thursday and the Sunday masterpiece evening. The Vietnam leg is a single card for now; its full guide lands later.</p>
+        </div>
+
+        <!-- PHASE LEGEND -->
+        <div class="noscroll" style="display:flex;gap:7px;overflow-x:auto;padding:0 20px 18px">
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#E8EDE6;color:#3C4B3E;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#3C4B3E"></span>Travel</span>
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#EAEFE5;color:#5E7257;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#5E7257"></span>Conference</span>
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#F7E9DF;color:var(--accent,#B5653F);border-radius:20px;padding:6px 11px;font-size:11px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent,#B5653F)"></span>KL time</span>
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#F6EDD9;color:#A77D2E;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#C99A4E"></span>Vietnam</span>
+          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#F5E4D9;color:#9C4F2E;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#9C4F2E"></span>Home run</span>
+        </div>
+
+        <!-- DAY CARDS -->
+        <div style="padding:0 16px;display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ itinDays }}" as="d" hint-placeholder-count="9">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+
+              <!-- HEADER -->
+              <button onClick="{{ d.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:13px;padding:15px 16px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;{{ d.dayBadgeStyle }}">
+                  <span style="font-family:'Newsreader',serif;font-size:19px;line-height:1">{{ d.n }}</span>
+                </span>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#9C9486;text-transform:uppercase">{{ d.dow }} · {{ d.date }}</span>
+                    <sc-if value="{{ d.isToday }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;font-weight:600;color:#fff;background:var(--accent,#B5653F);padding:2px 6px;border-radius:5px;animation:fadeIn .6s ease">TODAY</span>
+                    </sc-if>
+                  </div>
+                  <div style="font-family:'Newsreader',serif;font-size:18px;color:#2B2722;line-height:1.15">{{ d.title }}</div>
+                  <span style="display:inline-block;margin-top:5px;font-size:9.5px;font-weight:700;letter-spacing:.06em;border-radius:6px;padding:3px 7px;{{ d.phaseChipStyle }}">{{ d.phase }}</span>
+                </div>
+                <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#A89E8C;font-variant-numeric:tabular-nums">{{ d.ndone }}/{{ d.total }}</span>
+                  <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
+                    <svg-icon data-lucide="chevron-up" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+                  </sc-if>
+                  <sc-if value="{{ d.closed }}" hint-placeholder-val="{{ true }}">
+                    <svg-icon data-lucide="chevron-down" style="width:18px;height:18px;color:#B9B0A0"></svg-icon>
+                  </sc-if>
+                </div>
+              </button>
+
+              <!-- PROGRESS BAR -->
+              <div style="height:3px;background:#EFE7D7;margin:0 16px;border-radius:2px;overflow:hidden">
+                <div style="height:100%;width:{{ d.pctW }};background:linear-gradient(90deg,#C99A4E,var(--accent,#B5653F));transition:width .4s ease"></div>
+              </div>
+
+              <!-- BODY -->
+              <sc-if value="{{ d.open }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:4px 16px 14px;animation:fadeIn .4s ease">
+                  <sc-for list="{{ d.blocks }}" as="b" hint-placeholder-count="4">
+                    <button onClick="{{ b.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-top:1px solid #F0E8D8;opacity:{{ b.rowOpacity }};transition:opacity .25s ease">
+                      <span style="flex-shrink:0;width:46px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--accent,#B5653F);padding-top:3px">{{ b.time }}</span>
+                      <span style="flex-shrink:0;width:30px;height:30px;border-radius:9px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="{{ b.icon }}" style="width:15px;height:15px"></svg-icon></span>
+                      <span style="flex:1;min-width:0;padding-top:1px">
+                        <span style="display:block;font-size:14px;font-weight:700;line-height:1.25;{{ b.titleStyle }}">{{ b.title }}</span>
+                        <span style="display:block;font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">{{ b.detail }}</span>
+                      </span>
+                      <span style="flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;margin-top:3px;transition:all .2s ease;{{ b.checkStyle }}"><svg-icon data-lucide="check" style="width:13px;height:13px"></svg-icon></span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- CONFERENCE ANCHORS -->
+        <div data-reveal style="padding:28px 16px 8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px">
+            <svg-icon data-lucide="pin" style="width:17px;height:17px;color:#9C4F2E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Conference anchors</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:20px;padding:6px 16px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #F0E8D8">
+              <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">THU 24<br><span style="color:var(--accent,#B5653F);font-weight:600">19:00</span></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">Conference dinner <span style="font-weight:500;color:#9C9486;font-size:11px">· soft anchor</span></div><div style="font-size:12px;color:#7A7163;margin-top:1px">Free food + meet the crowd · if skippable, Thursday's KL night unlocks (fork #3)</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #F0E8D8">
+              <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">FRI 25<br><span style="color:#5E7257;font-weight:600">14:00</span></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">AI@MMU <span style="font-weight:500;color:#9C9486;font-size:11px">· 14:00–18:00</span></div><div style="font-size:12px;color:#7A7163;margin-top:1px">Skipping the morning competition · at MMU by 13:45</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #F0E8D8">
+              <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">SAT 26<br><span style="color:var(--accent,#B5653F);font-weight:600">14:00</span></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">SplashMania with the group <span style="font-weight:500;color:#9C9486;font-size:11px">· 14:00–20:00</span></div><div style="font-size:12px;color:#7A7163;margin-top:1px">Skipping the awards morning · verdict: KEEP the waterpark</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:13px 0;border-bottom:1px solid #F0E8D8">
+              <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">SUN 27<br><span style="color:#C99A4E;font-weight:600">10–14</span></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">Checkout → group move to KL city</div><div style="font-size:12px;color:#7A7163;margin-top:1px">Checkout 10:00 · lunch 12:00 · KL hotel 14:00 · 15:00 onward is yours</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:13px 0">
+              <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">MON 28<br><span style="color:#5E7257;font-weight:600">FREE</span></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">Departure day — no agenda</div><div style="font-size:12px;color:#7A7163;margin-top:1px">Mamak breakfast, Grab to KLIA T2, AK512 12:10 → Hanoi</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONSOLIDATED DATABASE -->
+        <div id="itin-db" data-reveal style="padding:28px 16px 8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="table-2" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Everything, in one place</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Every place, plan and booking from this guide — filter by area or category, search, and tick off what you've done. Saved on this device. Vietnam rows join when that guide lands.</p>
+
+          <div style="display:flex;gap:10px;margin-bottom:12px">
+            <div style="flex:1;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:11px 13px"><div style="font-family:'Newsreader',serif;font-size:22px;color:var(--accent,#B5653F);line-height:1">{{ dbCount }}<span style="font-size:13px;color:#B9B0A0">/{{ dbTotal }}</span></div><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#9C9486;letter-spacing:.08em;margin-top:3px">SHOWING</div></div>
+            <div style="flex:1;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:11px 13px"><div style="font-family:'Newsreader',serif;font-size:22px;color:#5E7257;line-height:1">{{ dbVisited }}</div><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#9C9486;letter-spacing:.08em;margin-top:3px">DONE · VISITED</div></div>
+          </div>
+
+          <div style="position:relative;margin-bottom:10px">
+            <svg-icon data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#9C9486"></svg-icon>
+            <input value="{{ dbQuery }}" onInput="{{ onDbSearch }}" placeholder="Search places, food, bookings…" style="width:100%;box-sizing:border-box;border:1px solid #E0D7C4;background:#FFFDF8;border-radius:13px;padding:11px 12px 11px 36px;font-size:13px;font-family:'Hanken Grotesk';color:#2B2722;outline:none"/>
+          </div>
+
+          <div style="display:flex;gap:7px;margin-bottom:8px">
+            <sc-for list="{{ dbAreaChips }}" as="a" hint-placeholder-count="4">
+              <button onClick="{{ a.go }}" style="flex:1;border:1px solid;border-radius:11px;padding:8px 4px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Hanken Grotesk';{{ a.style }}">{{ a.l }}</button>
+            </sc-for>
+          </div>
+
+          <div class="noscroll" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:12px">
+            <sc-for list="{{ dbCatChips }}" as="c" hint-placeholder-count="11">
+              <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid;border-radius:18px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Hanken Grotesk';{{ c.style }}">{{ c.l }}</button>
+            </sc-for>
+          </div>
+
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 15px;background:#F2EAD9;border-bottom:1px solid #E8E0CE">
+              <span style="flex-shrink:0;width:21px"></span>
+              <span style="flex:1;font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.12em;color:#9C8A63">PLACE</span>
+              <span style="font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.12em;color:#9C8A63">STATUS</span>
+            </div>
+            <sc-for list="{{ dbRows }}" as="r" hint-placeholder-count="12">
+              <button onClick="{{ r.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;gap:11px;align-items:center;padding:11px 15px;border-top:1px solid #F0E8D8">
+                <span style="flex-shrink:0;width:21px;height:21px;border-radius:6px;border:1.5px solid;display:flex;align-items:center;justify-content:center;transition:all .2s ease;{{ r.checkStyle }}"><svg-icon data-lucide="check" style="width:13px;height:13px"></svg-icon></span>
+                <span style="flex:1;min-width:0">
+                  <span style="display:block;font-size:13px;font-weight:700;line-height:1.25;{{ r.nameStyle }}">{{ r.name }}</span>
+                  <span style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">
+                    <span style="font-size:8.5px;font-weight:700;letter-spacing:.04em;border-radius:4px;padding:1px 5px;{{ r.areaStyle }}">{{ r.area }}</span>
+                    <span style="font-size:10.5px;color:#9C9486;font-family:'JetBrains Mono',monospace">{{ r.cat }}</span>
+                    <sc-if value="{{ r.hasCost }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;color:var(--accent,#B5653F);font-family:'JetBrains Mono',monospace">· {{ r.cost }}</span></sc-if>
+                  </span>
+                </span>
+                <span style="flex-shrink:0;font-size:8.5px;font-weight:700;letter-spacing:.03em;border-radius:5px;padding:3px 7px;{{ r.priStyle }}">{{ r.pri }}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ dbEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:28px 16px;text-align:center;color:#A89E8C"><svg-icon data-lucide="search-x" style="width:22px;height:22px;color:#C9BFA9"></svg-icon><div style="font-family:'Newsreader',serif;font-style:italic;font-size:15px;margin-top:8px">Nothing matches those filters.</div></div>
+            </sc-if>
+          </div>
+        </div>
+
+      </div>
+    </sc-if>
+    <sc-if value="{{ isBase }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease">
+
+        <!-- HERO -->
+        <div id="base-top" style="position:relative;overflow:hidden;padding:30px 20px 24px;background:linear-gradient(155deg,#7C8F73 0%,#5E7257 46%,#33402F 120%)">
+          <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(124,143,115,.5) 0%,rgba(94,114,87,.8) 52%,rgba(51,64,47,.96) 120%)"></div>
+          <div style="position:absolute;inset:0;opacity:.18;background:radial-gradient(120% 80% at 85% 5%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.8);margin-bottom:10px">YOUR HOME BASE · NIGHTS 1–3</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:38px;line-height:1;color:#FBF7EE;margin:0;letter-spacing:-.01em">Putrajaya <span style="font-style:italic;font-weight:400">&amp; Cyberjaya</span></h1>
+            <p style="color:rgba(255,255,255,.9);font-size:13.5px;line-height:1.5;margin:12px 0 0;max-width:92%">Malaysia's planned capital and its tech-town twin, ten minutes apart. Monumental mosques, empty boulevards, a huge lake — and almost no tourists. The commute tax to KL is real (35–55 min), so the trick is to use what's here: mornings at the pink mosque, nights under floodlights, mamaks with students.</p>
+          </div>
+        </div>
+
+        <!-- SECTION JUMP NAV -->
+        <div class="noscroll" style="position:sticky;top:49px;z-index:30;display:flex;gap:7px;overflow-x:auto;padding:11px 16px;background:rgba(245,239,227,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #E8E0CE">
+          <sc-for list="{{ baseNav }}" as="c" hint-placeholder-count="7">
+            <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid #E0D7C4;background:rgba(251,247,238,.8);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:700;color:#5E5749;cursor:pointer;font-family:'Hanken Grotesk'">{{ c.label }}</button>
+          </sc-for>
+        </div>
+
+        <!-- EXPERIENCES -->
+        <div id="base-exp" data-reveal style="padding:24px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="landmark" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Must-do experiences</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">All within 15 minutes of the hotel.</p>
+
+          <div style="display:flex;flex-direction:column;gap:11px">
+
+            <!-- Putra Mosque -->
+            <div style="position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#C98A8A,#8A4A5A);padding:18px;box-shadow:0 14px 30px -22px rgba(138,74,90,.7)">
+              <div style="position:relative">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;font-weight:600;color:#8A4A5A;background:#F6EDD9;padding:3px 7px;border-radius:5px">★ THE ONE TO DO</span>
+                </div>
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#fff;line-height:1.1">Putra Mosque — the Pink Mosque</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.9);line-height:1.5;margin-top:7px">Rose-granite domes over Putrajaya Lake. Free entry, robes lent at the counter. Tourist windows: Sat–Thu 09:00–12:30, 14:00–16:00, 17:30–18:00 · Friday only 15:00–16:00 + 17:30–18:00. Your slot: <b>Saturday 09:00 at opening</b> (fork #4 — or Bangsar brunch instead, one dies). As a worshipper you can also simply come at prayer times.</div>
+                <div style="display:flex;gap:14px;margin-top:11px;flex-wrap:wrap">
+                  <span style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#fff;font-weight:600"><svg-icon data-lucide="banknote" style="width:13px;height:13px"></svg-icon>Free</span>
+                  <span style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:rgba(255,255,255,.85)"><svg-icon data-lucide="car-front" style="width:13px;height:13px"></svg-icon>Grab 12–15 min · RM10–15</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Perdana Putra -->
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="building-2" style="width:21px;height:21px"></svg-icon></span>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Perdana Putra &amp; the square</span><span style="font-size:8.5px;font-weight:700;letter-spacing:.06em;color:#3C4B3E;background:#E8EDE6;padding:2px 6px;border-radius:5px">FREE</span></div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">The Prime Minister's office — green domes over Dataran Putra, right beside the mosque. Exterior only; the photo pairs both buildings across the square. 20 minutes.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lake + cruise -->
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="sailboat" style="width:21px;height:21px"></svg-icon></span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Putrajaya Lake &amp; esplanade</div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">Manmade lake wrapping the government core. Waterfront walk below the mosque; optional 25–45 min sightseeing cruise from the jetty (~RM50) — only if Saturday morning feels roomy, hard stop 11:15 stands.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Iron mosque -->
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="landmark" style="width:21px;height:21px"></svg-icon></span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Tuanku Mizan — the Iron Mosque</div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">Steel-mesh architecture, no minarets, half the visitors of the pink one. 10:30 add-on after Putra Mosque, or part of the floodlit night loop.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid: bridges / lake gardens / monument / MMU -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="cable" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Seri Wawasan Bridge</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Sail-shaped cable bridge — best of the nine, lit at night.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="trees" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Cyberjaya Lake Gardens</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Easy 40-min loop near the hotel — Friday-morning recovery walk.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="milestone" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Millennium Monument</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Steel obelisk on the lake — a 10-min night-loop stop.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="graduation-cap" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">MMU campus</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Your conference home — Fri 14:00–18:00 (AI@MMU). Grab 5–10 min.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SPLASHMANIA -->
+        <div id="base-splash" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(150deg,#3A5A8C,#22354F);padding:20px;box-shadow:0 16px 36px -24px rgba(34,53,79,.8)">
+            <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(58,90,140,.5),rgba(34,53,79,.95))"></div>
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:rgba(255,255,255,.78)">SATURDAY 14:00–20:00 · WITH THE GROUP · VERDICT: KEEP</div>
+              <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:27px;color:#fff;margin:8px 0 0;line-height:1.05">SplashMania, Gamuda Cove</h2>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.82);margin-top:7px">~25 min from Cyberjaya · conference bus</div>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.92);line-height:1.55;margin:12px 0 0">You're excited about it — that decides it. Group glue, zero logistics, recovery-fun sandwiched between two heavy days. Ride the big slides in hour one while queues are short, then lazy river and wave pool. Afternoon storm cells pause rides briefly and reopen — normal, don't bail early.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+                <div style="background:rgba(255,255,255,.12);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.7)">BRING</div><div style="font-size:12px;color:#fff;font-weight:600;margin-top:2px">Swimwear · SPF50 · phone pouch · strap</div></div>
+                <div style="background:rgba(255,255,255,.12);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.7)">LOCKER</div><div style="font-size:12px;color:#fff;font-weight:600;margin-top:2px">~RM20 cash · everything valuable inside</div></div>
+              </div>
+              <div style="font-size:11px;color:rgba(255,255,255,.82);line-height:1.45;margin-top:10px">Morning is yours: pink mosque at 09:00 opening (Sat hours), back 11:15 hard stop, lunch with the group 12:15. Waterpark fatigue is real — Sunday starts at 15:00, which is the buffer.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOD -->
+        <div id="base-food" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="utensils" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Eating in the base</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Cyberjaya is a student town — which means <b style="color:#5E5749">mamaks</b>: 24-hour Indian-Muslim canteens, all halal, absurdly cheap.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">The mamak ritual</span><span style="font-size:8.5px;font-weight:700;letter-spacing:.06em;color:var(--accent,#B5653F);background:#F7E9DF;padding:2px 6px;border-radius:5px">NEVER-MISS</span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9C9486;margin-top:4px">24h · RM2–10 · everywhere</div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">Roti canai dunked in dal, teh tarik pulled from a height, maybe a maggi goreng. Friday night default; the 2am version is the most authentically Malaysian thing you can do. Order: "roti canai satu, teh tarik kurang manis."</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Nasi kandar</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Rice + ladled mixed curries. Pelita or any busy shop — halal by default.</div></div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Student cafés at MMU</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Cheap lunch before the 14:00 session — follow the queue.</div></div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">D'Pulze / Tamarind Sq</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Cyberjaya's malls — food courts, air-con, groceries.</div></div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Hotel breakfast</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Covered by the conference — carb-load before city days.</div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PRAYER -->
+        <div id="base-prayer" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="compass" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Prayer here</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">The easiest country on the trip for it — you're living next to two national-landmark mosques.</p>
+          <div style="background:#EEF1E9;border:1px solid #DDE4D2;border-radius:14px;padding:13px 14px">
+            <div style="font-size:12px;color:#5A6353;line-height:1.55">Every mall, campus and rest stop has a <b>surau</b>; MMU has one on campus. Jumu'ah on Fri 25: pray at Putra Mosque or the Iron Mosque (khutbah ~13:15) — note AI@MMU starts 14:00, so the campus surau is the safe option. Tourist visiting windows never restrict worshippers. KL apps (JAKIM e-Solat) are exact.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:12px"><div style="font-size:13px;font-weight:700;color:#2B2722">Putra Mosque</div><div style="font-size:11px;color:#7A7163;line-height:1.4;margin-top:3px">12–15 min Grab · all five prayers · robes for the photos after.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:12px"><div style="font-size:13px;font-weight:700;color:#2B2722">Iron Mosque</div><div style="font-size:11px;color:#7A7163;line-height:1.4;margin-top:3px">Quieter · striking modern hall · pairs with the night loop.</div></div>
+          </div>
+        </div>
+
+        <!-- EVENINGS -->
+        <div id="base-eve" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="moon" style="width:18px;height:18px;color:#9C4F2E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Evenings</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F7E9DF;display:flex;align-items:center;justify-content:center;color:var(--accent,#B5653F)"><svg-icon data-lucide="camera" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Floodlit Putrajaya loop</div><div style="font-size:12px;color:#7A7163;line-height:1.4;margin-top:2px">Pink mosque + Perdana Putra + Seri Wawasan + Iron Mosque lit up, ~90 min, RM30 of Grab hops. Practically empty. Hidden-gem grade — Friday-night option.</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="coffee" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Mamak until late</div><div style="font-size:12px;color:#7A7163;line-height:1.4;margin-top:2px">Teh tarik, roti, football on the TV, students everywhere. The real Malaysia costs RM8.</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="bed-double" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Early nights, on purpose</div><div style="font-size:12px;color:#7A7163;line-height:1.4;margin-top:2px">Thu 22:00 (jet-lag reset), Fri easy (Sat + Sun are heavy). The base is for recharging — KL is for burning.</div></div></div>
+          </div>
+        </div>
+
+        <!-- TO KL -->
+        <div id="base-tokl" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="train-front" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Getting to KL &amp; the airport</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F6EDD9;display:flex;align-items:center;justify-content:center;color:#A77D2E"><svg-icon data-lucide="train-front" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">MRT Putrajaya Line — the sleeper asset</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">Direct rail from <b style="color:#5E5749">Putrajaya Sentral + two Cyberjaya stations</b> into the city — stops at TRX, Persiaran KLCC, Conlay (Bukit Bintang's east edge) and Titiwangsa. <b style="color:#5E5749">45–55 min, RM4–6</b>, every 4–8 min till ~23:30. Tap a contactless bank card at the gate. Beats Grab on price 10×, loses ~10 min.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F5E4D9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="zap" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">KLIA Transit — airport &amp; KL Sentral</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">From Putrajaya &amp; Cyberjaya station: <b style="color:#5E5749">16 min to KLIA (RM9.40)</b> one way, <b style="color:#5E5749">20 min to KL Sentral (RM14)</b> the other. Every 15 min peak / 30 min off-peak, ~05:00–00:30. This is Thursday's route home from the city and the spine of the whole geography.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="car-front" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Grab — door to door</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">Cyberjaya ↔ KL city 35–50 min, RM45–70 (tolls included). Station hops RM8–15. Surges in rain and 17:30–19:30. Use rail for the long legs, Grab for the last mile and late nights.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KLIA MITSUI DAY -->
+        <div id="base-mitsui" data-reveal style="padding:28px 16px 8px;scroll-margin-top:60px">
+          <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(150deg,#C99A4E,#9A7B3C);padding:20px;box-shadow:0 16px 36px -24px rgba(154,123,60,.8)">
+            <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(201,154,78,.68),rgba(154,123,60,.93))"></div>
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(255,255,255,.85)">TUE 6 OCT · RETURN LEG · OUTLETS TILL 22:00</div>
+              <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:26px;color:#fff;margin:8px 0 0">KLIA night — Mitsui Outlet Park</h2>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.94);line-height:1.55;margin:10px 0 0">MH753 lands T1 at 16:40 → Grab 10 min (RM10–15) → shop 17:45–21:30: Nike/Adidas/Puma factory stores, Coach, Levi's at 30–70% off. Outlets only — no fakes, no tech (those were Sunday's Petaling + Low Yat). Nader meets you here with the stored bag. Then Grab 8 min to Sama-Sama Hotel (~RM400, 24/7 five-minute shuttle to T1) — <b>not the terminal floor</b> — repack for the 2-piece QR allowance, and QR845 at 09:30 next morning.</p>
+            </div>
+          </div>
+          <div style="text-align:center;padding:26px 0 6px;font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#A89E8C">A capital nobody visits — which is exactly why you should.</div>
+        </div>
+
+      </div>
+    </sc-if>
+    <sc-if value="{{ isKL }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease">
+
+        <!-- HERO -->
+        <div id="kl-top" style="position:relative;overflow:hidden;padding:30px 20px 24px;background:linear-gradient(155deg,#C36A44 0%,#9C4F2E 50%,#3C2A20 125%)">
+          <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=900&q=70" onError="{{ hideImg }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;animation:kenburns 28s ease forwards"/>
+          <div style="position:absolute;inset:0;background:linear-gradient(155deg,rgba(195,106,68,.45) 0%,rgba(156,79,46,.72) 50%,rgba(60,42,32,.93) 125%)"></div>
+          <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 85% 5%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.82);margin-bottom:10px">ZONE BY ZONE · 35–55 MIN AWAY</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1;color:#FBF7EE;margin:0;letter-spacing:-.01em">Kuala Lumpur</h1>
+            <p style="color:rgba(255,255,255,.9);font-size:13.5px;line-height:1.5;margin:12px 0 0;max-width:92%">Towers over shophouses, six cuisines per street, everything air-conditioned or on fire. The trick is the same as any megacity: cluster by zone, never crisscross. Your KL lives in two windows — Thursday's Sentral spine and Sunday's masterpiece evening.</p>
+          </div>
+        </div>
+
+        <!-- JUMP NAV -->
+        <div class="noscroll" style="position:sticky;top:49px;z-index:30;display:flex;gap:7px;overflow-x:auto;padding:11px 16px;background:rgba(245,239,227,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #E8E0CE">
+          <sc-for list="{{ klNav }}" as="c" hint-placeholder-count="8">
+            <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid #E0D7C4;background:rgba(251,247,238,.8);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:700;color:#5E5749;cursor:pointer;font-family:'Hanken Grotesk'">{{ c.label }}</button>
+          </sc-for>
+        </div>
+
+        <!-- PLAN IT -->
+        <div id="kl-plan" data-reveal style="padding:24px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="train-front" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Getting there &amp; around</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="train-front" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Cyberjaya → KL</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px"><b style="color:#5E5749">MRT Putrajaya Line</b> direct to TRX / Persiaran KLCC / Conlay, 45–55 min, <b style="color:#5E5749">RM4–6</b> · <b style="color:#5E5749">KLIA Transit</b> to KL Sentral, 20 min, RM14 (best for the Sentral/Brickfields cluster) · <b style="color:#5E5749">Grab</b> door-to-door 35–50 min, RM45–70. Airport: Ekspres from Sentral 28 min RM55; AirAsia flies from <b style="color:#5E5749">Terminal 2</b>, Qatar &amp; MH from Terminal 1.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F7E9DF;display:flex;align-items:center;justify-content:center;color:var(--accent,#B5653F)"><svg-icon data-lucide="credit-card" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">In KL: just tap</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">Your <b style="color:#5E5749">contactless Visa/Mastercard taps directly at every rail gate</b> (MRT, LRT, Monorail, KLIA lines) — no ticket, no top-up. Backup: Touch 'n Go card, RM10 at 7-Eleven. GoKL city buses cost foreigners RM1. City rail hops RM1.30–2.50. The covered air-con walkway <b style="color:#5E5749">Bukit Bintang ↔ KLCC (10 min)</b> is the one long walk that's always pleasant — elsewhere walk mornings/evenings, ride 12:00–16:00. Scooters: see Essentials — the answer is no.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ZONES -->
+        <div id="kl-zones" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="map" style="width:18px;height:18px;color:#9C4F2E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The six zones</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Tap a zone to open it. Thursday owns D + E; Sunday runs A → tower → B → C in one line.</p>
+
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ klZones }}" as="z" hint-placeholder-count="6">
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <button onClick="{{ z.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:13px;padding:14px 15px">
+                  <span style="flex-shrink:0;width:40px;height:40px;border-radius:12px;background:{{ z.grad }};display:flex;align-items:center;justify-content:center;font-family:'Newsreader',serif;font-size:19px;color:#fff;box-shadow:0 6px 14px -8px rgba(0,0,0,.5)">{{ z.letter }}</span>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-family:'Newsreader',serif;font-size:16.5px;color:#2B2722;line-height:1.15">{{ z.title }}</span><span style="font-size:8px;font-weight:700;letter-spacing:.05em;border-radius:5px;padding:2px 5px;{{ z.tagStyle }}">{{ z.tag }}</span></div>
+                    <div style="font-size:11.5px;color:#7A7163;margin-top:3px;line-height:1.3">{{ z.vibe }}</div>
+                  </div>
+                  <sc-if value="{{ z.open }}" hint-placeholder-val="{{ false }}"><svg-icon data-lucide="chevron-up" style="width:18px;height:18px;color:var(--accent,#B5653F);flex-shrink:0"></svg-icon></sc-if>
+                  <sc-if value="{{ z.closed }}" hint-placeholder-val="{{ true }}"><svg-icon data-lucide="chevron-down" style="width:18px;height:18px;color:#B9B0A0;flex-shrink:0"></svg-icon></sc-if>
+                </button>
+                <sc-if value="{{ z.open }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:2px 15px 15px;animation:fadeIn .4s ease">
+                    <div style="display:flex;gap:14px;padding:9px 0 12px;border-top:1px solid #F0E8D8;margin-bottom:2px">
+                      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#7A7163"><svg-icon data-lucide="train-front" style="width:13px;height:13px;color:#9C9486"></svg-icon>{{ z.tube }}</span>
+                      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#7A7163"><svg-icon data-lucide="clock" style="width:13px;height:13px;color:#9C9486"></svg-icon>{{ z.time }}</span>
+                    </div>
+                    <sc-for list="{{ z.highlights }}" as="h" hint-placeholder-count="5">
+                      <div style="padding:10px 0;border-top:1px solid #F4EEDF">
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+                          <span style="font-size:13.5px;font-weight:700;color:#2B2722">{{ h.name }}</span>
+                          <span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent,#B5653F);text-align:right">{{ h.meta }}</span>
+                        </div>
+                        <div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">{{ h.desc }}</div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ z.hasFood }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:8px;align-items:flex-start;background:#F7EFE2;border-radius:11px;padding:10px 11px;margin-top:10px"><svg-icon data-lucide="utensils" style="width:13px;height:13px;color:var(--accent,#B5653F);flex-shrink:0;margin-top:2px"></svg-icon><div style="font-size:11.5px;color:#7A6A52;line-height:1.45"><b style="color:#9C4F2E">Eat here:</b> {{ z.food }}</div></div>
+                    </sc-if>
+                    <sc-if value="{{ z.hasCoffee }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:8px;align-items:flex-start;background:#EEF1E9;border-radius:11px;padding:10px 11px;margin-top:8px"><svg-icon data-lucide="coffee" style="width:13px;height:13px;color:#5E7257;flex-shrink:0;margin-top:2px"></svg-icon><div style="font-size:11.5px;color:#5A6353;line-height:1.45"><b style="color:#3C4B3E">Coffee:</b> {{ z.coffee }}</div></div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- JALAN ALOR DEEP DIVE -->
+        <div id="kl-alor" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(150deg,var(--accent,#B5653F),#7E3F26);padding:20px;box-shadow:0 16px 36px -24px rgba(126,63,38,.8)">
+            <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(181,101,63,.7),rgba(126,63,38,.93))"></div>
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(255,255,255,.85)">DEEP DIVE · YOUR "NON-NEGOTIABLE"</div>
+              <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:26px;color:#fff;margin:8px 0 0">Jalan Alor</h2>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.85);margin-top:6px">Bukit Bintang · nightly ~17:00–03:00</div>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.94);line-height:1.55;margin:11px 0 0">KL's night food street — a full block of charcoal smoke, plastic stools and shouting. It peaks after 20:00. Your slot: the Sunday nightcap at 22:15, arriving fed from Kampung Baru so you graze instead of committing.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px">
+                <div style="background:rgba(255,255,255,.13);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.72)">ANCHOR ORDER</div><div style="font-size:11.5px;color:#fff;font-weight:600;margin-top:2px">Wong Ah Wah grilled chicken wings</div></div>
+                <div style="background:rgba(255,255,255,.13);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.72)">THE DARE</div><div style="font-size:11.5px;color:#fff;font-weight:600;margin-top:2px">Musang King durian at the street's mouth</div></div>
+              </div>
+              <div style="background:rgba(255,255,255,.13);border-radius:11px;padding:11px 12px;margin-top:8px">
+                <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.72);margin-bottom:5px">GOOD TO KNOW</div>
+                <div style="font-size:11.5px;color:#fff;line-height:1.5">Stalls are mixed — halal and non-halal side by side; satay, grilled seafood and the wings are safe bets, ask per stall if it matters (fork #1). No durian into hotels or trains after — genuinely banned. Prices are honest; you only haggle at markets, not food stalls.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKETS QUICK REF -->
+        <div id="kl-markets" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="shopping-basket" style="width:18px;height:18px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Markets by best day</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Each peaks on a different day — your Sunday is built around what's actually open.</p>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:4px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Petaling Street</div><div style="font-size:11.5px;color:#7A7163">The identical-knockoffs run · haggle from a third</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">DAILY<br><span style="color:#9C9486;font-weight:400">~10–22</span></span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Central Market</div><div style="font-size:11.5px;color:#7A7163">Batik, pewter, crafts — best souvenirs, air-con</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">DAILY<br><span style="color:#9C9486;font-weight:400">10–21:30</span></span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Kampung Baru Pasar Minggu</div><div style="font-size:11.5px;color:#7A7163">Malay night market — despite the name it runs Saturday night</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">SAT NIGHT</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Lucky Garden, Bangsar</div><div style="font-size:11.5px;color:#7A7163">Morning hawker stalls, zero tourists</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">MORNINGS</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Taman Connaught</div><div style="font-size:11.5px;color:#7A7163">2km pasar malam — Wednesdays only; your Wednesdays are mid-air or Hanoi. Impossible.</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;font-weight:600;text-align:right">WED ✗</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Mitsui Outlet Park</div><div style="font-size:11.5px;color:#7A7163">Brand outlets by the airport — the Tue 6 Oct plan</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">DAILY<br><span style="color:#9C9486;font-weight:400">10–22</span></span></div>
+          </div>
+        </div>
+
+        <!-- FOOD -->
+        <div id="kl-food" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="utensils-crossed" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Eating KL properly</span>
+          </div>
+          <div style="position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#9C4F2E,#6B341C);padding:17px;margin-bottom:11px">
+            <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(156,79,46,.8),rgba(107,52,28,.93))"></div>
+            <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.82)">MALAY HEARTLAND · ACROSS FROM PETRONAS</div>
+            <div style="font-family:'Newsreader',serif;font-size:20px;color:#fff;margin-top:5px">Kampung Baru</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.92);line-height:1.5;margin-top:6px">A wooden-house Malay village in the towers' shadow — everything halal, everything real. Nasi Lemak Wanjo is the famous plate; satay and nasi campur stalls line Jalan Raja Muda Musa. Safe and normal at night. This is Sunday's dinner and the best contradiction photo in KL.</div>
+            </div>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Halal by default</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Malay stalls, mamaks (24h Indian-Muslim), nasi kandar (Pelita nr KLCC), banana leaf in Brickfields, Kampung Baru — most of the city eats halal without asking.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Flags to know (fork #1)</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Hutong @ Lot 10's famous stalls are heavily non-halal · Madras Lane curry mee adds pork blood · char kway teow usually cooks in lard · bak kut teh IS pork. If pork's out, skip those; the city still overfeeds you.</div></div>
+            <div style="padding:11px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">The never-miss list</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Nasi lemak (Wanjo or Village Park) · roti canai + teh tarik at a mamak · satay · banana leaf rice · assam laksa if you like funky-sour · one Musang King seed · Jalan Alor wings.</div></div>
+          </div>
+        </div>
+
+        <!-- COFFEE -->
+        <div id="kl-coffee" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="coffee" style="width:18px;height:18px;color:#9C4F2E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Specialty coffee</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">VCR</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Jalan Galloway — KL's specialty benchmark, brunch too.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Feeka</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Jalan Mesui — calm heritage-shophouse roaster off Changkat.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Merchant's Lane</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Petaling St — plant-filled 2nd-floor former brothel; closes early evening, go first.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">PULP by Papa Palheta</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Bangsar — inside an old printing factory, machines still there.</div></div>
+          </div>
+          <div style="font-size:11.5px;color:#9C9486;line-height:1.45;margin-top:9px">Also: 103 Coffee (Sri Petaling) if you drift that way. And the anti-specialty move that outranks all of them: kopi tarik at any mamak, RM2, pulled twice for show.</div>
+        </div>
+
+        <!-- SHOPPING -->
+        <div id="kl-shop" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="shopping-bag" style="width:18px;height:18px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Shopping — the mission map</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Identical knock-offs → Petaling Street</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Sunday 16:00 slot. Open at a third of first price, walk away once, settle near half. Cash.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Tech → Plaza Low Yat</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Six floors in Bukit Bintang. Only worth the Sunday 40 minutes if you have a target (fork #2) — accessories haggle, big brands don't.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Outlet brands → Mitsui (Tue 6 Oct)</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Nike/Adidas/Puma factory, Coach, Levi's, 30–70% off, 17:45–21:30 window. No fakes, no tech there.</div></div>
+            <div style="padding:11px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Souvenirs → Central Market + IAMM shop</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Batik, pewter, crafts under air-con; the Islamic Arts Museum bookshop is the quality-gift move. Full-price malls (Pavilion, Suria) got no slot — Mitsui covers brands cheaper.</div></div>
+          </div>
+        </div>
+
+        <!-- NIGHTS -->
+        <div id="kl-night" data-reveal style="padding:28px 16px 8px;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="moon-star" style="width:18px;height:18px;color:#7E6BA8"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">After dark</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F7E9DF;display:flex;align-items:center;justify-content:center;color:var(--accent,#B5653F)"><svg-icon data-lucide="tower-control" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">KL Tower Sky Deck at sunset</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Your one deck, rightly chosen — the only one with Petronas IN the frame. Pre-book ~18:30 slot; sunset 19:06; Sky Box after golden hour. ~RM90–200 intl tiers; open deck closes in storms (indoor level still runs).</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="camera" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Saloma Link + Lake Symphony</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">The lit betel-leaf bridge with Petronas behind — night is its best look. Then KLCC park: fountain shows every ~30 min, 20:00–22:00.</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#EFEAF4;display:flex;align-items:center;justify-content:center;color:#7E6BA8"><svg-icon data-lucide="martini" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Heli Lounge &amp; Changkat</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Drinks on a working helipad, no railings — go 18:30 or as a Sunday 23:00 nightcap if legs remain. Changkat Bukit Bintang is the rowdy bar street. Both optional (fork #1).</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="footprints" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">River of Life after 19:30</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Masjid Jamek confluence lit electric blue + Sultan Abdul Samad floodlit. Lives in Thursday's dinner-skip variant; otherwise a future-trip debt.</div></div></div>
+          </div>
+          <div style="text-align:center;padding:26px 0 6px;font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#A89E8C">This city eats at midnight.</div>
+        </div>
+
+      </div>
+    </sc-if>
+    <sc-if value="{{ isEss }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease;position:relative;z-index:0">
+        <div aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1">
+          <div style="position:absolute;top:80px;right:-70px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(206,160,82,.58),transparent 68%);animation:drift2 28s ease-in-out infinite"></div>
+          <div style="position:absolute;top:680px;left:-90px;width:430px;height:430px;border-radius:50%;background:radial-gradient(circle,rgba(192,108,68,.5),transparent 68%);animation:drift1 33s ease-in-out infinite"></div>
+          <div style="position:absolute;top:1280px;right:-50px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(110,138,104,.52),transparent 68%);animation:drift3 37s ease-in-out infinite"></div>
+          <div style="position:absolute;top:1900px;left:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(206,160,82,.54),transparent 68%);animation:drift2 30s ease-in-out infinite"></div>
+        </div>
+
+        <!-- HERO -->
+        <div id="ess-top" style="position:relative;overflow:hidden;padding:30px 20px 24px;background:linear-gradient(155deg,#C99A4E 0%,#A87C36 48%,#3C2F1A 125%)">
+          <div style="position:absolute;inset:0;background:linear-gradient(155deg,rgba(201,154,78,.6) 0%,rgba(168,124,54,.82) 48%,rgba(60,47,26,.95) 125%)"></div>
+          <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 85% 5%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.82);margin-bottom:10px">EVERYTHING YOU NEED</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1;color:#FBF7EE;margin:0;letter-spacing:-.01em">Essentials</h1>
+            <p style="color:rgba(255,255,255,.9);font-size:13.5px;line-height:1.5;margin:12px 0 0;max-width:92%">Entry paperwork, bookings and the to-book list, budget, an interactive packing list, the scooter-licence verdict, money, SIM and every number — in one place.</p>
+          </div>
+        </div>
+
+        <!-- JUMP NAV -->
+        <div class="noscroll" style="position:sticky;top:49px;z-index:30;display:flex;gap:7px;overflow-x:auto;padding:11px 16px;background:rgba(245,239,227,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #E8E0CE">
+          <sc-for list="{{ essNav }}" as="c" hint-placeholder-count="8">
+            <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid #E0D7C4;background:rgba(251,247,238,.8);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:700;color:#5E5749;cursor:pointer;font-family:'Hanken Grotesk'">{{ c.label }}</button>
+          </sc-for>
+        </div>
+
+        <!-- ENTRY / VISA -->
+        <div id="ess-visa" data-reveal style="padding:24px 16px 0;scroll-margin-top:60px">
+          <div style="background:#EEF1E9;border:1px solid #CDE0C4;border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="width:38px;height:38px;border-radius:11px;background:#5E7257;display:flex;align-items:center;justify-content:center;color:#fff"><svg-icon data-lucide="badge-check" style="width:20px;height:20px"></svg-icon></span>
+              <div><div style="font-family:'Newsreader',serif;font-size:19px;color:#2B2722;line-height:1">Malaysia entry</div><div style="font-size:11px;font-weight:700;color:#A77D2E;letter-spacing:.04em;margin-top:2px">MDAC ×2 REQUIRED</div></div>
+            </div>
+            <div style="font-size:12.5px;color:#5A6353;line-height:1.55">Egyptian passport: <b>visa-free ~90 days</b> — but the <b>MDAC</b> (Malaysia Digital Arrival Card) is mandatory, free, on the official immigration portal, filed <b>≤3 days before EACH entry</b>: once ~21–23 Sep for the 24 Sep landing, again ~3–5 Oct (from Vietnam) for the 6 Oct re-entry. Passport 6+ months valid; keep the QR handy at the eGate.</div>
+          </div>
+          <div style="background:#F6EDD9;border:1px solid #E8D7B0;border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(43,39,34,.04);margin-top:11px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span style="width:38px;height:38px;border-radius:11px;background:#A77D2E;display:flex;align-items:center;justify-content:center;color:#fff"><svg-icon data-lucide="file-warning" style="width:20px;height:20px"></svg-icon></span>
+              <div><div style="font-family:'Newsreader',serif;font-size:19px;color:#2B2722;line-height:1">Vietnam e-visa</div><div style="font-size:11px;font-weight:700;color:#9C4F2E;letter-spacing:.04em;margin-top:2px">APPLY NOW — DO NOT SIT ON THIS</div></div>
+            </div>
+            <div style="font-size:12.5px;color:#7A6638;line-height:1.55"><b>evisa.gov.vn only</b> — the .com clones are middlemen charging 3×. $25 single entry, entry date <b>26 Sep</b> (buffer), 3–5+ working days to issue. <b>Print two copies</b>; name/passport typos = refused boarding. Full Vietnam admin lives in the VN guide when it lands.</div>
+          </div>
+        </div>
+
+        <!-- BOOKINGS -->
+        <div id="ess-book" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="ticket" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Bookings</span>
+          </div>
+
+          <!-- Flights -->
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:16px;box-shadow:0 1px 2px rgba(43,39,34,.04);margin-bottom:11px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px"><svg-icon data-lucide="plane" style="width:16px;height:16px;color:#5E7257"></svg-icon><span style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Flights — Qatar Airways</span></div><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#9C9486">REF HV9TBJ</span></div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;background:#F2EAD9;border-radius:12px;padding:11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#9C9486">OUT · WED 23 SEP</div><div style="font-size:13px;font-weight:700;color:#2B2722;margin-top:4px">QR1304 + QR844</div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#5E5749;margin-top:3px">CAI 14:10 → DOH → KUL 07:55 (+1)</div></div>
+              <div style="flex:1;background:#F2EAD9;border-radius:12px;padding:11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#9C9486">HOME · WED 7 OCT</div><div style="font-size:13px;font-weight:700;color:#2B2722;margin-top:4px">QR845 + QR1301</div><div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#5E5749;margin-top:3px">KUL 09:30 → DOH → CAI 17:50</div></div>
+            </div>
+            <div style="font-size:11px;color:#7A7163;line-height:1.45;margin-top:10px">Economy · 2-piece checked baggage · e-ticket 1575008970931 · confirmation 9KT7FX · booked via NSAS Cairo · KLIA <b>Terminal 1</b> both ways</div>
+          </div>
+
+          <!-- To book -->
+          <div style="background:#F6EDD9;border:1px solid #E8D7B0;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04);margin-bottom:11px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><svg-icon data-lucide="triangle-alert" style="width:15px;height:15px;color:#A77D2E"></svg-icon><span style="font-family:'Newsreader',serif;font-size:16px;color:#2B2722">Still to book — this week</span></div>
+            <div style="font-size:12px;color:#7A6638;line-height:1.7"><b>AK512</b> KUL→HAN Mon 28 Sep 12:10 — airasia.com direct, add 20kg bag at purchase (T2!)<br><b>MH753</b> HAN→KUL Tue 6 Oct 13:19 — 30kg included, lands T1<br><b>KL Tower</b> timed Sky Deck slot ~18:30, Sun 27 Sep<br><b>KLIA hotel</b> Tue 6 Oct — Sama-Sama (T1, ~RM400) or CapsuleTransit (T2, ~RM150–250)<br><b>Vietnam beds + night train</b> — in the VN guide, but book with these dates (Golden Week Oct 1–7 pressure)</div>
+          </div>
+
+          <!-- Hotels -->
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><svg-icon data-lucide="bed-double" style="width:16px;height:16px;color:#5E7257"></svg-icon><span style="font-family:'Newsreader',serif;font-size:16px;color:#2B2722">Conference hotel — Cyberjaya/Putrajaya</span></div><span style="font-size:9px;font-weight:700;color:#5E7257;background:#EAEFE5;border-radius:5px;padding:2px 6px">24–27 SEP · 3 NTS · COVERED</span></div>
+              <div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:5px">Name TBA by the organisers (fork #6) — barely matters, everything routes by Grab + the P&amp;C rail station. Check-in 14:00 Thu; you'll be in KL until ~17:00 anyway.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><svg-icon data-lucide="building-2" style="width:16px;height:16px;color:#5E7257"></svg-icon><span style="font-family:'Newsreader',serif;font-size:16px;color:#2B2722">KL city hotel</span></div><span style="font-size:9px;font-weight:700;color:#5E7257;background:#EAEFE5;border-radius:5px;padding:2px 6px">27 SEP · 1 NT · COVERED</span></div>
+              <div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:5px">Name TBA — it sets Sunday's 15:00 start point (plan assumes Bukit Bintang/KLCC). Nader collects the leave-behind bag here Sunday evening.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUDGET -->
+        <div id="ess-budget" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="wallet" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Budget — Malaysia legs</span>
+          </div>
+          <div style="position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#5E7257,#33402F);padding:18px;margin-bottom:11px">
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:rgba(255,255,255,.8)">MID-RANGE · PAY FOR WHAT IMPROVES THE TRIP</div>
+              <div style="display:flex;align-items:baseline;gap:10px;margin-top:5px"><span style="font-family:'Newsreader',serif;font-size:32px;color:#fff;line-height:1">~RM 150–250 / day</span></div>
+              <div style="font-size:13px;color:rgba(255,255,255,.92);margin-top:4px">≈ $32–53 — outside shopping and the tower. RM1 ≈ $0.21.</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px">
+              <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:#5E7257;letter-spacing:.06em;margin-bottom:8px">ALREADY COVERED</div>
+              <div style="font-size:11.5px;color:#5E5749;line-height:1.7">CAI↔KUL flights<br>4 hotel nights (24–27)<br>Conference meals<br>SplashMania entry<br>Sunday transfer to KL</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px">
+              <div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--accent,#B5653F);letter-spacing:.06em;margin-bottom:8px">YOUR SPEND</div>
+              <div style="font-size:11.5px;color:#5E5749;line-height:1.7">Grab + rail (~RM40–90/day out)<br>KL Tower RM90–200<br>Street food (RM5–20/meal)<br>Petaling + Low Yat + Mitsui fund<br>KLIA hotel 6 Oct RM150–400<br>Nader's thank-you gift</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:13px;padding:11px 13px;margin-top:11px"><svg-icon data-lucide="info" style="width:14px;height:14px;color:#5E7257;flex-shrink:0;margin-top:1px"></svg-icon><div style="font-size:11.5px;color:#5A6353;line-height:1.5">KL is cheap where it matters: the best meals of the trip cost RM8–20, the best photos are free (Saloma, Merdeka, fountain, Batu, the mosques), and rail is RM2–14. Splurge points are the tower and the bed at the airport — both worth it.</div></div>
+        </div>
+
+        <!-- PACKING -->
+        <div id="ess-pack" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="display:flex;align-items:center;gap:8px"><svg-icon data-lucide="luggage" style="width:18px;height:18px;color:#9C4F2E"></svg-icon><span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Packing list</span></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent,#B5653F);font-weight:600">{{ packDone }}/{{ packTotal }}</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 12px">Tap to tick off — saved on this device. Built around the split: big bag lives at Nader's, cabin bag goes to Vietnam.</p>
+          <div style="height:8px;background:#EFE7D7;border-radius:5px;overflow:hidden;margin-bottom:14px"><div style="height:100%;width:{{ packPctW }};background:linear-gradient(90deg,#C99A4E,var(--accent,#B5653F));transition:width .4s ease;border-radius:5px"></div></div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ packing }}" as="c" hint-placeholder-count="10">
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <button onClick="{{ c.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 15px">
+                  <span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="{{ c.icon }}" style="width:18px;height:18px"></svg-icon></span>
+                  <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:700;color:#2B2722">{{ c.cat }}</div><div style="font-size:11px;color:#9C9486;margin-top:1px">{{ c.ndone }} of {{ c.total }} packed</div></div>
+                  <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><svg-icon data-lucide="chevron-up" style="width:18px;height:18px;color:var(--accent,#B5653F);flex-shrink:0"></svg-icon></sc-if>
+                  <sc-if value="{{ c.closed }}" hint-placeholder-val="{{ true }}"><svg-icon data-lucide="chevron-down" style="width:18px;height:18px;color:#B9B0A0;flex-shrink:0"></svg-icon></sc-if>
+                </button>
+                <div style="height:3px;background:#EFE7D7;margin:0 15px;border-radius:2px;overflow:hidden"><div style="height:100%;width:{{ c.pctW }};background:#5E7257;transition:width .35s ease"></div></div>
+                <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:4px 15px 12px;animation:fadeIn .35s ease">
+                    <sc-if value="{{ c.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font-size:11.5px;color:#9C8E6F;font-style:italic;font-family:'Newsreader',serif;padding:8px 0 2px;line-height:1.4">{{ c.note }}</div></sc-if>
+                    <sc-for list="{{ c.items }}" as="it" hint-placeholder-count="6">
+                      <button onClick="{{ it.toggle }}" style="width:100%;text-align:left;border:none;background:none;cursor:pointer;display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-top:1px solid #F0E8D8">
+                        <span style="flex-shrink:0;width:21px;height:21px;border-radius:6px;border:1.5px solid;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s ease;{{ it.checkStyle }}"><svg-icon data-lucide="check" style="width:13px;height:13px"></svg-icon></span>
+                        <span style="flex:1;min-width:0">
+                          <span style="display:block;font-size:13.5px;font-weight:600;line-height:1.3;{{ it.labelStyle }}">{{ it.label }}</span>
+                          <sc-if value="{{ it.hasNote }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:11.5px;color:#9C9486;line-height:1.35;margin-top:1px">{{ it.note }}</span></sc-if>
+                        </span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- Do not pack -->
+          <div style="background:#F7EFE2;border:1px solid #E8D7B0;border-radius:16px;padding:14px;margin-top:11px">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px"><svg-icon data-lucide="circle-slash" style="width:15px;height:15px;color:#A77D2E"></svg-icon><span style="font-size:13px;font-weight:700;color:#7A6638">Leave at home</span></div>
+            <div style="font-size:11.5px;color:#8A7647;line-height:1.55">Anything warm beyond one layer (Sapa's the only cool spot) · umbrella (buy a RM10 one there, or ponchos) · full-size toiletries (Watsons/Guardian everywhere) · valuables you'd cry about at a waterpark · durian in luggage — banned and it will haunt the bag forever.</div>
+          </div>
+        </div>
+
+        <!-- EVENTS -->
+        <div id="ess-events" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="sparkles" style="width:18px;height:18px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Timed &amp; seasonal</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#A23E48,#5E2830);padding:17px">
+              <div style="position:relative">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.82)">1–7 OCT · REGION-WIDE</div>
+                <div style="font-family:'Newsreader',serif;font-size:21px;color:#fff;margin-top:5px">China's Golden Week</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.92);line-height:1.5;margin-top:6px">Overlaps your Sapa dates exactly — book Vietnam beds and the night train NOW, and do Fansipan at the 07:30 first car. In KL it just means busier malls on the 6th. Full plan in the VN guide.</div>
+              </div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13px;font-weight:700;color:#2B2722">Lake Symphony fountains</div><div style="font-size:11.5px;color:#7A7163">KLCC park · nightly, every ~30 min</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent,#B5653F);font-weight:600">20:00–22:00</span></div>
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13px;font-weight:700;color:#2B2722">Pasar Minggu, Kampung Baru</div><div style="font-size:11.5px;color:#7A7163">Malay night market — runs Saturday night despite the name</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent,#B5653F);font-weight:600">SAT EVE</span></div>
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13px;font-weight:700;color:#2B2722">Putra Mosque tourist windows</div><div style="font-size:11.5px;color:#7A7163">Sat–Thu from 09:00 · Friday mornings closed to visitors</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent,#B5653F);font-weight:600">SAT 09:00</span></div>
+              <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0"><div><div style="font-size:13px;font-weight:700;color:#2B2722">Sunset ≈ 19:06</div><div style="font-size:11.5px;color:#7A7163">Storm window most days 15:00–18:00 — every day has an indoor fallback</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;color:#9C9486;font-weight:600">DAILY</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRAVEL / LICENCE -->
+        <div id="ess-travel" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="train-front" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Getting around</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Cyberjaya ↔ KL</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">MRT Putrajaya Line direct to TRX/KLCC/Conlay 45–55 min RM4–6 · KLIA Transit to KL Sentral 20 min RM14 · Grab door-to-door 35–50 min RM45–70.</div></div>
+            <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Airport terminals — check twice</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Qatar + Malaysia Airlines = <b>T1</b>. AirAsia = <b>T2</b>. Separate buildings. Mitsui Outlet is 10 min from both by Grab (RM10–15); free shuttle exists but is sparse.</div></div>
+            <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Scooter / motorbike — the verdict is no</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Riding needs a home licence with the <b>motorcycle category</b> + an IDP carrying that category — you hold neither, so any rental is illegal with void insurance in unforgiving traffic. <b>E-scooters are banned from all Malaysian public roads</b> (since Dec 2021, enforced, fines to RM5k) — parks and bike lanes only. Bicycles: fine, no licence (Putrajaya lake loop, Titiwangsa). A car is legal with car licence + IDP but pointless — Grab is cheaper than parking.</div></div>
+            <div style="padding:12px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Grab craft</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Pickups at marked e-hailing bays in airports/malls · surge in rain + 17:30–19:30 · drop an exact pin, buildings are huge · tolls included · AirAsia Ride sometimes undercuts on airport runs.</div></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">Grab</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">Google Maps offline</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">KLIA Ekspres app</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">TnG eWallet</span>
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">JAKIM e-Solat</span>
+          </div>
+        </div>
+
+        <!-- MONEY & SIM -->
+        <div id="ess-money" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="credit-card" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Money, SIM &amp; practicals</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:700;color:#2B2722">Pay by tap</div><div style="font-size:11.5px;color:#7A7163;line-height:1.45;margin-top:3px">Cards work nearly everywhere incl. rail gates. Keep RM200–300 cash for hawkers, lockers, robes, markets.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:700;color:#2B2722">Tipping</div><div style="font-size:11.5px;color:#7A7163;line-height:1.45;margin-top:3px">Not expected. Restaurants add service charge; round up a Grab if you like. That's it.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:700;color:#2B2722">SIM / data</div><div style="font-size:11.5px;color:#7A7163;line-height:1.45;margin-top:3px">Hotlink or CelcomDigi counter at KLIA arrivals, or an Airalo eSIM before you land. Grab needs data from minute one.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><div style="font-size:13px;font-weight:700;color:#2B2722">Power &amp; water</div><div style="font-size:11.5px;color:#7A7163;line-height:1.45;margin-top:3px">Type-G plugs (UK style), 240V — Egypt's C/F pins need an adaptor. Don't drink tap; bottled is RM1–2.</div></div>
+          </div>
+        </div>
+
+        <!-- UNIQUE EXPERIENCES -->
+        <div id="ess-unique" data-reveal style="padding:26px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="star" style="width:18px;height:18px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Do at least once</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">2am roti canai at a mamak</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">Teh tarik pulled from a height</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">One Musang King seed</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">The Sky Box photo</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">272 steps past the monkeys</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">Pink robes at the pink mosque</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">Fountains under Petronas</span>
+            <span style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:9px 13px;font-size:12.5px;font-weight:600;color:#5E5749">Wings at Wong Ah Wah</span>
+          </div>
+        </div>
+
+        <!-- CONTACTS -->
+        <div id="ess-contacts" data-reveal style="padding:26px 16px 8px;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="phone" style="width:18px;height:18px;color:#9C4F2E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Key contacts</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:4px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Malaysia emergency</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent,#B5653F);font-weight:600">999 / 112</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Tourist police (KL)</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">+60 3-2149 6590</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Qatar Airways ref</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">HV9TBJ · 9KT7FX</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Booking agent</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">NSAS Cairo</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Nader (KL — luggage)</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">add number</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Conference contact</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">TBA</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Egypt embassy, KL</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">+60 3-4256 8184</span></div>
+          </div>
+          <div style="font-size:11px;color:#9C9486;line-height:1.5;margin-top:10px">Fill Nader's number and the conference contact once known. Vietnam contacts land with the VN guide.</div>
+        </div>
+
+      </div>
+    </sc-if>
+
+  </main>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:50;display:flex;background:rgba(248,243,233,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #E4DBC9;padding:8px 6px calc(8px + env(safe-area-inset-bottom))">
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+      <button onClick="{{ n.go }}" style="flex:1;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;position:relative">
+        <sc-if value="{{ n.notCenter }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ n.active }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;top:-8px;width:22px;height:3px;border-radius:2px;background:var(--accent,#B5653F)"></span>
+          </sc-if>
+          <svg-icon data-lucide="{{ n.icon }}" style="width:21px;height:21px;color:{{ n.color }}"></svg-icon>
+          <span style="font-size:9.5px;font-weight:700;letter-spacing:.01em;color:{{ n.color }}">{{ n.label }}</span>
+        </sc-if>
+        <sc-if value="{{ n.center }}" hint-placeholder-val="{{ false }}">
+          <span style="position:absolute;top:-23px;width:54px;height:54px;border-radius:50%;background:linear-gradient(140deg,#C99A4E,var(--accent,#B5653F));box-shadow:0 9px 20px -6px rgba(181,101,63,.65);display:flex;align-items:center;justify-content:center;border:3px solid #F8F3E9">
+            <svg-icon data-lucide="{{ n.icon }}" style="width:24px;height:24px;color:#fff"></svg-icon>
+          </span>
+          <span style="margin-top:35px;font-size:9.5px;font-weight:800;letter-spacing:.02em;color:var(--accent,#B5653F)">{{ n.label }}</span>
+        </sc-if>
+      </button>
+    </sc-for>
+  </nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 430, &quot;height&quot;: 880 },
+  &quot;accentColor&quot;: {
+    &quot;editor&quot;: &quot;enum&quot;,
+    &quot;options&quot;: [&quot;#B5653F&quot;, &quot;#A23E48&quot;, &quot;#2F6E5B&quot;, &quot;#3A5A8C&quot;, &quot;#7A5C9E&quot;],
+    &quot;default&quot;: &quot;#B5653F&quot;,
+    &quot;tsType&quot;: &quot;string&quot;
+  },
+  &quot;heroPhotos&quot;: {
+    &quot;editor&quot;: &quot;boolean&quot;,
+    &quot;default&quot;: true,
+    &quot;tsType&quot;: &quot;boolean&quot;
+  },
+  &quot;scrollReveal&quot;: {
+    &quot;editor&quot;: &quot;boolean&quot;,
+    &quot;default&quot;: true,
+    &quot;tsType&quot;: &quot;boolean&quot;
+  }
+}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const arriveMY = Date.UTC(2026,8,23,23,55); // land KUL 24 Sep 07:55 MYT (UTC+8)
+    const defCity = Date.now() >= arriveMY ? 'kl' : 'cairo';
+    this.state = { tab: 'today', openDays: {}, openZones: {}, openPack: {}, packed: {}, doneItin: {}, dbArea: 'all', dbCat: 'all', dbQuery: '', dbDone: {},
+      selCity: defCity, wx: null, wxLoading: true, wxErr: false, wxAt: 0 };
+    this.clockRef = React.createRef();
+    this.cdRef = React.createRef();
+    this.tzRef = React.createRef();
+    this.wxClockRef = React.createRef();
+    this._loadStore();
+    this._buildMoments();
+  }
+
+  CITIES = {
+    kl:        { name:'Kuala Lumpur', label:'KUL', tz:'Asia/Kuala_Lumpur', lat:3.1390,  lon:101.6869 },
+    cyberjaya: { name:'Cyberjaya',    label:'CYB', tz:'Asia/Kuala_Lumpur', lat:2.9213,  lon:101.6559 },
+    cairo:     { name:'Cairo',        label:'CAI', tz:'Africa/Cairo',      lat:30.0444, lon:31.2357 },
+  };
+
+  /* ---------- TRIP DATA ---------- */
+  // Times default to MYT (UTC+8); Cairo-timed blocks carry tz:3 (EEST), Hanoi blocks tz:7.
+  DAYS = [
+    { n:1, dow:'Wed', date:'23 Sep', y:2026, mo:9, d:23, phase:'TRAVEL DAY', title:'Cairo → the equator', accent:'#3C4B3E',
+      blocks:[
+        { t:'14:10', tz:3, time:'14:10', icon:'plane-takeoff', title:'Depart Cairo — QR1304', detail:'CAI → Doha 17:25 · ref HV9TBJ · 2-piece checked · MDAC filed already' },
+        { t:'19:20', tz:3, time:'19:20', icon:'plane', title:'Doha connection — QR844', detail:'~2h layover · departs 19:20 → KUL 07:55 (+1)' },
+        { time:'night', icon:'moon', title:'Sleep hard on the long leg', detail:'7h to KL · you land with a body clock reading 03:00 — Thursday is engineered around it' },
+      ]},
+    { n:2, dow:'Thu', date:'24 Sep', y:2026, mo:9, d:24, phase:'KL TIME', title:'The Sentral spine', accent:'var(--accent,#B5653F)',
+      blocks:[
+        { t:'07:55', time:'07:55', icon:'plane-landing', title:'Land KLIA T1', detail:'Immigration + bags ~75 min · ATM pull RM300 + eSIM at arrivals' },
+        { t:'09:15', time:'09:15', icon:'train-front', title:'KLIA Ekspres → KL Sentral', detail:'28 min · RM55 · tap bank card at the gate · bags to left-luggage, transit level' },
+        { t:'10:30', time:'10:30', icon:'mountain', title:'Batu Caves', detail:'Grab 25 min RM25 · 272 steps, gold Murugan, free · monkeys steal — zip everything · skip the climb if wrecked' },
+        { t:'12:00', time:'12:00', icon:'camera', title:'Titiwangsa skyline stop', detail:'Grab 13 min · the full-skyline Petronas photo · 20 minutes, free · how "the north" survives the cut' },
+        { t:'12:45', time:'12:45', icon:'utensils', title:'Banana leaf in Brickfields', detail:'Vishal Food & Catering · unlimited refills, eat with the right hand · RM15–20 · fork: Madras Lane hawkers instead (its only real window)' },
+        { t:'14:10', time:'14:10', icon:'landmark', title:'Islamic Arts Museum — the aircon block', detail:'RM20 · walk 15 min via Masjid Negara · 2h placed exactly in the jet-lag trough · bookshop = best gifts in KL' },
+        { t:'17:00', time:'17:00', icon:'train-front', title:'KLIA Transit → Putrajaya → hotel', detail:'20 min RM14 + Grab 10 min · check in, shower · battery fork: 40-min Merdeka Square loop first' },
+        { t:'19:00', time:'19:00', icon:'utensils-crossed', title:'Conference dinner', detail:'Soft anchor · fork #3: if skippable, stay in KL for River of Life + Chinatown at night instead' },
+        { t:'22:00', time:'22:00', icon:'bed-double', title:'Sleep. Non-negotiable.', detail:'No nap all day, 22:00 hard stop · skip the 22:00 competition prep as planned · this buys the whole trip’s rhythm' },
+      ]},
+    { n:3, dow:'Fri', date:'25 Sep', y:2026, mo:9, d:25, phase:'CONFERENCE', title:'Recovery + AI@MMU', accent:'#5E7257',
+      blocks:[
+        { t:'08:30', time:'08:30', icon:'coffee', title:'Sleep in · slow breakfast', detail:'Yesterday was a 30-hour day — this half-day buffer is deliberate, not laziness' },
+        { t:'10:00', time:'10:00', icon:'footprints', title:'Optional: Putrajaya lakefront', detail:'Seri Wawasan bridge walk, exteriors only — Putra Mosque interior is CLOSED to visitors Friday mornings · or just the pool' },
+        { t:'12:00', time:'12:00', icon:'utensils', title:'Lunch near MMU', detail:'Student cafés — cheap, fast, follow the queue · Jumu’ah option: campus surau (AI@MMU starts 14:00)' },
+        { t:'14:00', time:'14:00', icon:'presentation', title:'AI@MMU', detail:'14:00–18:00, leaving at 18:00 as planned · skipped the morning competition' },
+        { t:'19:00', time:'19:00', icon:'utensils-crossed', title:'Mamak night', detail:'Roti canai + teh tarik with the students · wired option: 90-min floodlit Putrajaya photo loop · early night — Sat + Sun are heavy' },
+      ]},
+    { n:4, dow:'Sat', date:'26 Sep', y:2026, mo:9, d:26, phase:'CONFERENCE', title:'Pink mosque + SplashMania', accent:'#5E7257',
+      blocks:[
+        { t:'08:30', time:'08:30', icon:'car-front', title:'Grab to Putrajaya', detail:'12–15 min · RM10–15 · skipped the awards morning' },
+        { t:'09:00', time:'09:00', icon:'landmark', title:'Putra Mosque at opening', detail:'Sat window 09:00–12:30 · robes lent free · then Perdana Putra + lake esplanade · fork #4: Bangsar brunch instead — one dies' },
+        { t:'11:15', time:'11:15', icon:'door-open', title:'Back to hotel — hard stop', detail:'Change · pool bag: swimwear, SPF50, phone pouch, strap, RM cash for locker' },
+        { t:'12:15', time:'12:15', icon:'utensils', title:'Lunch with the group', detail:'Conference bus to Gamuda Cove after (~25 min)' },
+        { t:'14:00', time:'14:00', icon:'waves', title:'SplashMania — verdict: KEEP', detail:'Big slides in hour one while queues are short · locker ~RM20 · storm pauses are normal, don’t bail' },
+        { t:'20:00', time:'20:00', icon:'utensils-crossed', title:'Group dinner → back ~22:00', detail:'Pack tonight for the move: Vietnam bag vs leave-behind bag (Nader gets the latter tomorrow)' },
+      ]},
+    { n:5, dow:'Sun', date:'27 Sep', y:2026, mo:9, d:27, phase:'KL TIME', title:'The masterpiece evening', accent:'var(--accent,#B5653F)',
+      blocks:[
+        { t:'10:00', time:'10:00', icon:'luggage', title:'Checkout → group move', detail:'10–12 dead time (pool, coffee, repack) · lunch 12:00 · luggage rides with the group' },
+        { t:'14:00', time:'14:00', icon:'bed-double', title:'Check in — KL city hotel', detail:'Drop bags, fill water · launch 15:00 · route assumes Bukit Bintang/KLCC (fork #6)' },
+        { t:'15:00', time:'15:00', icon:'shopping-bag', title:'Low Yat (if tech target) → Chinatown', detail:'Fork #2 · then Petaling St knock-offs (open at a third, settle near half) · Kwai Chai Hong · Sri Mahamariamman · Central Market for souvenirs' },
+        { t:'17:40', time:'17:40', icon:'landmark', title:'Merdeka Square — golden light', detail:'Walk 12 min up the river · Sultan Abdul Samad, I❤KL sign, Masjid Jamek confluence · 35 min' },
+        { t:'18:35', time:'18:35', icon:'tower-control', title:'KL Tower — sunset from the Sky Deck', detail:'Grab 12 min · pre-booked ~18:30 slot · sunset 19:06 · Sky Box after golden hour · storms close the open deck (indoor level runs)' },
+        { t:'20:00', time:'20:00', icon:'utensils', title:'Kampung Baru dinner', detail:'Grab 10 min · Nasi Lemak Wanjo + satay stalls · safe, normal, all halal · the towers-over-village photo' },
+        { t:'21:05', time:'21:05', icon:'camera', title:'Saloma Link → Lake Symphony', detail:'Walk 7 min · lit bridge, Petronas behind — night is its best look · then KLCC park fountains (shows every ~30 min to 22:00)' },
+        { t:'22:15', time:'22:15', icon:'flame', title:'Jalan Alor nightcap', detail:'Covered walkway 10 min · Wong Ah Wah wings · one Musang King seed at the mouth of the street · graze, don’t commit' },
+        { t:'23:00', time:'23:00', icon:'hand', title:'Nader handoff', detail:'He collects the leave-behind bag at the hotel (fork #5) · Vietnam = cabin bag only from here' },
+      ]},
+    { n:6, dow:'Mon', date:'28 Sep', y:2026, mo:9, d:28, phase:'TRAVEL DAY', title:'Out to Hanoi', accent:'#3C4B3E',
+      blocks:[
+        { t:'08:00', time:'08:00', icon:'utensils', title:'Mamak breakfast — the closing ritual', detail:'Roti canai + teh tarik near the hotel · stretch option: Village Park nasi lemak, only if out by 06:45' },
+        { t:'09:00', time:'09:00', icon:'car-front', title:'Grab → KLIA Terminal 2', detail:'50–60 min · RM65–85 · AirAsia = T2, not T1 · e-visa printout in hand luggage' },
+        { t:'12:10', time:'12:10', icon:'plane-takeoff', title:'AK512 → Hanoi 14:20', detail:'20kg bag bought online · Vietnam takes over from here' },
+      ]},
+    { n:7, dow:'—', date:'29 Sep – 5 Oct', y:2026, mo:9, d:29, until:{ y:2026, mo:10, d:5 }, phase:'VIETNAM', title:'Hanoi · Ninh Bình · Sapa', accent:'#C99A4E',
+      blocks:[
+        { time:'28–29', icon:'map-pin', title:'Hanoi — Old Quarter base', detail:'Hoàn Kiếm loop · Train Street · Tạ Hiện · egg coffee at Giang · Ninh Bình day trip (Hoa Lư, Múa, Tràng An)' },
+        { time:'30', icon:'train-front', title:'Full Hanoi day → night train', detail:'Old Quarter deep walk · Trấn Quốc sunset · 22:00 sleeper to Lào Cai, lower berth' },
+        { time:'1–3', icon:'mountain', title:'Sapa — three days on foot', detail:'Fansipan on the first clear morning · Cát Cát + Moana (the rainbow slide) · Lao Chai–Tả Van trek · O Quy Hồ road + glass bridge' },
+        { time:'4', icon:'bus', title:'Limousine van back to Hanoi', detail:'13:30 → 19:30 · shower + real bed beats a second night train' },
+        { time:'5', icon:'coffee', title:'Final Hanoi day', detail:'Long Biên bridge sunrise · mop-up + gifts · chả cá farewell dinner' },
+        { time:'', icon:'map', title:'Full Vietnam guide — coming', detail:'This card is the placeholder; the VN tab lands next, same treatment as Malaysia' },
+      ]},
+    { n:8, dow:'Tue', date:'06 Oct', y:2026, mo:10, d:6, phase:'HOME RUN', title:'Hanoi → KL → Mitsui', accent:'#9C4F2E',
+      blocks:[
+        { t:'13:19', tz:7, time:'13:19', icon:'plane-takeoff', title:'MH753 → KL 16:40', detail:'Lands T1 · 30kg included · MDAC #2 filed from Vietnam days before' },
+        { t:'17:45', time:'17:45', icon:'shopping-bag', title:'Mitsui Outlet Park', detail:'Grab 10 min RM10–15 · outlets till 22:00: sports factory stores → Coach → rest · Nader meets you here with the stored bag' },
+        { t:'21:45', time:'21:45', icon:'bed-double', title:'Sama-Sama Hotel', detail:'Not the terminal floor — 13h travel day tomorrow after 14 days moving · repack for the 2-piece QR allowance' },
+      ]},
+    { n:9, dow:'Wed', date:'07 Oct', y:2026, mo:10, d:7, phase:'TRAVEL HOME', title:'Departure', accent:'#3C4B3E',
+      blocks:[
+        { t:'06:45', time:'06:45', icon:'bus', title:'Shuttle to T1', detail:'24/7 hotel shuttle, 5 min · QR bag drop' },
+        { t:'09:30', time:'09:30', icon:'plane-takeoff', title:'QR845 → Doha → Cairo', detail:'Home 17:50 · ref HV9TBJ · done properly' },
+      ]},
+  ];
+
+  // Late-September KL approximations; local apps are exact. Shift ~1 min/week.
+  PRAYERS = [
+    { name:'Fajr',    time:'05:55', sub:'', begins:'', icon:'sunrise', H:5,  M:55 },
+    { name:'Syuruk',  time:'07:03', sub:'sunrise', begins:'', icon:'sun', H:7, M:3, info:true },
+    { name:'Dhuhr',   time:'13:03', sub:'Fri: Jumu’ah', begins:'', icon:'sun', H:13, M:3 },
+    { name:'Asr',     time:'16:14', sub:'', begins:'', icon:'cloud-sun', H:16, M:14 },
+    { name:'Maghrib', time:'19:08', sub:'sunset', begins:'', icon:'sunset', H:19, M:8 },
+    { name:'Isha',    time:'20:17', sub:'', begins:'', icon:'moon', H:20, M:17 },
+  ];
+
+  KL_ZONES = [
+    { id:'A', letter:'A', title:'Chinatown & Merdeka Square', vibe:'Oldest KL — shophouses, temples, colonial core, knock-offs', tube:'Pasar Seni MRT/LRT', time:'Half day + evening', tag:'MUST-DO', grad:'linear-gradient(135deg,var(--accent,#B5653F),#7E3F26)',
+      highlights:[
+        { name:'Petaling Street market', meta:'Daily ~10–22 · free', desc:'The identical-knockoffs run. Open at a third of the first price, walk away once, settle near half. Cash.' },
+        { name:'Kwai Chai Hong', meta:'Free', desc:'Restored lantern alley with murals — prettiest in late-afternoon light, lit at night.' },
+        { name:'Sri Mahamariamman Temple', meta:'Free · shoes off', desc:'Oldest Hindu temple in KL — the 228-deity gopuram tower. 15 minutes.' },
+        { name:'Central Market', meta:'10–21:30', desc:'Batik, pewter, crafts under aircon — the souvenir stop and the rain fallback.' },
+        { name:'Merdeka Square + Sultan Abdul Samad', meta:'Free', desc:'The Moorish administrative core, golden at 17:40, floodlit after dark. KL City Gallery + I❤KL sign.' },
+        { name:'Masjid Jamek & River of Life', meta:'Free · lights ~19:30+', desc:'The confluence the city is named for, lit electric blue at night — Thursday-variant material.' },
+        { name:'REXKL + Guan Di + clan houses', meta:'Optional', desc:'Old cinema turned book hall; incense-heavy Guan Di; Chan She Shu Yuen — deeper-cut add-ons.' },
+      ],
+      food:'Madras Lane hawkers (lunch only ~08:00–15:00, several stalls closed Mon) — assam laksa, yong tau foo; curry mee adds pork blood, ask. Sunday arrives too late — Thursday is its only real window.',
+      coffee:'Merchant’s Lane — plant-filled 2nd-floor former brothel; closes early evening, go first.' },
+
+    { id:'B', letter:'B', title:'KLCC & Kampung Baru', vibe:'Towers, fountains, and the Malay village across the water', tube:'KLCC LRT · Kampung Baru LRT', time:'Evening is best', tag:'MUST-DO', grad:'linear-gradient(135deg,#5E7257,#33402F)',
+      highlights:[
+        { name:'Saloma Link', meta:'Free · lit at night', desc:'The betel-leaf pedestrian bridge — the best free Petronas shot, and night is its best look.' },
+        { name:'KLCC Park — Lake Symphony', meta:'Free · 20:00–22:00', desc:'Fountain shows every ~30 minutes under the lit towers. Catch one, skip the wait.' },
+        { name:'Kampung Baru', meta:'Free · dusk is fine', desc:'Wooden Malay houses in the skyscrapers’ shadow — the contradiction photo and Sunday’s dinner. Pasar Minggu runs Saturday night despite the name.' },
+        { name:'Petronas Twin Towers', meta:'Exterior free', desc:'Skybridge tickets skipped by design — KL Tower won the one-deck rule because Petronas belongs IN the frame.' },
+      ],
+      food:'Nasi Lemak Wanjo (the famous plate) · satay + nasi campur stalls on Jalan Raja Muda Musa · all halal.',
+      coffee:'' },
+
+    { id:'C', letter:'C', title:'Bukit Bintang', vibe:'The engine — malls, night food street, bars, tech', tube:'Bukit Bintang MRT / Monorail', time:'Evenings + Sunday slots', tag:'MUST-DO', grad:'linear-gradient(135deg,#C99A4E,#9A7B3C)',
+      highlights:[
+        { name:'Jalan Alor', meta:'~17:00–03:00', desc:'The night food street — full deep-dive below. Non-negotiable, your word.' },
+        { name:'Plaza Low Yat', meta:'10–22', desc:'Six floors of tech. Worth Sunday’s first 40 minutes only with a target (fork #2).' },
+        { name:'Pavilion / Lot 10 / Sungei Wang', meta:'Browse', desc:'Flagship-to-cheap mall spectrum. No dedicated slot — Mitsui covers brands cheaper on the 6th.' },
+        { name:'Hutong @ Lot 10', meta:'Basement', desc:'Heritage hawker hall, 40-year lineages — honest flag: the famous stalls are heavily non-halal (fork #1).' },
+        { name:'Changkat + Heli Lounge', meta:'Evening', desc:'Bar street + drinks on a working helipad (go 18:30, no railings). Optional nightcaps.' },
+        { name:'Covered walkway to KLCC', meta:'10 min · aircon', desc:'The one long walk that’s always pleasant — Sunday’s closing leg.' },
+      ],
+      food:'Wong Ah Wah grilled wings (the anchor order) · durian stalls at Alor’s mouth · Nasi Kandar Pelita near KLCC, 24h, halal.',
+      coffee:'VCR (Jalan Galloway) · Feeka (Jalan Mesui).' },
+
+    { id:'D', letter:'D', title:'KL Sentral, Brickfields & Lake Gardens', vibe:'The Thursday spine — transit hub, Little India, museum quarter', tube:'KL Sentral — every line', time:'Thursday owns it', tag:'MUST-DO', grad:'linear-gradient(135deg,#6E7E5E,#3C4B3E)',
+      highlights:[
+        { name:'Islamic Arts Museum', meta:'RM20 · 09:30–18:00', desc:'Your must-do, rightly — domes gallery, manuscripts, architecture models, benches, aircon. Bookshop = the quality-gift stop.' },
+        { name:'Brickfields banana leaf', meta:'RM15–20', desc:'Little India, five minutes from Sentral. Vishal is the one locals name; unlimited refills, right hand.' },
+        { name:'Masjid Negara + Old Railway Station', meta:'Free', desc:'On the 15-min walk between Brickfields and the museum — the 1910 Moorish station façade is a two-minute wonder.' },
+        { name:'Thean Hou Temple', meta:'Free · dusk best', desc:'Six-tier Chinese temple, red lanterns — 10-min Grab from Sentral. Unslotted; revives in the Thursday dinner-skip variant.' },
+      ],
+      food:'Banana leaf (Vishal, Ananda Bahwan) · nasi kandar rows · all Indian-Muslim = halal by default.',
+      coffee:'' },
+
+    { id:'E', letter:'E', title:'The North — Batu & Titiwangsa', vibe:'Caves, monkeys, and the postcard skyline', tube:'KTM to Batu (sparse) · Grab wins', time:'Thursday 10:30–12:30', tag:'MUST-DO', grad:'linear-gradient(135deg,#7E6BA8,#4C3F6B)',
+      highlights:[
+        { name:'Batu Caves', meta:'Free · ~06:00–21:00', desc:'272 rainbow steps under the 43m gold Murugan into the Temple Cave. Weekday mid-morning = thin crowds. Sarong rental if in shorts; monkeys are professional thieves.' },
+        { name:'Titiwangsa Lake', meta:'Free · 15–20 min', desc:'The classic full-skyline Petronas photo across the water — the 13-min Grab hop that saves "the north".' },
+        { name:'Zoo Negara + Royal Selangor', meta:'Cut', desc:'Pandas and pewter-hammering didn’t survive — keeping them costs the Islamic Arts Museum. Casualties, on record.' },
+      ],
+      food:'', coffee:'' },
+
+    { id:'F', letter:'F', title:'Bangsar', vibe:'No tourists — cafés, morning hawkers, neighborhood KL', tube:'Grab ~30 min from Cyberjaya · 15 from Sentral', time:'Sat-morning fork only', tag:'HIDDEN GEM', grad:'linear-gradient(135deg,#C98A8A,#9A5A5A)',
+      highlights:[
+        { name:'Lucky Garden hawker stalls', meta:'Mornings', desc:'Nasi lemak the way the neighborhood eats it — zero tourists, RM5 breakfast.' },
+        { name:'Jalan Telawi + Bangsar Village', meta:'Browse', desc:'Café rows, indie shops, aircon mall pass.' },
+        { name:'PULP by Papa Palheta', meta:'Coffee', desc:'Roastery inside an old printing factory, machines still in place.' },
+        { name:'The catch', meta:'Fork #4', desc:'Bangsar lives only as the Saturday-morning alternative — choosing it kills the pink mosque for this trip (its Friday window is closed).' },
+      ],
+      food:'Lucky Garden stalls in the morning; Telawi restaurants at night.',
+      coffee:'PULP · plus the strip’s rotating indie roasters.' },
+  ];
+
+  PACKING = [
+    { cat:'In your carry-on', icon:'backpack', note:'With you on the plane — never checked.', items:[
+      ['Passport + QR ref (HV9TBJ) printed',''],['Vietnam e-visa — 2 printed copies','Typos = refused boarding; check before printing'],
+      ['MDAC confirmation QR','Filed ≤3 days before each Malaysia entry'],['Laptop + charger',''],['Phone, power bank & cables',''],
+      ['All medications','Never check these'],['One change of clothes','In case a bag is delayed'],
+      ['Eye mask + earplugs','Two overnight flights + a night train later'],['Toiletries (clear 1L bag, ≤100ml)',''],['Empty water bottle + snacks','Fill after security'],
+    ]},
+    { cat:'Clothing — the tropics', icon:'shirt', note:'24–33°C and humid every single day. Breathable or you suffer.', items:[
+      ['Breathable tees ×5–6','You will sweat through one a day'],['Light shirts ×2–3','Evenings + conference sessions'],
+      ['Shorts ×2 + light trousers ×2','Trousers for mosques — knees covered'],['Packable rain shell','Storms 15:00–18:00 most days — non-negotiable'],
+      ['One smart-casual outfit','Conference dinner + KL Tower night'],['Underwear & socks ×8',''],['Sleepwear',''],['Cap / hat + sunglasses','Batu steps and boat decks'],
+    ]},
+    { cat:'SplashMania & boat kit', icon:'waves', note:'Saturday’s waterpark — then the pouch works again on the Tràng An boat.', items:[
+      ['Swim shorts',''],['Waterproof phone pouch','Waterpark + 3h rowed boat in Vietnam'],['Glasses strap',''],
+      ['SPF50, reapplied','Equatorial sun through cloud is deceptive'],['Quick-dry towel',''],['Flip-flops / slides',''],
+    ]},
+    { cat:'Vietnam add-ons', icon:'mountain', note:'Cabin bag only — the big bag lives at Nader’s.', items:[
+      ['One light warm layer','Sapa runs 15–25°C — the only cool place on the trip'],['Walking shoes, broken in','Lao Chai–Tả Van trek is 4–5h on foot'],
+      ['Small daypack','Day trips + trek'],['Physio band — packs flat, use it','The back is in active physio; night train + vans'],
+      ['Motion tablets','Winding van legs to/from Sapa'],
+    ]},
+    { cat:'Tech & work', icon:'laptop', note:'', items:[
+      ['Universal adaptor','Malaysia = UK Type G; Vietnam = A/C two-pin — one universal covers both'],['Power bank 20,000mAh','Long days out, Grab needs a live phone'],
+      ['Spare cables',''],['AirPods / headphones',''],['Offline maps downloaded','KL + Hanoi + Sapa before you fly'],['Offline Google Translate Vietnamese','Malaysia runs fine in English; Vietnam doesn’t always'],
+    ]},
+    { cat:'Health & grooming', icon:'heart-pulse', note:'', items:[
+      ['SPF50 face + body',''],['Insect repellent (DEET)','Evenings outdoors, both countries'],['Imodium + oral rehydration salts','Street-food insurance — busy stalls are safe stalls, but still'],
+      ['Paracetamol, ibuprofen, plasters',''],['Prescriptions in original packaging','Full trip + 2 days'],['Hand sanitizer','Pre-hawker ritual'],['Deodorant, razor, clippers',''],
+    ]},
+    { cat:'Prayer', icon:'moon-star', note:'The easiest trip for it — surau everywhere in Malaysia.', items:[
+      ['Travel prayer mat (foldable)','More useful in Vietnam than Malaysia'],['Qibla app checked',''],['Light — that’s genuinely it','Malaysia provides the rest'],
+    ]},
+    { cat:'Documents & money', icon:'wallet', note:'', items:[
+      ['Passport — 6+ months validity',''],['2× contactless cards + bank travel notice','Cards tap rail gates directly'],
+      ['~$100 USD backup cash',''],['RM plan: pull ~RM300 at KLIA arrivals','Hawkers, lockers, markets run on cash'],
+      ['Travel insurance docs','Covers the waterpark + Vietnam legs'],['Emergency card','Nader, embassy +60 3-4256 8184, hotel names once known'],
+    ]},
+    { cat:'Luggage plan', icon:'luggage', note:'The split is the system — get it right on Saturday night.', items:[
+      ['Big bag: packed for Nader by Sun evening','Everything not needed in Vietnam + Thursday–Sunday purchases'],
+      ['Cabin bag: 8 days of Vietnam','Airline limit 7kg cabin; 20kg checked bought on AK512'],
+      ['Foldable duffel / tote','Mitsui haul on 6 Oct needs somewhere to live'],
+      ['Zip-locks + packing cubes',''],['Confirm Nader: Sun 27 eve + Tue 6 eve','Fork #5 — fallback is KLIA left luggage ~RM40–55/bag/day'],
+    ]},
+    { cat:'Before you fly — to-dos', icon:'list-checks', note:'', items:[
+      ['Vietnam e-visa applied — TODAY','evisa.gov.vn only · entry date 26 Sep · $25'],['MDAC #1 filed','21–23 Sep window'],
+      ['AK512 + MH753 booked','airasia.com + malaysiaairlines.com direct'],['KL Tower slot booked','~18:30, Sun 27 Sep'],
+      ['KLIA hotel booked for 6 Oct','Sama-Sama or CapsuleTransit'],['Bank told: Malaysia + Vietnam + Qatar',''],
+      ['eSIM installed or KLIA counter plan',''],['Grab app + card linked','Works in both countries'],['Print everything','Paper survives dead batteries'],
+    ]},
+  ];
+
+  // Consolidated database — everything in this guide, linked to the itinerary and both city tabs
+  MASTER = [
+    // — Bookings & travel —
+    { n:'Flights out — QR1304 + QR844', a:'Travel', c:'booking', p:'booked', cost:'Wed 23 Sep 14:10' },
+    { n:'Flights home — QR845 + QR1301', a:'Travel', c:'booking', p:'booked', cost:'Wed 7 Oct 09:30' },
+    { n:'AK512 KUL→HAN + 20kg bag', a:'Travel', c:'booking', p:'open', cost:'Mon 28 Sep 12:10' },
+    { n:'MH753 HAN→KUL', a:'Travel', c:'booking', p:'open', cost:'Tue 6 Oct 13:19' },
+    { n:'Vietnam e-visa (evisa.gov.vn)', a:'Travel', c:'booking', p:'open', cost:'$25 · apply NOW' },
+    { n:'MDAC ×2 (each MY entry)', a:'Travel', c:'booking', p:'open', cost:'Free · ≤3 days before' },
+    { n:'Conference hotel (Cyberjaya) — 3 nts', a:'Putrajaya', c:'booking', p:'booked', cost:'24–27 Sep · covered' },
+    { n:'KL city hotel — 1 nt', a:'KL', c:'booking', p:'booked', cost:'27 Sep · covered' },
+    { n:'KL Tower timed slot', a:'KL', c:'booking', p:'open', cost:'Sun ~18:30' },
+    { n:'KLIA hotel (Sama-Sama / capsule)', a:'Travel', c:'booking', p:'open', cost:'6 Oct · RM150–400' },
+    { n:'Nader luggage plan ×2 meets', a:'Travel', c:'booking', p:'open', cost:'Sun eve + 6 Oct eve' },
+    // — KL attractions & experiences —
+    { n:'Batu Caves', a:'KL', c:'attr', p:'must', cost:'Free' },
+    { n:'Titiwangsa skyline photo', a:'KL', c:'attr', p:'must', cost:'Free' },
+    { n:'Islamic Arts Museum', a:'KL', c:'attr', p:'must', cost:'RM20' },
+    { n:'KL Tower Sky Deck + Sky Box', a:'KL', c:'attr', p:'must', cost:'RM90–200' },
+    { n:'Merdeka Square + Sultan Abdul Samad', a:'KL', c:'attr', p:'must', cost:'Free' },
+    { n:'Petaling Street knock-off run', a:'KL', c:'market', p:'must', cost:'Cash' },
+    { n:'Kwai Chai Hong', a:'KL', c:'attr', p:'rec', cost:'Free' },
+    { n:'Sri Mahamariamman Temple', a:'KL', c:'attr', p:'rec', cost:'Free' },
+    { n:'Central Market', a:'KL', c:'market', p:'rec', cost:'Free' },
+    { n:'Masjid Jamek + River of Life', a:'KL', c:'attr', p:'opt', cost:'Free · 19:30+' },
+    { n:'Masjid Negara', a:'KL', c:'prayer', p:'rec', cost:'Free' },
+    { n:'Old KL Railway Station façade', a:'KL', c:'attr', p:'opt', cost:'Free' },
+    { n:'Saloma Link night shot', a:'KL', c:'exp', p:'must', cost:'Free' },
+    { n:'KLCC Lake Symphony fountains', a:'KL', c:'exp', p:'must', cost:'Free · 20–22h' },
+    { n:'Kampung Baru village walk', a:'KL', c:'exp', p:'must', cost:'Free' },
+    { n:'Thean Hou Temple', a:'KL', c:'attr', p:'opt', cost:'Free · dusk' },
+    { n:'REXKL', a:'KL', c:'attr', p:'opt', cost:'Free' },
+    { n:'Guan Di + Chan She Shu Yuen', a:'KL', c:'attr', p:'opt', cost:'Free' },
+    { n:'Zoo Negara (cut — no slot)', a:'KL', c:'attr', p:'info', cost:'—' },
+    { n:'Royal Selangor pewter (cut)', a:'KL', c:'attr', p:'info', cost:'—' },
+    { n:'Merdeka 118 deck (KL Tower won)', a:'KL', c:'attr', p:'info', cost:'—' },
+    { n:'Taman Connaught (Wed-only — impossible)', a:'KL', c:'market', p:'info', cost:'✗' },
+    // — KL food & coffee —
+    { n:'Jalan Alor + Wong Ah Wah wings', a:'KL', c:'food', p:'must', cost:'RM15–30' },
+    { n:'Nasi Lemak Wanjo, Kampung Baru', a:'KL', c:'food', p:'must', cost:'RM8–15' },
+    { n:'Banana leaf — Vishal, Brickfields', a:'KL', c:'food', p:'must', cost:'RM15–20' },
+    { n:'Mamak roti canai + teh tarik (2am rite)', a:'KL', c:'food', p:'must', cost:'RM5–10' },
+    { n:'Musang King durian, one seed', a:'KL', c:'food', p:'must', cost:'RM10–25' },
+    { n:'Madras Lane hawkers (lunch only)', a:'KL', c:'food', p:'rec', cost:'RM8–15' },
+    { n:'Nasi Kandar Pelita (24h)', a:'KL', c:'food', p:'rec', cost:'RM10–18' },
+    { n:'Village Park nasi lemak (Damansara)', a:'KL', c:'food', p:'opt', cost:'RM12–20' },
+    { n:'Hutong @ Lot 10 (pork-heavy — fork #1)', a:'KL', c:'food', p:'opt', cost:'RM12–25' },
+    { n:'Merchant’s Lane', a:'KL', c:'coffee', p:'rec', cost:'RM12–18' },
+    { n:'VCR', a:'KL', c:'coffee', p:'rec', cost:'RM12–18' },
+    { n:'Feeka', a:'KL', c:'coffee', p:'opt', cost:'RM12–18' },
+    { n:'PULP, Bangsar', a:'KL', c:'coffee', p:'opt', cost:'RM12–18' },
+    { n:'Lucky Garden stalls, Bangsar', a:'KL', c:'food', p:'opt', cost:'RM5–10 · fork #4' },
+    { n:'Heli Lounge Bar', a:'KL', c:'event', p:'opt', cost:'Drinks · 18:30' },
+    { n:'Changkat bar street', a:'KL', c:'event', p:'opt', cost:'—' },
+    // — KL shopping —
+    { n:'Plaza Low Yat (tech — fork #2)', a:'KL', c:'shop', p:'opt', cost:'Sun 40 min' },
+    { n:'Mitsui Outlet Park', a:'Travel', c:'shop', p:'must', cost:'6 Oct 17:45–21:30' },
+    { n:'IAMM bookshop gifts', a:'KL', c:'shop', p:'rec', cost:'RM30–150' },
+    // — Putrajaya / Cyberjaya —
+    { n:'Putra Mosque at 09:00 opening', a:'Putrajaya', c:'prayer', p:'must', cost:'Free · Sat' },
+    { n:'Perdana Putra + Dataran Putra', a:'Putrajaya', c:'attr', p:'rec', cost:'Free' },
+    { n:'Iron Mosque (Tuanku Mizan)', a:'Putrajaya', c:'prayer', p:'rec', cost:'Free' },
+    { n:'Seri Wawasan Bridge', a:'Putrajaya', c:'attr', p:'rec', cost:'Free' },
+    { n:'Floodlit Putrajaya night loop', a:'Putrajaya', c:'exp', p:'rec', cost:'~RM30 Grabs' },
+    { n:'Putrajaya lake cruise', a:'Putrajaya', c:'exp', p:'opt', cost:'~RM50' },
+    { n:'Cyberjaya Lake Gardens loop', a:'Putrajaya', c:'exp', p:'opt', cost:'Free' },
+    { n:'SplashMania with the group', a:'Putrajaya', c:'event', p:'booked', cost:'Sat 14–20' },
+    { n:'AI@MMU session', a:'Putrajaya', c:'event', p:'booked', cost:'Fri 14–18' },
+    { n:'Cyberjaya mamak night', a:'Putrajaya', c:'food', p:'must', cost:'RM5–10' },
+  ];
+
+  /* ---------- TIME HELPERS ---------- */
+  _localParts() {
+    const p = new Intl.DateTimeFormat('en-GB', { timeZone:'Asia/Kuala_Lumpur', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric', second:'numeric', hour12:false }).formatToParts(new Date());
+    const g = t => parseInt(p.find(x => x.type===t).value, 10);
+    return { y:g('year'), mo:g('month'), d:g('day'), H:(g('hour')%24), Min:g('minute'), S:g('second') };
+  }
+  _ms(y, mo, d, H, M, tz) { tz = (tz==null ? 8 : tz); return Date.UTC(y, mo-1, d, H-tz, M); } // default MYT=UTC+8; Cairo (EEST)=+3, Hanoi=+7
+  _buildMoments() {
+    this.moments = [];
+    this.DAYS.forEach(day => day.blocks.forEach(b => {
+      if (b.t && /^\d/.test(b.t)) {
+        const [H,M] = b.t.split(':').map(Number);
+        this.moments.push({ ms:this._ms(day.y, day.mo, day.d, H, M, b.tz), label:`Day ${day.n} · ${b.title}` });
+      }
+    }));
+    this.moments.sort((a,b) => a.ms - b.ms);
+  }
+  _nextMoment() {
+    const now = Date.now();
+    return this.moments.find(m => m.ms > now) || null;
+  }
+  // Gap-aware "where are we": exact day, a spanning card (Vietnam), before, after, or between cards.
+  _todayInfo() {
+    const lp = this._localParts();
+    const nowMs = this._ms(lp.y, lp.mo, lp.d, 12, 0);
+    for (let i = 0; i < this.DAYS.length; i++) {
+      const d = this.DAYS[i];
+      const startMs = this._ms(d.y, d.mo, d.d, 0, 0);
+      const end = d.until || { y:d.y, mo:d.mo, d:d.d };
+      const endMs = this._ms(end.y, end.mo, end.d, 23, 59);
+      if (nowMs >= startMs && nowMs <= endMs) return { mode:'day', idx:i };
+    }
+    const first = this.DAYS[0], last = this.DAYS[this.DAYS.length-1];
+    if (nowMs < this._ms(first.y, first.mo, first.d, 0, 0)) return { mode:'before', idx:0 };
+    if (nowMs > this._ms(last.y, last.mo, last.d, 23, 59)) return { mode:'after', idx:this.DAYS.length-1 };
+    const next = this.DAYS.findIndex(d => this._ms(d.y, d.mo, d.d, 0, 0) > nowMs);
+    return { mode:'gap', idx: next < 0 ? this.DAYS.length-1 : next };
+  }
+
+  /* ---------- LIFECYCLE ---------- */
+  componentDidMount() {
+    const nm = this._nextMoment();
+    this._target = nm ? nm.ms : null;
+    this._tick();
+    this._iv = setInterval(() => this._tick(), 1000);
+    const info = this._todayInfo();
+    if (info.mode === 'day') this.setState(s => ({ openDays: { ...s.openDays, [this.DAYS[info.idx].n]: true } }));
+    this._fetchWeather();
+    this._wxIv = setInterval(() => this._fetchWeather(), 30*60*1000); // refresh every 30 min
+    this._icons();
+  }
+  componentDidUpdate() { this._icons(); }
+  componentWillUnmount() { clearInterval(this._iv); clearInterval(this._wxIv); }
+
+  /* ---------- WEATHER ---------- */
+  setCity(key) {
+    if (!this.CITIES[key] || key === this.state.selCity) return;
+    this.setState({ selCity: key, wx: null, wxLoading: true, wxErr: false }, () => { this._tick(); this._fetchWeather(); });
+  }
+  async _fetchWeather() {
+    const c = this.CITIES[this.state.selCity]; if (!c) return;
+    const reqCity = this.state.selCity;
+    this.setState({ wxLoading: true, wxErr: false });
+    try {
+      const u = 'https://api.open-meteo.com/v1/forecast?latitude='+c.lat+'&longitude='+c.lon+
+        '&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m'+
+        '&hourly=uv_index&daily=sunrise,sunset,uv_index_max,temperature_2m_max,temperature_2m_min,precipitation_probability_max'+
+        '&timezone=auto&forecast_days=1&wind_speed_unit=kmh';
+      const r = await fetch(u); if (!r.ok) throw new Error('http '+r.status);
+      const j = await r.json();
+      let uv = null;
+      if (j.hourly && j.hourly.time && j.current && j.current.time) {
+        const key = j.current.time.slice(0,13)+':00';
+        const idx = j.hourly.time.indexOf(key);
+        uv = idx >= 0 ? j.hourly.uv_index[idx] : (j.daily ? j.daily.uv_index_max[0] : null);
+      }
+      if (this.state.selCity !== reqCity) return; // stale (city changed mid-flight)
+      this.setState({ wx: { raw: j, uv: uv }, wxLoading: false, wxErr: false, wxAt: Date.now() });
+    } catch (e) { if (this.state.selCity === reqCity) this.setState({ wxLoading: false, wxErr: true }); }
+  }
+  _wxCode(code, isDay) {
+    const d = isDay === 1;
+    const M = {
+      0:{l:'Clear sky',         i:d?'sun':'moon',          g:d?'linear-gradient(140deg,#E0A23C,var(--accent,#B5653F))':'linear-gradient(140deg,#3C4A66,#222C44)'},
+      1:{l:'Mainly clear',      i:d?'sun':'moon',          g:d?'linear-gradient(140deg,#D69A45,var(--accent,#B5653F))':'linear-gradient(140deg,#3C4A66,#222C44)'},
+      2:{l:'Partly cloudy',     i:d?'cloud-sun':'cloud-moon', g:d?'linear-gradient(140deg,#C99A6E,#9A7E62)':'linear-gradient(140deg,#46506A,#2C3550)'},
+      3:{l:'Overcast',          i:'cloudy',                g:'linear-gradient(140deg,#928A7C,#62604F)'},
+      45:{l:'Fog',              i:'cloud-fog',             g:'linear-gradient(140deg,#9C988E,#6C6759)'},
+      48:{l:'Rime fog',         i:'cloud-fog',             g:'linear-gradient(140deg,#9C988E,#6C6759)'},
+      51:{l:'Light drizzle',    i:'cloud-drizzle',         g:'linear-gradient(140deg,#7E8A90,#525E64)'},
+      53:{l:'Drizzle',          i:'cloud-drizzle',         g:'linear-gradient(140deg,#7E8A90,#525E64)'},
+      55:{l:'Heavy drizzle',    i:'cloud-drizzle',         g:'linear-gradient(140deg,#6E7A82,#454F56)'},
+      56:{l:'Freezing drizzle', i:'cloud-drizzle',         g:'linear-gradient(140deg,#7E8A90,#525E64)'},
+      57:{l:'Freezing drizzle', i:'cloud-drizzle',         g:'linear-gradient(140deg,#7E8A90,#525E64)'},
+      61:{l:'Light rain',       i:'cloud-rain',            g:'linear-gradient(140deg,#6E7E86,#3C4B52)'},
+      63:{l:'Rain',             i:'cloud-rain',            g:'linear-gradient(140deg,#62727A,#36444B)'},
+      65:{l:'Heavy rain',       i:'cloud-rain-wind',       g:'linear-gradient(140deg,#586870,#2E3B42)'},
+      66:{l:'Freezing rain',    i:'cloud-rain',            g:'linear-gradient(140deg,#62727A,#36444B)'},
+      67:{l:'Freezing rain',    i:'cloud-rain',            g:'linear-gradient(140deg,#62727A,#36444B)'},
+      71:{l:'Light snow',       i:'cloud-snow',            g:'linear-gradient(140deg,#AEB6BE,#74808A)'},
+      73:{l:'Snow',             i:'cloud-snow',            g:'linear-gradient(140deg,#A6AEB6,#6E7A84)'},
+      75:{l:'Heavy snow',       i:'cloud-snow',            g:'linear-gradient(140deg,#9EA6AE,#68747E)'},
+      77:{l:'Snow grains',      i:'cloud-snow',            g:'linear-gradient(140deg,#AEB6BE,#74808A)'},
+      80:{l:'Rain showers',     i:'cloud-rain',            g:'linear-gradient(140deg,#6E7E86,#3C4B52)'},
+      81:{l:'Rain showers',     i:'cloud-rain',            g:'linear-gradient(140deg,#62727A,#36444B)'},
+      82:{l:'Violent showers',  i:'cloud-rain-wind',       g:'linear-gradient(140deg,#586870,#2E3B42)'},
+      85:{l:'Snow showers',     i:'cloud-snow',            g:'linear-gradient(140deg,#AEB6BE,#74808A)'},
+      86:{l:'Snow showers',     i:'cloud-snow',            g:'linear-gradient(140deg,#9EA6AE,#68747E)'},
+      95:{l:'Thunderstorm',     i:'cloud-lightning',       g:'linear-gradient(140deg,#585268,#2C2838)'},
+      96:{l:'Thunderstorm',     i:'cloud-lightning',       g:'linear-gradient(140deg,#585268,#2C2838)'},
+      99:{l:'Thunderstorm',     i:'cloud-lightning',       g:'linear-gradient(140deg,#585268,#2C2838)'},
+    };
+    return M[code] || M[3];
+  }
+  _compass(deg) {
+    const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+    return dirs[Math.round(((deg%360)/22.5))%16];
+  }
+  _uvCat(uv) {
+    if (uv == null) return { t:'—', c:'#8C8478' };
+    if (uv < 3) return { t:'Low', c:'#5E7257' };
+    if (uv < 6) return { t:'Moderate', c:'#C99A4E' };
+    if (uv < 8) return { t:'High', c:'#C36A44' };
+    if (uv < 11) return { t:'Very High', c:'#A23E48' };
+    return { t:'Extreme', c:'#7A5C9E' };
+  }
+  _hmZone(iso) { return (iso || '').slice(11,16); }
+  _icons() { /* icons self-render via <svg-icon> web component */ }
+  _tick() {
+    const city = this.CITIES[this.state.selCity] || this.CITIES.kl;
+    const zone = city.tz;
+    const cf = new Intl.DateTimeFormat('en-GB', { timeZone:zone, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+    const now = new Date();
+    if (this.clockRef.current) this.clockRef.current.textContent = cf.format(now);
+    if (this.tzRef && this.tzRef.current) this.tzRef.current.textContent = city.label;
+    if (this.wxClockRef && this.wxClockRef.current) {
+      this.wxClockRef.current.textContent = new Intl.DateTimeFormat('en-GB', { timeZone:zone, weekday:'short', hour:'2-digit', minute:'2-digit', hour12:false }).format(now);
+    }
+    if (this.cdRef.current) {
+      if (this._target) {
+        let ms = this._target - Date.now(); if (ms < 0) ms = 0;
+        const s = Math.floor(ms/1000), dd = Math.floor(s/86400), hh = Math.floor(s%86400/3600), mm = Math.floor(s%3600/60), ss = s%60;
+        const pad = n => String(n).padStart(2,'0');
+        this.cdRef.current.textContent = (dd>0 ? dd+'d ' : '') + pad(hh)+':'+pad(mm)+':'+pad(ss);
+      } else { this.cdRef.current.textContent = 'Trip complete'; }
+    }
+  }
+
+  /* ---------- STATE / STORE ---------- */
+  _loadStore() {
+    try {
+      const p = JSON.parse(localStorage.getItem('mytrip_packed')||'{}');
+      const it = JSON.parse(localStorage.getItem('mytrip_itin')||'{}');
+      const db = JSON.parse(localStorage.getItem('mytrip_db')||'{}');
+      this.state.packed = p; this.state.doneItin = it; this.state.dbDone = db;
+    } catch(e){}
+  }
+  _save() {
+    try {
+      localStorage.setItem('mytrip_packed', JSON.stringify(this.state.packed));
+      localStorage.setItem('mytrip_itin', JSON.stringify(this.state.doneItin));
+      localStorage.setItem('mytrip_db', JSON.stringify(this.state.dbDone));
+    } catch(e){}
+  }
+  setDbArea(a) { this.setState({ dbArea: a }); }
+  setDbCat(c) { this.setState({ dbCat: c }); }
+  toggleDbDone(id) { this.setState(s => ({ dbDone: { ...s.dbDone, [id]: !s.dbDone[id] } }), () => this._save()); }
+  go(tab) { this.setState({ tab }); window.scrollTo({ top:0, behavior:'smooth' }); }
+  scrollToId(id) { const el = document.getElementById(id); if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 54; window.scrollTo({ top:y, behavior:'smooth' }); } }
+  toggleDay(n) { this.setState(s => ({ openDays:{ ...s.openDays, [n]: !s.openDays[n] } })); }
+  toggleZone(id) { this.setState(s => ({ openZones:{ ...s.openZones, [id]: !s.openZones[id] } })); }
+  togglePackCat(c) { this.setState(s => ({ openPack:{ ...s.openPack, [c]: !s.openPack[c] } })); }
+  toggleItem(id) { this.setState(s => ({ doneItin: { ...s.doneItin, [id]: !s.doneItin[id] } }), () => this._save()); }
+  togglePack(id) { this.setState(s => ({ packed: { ...s.packed, [id]: !s.packed[id] } }), () => this._save()); }
+  ACCENT_LIGHT = { '#3C4B3E':'#E8EDE6', '#5E7257':'#EAEFE5', 'var(--accent,#B5653F)':'#F7E9DF', '#C99A4E':'#F6EDD9', '#9C4F2E':'#F5E4D9' };
+
+  /* ---------- RENDER ---------- */
+  renderVals() {
+    const tab = this.state.tab;
+    const info = this._todayInfo();
+    const idx = info.idx;
+    const today = this.DAYS[idx];
+    const lp = this._localParts();
+    const nowMin = lp.H*60 + lp.Min;
+    const onDay = info.mode === 'day';
+
+    // dots
+    const dots = this.DAYS.map((d,i) => ({
+      bg: info.mode==='before' ? '#E0D7C4'
+        : info.mode==='after' ? '#C99A4E'
+        : (i < idx ? '#C99A4E' : (i===idx && onDay ? 'var(--accent,#B5653F)' : '#E0D7C4'))
+    }));
+
+    // prayers state
+    let nextName = null;
+    for (const p of this.PRAYERS) { if (!p.info && (p.H*60+p.M) > nowMin) { nextName = p.name; break; } }
+    if (!nextName) nextName = 'Fajr';
+    const prayers = this.PRAYERS.map(p => {
+      const isNext = p.name === nextName && !p.info && onDay;
+      return {
+        name:p.name, time:p.time, sub:p.sub, icon:p.icon, isNext,
+        bg: isNext ? '#FBEEE3' : (p.info ? '#F1ECDF' : '#FBF7EE'),
+        border: isNext ? '#E7C39E' : '#E8E0CE',
+        ink: p.info ? '#9C9486' : (isNext ? '#9C4F2E' : '#2B2722'),
+        sub2: isNext ? 'var(--accent,#B5653F)' : '#9C9486',
+      };
+    });
+
+    // phase-of-trip weather framing (live card above is the real data)
+    let weather;
+    if (idx <= 5) weather = { tag:'EQUATORIAL STANDARD', temp:'33°', headline:'hot, humid, storm-prone', detail:'24–33°C every day, humidity ~80%. Storm window 15:00–18:00 — every day in this guide carries an indoor fallback. Sunset ~19:06.', icon:'cloud-sun', grad:'linear-gradient(135deg,#D98B3F,var(--accent,#B5653F))', shadow:'rgba(181,101,63,.6)' };
+    else if (idx === 6) weather = { tag:'VIETNAM INTERLUDE', temp:'30°', headline:'Hanoi hot · Sapa cool', detail:'Hanoi ~32/25°C and sticky; Sapa 15–25°C — the one place the warm layer earns its seat. Typhoon remnants can clip Ninh Bình — that day flexes.', icon:'cloud-sun-rain', grad:'linear-gradient(135deg,#6E8B7E,#3C4B3E)', shadow:'rgba(60,75,62,.55)' };
+    else weather = { tag:'HOME RUN', temp:'33°', headline:'one more hot one', detail:'Same KL heat for the Mitsui evening, then 13 hours of aircon home. Cairo will feel dry and cold by comparison.', icon:'thermometer-sun', grad:'linear-gradient(135deg,#C99A4E,#9A8A4E)', shadow:'rgba(154,138,78,.55)' };
+
+    // today events
+    let todayEvents;
+    if (idx <= 5) todayEvents = [
+      { title:'Lake Symphony runs nightly', meta:'KLCC park fountains every ~30 min, 20:00–22:00 — Sunday catches one under the towers', icon:'sparkles', tint:'var(--accent,#B5653F)' },
+      { title:'Pasar Minggu is Saturday night', meta:'Kampung Baru’s "Sunday market" runs Sat eve — the name lies; Sunday dinner is stalls, not the market', icon:'store', tint:'#5E7257' },
+    ];
+    else todayEvents = [
+      { title:'Golden Week — Oct 1–7', meta:'China’s holiday floods Sapa exactly on your dates · beds + train booked ahead, Fansipan at the 07:30 first car', icon:'users', tint:'#A23E48' },
+      { title:'Mitsui open till 22:00', meta:'Tue 6 Oct: land 16:40, shop 17:45–21:30, Nader brings the stored bag', icon:'shopping-bag', tint:'#C99A4E' },
+    ];
+
+    const nm = this._nextMoment();
+    const cdLabel = nm ? ('Next: ' + nm.label.split(' · ').slice(1).join(' · ')) : 'Trip complete';
+
+    // ----- WEATHER VIEW -----
+    const selCity = this.state.selCity;
+    const cityList = Object.keys(this.CITIES).map(k => ({
+      key: k, name: this.CITIES[k].name, active: k === selCity,
+      onClick: () => this.setCity(k),
+      pillStyle: 'flex:1;cursor:pointer;border-radius:11px;padding:8px 4px;font-family:\'Hanken Grotesk\',sans-serif;font-size:12px;font-weight:700;letter-spacing:.02em;transition:all .25s;' +
+        (k === selCity
+          ? 'border:1px solid transparent;background:var(--accent,#B5653F);color:#FBF7EE;box-shadow:0 6px 14px -6px rgba(43,39,34,.5)'
+          : 'border:1px solid #E8E0CE;background:#F2EAD9;color:#6B6358'),
+    }));
+    const cityName = this.CITIES[selCity] ? this.CITIES[selCity].name : '';
+    let wx = null;
+    const W = this.state.wx;
+    if (W && W.raw && W.raw.current) {
+      const cur = W.raw.current, dl = W.raw.daily || {};
+      const infoW = this._wxCode(cur.weather_code, cur.is_day);
+      const uvVal = W.uv != null ? W.uv : (dl.uv_index_max ? dl.uv_index_max[0] : null);
+      const uvc = this._uvCat(uvVal);
+      const dir = this._compass(cur.wind_direction_10m);
+      wx = {
+        temp: Math.round(cur.temperature_2m),
+        feels: Math.round(cur.apparent_temperature),
+        label: infoW.l, icon: infoW.i, grad: infoW.g,
+        isDay: cur.is_day === 1,
+        hi: dl.temperature_2m_max ? Math.round(dl.temperature_2m_max[0]) : null,
+        lo: dl.temperature_2m_min ? Math.round(dl.temperature_2m_min[0]) : null,
+        humidity: Math.round(cur.relative_humidity_2m),
+        wind: Math.round(cur.wind_speed_10m),
+        gust: Math.round(cur.wind_gusts_10m),
+        windDir: dir,
+        windArrow: 'rotate(' + ((cur.wind_direction_10m + 180) % 360) + 'deg)',
+        cloud: Math.round(cur.cloud_cover),
+        pressure: Math.round(cur.surface_pressure),
+        rain: (Math.round(cur.precipitation * 10) / 10),
+        rainProb: dl.precipitation_probability_max ? dl.precipitation_probability_max[0] : 0,
+        uv: uvVal != null ? Math.round(uvVal * 10) / 10 : '—',
+        uvCat: uvc.t, uvColor: uvc.c,
+        uvPct: uvVal != null ? Math.min(100, Math.round(uvVal / 11 * 100)) : 0,
+        sunrise: this._hmZone(dl.sunrise ? dl.sunrise[0] : ''),
+        sunset: this._hmZone(dl.sunset ? dl.sunset[0] : ''),
+      };
+    }
+    const wxUpdated = this.state.wxAt ? new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false }).format(new Date(this.state.wxAt)) : '';
+
+    // itinerary days
+    const done = this.state.doneItin, openD = this.state.openDays;
+    const itinDays = this.DAYS.map(day => {
+      const blocks = day.blocks.map((b,i) => {
+        const id = day.n+'-'+i;
+        const isDone = !!done[id];
+        return {
+          time:b.time, icon:b.icon, title:b.title, detail:b.detail, id,
+          done:isDone, notDone:!isDone, toggle: ()=>this.toggleItem(id),
+          titleStyle: isDone ? 'text-decoration:line-through;color:#B4AB99' : 'color:#2B2722',
+          rowOpacity: isDone ? '.55' : '1',
+          checkStyle: isDone ? 'background:#5E7257;border-color:#5E7257;color:#fff' : 'background:#FFFDF8;border-color:#D8CEBB;color:transparent',
+        };
+      });
+      const ndone = blocks.filter(b=>b.done).length;
+      return {
+        n:day.n, dow:day.dow, date:day.date, phase:day.phase, title:day.title,
+        accent:day.accent, railBg:(this.ACCENT_LIGHT[day.accent]||'#F3ECDD'),
+        blocks, total:blocks.length, ndone, pct: blocks.length ? Math.round(ndone/blocks.length*100) : 0,
+        pctW: (blocks.length ? Math.round(ndone/blocks.length*100) : 0) + '%',
+        allDone: ndone===blocks.length && blocks.length>0,
+        dayBadgeStyle: 'background:'+(this.ACCENT_LIGHT[day.accent]||'#F3ECDD')+';color:'+day.accent,
+        phaseChipStyle: 'background:'+(this.ACCENT_LIGHT[day.accent]||'#F3ECDD')+';color:'+day.accent,
+        open: !!openD[day.n], closed: !openD[day.n],
+        isToday: (onDay && this.DAYS[idx].n===day.n),
+        summary: day.blocks.slice(0,3).map(b=>b.title).join('  ·  '),
+        toggle: ()=>this.toggleDay(day.n),
+      };
+    });
+
+    const hideImg = (e)=>{ try { e.currentTarget.style.opacity='0'; } catch(_){} };
+    const oz = this.state.openZones;
+    const tagCol = (t)=>({ 'MUST-DO':'background:#F7E9DF;color:var(--accent,#B5653F)','HIGHLY REC':'background:#EAEFE5;color:#5E7257','SHOPPING':'background:#F6EDD9;color:#A77D2E','FREE':'background:#E8EDE6;color:#3C4B3E','HIDDEN GEM':'background:#F6EDD9;color:#A77D2E' }[t]||'background:#EFE7D7;color:#7A7163');
+    const klZones = this.KL_ZONES.map(z=>({
+      id:z.id, letter:z.letter, title:z.title, vibe:z.vibe, tube:z.tube, time:z.time, tag:z.tag, grad:z.grad,
+      tagStyle:tagCol(z.tag), open:!!oz[z.id], closed:!oz[z.id], toggle:()=>this.toggleZone(z.id),
+      hasFood: !!z.food, food:z.food, hasCoffee: !!z.coffee, coffee:z.coffee,
+      highlights: z.highlights.map(h=>({ name:h.name, meta:h.meta, desc:h.desc, tag:h.tag||'', hasTag:!!h.tag, tagStyle: h.tag?tagCol(h.tag):'' })),
+    }));
+
+    // packing checklist
+    const packed = this.state.packed, opk = this.state.openPack;
+    let packTotal = 0, packDone = 0;
+    const packing = this.PACKING.map((c, ci) => {
+      const items = c.items.map((it, ii) => {
+        const id = 'p'+ci+'-'+ii;
+        const isDone = !!packed[id];
+        return {
+          id, label: it[0], note: it[1], hasNote: !!it[1], checked: isDone, toggle: ()=>this.togglePack(id),
+          labelStyle: isDone ? 'text-decoration:line-through;color:#B4AB99' : 'color:#2B2722',
+          checkStyle: isDone ? 'background:#5E7257;border-color:#5E7257;color:#fff' : 'background:#FFFDF8;border-color:#D8CEBB;color:transparent',
+        };
+      });
+      const nd = items.filter(i=>i.checked).length;
+      packTotal += items.length; packDone += nd;
+      return { cat:c.cat, icon:c.icon, note:c.note, hasNote:!!c.note, items, total:items.length, ndone:nd,
+        pctW: items.length? Math.round(nd/items.length*100)+'%':'0%',
+        open: !!opk[c.cat], closed: !opk[c.cat], toggle: ()=>this.togglePackCat(c.cat) };
+    });
+    const packPctW = packTotal ? Math.round(packDone/packTotal*100)+'%' : '0%';
+    const packPct = packTotal ? Math.round(packDone/packTotal*100) : 0;
+
+    // consolidated database
+    const fArea = this.state.dbArea, fCat = this.state.dbCat, dq = (this.state.dbQuery||'').toLowerCase().trim();
+    const dbDone = this.state.dbDone;
+    const CATLABEL = { exp:'Experiences', attr:'Attractions', food:'Food', coffee:'Coffee', market:'Markets', shop:'Shopping', event:'Events', prayer:'Prayer', daytrip:'Day trips', booking:'Bookings' };
+    const PRI = { must:['Must-do','background:#F7E9DF;color:var(--accent,#B5653F)'], rec:['Recommended','background:#EAEFE5;color:#5E7257'], opt:['Optional','background:#F1ECDF;color:#9C8A5E'], booked:['Booked ✓','background:#E2EEDD;color:#3C7A4E'], open:['Open item','background:#F6EDD9;color:#A77D2E'], info:['Note','background:#EDE7DA;color:#9C9486'] };
+    const areaStyle = a => a==='Putrajaya' ? 'background:#EAEFE5;color:#5E7257' : a==='KL' ? 'background:#F7E9DF;color:var(--accent,#B5653F)' : 'background:#ECE5D6;color:#8A7E66';
+    const allRows = this.MASTER.map((m,i) => {
+      const id = 'db'+i, done2 = !!dbDone[id], pr = PRI[m.p]||PRI.info;
+      return { id, name:m.n, area:m.a, areaStyle:areaStyle(m.a), cat:CATLABEL[m.c]||m.c, catKey:m.c, cost:m.cost||'', hasCost:!!m.cost,
+        pri:pr[0], priStyle:pr[1], done:done2, toggle:()=>this.toggleDbDone(id),
+        checkStyle: done2 ? 'background:#5E7257;border-color:#5E7257;color:#fff' : 'background:#FFFDF8;border-color:#D8CEBB;color:transparent',
+        nameStyle: done2 ? 'color:#B4AB99;text-decoration:line-through' : 'color:#2B2722' };
+    });
+    const dbRows = allRows.filter(r => (fArea==='all'||r.area===fArea) && (fCat==='all'||r.catKey===fCat) && (!dq || r.name.toLowerCase().includes(dq) || r.cat.toLowerCase().includes(dq) || r.area.toLowerCase().includes(dq)));
+    const dbVisited = allRows.filter(r => r.done).length;
+    const dbAreaChips = [['all','All'],['KL','KL'],['Putrajaya','Putrajaya'],['Travel','Travel']].map(([k,l]) => ({ k, l, active:fArea===k, go:()=>this.setDbArea(k),
+      style: fArea===k ? 'background:#2B2722;color:#fff;border-color:#2B2722' : 'background:rgba(251,247,238,.8);color:#5E5749;border-color:#E0D7C4' }));
+    const dbCatChips = ['all','exp','attr','food','coffee','market','shop','event','prayer','booking'].map(k => ({ k, l: k==='all'?'All':CATLABEL[k], active:fCat===k, go:()=>this.setDbCat(k),
+      style: fCat===k ? 'background:var(--accent,#B5653F);color:#fff;border-color:var(--accent,#B5653F)' : 'background:rgba(251,247,238,.8);color:#5E5749;border-color:#E0D7C4' }));
+    const onDbSearch = (e) => this.setState({ dbQuery: e.target.value });
+    const dbEmpty = dbRows.length===0;
+
+    const J = id => () => this.scrollToId(id);
+    const essNav = [
+      { label:'Entry & visa', go:J('ess-visa') },
+      { label:'Bookings', go:J('ess-book') },
+      { label:'Budget', go:J('ess-budget') },
+      { label:'Packing', go:J('ess-pack') },
+      { label:'Timed', go:J('ess-events') },
+      { label:'Travel', go:J('ess-travel') },
+      { label:'Money', go:J('ess-money') },
+      { label:'Contacts', go:J('ess-contacts') },
+    ];
+    const baseNav = [
+      { label:'Experiences', go:J('base-exp') },
+      { label:'SplashMania', go:J('base-splash') },
+      { label:'Food', go:J('base-food') },
+      { label:'Prayer', go:J('base-prayer') },
+      { label:'Evenings', go:J('base-eve') },
+      { label:'To KL', go:J('base-tokl') },
+      { label:'KLIA · Mitsui', go:J('base-mitsui') },
+    ];
+    const klNav = [
+      { label:'Plan it', go:J('kl-plan') },
+      { label:'Zones', go:J('kl-zones') },
+      { label:'Jalan Alor', go:J('kl-alor') },
+      { label:'Markets', go:J('kl-markets') },
+      { label:'Food', go:J('kl-food') },
+      { label:'Coffee', go:J('kl-coffee') },
+      { label:'Shopping', go:J('kl-shop') },
+      { label:'Nights', go:J('kl-night') },
+    ];
+    const quickLinks = [
+      { label:'Full itinerary', icon:'calendar-days', tint:'var(--accent,#B5653F)', go:()=>this.go('itinerary') },
+      { label:'Putrajaya base', icon:'landmark', tint:'#5E7257', go:()=>this.go('base') },
+      { label:'KL zones', icon:'tower-control', tint:'#9C4F2E', go:()=>this.go('kl') },
+      { label:'Essentials & packing', icon:'briefcase', tint:'#C99A4E', go:()=>this.go('essentials') },
+    ];
+
+    const navDef = [
+      { key:'itinerary', label:'Itinerary', icon:'calendar-days' },
+      { key:'base', label:'Putrajaya', icon:'landmark' },
+      { key:'today', label:'Today', icon:'sparkles' },
+      { key:'kl', label:'KL', icon:'tower-control' },
+      { key:'essentials', label:'Essentials', icon:'compass' },
+    ];
+    const navItems = navDef.map((n,i) => ({
+      label:n.label, icon:n.icon, active:tab===n.key, center:i===2, notCenter:i!==2,
+      color: tab===n.key ? 'var(--accent,#B5653F)' : '#A89E8C',
+      go:()=>this.go(n.key),
+    }));
+
+    const phasePrefix = info.mode==='gap' ? 'NEXT UP · ' : (info.mode==='before' ? 'FIRST UP · ' : (info.mode==='after' ? 'DONE · ' : ''));
+
+    return {
+      isToday: tab==='today', isItin: tab==='itinerary', isBase: tab==='base', isKL: tab==='kl', isEss: tab==='essentials',
+      tab, clockRef:this.clockRef, cdRef:this.cdRef, tzRef:this.tzRef, cdLabel,
+      wxClockRef:this.wxClockRef, wx, wxLoading:this.state.wxLoading, wxErr:this.state.wxErr, wxUpdated,
+      wxSkeleton: this.state.wxLoading && !W && !this.state.wxErr,
+      wxShowErr: this.state.wxErr && !W,
+      cityList, cityName, onRefreshWx: () => this._fetchWeather(),
+      accentVar: this.props.accentColor || '#B5653F',
+      photoClass: (this.props.heroPhotos === false) ? 'no-photos' : '',
+      revealClass: (this.props.scrollReveal === false) ? '' : 'reveal-on',
+      dbRows, dbAreaChips, dbCatChips, dbCount:dbRows.length, dbTotal:allRows.length, dbVisited, dbQuery:this.state.dbQuery, onDbSearch, dbEmpty,
+      dayNum: info.mode==='before' ? 0 : (info.mode==='after' ? this.DAYS.length : today.n),
+      totalDays: this.DAYS.length,
+      phaseLabel: phasePrefix + today.phase, todayTitle: today.title,
+      dots, prayers, weather, todayEvents, quickLinks, navItems,
+      todayBlocks: today.blocks,
+      goItin: ()=>this.go('itinerary'),
+      itinDays, baseNav, klNav, klZones, essNav, packing, packPctW, packPct, packDone, packTotal,
+      hideImg,
+      showImg: (e)=>{ try { e.currentTarget.style.opacity='1'; } catch(_){} },
+    };
+  }
+}
+</script>
+</body>
+</html>

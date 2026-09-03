@@ -32,8 +32,22 @@ export const dynamic = "force-dynamic"
 // next.config.ts, which ships content/trips/** alongside this route).
 const CONTENT_ROOT = path.join(process.cwd(), "content", "trips")
 
-// The default document when no file is requested.
-const DEFAULT_FILE = "UK Trip.dc.html"
+// The default document when no file is requested is resolved PER BUNDLE:
+// the bundle's own *.dc.html (first alphabetically if several), falling back
+// to index.html. Keeps cambridge-london serving "UK Trip.dc.html" while new
+// bundles (e.g. malaysia-vietnam → "Malaysia Trip.dc.html") resolve their own
+// document instead of inheriting another trip's filename.
+async function resolveDefaultFile(bundleRoot: string): Promise<string | null> {
+  try {
+    const entries = await fs.readdir(bundleRoot)
+    const dc = entries.filter((e) => e.toLowerCase().endsWith(".dc.html")).sort()
+    if (dc.length > 0) return dc[0]
+    if (entries.includes("index.html")) return "index.html"
+  } catch {
+    // missing bundle folder → caller returns 404
+  }
+  return null
+}
 
 // Minimal, explicit extension → Content-Type map. Unknown types fall back to
 // octet-stream so we never guess-execute something.
@@ -115,14 +129,21 @@ export async function GET(
 
   // The trip's bundle folder key (e.g. "cambridge-london").
   const dir = trip.hosted_path
+  const bundleRoot = path.resolve(CONTENT_ROOT, dir)
 
-  // The requested file relative to the bundle, or the default document.
-  const requested = (segments ?? []).join("/") || DEFAULT_FILE
+  // The requested file relative to the bundle, or the bundle's default document.
+  let requested = (segments ?? []).join("/")
+  if (!requested) {
+    const def = await resolveDefaultFile(bundleRoot)
+    if (!def) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    }
+    requested = def
+  }
 
   // ── Resolve + path-traversal guard ─────────────────────────
-  // Build the bundle root, then the resolved target, and require the target to
-  // stay inside its own bundle. Guards against ../ escapes and absolute paths.
-  const bundleRoot = path.resolve(CONTENT_ROOT, dir)
+  // Build the resolved target and require it to stay inside its own bundle.
+  // Guards against ../ escapes and absolute paths.
   const resolved = path.resolve(bundleRoot, requested)
 
   if (resolved !== bundleRoot && !resolved.startsWith(bundleRoot + path.sep)) {

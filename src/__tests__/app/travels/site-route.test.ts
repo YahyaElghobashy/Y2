@@ -97,6 +97,42 @@ describe("GET /travels/[tripId]/site/[[...path]]", () => {
     expect(res.headers.get("content-type")).toContain("text/markdown")
   })
 
+  // ── Second real bundle: malaysia-vietnam (per-bundle default doc) ──
+  it("serves the malaysia-vietnam bundle's own default doc (Malaysia Trip.dc.html)", async () => {
+    single.mockResolvedValue({
+      data: { hosted_path: "malaysia-vietnam", kind: "hosted" },
+      error: null,
+    })
+    const res = await GET(req(), ctx("t2"))
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toContain("text/html")
+    const body = await res.text()
+    expect(body).toContain("Kuala Lumpur")
+  })
+
+  it("serves the malaysia-vietnam bundle's support.js", async () => {
+    single.mockResolvedValue({
+      data: { hosted_path: "malaysia-vietnam", kind: "hosted" },
+      error: null,
+    })
+    const res = await GET(req(), ctx("t2", ["support.js"]))
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toContain("text/javascript")
+  })
+
+  it("serves a malaysia-vietnam markdown upload with text/markdown", async () => {
+    single.mockResolvedValue({
+      data: { hosted_path: "malaysia-vietnam", kind: "hosted" },
+      error: null,
+    })
+    const res = await GET(
+      req(),
+      ctx("t2", ["uploads", "Malaysia Day-by-Day Plan.md"])
+    )
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toContain("text/markdown")
+  })
+
   // ── Path-traversal guard ──
   it("404s a ../ traversal that escapes the content root", async () => {
     const res = await GET(req(), ctx("t1", ["..", "..", "..", "etc", "passwd"]))
