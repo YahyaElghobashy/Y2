@@ -13,10 +13,11 @@
   - [ ] ~3–5 Oct (from Vietnam) for the 6 Oct re-entry
 - Egyptians: typically visa-free 90 days — confirm current rule once when filing MDAC.
 
-## 3. Flights to buy (this week — 3 weeks out is the right window)
-- [ ] **AK512** KUL 12:10 → HAN 14:20, Mon 28 Sep. Buy direct at airasia.com (skip tiket.com/aggregators — same seats, worse support). **Add 20kg checked bag at purchase** (airport rate is ~double). Expect roughly $60–110 with bag; check live price.
-- [ ] **MH753** HAN 13:19 → KUL 16:40, Tue 6 Oct. malaysiaairlines.com. 30kg included. Roughly $90–150.
-- Departure terminals: AirAsia = **KLIA T2**. MH lands **T1**. QR = T1.
+## 3. Flights to buy (this week) — CORRECTED 3 Sep after schedule research
+- [ ] **MH752** KUL 09:35 → HAN 12:15, Mon 28 Sep — **new recommendation** (T1, 30kg + meal incl, ~RM420–700, lands ~3h before AirAsia). malaysiaairlines.com direct.
+- [ ] **MH753** HAN **13:05 → KUL 17:30**, Tue 6 Oct (schedule moved from 13:19→16:40; Mitsui window now ≈18:30–21:30). 30kg incl. Runs Tuesdays ✓.
+- Alternatives Mon 28: OD571 Batik 11:10→13:30 · VJ906 VietJet 12:30→14:40 · AK512 now **12:40→15:00** (T2, bag extra) — price play only. **AK516 06:05 no longer exists** (stopped Mar 2025).
+- Terminals: MH & QR & Batik & VietJet = **T1**; AirAsia = **T2**.
 
 ## 4. Night train Hanoi → Lào Cai, Wed 30 Sep
 - Private-operator soft sleeper on the SP service: **Chapa Express / King Express / Sapaly / Vietage-style cabins**, ~$40–55/berth. Book via operator site or 12go.
@@ -41,7 +42,7 @@
 
 ## 8. Money / SIM / apps
 - **Malaysia:** cards + contactless nearly everywhere; RM200–300 cash for hawkers/Grab top-ups. Grab app works with foreign card.
-- **Vietnam:** cash country. ATM at arrivals (VPBank/TPBank = low/no fee, 3–5M VND per pull). ~25k VND = $1. Grab (bikes = fastest in Old Quarter — helmet provided; car if back says no).
+- **Vietnam:** cash country. ATM at arrivals — **VPBank = zero fee, up to 10M₫/pull** (TPBank added ~3.3% fee in 2025; others charge 22–66k). Always charge in VND, decline DCC. ~25k VND = $1. Grab works in **Hanoi only** (bikes = fastest in Old Quarter; car if back says no) — **no Grab in Sapa**, hotel phones taxis, prices agreed up front.
 - eSIM: Airalo/Holafly regional, or local counters (Hotlink at KLIA, Viettel at Nội Bài — Viettel ~120–200k for tourist data pack).
 - Apps: Grab, Google Maps offline (KL + Hanoi + Sapa), Google Translate offline Vietnamese, airline apps.
 

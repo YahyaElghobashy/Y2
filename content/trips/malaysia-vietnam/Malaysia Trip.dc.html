@@ -84,7 +84,7 @@
   <div style="position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(245,239,227,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #E8E0CE">
     <div style="display:flex;align-items:center;gap:8px">
       <span style="width:9px;height:9px;border-radius:50%;background:var(--accent,#B5653F);box-shadow:0 0 0 3px rgba(181,101,63,.18)"></span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:#6B6358;font-weight:500">KUALA LUMPUR · CYBERJAYA</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:#6B6358;font-weight:500">MALAYSIA · VIETNAM</span>
     </div>
     <div style="display:flex;align-items:center;gap:6px;color:#6B6358">
       <span ref="{{ tzRef }}" style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;font-weight:700;color:var(--accent,#B5653F);background:#F7E9DF;padding:2px 5px;border-radius:5px">CAI</span>
@@ -106,11 +106,11 @@
           <div style="position:absolute;inset:0;background:linear-gradient(150deg,rgba(201,154,78,.5) 0%,rgba(181,101,63,.74) 52%,rgba(60,75,62,.93) 122%)"></div>
           <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 80% 0%,#fff 0%,transparent 55%)"></div>
           <div style="position:relative">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.78);margin-bottom:10px">CONFERENCE + THE CITY, SQUEEZED DRY</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.78);margin-bottom:10px">CONFERENCE · CITY · KARST · MOUNTAINS</div>
             <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1.0;color:#FBF7EE;margin:0 0 6px;letter-spacing:-.01em">Two Weeks<br><span style="font-style:italic;font-weight:400">East</span></h1>
             <div style="color:rgba(255,255,255,.86);font-size:13.5px;font-weight:500;margin-top:10px;display:flex;align-items:center;gap:8px">
               <svg-icon data-lucide="calendar-days" style="width:14px;height:14px"></svg-icon>
-              23 Sep – 7 Oct 2026 · Malaysia now · Vietnam guide coming
+              23 Sep – 7 Oct 2026 · Malaysia + Vietnam · the whole thing
             </div>
           </div>
         </div>
@@ -171,7 +171,7 @@
               <svg-icon data-lucide="moon-star" style="width:17px;height:17px;color:#5E7257"></svg-icon>
               <span style="font-family:'Newsreader',serif;font-size:21px;color:#2B2722">Prayer today</span>
             </div>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#9C9486">KUALA LUMPUR · MYT</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.1em;color:#9C9486">{{ prayerCity }}</span>
           </div>
           <div class="noscroll" style="display:flex;gap:10px;overflow-x:auto;padding:2px 0 6px;scroll-snap-type:x mandatory">
             <sc-for list="{{ prayers }}" as="p" hint-placeholder-count="6">
@@ -188,7 +188,7 @@
           </div>
           <div style="margin-top:8px;display:flex;align-items:flex-start;gap:8px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:13px;padding:11px 13px">
             <svg-icon data-lucide="info" style="width:14px;height:14px;color:#5E7257;flex-shrink:0;margin-top:1px"></svg-icon>
-            <div style="font-size:11.5px;color:#5A6353;line-height:1.45">Malaysia makes this effortless — a <b>surau (prayer room) in every mall, airport and rest stop</b>, and mosques everywhere. Times shown are late-Sep KL approximations; local apps (JAKIM e-Solat, Muslim Pro) are accurate here. Tourist visiting hours at mosques never apply to worshippers.</div>
+            <div style="font-size:11.5px;color:#5A6353;line-height:1.45">Times switch KL ↔ Hanoi with the trip phase — approximations either way; local apps are exact. Malaysia: a surau in every mall and airport. Hanoi: mosques are rare — <b>Al-Noor Mosque, 12 Hàng Lược</b> (Old Quarter) is the one, and the hotel room works for everything else. Tourist visiting hours never apply to worshippers.</div>
           </div>
         </div>
 
@@ -326,7 +326,7 @@
         <div style="padding:26px 20px 18px">
           <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:var(--accent,#B5653F);margin-bottom:9px">FIFTEEN DAYS · DAY BY DAY</div>
           <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:34px;line-height:1.02;color:#2B2722;margin:0 0 8px;letter-spacing:-.01em">The <span style="font-style:italic">Itinerary</span></h1>
-          <p style="font-size:13px;color:#7A7163;line-height:1.5;margin:0">Tap a day to open it; tick off each moment as it happens. Cyberjaya is home base for the conference — KL gets Thursday and the Sunday masterpiece evening. The Vietnam leg is a single card for now; its full guide lands later.</p>
+          <p style="font-size:13px;color:#7A7163;line-height:1.5;margin:0">Tap a day to open it; tick off each moment as it happens. Cyberjaya is home base for the conference — KL gets Thursday and the Sunday masterpiece evening. Vietnam runs day-by-day like everything else — the weather-swap logic lives inside each card.</p>
         </div>
 
         <!-- PHASE LEGEND -->
@@ -420,7 +420,7 @@
             </div>
             <div style="display:flex;gap:12px;padding:13px 0">
               <div style="flex-shrink:0;width:54px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;padding-top:2px">MON 28<br><span style="color:#5E7257;font-weight:600">FREE</span></div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">Departure day — no agenda</div><div style="font-size:12px;color:#7A7163;margin-top:1px">Mamak breakfast, Grab to KLIA T2, AK512 12:10 → Hanoi</div></div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:700;color:#2B2722">Departure day — no agenda</div><div style="font-size:12px;color:#7A7163;margin-top:1px">Early Grab to KLIA T1, MH752 09:35 → land Hanoi 12:15 with the afternoon alive</div></div>
             </div>
           </div>
         </div>
@@ -431,7 +431,7 @@
             <svg-icon data-lucide="table-2" style="width:18px;height:18px;color:#5E7257"></svg-icon>
             <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Everything, in one place</span>
           </div>
-          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Every place, plan and booking from this guide — filter by area or category, search, and tick off what you've done. Saved on this device. Vietnam rows join when that guide lands.</p>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Every place, plan and booking from both countries — filter by area or category, search, and tick off what you've done. Saved on this device.</p>
 
           <div style="display:flex;gap:10px;margin-bottom:12px">
             <div style="flex:1;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:14px;padding:11px 13px"><div style="font-family:'Newsreader',serif;font-size:22px;color:var(--accent,#B5653F);line-height:1">{{ dbCount }}<span style="font-size:13px;color:#B9B0A0">/{{ dbTotal }}</span></div><div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#9C9486;letter-spacing:.08em;margin-top:3px">SHOWING</div></div>
@@ -690,7 +690,7 @@
             <div style="position:relative">
               <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(255,255,255,.85)">TUE 6 OCT · RETURN LEG · OUTLETS TILL 22:00</div>
               <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:26px;color:#fff;margin:8px 0 0">KLIA night — Mitsui Outlet Park</h2>
-              <p style="font-size:12.5px;color:rgba(255,255,255,.94);line-height:1.55;margin:10px 0 0">MH753 lands T1 at 16:40 → Grab 10 min (RM10–15) → shop 17:45–21:30: Nike/Adidas/Puma factory stores, Coach, Levi's at 30–70% off. Outlets only — no fakes, no tech (those were Sunday's Petaling + Low Yat). Nader meets you here with the stored bag. Then Grab 8 min to Sama-Sama Hotel (~RM400, 24/7 five-minute shuttle to T1) — <b>not the terminal floor</b> — repack for the 2-piece QR allowance, and QR845 at 09:30 next morning.</p>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.94);line-height:1.55;margin:10px 0 0">MH753 lands T1 at 17:30 → Grab 10 min (RM10–15) → shop ~18:30–21:30: Nike/Adidas/Puma factory stores, Coach, Levi's at 30–70% off. Outlets only — no fakes, no tech (those were Sunday's Petaling + Low Yat). Nader meets you here with the stored bag. Then Grab 8 min to Sama-Sama Hotel (~RM400, 24/7 five-minute shuttle to T1) — <b>not the terminal floor</b> — repack for the 2-piece QR allowance, and QR845 at 09:30 next morning.</p>
             </div>
           </div>
           <div style="text-align:center;padding:26px 0 6px;font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#A89E8C">A capital nobody visits — which is exactly why you should.</div>
@@ -729,7 +729,7 @@
           <div style="display:flex;flex-direction:column;gap:11px">
             <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
               <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="train-front" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Cyberjaya → KL</div></div>
-              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px"><b style="color:#5E5749">MRT Putrajaya Line</b> direct to TRX / Persiaran KLCC / Conlay, 45–55 min, <b style="color:#5E5749">RM4–6</b> · <b style="color:#5E5749">KLIA Transit</b> to KL Sentral, 20 min, RM14 (best for the Sentral/Brickfields cluster) · <b style="color:#5E5749">Grab</b> door-to-door 35–50 min, RM45–70. Airport: Ekspres from Sentral 28 min RM55; AirAsia flies from <b style="color:#5E5749">Terminal 2</b>, Qatar &amp; MH from Terminal 1.</div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px"><b style="color:#5E5749">MRT Putrajaya Line</b> direct to TRX / Persiaran KLCC / Conlay, 45–55 min, <b style="color:#5E5749">RM4–6</b> · <b style="color:#5E5749">KLIA Transit</b> to KL Sentral, 20 min, RM14 (best for the Sentral/Brickfields cluster) · <b style="color:#5E5749">Grab</b> door-to-door 35–50 min, RM45–70. Airport: Ekspres from Sentral 28 min RM55; your Hanoi flights (Malaysia Airlines) use <b style="color:#5E5749">Terminal 1</b> — AirAsia would be T2.</div>
             </div>
             <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
               <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F7E9DF;display:flex;align-items:center;justify-content:center;color:var(--accent,#B5653F)"><svg-icon data-lucide="credit-card" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">In KL: just tap</div></div>
@@ -891,6 +891,289 @@
 
       </div>
     </sc-if>
+    <sc-if value="{{ isHN }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease">
+
+        <!-- HERO -->
+        <div id="hn-top" style="position:relative;overflow:hidden;padding:30px 20px 24px;background:linear-gradient(155deg,#C4525E 0%,#A23E48 50%,#3C1A20 125%)">
+          <div style="position:absolute;inset:0;background:linear-gradient(155deg,rgba(196,82,94,.45) 0%,rgba(162,62,72,.75) 50%,rgba(60,26,32,.94) 125%)"></div>
+          <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 85% 5%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.82);margin-bottom:10px">THE HUB · MON 28 – WED 30 + SUN 4 – TUE 6</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1;color:#FBF7EE;margin:0;letter-spacing:-.01em">Hanoi</h1>
+            <p style="color:rgba(255,255,255,.9);font-size:13.5px;line-height:1.5;margin:12px 0 0;max-width:92%">A thousand-year-old city that eats on stools and drives like water. Everything you need lives in the 1.5km square of the Old Quarter — you walk it, Grab fills the gaps, and the food costs less than the photo of the food anywhere else.</p>
+          </div>
+        </div>
+
+        <!-- JUMP NAV -->
+        <div class="noscroll" style="position:sticky;top:49px;z-index:30;display:flex;gap:7px;overflow-x:auto;padding:11px 16px;background:rgba(245,239,227,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #E8E0CE">
+          <sc-for list="{{ hnNav }}" as="c" hint-placeholder-count="6">
+            <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid #E0D7C4;background:rgba(251,247,238,.8);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:700;color:#5E5749;cursor:pointer;font-family:'Hanken Grotesk'">{{ c.label }}</button>
+          </sc-for>
+        </div>
+
+        <!-- ARRIVAL KIT -->
+        <div id="hn-kit" data-reveal style="padding:24px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="plane-landing" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The calm first hour</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="badge-check" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Immigration → SIM → cash → Grab</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">E-visa printout out at the counter (~30–45 min). Inside arrivals: <b style="color:#5E5749">Viettel eSIM/SIM ~135–200k₫</b> · <b style="color:#5E5749">VPBank ATM — fee-free, up to 10M₫ a pull</b> (pull 4–5M; always "charge in VND", decline the conversion screen; ~25k₫ = $1, the 500k note is $20) · book the Grab in-app (250–350k, 45–60 min) and walk past every "taxi sir?" between you and the pickup zone.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F5E4D9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="bed-double" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">The hotel brief (both stints, same property)</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">Old Quarter street logic: <b style="color:#5E5749">Mã Mây</b> boutique 4★ · <b style="color:#5E5749">Hàng Bạc</b> mid-range · <b style="color:#5E5749">Hàng Bè</b> budget. Sweet spot: hostel-private $25–40 (Little Charm — pool; The One; Old Quarter View) or boutique $50–90 (La Siesta Premium Hàng Bè, O'Gallery, Peridot). Non-negotiables: <b style="color:#5E5749">alley-facing room</b> (the Quarter is loud, earplugs regardless) + confirmed <b style="color:#5E5749">bag-hold and shower-after-checkout</b> for the Wed-30 train day. The desk also books puppets, tours and treks — concierge value is real solo.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OLD QUARTER -->
+        <div id="hn-oq" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="lamp" style="width:18px;height:18px;color:#A23E48"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The Old Quarter set</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Everything below is on foot from the hotel.</p>
+          <div style="display:flex;flex-direction:column;gap:11px">
+
+            <div style="position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(135deg,#A23E48,#5E2830);padding:18px;box-shadow:0 14px 30px -22px rgba(94,40,48,.7)">
+              <div style="position:relative">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.12em;font-weight:600;color:#5E2830;background:#F6EDD9;padding:3px 7px;border-radius:5px">★ THE ONE TO DO</span></div>
+                <div style="font-family:'Newsreader',serif;font-size:22px;color:#fff;line-height:1.1">Train Street</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.9);line-height:1.5;margin-top:7px">Open in 2026, entered through a trackside café — the drink is the ticket. Weekday evening passes ~<b>19:50 and 21:15</b>; weekends add more. The café's chalkboard is the truth — confirm on arrival, sit where staff put you, and don't step out for the phone shot. Your slots: Mon-28 evening, retry Mon-5.</div>
+              </div>
+            </div>
+
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="landmark" style="width:21px;height:21px"></svg-icon></span>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Hoàn Kiếm + Ngọc Sơn Temple</span><span style="font-size:8.5px;font-weight:700;letter-spacing:.06em;color:var(--accent,#B5653F);background:#F7E9DF;padding:2px 6px;border-radius:5px">MUST-SEE</span></div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;margin-top:4px">30k₫ · 08:00–18:00 · sunset ~17:45</div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">The lake is the city's front room; the temple sits on its island over the red Huc bridge. Dusk with the Turtle Tower lit is the shot.</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:flex-start;gap:12px">
+                <span style="flex-shrink:0;width:42px;height:42px;border-radius:12px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="drama" style="width:21px;height:21px"></svg-icon></span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Thăng Long water puppets</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;margin-top:4px">from 100k₫ · shows ~15:30–21:15 · 50 min</div>
+                  <div style="font-size:12.5px;color:#7A7163;line-height:1.45;margin-top:5px">A thousand-year-old rice-paddy art form: puppets on water, nine live musicians, no dialogue needed. Book a day ahead via the hotel; weekday shows take walk-ins.</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="footprints" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Guild-street walk</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Hàng Mã lanterns → Ô Quan Chưởng gate → Đồng Xuân market → Phùng Hưng murals.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="landmark" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Trấn Quốc Pagoda</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">Oldest in Hanoi, on its West Lake causeway. Free, modest dress, 15-min Grab.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="camera" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Long Biên at sunrise</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">The 1902 rail bridge over the Red River — hidden-gem grade, free, go before 07:00.</div>
+              </div>
+              <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+                <span style="width:34px;height:34px;border-radius:10px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="building-2" style="width:17px;height:17px"></svg-icon></span>
+                <div style="font-family:'Newsreader',serif;font-size:15.5px;color:#2B2722;margin-top:9px">Hỏa Lò Prison</div>
+                <div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">~50k · 45–60 min · not on your list, but the best indoor hour in Hanoi.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- NINH BINH -->
+        <div id="hn-nb" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(150deg,#1A6A8A,#0F3D50);padding:20px;box-shadow:0 16px 36px -24px rgba(15,61,80,.8)">
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(255,255,255,.85)">DAY TRIP · TUE 29 · THE FLEX DAY</div>
+              <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:26px;color:#fff;margin:8px 0 0">Ninh Bình — Hạ Long on land</h2>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.94);line-height:1.55;margin:10px 0 0">Small-group limousine tour, $40–55, hotel pickup 07:20–08:00, back ~19:15: <b>Hoa Lư</b> (the 10th-century capital) → <b>Múa viewpoint</b> (500 steps up the dragon ridge — slow pace, water, hat) → buffet lunch → <b>Tràng An</b>, three hours rowed through caves and lagoons (SPF + the waterproof pouch; tip the rower 50k). Book a free-cancellation listing — this is the itinerary's weather-release valve if a typhoon remnant clips the delta.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px">
+                <div style="background:rgba(255,255,255,.13);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.72)">UPGRADE</div><div style="font-size:11.5px;color:#fff;font-weight:600;margin-top:2px">+$15pp → 9-seat D-Car group</div></div>
+                <div style="background:rgba(255,255,255,.13);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.72)">ASK FOR</div><div style="font-size:11.5px;color:#fff;font-weight:600;margin-top:2px">The Tràng An cave-heavy boat route</div></div>
+              </div>
+              <div style="font-size:11px;color:rgba(255,255,255,.84);line-height:1.45;margin-top:9px">Why this and not Hạ Long: same karst, two hours closer, no overnight boat — and it's why Hạ Long stays guiltlessly cut. Incense village stays cut too (a 20-minute photo stop that costs half a day — your own verdict, still correct).</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOD -->
+        <div id="hn-food" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="utensils-crossed" style="width:18px;height:18px;color:var(--accent,#B5653F)"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Eating Hanoi properly</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">The never-miss four</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px"><b>Phở</b> at Gia Truyền, 49 Bát Đàn (07:00–09:00, cash, queue moves fast) · <b>egg coffee</b> at Giang, 39 Nguyễn Hữu Huân — twice · <b>chả cá</b> (turmeric fish + dill, tabletop brazier — the farewell) · <b>bia hơi on Tạ Hiện stools</b>, 15k a glass (or sugarcane juice, same stools, zero awkwardness).</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Pork flags (fork #1)</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px"><b>Bún chả IS pork</b> — the Obama dish, Hanoi's #1 lunch if pork's in; bún bò Nam Bộ is the excellent beef swap if not · bánh mì pâté/chả usually pork (chicken/beef/egg versions everywhere) · bánh cuốn usually pork-mushroom filled.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Hidden gem</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px"><b>Phở cuốn in Ngũ Xã</b> — fresh rice-sheet beef rolls in the island neighborhood locals keep quiet. Monday-5 lunch, 15-min Grab.</div></div>
+            <div style="padding:11px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">The rules</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">A queue of locals beats any list including this one · busy stall = safe stall · eat dishes at their hour, kitchens sell out · bottled water; café ice is fine.</div></div>
+          </div>
+        </div>
+
+        <!-- STREET SMARTS -->
+        <div id="hn-street" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="shield" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Street smarts</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Crossing the street</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Walk out slow and STEADY — never stop, never dart. The scooter river reads your vector and flows around you. Second nature by day two.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">The scam bingo card (all low-stakes)</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Shoe-shine grab (keep walking) · donut/fruit-basket "hold this, photo!" (don't take the pole) · cyclo price morph (skip cyclos, you have Grab) · broken-meter taxi (Grab/Be/Xanh SM only, or Mai Linh/G7 brands) · "that attraction is closed today" tout (it isn't).</div></div>
+            <div style="padding:11px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Otherwise</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Hanoi is genuinely safe, including Old Quarter evenings. Phones away from curb edges, valuables beside your head on the train — that's the whole briefing.</div></div>
+          </div>
+        </div>
+
+        <!-- NIGHTS -->
+        <div id="hn-night" data-reveal style="padding:28px 16px 8px;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="moon-star" style="width:18px;height:18px;color:#7E6BA8"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">After dark</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F5E4D9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="beer" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Tạ Hiện — beer street</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Plastic stools, fresh bia hơi, the whole city at knee height. Peaks 21:00–23:00; your nightcap on days 1 and 12.</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#EAEFE5;display:flex;align-items:center;justify-content:center;color:#5E7257"><svg-icon data-lucide="footprints" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Night lake loop</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Hoàn Kiếm after dark — locals exercising, couples, the lit Turtle Tower. Free, 25 minutes, better than it sounds.</div></div></div>
+            <div style="display:flex;gap:12px;background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:14px"><span style="flex-shrink:0;width:36px;height:36px;border-radius:11px;background:#F2EAD9;display:flex;align-items:center;justify-content:center;color:#9C4F2E"><svg-icon data-lucide="coffee" style="width:18px;height:18px"></svg-icon></span><div><div style="font-size:14px;font-weight:700;color:#2B2722">Late egg coffee</div><div style="font-size:12px;color:#7A7163;line-height:1.42;margin-top:2px">Giang stays open into the evening — dessert pretending to be coffee, second-round certified.</div></div></div>
+          </div>
+          <div style="text-align:center;padding:26px 0 6px;font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#A89E8C">A city best measured in bowls.</div>
+        </div>
+
+      </div>
+    </sc-if>
+    <sc-if value="{{ isSP }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ tab }}" style="animation:fadeUp .5s ease">
+
+        <!-- HERO -->
+        <div id="sp-top" style="position:relative;overflow:hidden;padding:30px 20px 24px;background:linear-gradient(155deg,#5A7EA6 0%,#3A5A8C 50%,#16233C 125%)">
+          <div style="position:absolute;inset:0;background:linear-gradient(155deg,rgba(90,126,166,.45) 0%,rgba(58,90,140,.75) 50%,rgba(22,35,60,.94) 125%)"></div>
+          <div style="position:absolute;inset:0;opacity:.16;background:radial-gradient(120% 80% at 85% 5%,#fff 0%,transparent 55%)"></div>
+          <div style="position:relative">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;color:rgba(255,255,255,.82);margin-bottom:10px">THE MOUNTAINS · THU 1 – SUN 4 · HARVEST GOLD</div>
+            <h1 style="font-family:'Newsreader',serif;font-weight:500;font-size:40px;line-height:1;color:#FBF7EE;margin:0;letter-spacing:-.01em">Sapa</h1>
+            <p style="color:rgba(255,255,255,.9);font-size:13.5px;line-height:1.5;margin:12px 0 0;max-width:92%">1,600m up, 15–25°C, terraces mid-harvest — gold, amber and cut stubble in patches. Three days, three shapes: one for the mountain, one for the valley on foot, one for the pass road. Weather owns the order; the plan bends, never breaks.</p>
+          </div>
+        </div>
+
+        <!-- JUMP NAV -->
+        <div class="noscroll" style="position:sticky;top:49px;z-index:30;display:flex;gap:7px;overflow-x:auto;padding:11px 16px;background:rgba(245,239,227,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #E8E0CE">
+          <sc-for list="{{ spNav }}" as="c" hint-placeholder-count="6">
+            <button onClick="{{ c.go }}" style="flex-shrink:0;border:1px solid #E0D7C4;background:rgba(251,247,238,.8);border-radius:20px;padding:7px 13px;font-size:11.5px;font-weight:700;color:#5E5749;cursor:pointer;font-family:'Hanken Grotesk'">{{ c.label }}</button>
+          </sc-for>
+        </div>
+
+        <!-- MENU -->
+        <div id="sp-menu" data-reveal style="padding:24px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="list" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The menu — prices locked</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">Everything à la carte; the sky picks the order. Two rules: <b style="color:#5E5749">Fansipan takes the first clear morning</b>, and it costs 900k on Saturdays vs 850k weekdays — another reason it aims at Thu/Fri.</p>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:4px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Fansipan cable car</div><div style="font-size:11.5px;color:#7A7163">07:30–17:30 · summit 3,143m · cold up top</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">850k wkday<br><span style="color:#9C9486;font-weight:400">900k Sat</span></span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Lao Chai–Tả Van trek</div><div style="font-size:11.5px;color:#7A7163">4–5h with a Hmong guide, lunch + van back incl.</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">500–750k</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Cát Cát village</div><div style="font-size:11.5px;color:#7A7163">Walk down, taxi back up 100–150k · cash only</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">150k</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Rồng Mây glass bridge</div><div style="font-size:11.5px;color:#7A7163">300m skywalk at 2,333m · glass elevator incl. · 08:00–18:00</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">500k</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Silver Waterfall + Heaven's Gate</div><div style="font-size:11.5px;color:#7A7163">Same pass road — fold into the taxi loop</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">20k + free-ish</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #F0E8D8"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Rainbow slide + Moana</div><div style="font-size:11.5px;color:#7A7163">Green Valley slide (unlimited + go-kart) · Moana photo park next door</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">90–120k · 80–90k</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px 0"><div><div style="font-size:13.5px;font-weight:700;color:#2B2722">Red Dao bath + massage</div><div style="font-size:11.5px;color:#7A7163">Post-trek Friday slot — scheduled physio</div></div><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent,#B5653F);font-weight:600;text-align:right">150–350k +</span></div>
+          </div>
+        </div>
+
+        <!-- FANSIPAN -->
+        <div id="sp-fansipan" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(150deg,#3A5A8C,#16233C);padding:20px;box-shadow:0 16px 36px -24px rgba(22,35,60,.8)">
+            <div style="position:relative">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:rgba(255,255,255,.78)">THE ROOF OF INDOCHINA · FIRST CLEAR MORNING</div>
+              <h2 style="font-family:'Newsreader',serif;font-weight:500;font-size:27px;color:#fff;margin:8px 0 0;line-height:1.05">Fansipan, 3,143m</h2>
+              <p style="font-size:12.5px;color:rgba(255,255,255,.92);line-height:1.55;margin:12px 0 0">The 20-minute cable ride over the Mường Hoa valley is half the product — one of the world's great cable cars. Then summit stairs (or the peak funicular ~150k) to the highest point between here and the Himalaya. Check the sky at breakfast; if it's clear, drop everything and go — first car 07:30, before the Golden Week crowds compound.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+                <div style="background:rgba(255,255,255,.12);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.7)">BUDGET</div><div style="font-size:12px;color:#fff;font-weight:600;margin-top:2px">Cable 850k wkday (900k Sat) · funiculars optional</div></div>
+                <div style="background:rgba(255,255,255,.12);border-radius:11px;padding:9px 11px"><div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.7)">BRING</div><div style="font-size:12px;color:#fff;font-weight:600;margin-top:2px">The warm layer — ~10–15°C up top</div></div>
+              </div>
+              <div style="font-size:11px;color:rgba(255,255,255,.82);line-height:1.45;margin-top:10px">3–4h door to door. Fog day? Don't buy hope — the view IS the ticket. Hold it for tomorrow; Saturday at 900k is the fallback of last resort.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TREK -->
+        <div id="sp-trek" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <svg-icon data-lucide="footprints" style="width:18px;height:18px;color:#5E7257"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The trek — the day the trip is for</span>
+          </div>
+          <p style="font-size:12.5px;color:#7A7163;margin:0 0 14px">This is why Sapa beat Ha Giang for a back in physio: hours of walking through the views instead of hours of sitting through them.</p>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Lao Chai → Tả Van with a local Hmong guide</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C9486;margin-top:4px">09:00 start · 4–5h · mostly downhill · lunch in the village · van back included</div>
+            <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:8px">Book at the hotel desk the night before: group ~500–750k; private 730k solo / 520k pp at 2–3 people. Down the valley wall, through the harvest terraces, along the river into Tả Van where Hmong and Giáy families live side by side. Real shoes, 1.5L water, small notes for the indigo grandmothers. Back-friendly variant exists: "Lao Chai only, van from the village" (~3h).</div>
+            <div style="display:flex;align-items:flex-start;gap:9px;background:#F6EDD9;border:1px solid #E8D7B0;border-radius:14px;padding:12px 13px;margin-top:12px">
+              <svg-icon data-lucide="info" style="width:14px;height:14px;color:#A77D2E;flex-shrink:0;margin-top:1px"></svg-icon>
+              <div style="font-size:11.5px;color:#7A6638;line-height:1.45">Peak-season honesty: October trails carry crowds, and harvest means some paddies are already cut stubble. It's still the most beautiful walking day of the trip — just don't expect solitude.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASS ROAD -->
+        <div id="sp-pass" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="mountain" style="width:18px;height:18px;color:#3A5A8C"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">The pass road — Saturday's loop</span>
+          </div>
+          <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">One negotiated taxi, three stops</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Hotel phones the driver (no Grab up here) — agree the full O Quy Hồ loop with waiting: ~500–700k. Out ~08:30, back ~13:30.</div></div>
+            <div style="padding:11px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Silver Waterfall → Heaven's Gate → glass bridge</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">20k waterfall path · the pass-top viewpoint (wishlist, ticked) · Rồng Mây's 300m skywalk at 2,333m, 500k with the cliff-face glass elevator. Vertigo is the product.</div></div>
+            <div style="padding:11px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Why Saturday</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Fansipan costs 900k and queues worst on Saturdays — so Saturday gets the road, and the afternoon becomes the catch-up slot for whatever weather stole.</div></div>
+          </div>
+        </div>
+
+        <!-- PHOTO PARKS -->
+        <div id="sp-parks" data-reveal style="padding:28px 16px 0;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="camera" style="width:18px;height:18px;color:#C99A4E"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Photo parks — the rainbow slide, found</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Sapa Green Valley</div><div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#9C9486;margin-top:3px">90–120k · unlimited</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px"><b>THIS is the TikTok rainbow slide</b> — unlimited runs plus a go-kart, ~10 min south of center.</div></div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:16px;padding:13px"><div style="font-family:'Newsreader',serif;font-size:15px;color:#2B2722">Moana Sapa</div><div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:#9C9486;margin-top:3px">80–90k incl. a drink · 07:00–19:00</div><div style="font-size:11.5px;color:#7A7163;line-height:1.4;margin-top:3px">The Bali-gate / giant-hand viewpoint park next door. Staged, shameless, fun. Before 15:00 for light.</div></div>
+          </div>
+          <div style="font-size:11.5px;color:#9C9486;line-height:1.45;margin-top:9px">Both slot into the cloudy-day flip on Thursday or Saturday's open afternoon — never spend a clear morning on them.</div>
+        </div>
+
+        <!-- UP & DOWN -->
+        <div id="sp-updown" data-reveal style="padding:28px 16px 8px;scroll-margin-top:60px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <svg-icon data-lucide="train-front" style="width:18px;height:18px;color:#8A2432"></svg-icon>
+            <span style="font-family:'Newsreader',serif;font-size:23px;color:#2B2722">Up by train, down by van</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#F5E4D9;display:flex;align-items:center;justify-content:center;color:#8A2432"><svg-icon data-lucide="train-front" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Night train up — Wed 30, ~22:00</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">One state train, many private branded carriages: standard 4-berth ~$28–35 · <b style="color:#5E5749">Chapa Express ~$45</b> · <b style="color:#5E5749">Sapaly Deluxe ~$55</b> (the nicest 4-berth tier) · private 2-berth VIP $99–198/cabin. Book a <b style="color:#5E5749">LOWER berth</b> — bag under you, no ladder for the back. Board at Hanoi station's <b style="color:#5E5749">Trần Quý Cáp</b> back gate; arrive Lào Cai 05:30–06:25; ~1h van up (often bundled, else 100–150k). Book by ~10 Sep via the operator's site or 12go.asia.</div>
+            </div>
+            <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:11px;background:#E6EDF4;display:flex;align-items:center;justify-content:center;color:#3A5A8C"><svg-icon data-lucide="bus" style="width:18px;height:18px"></svg-icon></span><div style="font-family:'Newsreader',serif;font-size:17px;color:#2B2722">Limousine van down — Sun 4, 14:30–15:00</div></div>
+              <div style="font-size:12.5px;color:#7A7163;line-height:1.5;margin-top:10px">Eco Sapa / Sapa Express, reclining captain's chairs, hotel pickup ~14:00, $24–26, 5.5–6h → Old Quarter ~20:30. Shower, stools, real bed. The second night train stays rejected: it lands at 05:00 with no room until 14:00 — a zombie final day for five extra Sapa hours. Book days ahead — it's a Golden Week Sunday.</div>
+            </div>
+          </div>
+          <div style="text-align:center;padding:26px 0 6px;font-family:'Newsreader',serif;font-style:italic;font-size:15px;color:#A89E8C">Sleep through the climb; stay awake for the fall.</div>
+        </div>
+
+      </div>
+    </sc-if>
     <sc-if value="{{ isEss }}" hint-placeholder-val="{{ false }}">
       <div key="{{ tab }}" style="animation:fadeUp .5s ease;position:relative;z-index:0">
         <div aria-hidden="true" style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1">
@@ -932,7 +1215,7 @@
               <span style="width:38px;height:38px;border-radius:11px;background:#A77D2E;display:flex;align-items:center;justify-content:center;color:#fff"><svg-icon data-lucide="file-warning" style="width:20px;height:20px"></svg-icon></span>
               <div><div style="font-family:'Newsreader',serif;font-size:19px;color:#2B2722;line-height:1">Vietnam e-visa</div><div style="font-size:11px;font-weight:700;color:#9C4F2E;letter-spacing:.04em;margin-top:2px">APPLY NOW — DO NOT SIT ON THIS</div></div>
             </div>
-            <div style="font-size:12.5px;color:#7A6638;line-height:1.55"><b>evisa.gov.vn only</b> — the .com clones are middlemen charging 3×. $25 single entry, entry date <b>26 Sep</b> (buffer), 3–5+ working days to issue. <b>Print two copies</b>; name/passport typos = refused boarding. Full Vietnam admin lives in the VN guide when it lands.</div>
+            <div style="font-size:12.5px;color:#7A6638;line-height:1.55"><b>evisa.gov.vn only</b> — the .com clones are middlemen charging 3×. The 15-minute script: ① passport photo-page scan, all corners, MRZ lines sharp · ② 4×6 vertical portrait, white background, no glasses · ③ name EXACTLY as the passport prints it · ④ entry date <b>26 Sep</b>, gate <b>Noi Bai</b>, single entry · ⑤ pay $25 by card, save the code, check status in 3–5 working days → <b>print two copies</b>. Rejected or stuck past a week? Reapply immediately with fixed files — no penalty, no queue.</div>
           </div>
         </div>
 
@@ -956,7 +1239,7 @@
           <!-- To book -->
           <div style="background:#F6EDD9;border:1px solid #E8D7B0;border-radius:18px;padding:15px;box-shadow:0 1px 2px rgba(43,39,34,.04);margin-bottom:11px">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><svg-icon data-lucide="triangle-alert" style="width:15px;height:15px;color:#A77D2E"></svg-icon><span style="font-family:'Newsreader',serif;font-size:16px;color:#2B2722">Still to book — this week</span></div>
-            <div style="font-size:12px;color:#7A6638;line-height:1.7"><b>AK512</b> KUL→HAN Mon 28 Sep 12:10 — airasia.com direct, add 20kg bag at purchase (T2!)<br><b>MH753</b> HAN→KUL Tue 6 Oct 13:19 — 30kg included, lands T1<br><b>KL Tower</b> timed Sky Deck slot ~18:30, Sun 27 Sep<br><b>KLIA hotel</b> Tue 6 Oct — Sama-Sama (T1, ~RM400) or CapsuleTransit (T2, ~RM150–250)<br><b>Vietnam beds + night train</b> — in the VN guide, but book with these dates (Golden Week Oct 1–7 pressure)</div>
+            <div style="font-size:12px;color:#7A6638;line-height:1.7"><b>MH752</b> KUL→HAN Mon 28 Sep 09:35→12:15 — T1, 30kg + meal incl (AK516 is dead; AK512 now 12:40, price-play only)<br><b>MH753</b> HAN→KUL Tue 6 Oct 13:05→17:30 — 30kg incl, lands T1, runs Tuesdays<br><b>Sapa hotel 1–3 Oct</b> — TODAY: October is Sapa's busiest month + Golden Week; rooms book 3–4 weeks out<br><b>Hanoi hotel</b> 28–29 Sep + 4–5 Oct — same property, alley-facing room, bag-hold + shower for the 30th<br><b>Night train Wed 30</b> — Chapa ~$45 / Sapaly ~$55, 4-berth soft, LOWER berth, operator site or 12go (by ~10 Sep)<br><b>Ninh Bình tour Tue 29</b> — small-group limousine $40–55, free-cancel listing (by ~15 Sep)<br><b>Sapa→Hanoi van Sun 4</b> — Eco Sapa / Sapa Express 14:30–15:00, $24–26 (by ~20 Sep — Golden Week Sunday)<br><b>KL Tower</b> ~18:30 slot Sun 27 · <b>KLIA hotel</b> Tue 6 — Sama-Sama ~RM400 or capsule</div>
           </div>
 
           <!-- Hotels -->
@@ -995,7 +1278,7 @@
               <div style="font-size:11.5px;color:#5E5749;line-height:1.7">Grab + rail (~RM40–90/day out)<br>KL Tower RM90–200<br>Street food (RM5–20/meal)<br>Petaling + Low Yat + Mitsui fund<br>KLIA hotel 6 Oct RM150–400<br>Nader's thank-you gift</div>
             </div>
           </div>
-          <div style="display:flex;align-items:flex-start;gap:8px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:13px;padding:11px 13px;margin-top:11px"><svg-icon data-lucide="info" style="width:14px;height:14px;color:#5E7257;flex-shrink:0;margin-top:1px"></svg-icon><div style="font-size:11.5px;color:#5A6353;line-height:1.5">KL is cheap where it matters: the best meals of the trip cost RM8–20, the best photos are free (Saloma, Merdeka, fountain, Batu, the mosques), and rail is RM2–14. Splurge points are the tower and the bed at the airport — both worth it.</div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:13px;padding:11px 13px;margin-top:11px"><svg-icon data-lucide="info" style="width:14px;height:14px;color:#5E7257;flex-shrink:0;margin-top:1px"></svg-icon><div style="font-size:11.5px;color:#5A6353;line-height:1.5">KL is cheap where it matters, and Vietnam is cheaper: the whole 8-night VN leg lands ≈ <b>$750–1,050 all-in</b> (flight pair $180–280 · beds incl. train berth $260–420 · transport + tours $150–190 · $25–40/day food and fun). Splurge points across the trip: KL Tower, the airport bed, the soft-sleeper lower berth — all worth it.</div></div>
         </div>
 
         <!-- PACKING -->
@@ -1053,7 +1336,7 @@
               <div style="position:relative">
                 <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(255,255,255,.82)">1–7 OCT · REGION-WIDE</div>
                 <div style="font-family:'Newsreader',serif;font-size:21px;color:#fff;margin-top:5px">China's Golden Week</div>
-                <div style="font-size:12px;color:rgba(255,255,255,.92);line-height:1.5;margin-top:6px">Overlaps your Sapa dates exactly — book Vietnam beds and the night train NOW, and do Fansipan at the 07:30 first car. In KL it just means busier malls on the 6th. Full plan in the VN guide.</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.92);line-height:1.5;margin-top:6px">Overlaps your Sapa dates exactly — Sapa beds, the Wed-30 train and the Sun-4 van all fill; book now. Fansipan costs <b>900k on Saturdays vs 850k weekdays</b> — aim it at Thu/Fri's first clear morning, 07:30 first car. In KL it just means busier malls on the 6th.</div>
               </div>
             </div>
             <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:6px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
@@ -1075,7 +1358,8 @@
             <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Cyberjaya ↔ KL</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">MRT Putrajaya Line direct to TRX/KLCC/Conlay 45–55 min RM4–6 · KLIA Transit to KL Sentral 20 min RM14 · Grab door-to-door 35–50 min RM45–70.</div></div>
             <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Airport terminals — check twice</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Qatar + Malaysia Airlines = <b>T1</b>. AirAsia = <b>T2</b>. Separate buildings. Mitsui Outlet is 10 min from both by Grab (RM10–15); free shuttle exists but is sparse.</div></div>
             <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">Scooter / motorbike — the verdict is no</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Riding needs a home licence with the <b>motorcycle category</b> + an IDP carrying that category — you hold neither, so any rental is illegal with void insurance in unforgiving traffic. <b>E-scooters are banned from all Malaysian public roads</b> (since Dec 2021, enforced, fines to RM5k) — parks and bike lanes only. Bicycles: fine, no licence (Putrajaya lake loop, Titiwangsa). A car is legal with car licence + IDP but pointless — Grab is cheaper than parking.</div></div>
-            <div style="padding:12px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Grab craft</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Pickups at marked e-hailing bays in airports/malls · surge in rain + 17:30–19:30 · drop an exact pin, buildings are huge · tolls included · AirAsia Ride sometimes undercuts on airport runs.</div></div>
+            <div style="padding:12px 0;border-bottom:1px solid #F0E8D8"><div style="font-size:13px;font-weight:700;color:#2B2722">In Vietnam</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Grab works in <b>Hanoi only</b> (Noi Bai↔Old Quarter 250–350k₫, 45–60 min; bikes ≈ half). <b>No Grab in Sapa</b> — the hotel phones taxis, price agreed before boarding (town 50k · Cát Cát 100–150k · pass loop 500–700k). Cash country: <b>VPBank ATMs are fee-free up to 10M₫/pull</b>; always charge in VND, decline the conversion screen.</div></div>
+            <div style="padding:12px 0"><div style="font-size:13px;font-weight:700;color:#2B2722">Grab craft (Malaysia)</div><div style="font-size:12px;color:#7A7163;line-height:1.45;margin-top:2px">Pickups at marked e-hailing bays in airports/malls · surge in rain + 17:30–19:30 · drop an exact pin, buildings are huge · tolls included · AirAsia Ride sometimes undercuts on airport runs.</div></div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:11px">
             <span style="display:inline-flex;align-items:center;gap:5px;background:#EEF1E9;border:1px solid #DDE4D2;border-radius:18px;padding:6px 11px;font-size:11px;font-weight:600;color:#5A6353">Grab</span>
@@ -1127,6 +1411,7 @@
           <div style="background:rgba(251,247,238,.8);border:1px solid #E8E0CE;border-radius:18px;padding:4px 15px;box-shadow:0 1px 2px rgba(43,39,34,.04)">
             <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Malaysia emergency</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent,#B5653F);font-weight:600">999 / 112</span></div>
             <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Tourist police (KL)</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">+60 3-2149 6590</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Vietnam emergency</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">113 police · 115 amb.</span></div>
             <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Qatar Airways ref</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">HV9TBJ · 9KT7FX</span></div>
             <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Booking agent</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">NSAS Cairo</span></div>
             <div style="display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #F0E8D8"><span style="font-size:12.5px;color:#5E5749;font-weight:600">Nader (KL — luggage)</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#5E5749">add number</span></div>
@@ -1187,7 +1472,10 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     const arriveMY = Date.UTC(2026,8,23,23,55); // land KUL 24 Sep 07:55 MYT (UTC+8)
-    const defCity = Date.now() >= arriveMY ? 'kl' : 'cairo';
+    const arriveVN = Date.UTC(2026,8,28,5,15);  // land Hanoi 28 Sep 12:15 ICT (UTC+7)
+    const backMY   = Date.UTC(2026,9,6,9,30);   // land KUL 6 Oct 17:30 MYT
+    const now0 = Date.now();
+    const defCity = now0 >= backMY ? 'kl' : (now0 >= arriveVN ? 'hanoi' : (now0 >= arriveMY ? 'kl' : 'cairo'));
     this.state = { tab: 'today', openDays: {}, openZones: {}, openPack: {}, packed: {}, doneItin: {}, dbArea: 'all', dbCat: 'all', dbQuery: '', dbDone: {},
       selCity: defCity, wx: null, wxLoading: true, wxErr: false, wxAt: 0 };
     this.clockRef = React.createRef();
@@ -1199,9 +1487,11 @@ class Component extends DCLogic {
   }
 
   CITIES = {
-    kl:        { name:'Kuala Lumpur', label:'KUL', tz:'Asia/Kuala_Lumpur', lat:3.1390,  lon:101.6869 },
-    cyberjaya: { name:'Cyberjaya',    label:'CYB', tz:'Asia/Kuala_Lumpur', lat:2.9213,  lon:101.6559 },
-    cairo:     { name:'Cairo',        label:'CAI', tz:'Africa/Cairo',      lat:30.0444, lon:31.2357 },
+    kl:        { name:'KL',        label:'KUL', tz:'Asia/Kuala_Lumpur', lat:3.1390,  lon:101.6869 },
+    cyberjaya: { name:'Cyberjaya', label:'CYB', tz:'Asia/Kuala_Lumpur', lat:2.9213,  lon:101.6559 },
+    hanoi:     { name:'Hanoi',     label:'HAN', tz:'Asia/Bangkok',      lat:21.0285, lon:105.8542 },
+    sapa:      { name:'Sapa',      label:'SPA', tz:'Asia/Bangkok',      lat:22.3364, lon:103.8438 },
+    cairo:     { name:'Cairo',     label:'CAI', tz:'Africa/Cairo',      lat:30.0444, lon:31.2357 },
   };
 
   /* ---------- TRIP DATA ---------- */
@@ -1223,13 +1513,13 @@ class Component extends DCLogic {
         { t:'14:10', time:'14:10', icon:'landmark', title:'Islamic Arts Museum — the aircon block', detail:'RM20 · walk 15 min via Masjid Negara · 2h placed exactly in the jet-lag trough · bookshop = best gifts in KL' },
         { t:'17:00', time:'17:00', icon:'train-front', title:'KLIA Transit → Putrajaya → hotel', detail:'20 min RM14 + Grab 10 min · check in, shower · battery fork: 40-min Merdeka Square loop first' },
         { t:'19:00', time:'19:00', icon:'utensils-crossed', title:'Conference dinner', detail:'Soft anchor · fork #3: if skippable, stay in KL for River of Life + Chinatown at night instead' },
-        { t:'22:00', time:'22:00', icon:'bed-double', title:'Sleep. Non-negotiable.', detail:'No nap all day, 22:00 hard stop · skip the 22:00 competition prep as planned · this buys the whole trip’s rhythm' },
+        { t:'22:00', time:'22:00', icon:'bed-double', title:'Sleep. Non-negotiable.', detail:'No nap all day, 22:00 hard stop · skip the 22:00 competition prep as planned · this buys the whole trip\u2019s rhythm' },
       ]},
     { n:3, dow:'Fri', date:'25 Sep', y:2026, mo:9, d:25, phase:'CONFERENCE', title:'Recovery + AI@MMU', accent:'#5E7257',
       blocks:[
         { t:'08:30', time:'08:30', icon:'coffee', title:'Sleep in · slow breakfast', detail:'Yesterday was a 30-hour day — this half-day buffer is deliberate, not laziness' },
         { t:'10:00', time:'10:00', icon:'footprints', title:'Optional: Putrajaya lakefront', detail:'Seri Wawasan bridge walk, exteriors only — Putra Mosque interior is CLOSED to visitors Friday mornings · or just the pool' },
-        { t:'12:00', time:'12:00', icon:'utensils', title:'Lunch near MMU', detail:'Student cafés — cheap, fast, follow the queue · Jumu’ah option: campus surau (AI@MMU starts 14:00)' },
+        { t:'12:00', time:'12:00', icon:'utensils', title:'Lunch near MMU', detail:'Student cafés — cheap, fast, follow the queue · Jumu\u2019ah option: campus surau (AI@MMU starts 14:00)' },
         { t:'14:00', time:'14:00', icon:'presentation', title:'AI@MMU', detail:'14:00–18:00, leaving at 18:00 as planned · skipped the morning competition' },
         { t:'19:00', time:'19:00', icon:'utensils-crossed', title:'Mamak night', detail:'Roti canai + teh tarik with the students · wired option: 90-min floodlit Putrajaya photo loop · early night — Sat + Sun are heavy' },
       ]},
@@ -1239,8 +1529,8 @@ class Component extends DCLogic {
         { t:'09:00', time:'09:00', icon:'landmark', title:'Putra Mosque at opening', detail:'Sat window 09:00–12:30 · robes lent free · then Perdana Putra + lake esplanade · fork #4: Bangsar brunch instead — one dies' },
         { t:'11:15', time:'11:15', icon:'door-open', title:'Back to hotel — hard stop', detail:'Change · pool bag: swimwear, SPF50, phone pouch, strap, RM cash for locker' },
         { t:'12:15', time:'12:15', icon:'utensils', title:'Lunch with the group', detail:'Conference bus to Gamuda Cove after (~25 min)' },
-        { t:'14:00', time:'14:00', icon:'waves', title:'SplashMania — verdict: KEEP', detail:'Big slides in hour one while queues are short · locker ~RM20 · storm pauses are normal, don’t bail' },
-        { t:'20:00', time:'20:00', icon:'utensils-crossed', title:'Group dinner → back ~22:00', detail:'Pack tonight for the move: Vietnam bag vs leave-behind bag (Nader gets the latter tomorrow)' },
+        { t:'14:00', time:'14:00', icon:'waves', title:'SplashMania — verdict: KEEP', detail:'Big slides in hour one while queues are short · locker ~RM20 · storm pauses are normal, don\u2019t bail' },
+        { t:'20:00', time:'20:00', icon:'utensils-crossed', title:'Group dinner → back ~22:00', detail:'Pack tonight for the move: Vietnam cabin bag vs leave-behind bag (Nader gets the latter tomorrow)' },
       ]},
     { n:5, dow:'Sun', date:'27 Sep', y:2026, mo:9, d:27, phase:'KL TIME', title:'The masterpiece evening', accent:'var(--accent,#B5653F)',
       blocks:[
@@ -1251,45 +1541,109 @@ class Component extends DCLogic {
         { t:'18:35', time:'18:35', icon:'tower-control', title:'KL Tower — sunset from the Sky Deck', detail:'Grab 12 min · pre-booked ~18:30 slot · sunset 19:06 · Sky Box after golden hour · storms close the open deck (indoor level runs)' },
         { t:'20:00', time:'20:00', icon:'utensils', title:'Kampung Baru dinner', detail:'Grab 10 min · Nasi Lemak Wanjo + satay stalls · safe, normal, all halal · the towers-over-village photo' },
         { t:'21:05', time:'21:05', icon:'camera', title:'Saloma Link → Lake Symphony', detail:'Walk 7 min · lit bridge, Petronas behind — night is its best look · then KLCC park fountains (shows every ~30 min to 22:00)' },
-        { t:'22:15', time:'22:15', icon:'flame', title:'Jalan Alor nightcap', detail:'Covered walkway 10 min · Wong Ah Wah wings · one Musang King seed at the mouth of the street · graze, don’t commit' },
-        { t:'23:00', time:'23:00', icon:'hand', title:'Nader handoff', detail:'He collects the leave-behind bag at the hotel (fork #5) · Vietnam = cabin bag only from here' },
+        { t:'22:15', time:'22:15', icon:'flame', title:'Jalan Alor nightcap', detail:'Covered walkway 10 min · Wong Ah Wah wings · one Musang King seed at the mouth of the street · graze, don\u2019t commit' },
+        { t:'23:00', time:'23:00', icon:'hand', title:'Nader handoff + early-ish night', detail:'He collects the leave-behind bag at the hotel (fork #5) · cabin bag only from here · tomorrow\u2019s alarm is 06:15' },
       ]},
-    { n:6, dow:'Mon', date:'28 Sep', y:2026, mo:9, d:28, phase:'TRAVEL DAY', title:'Out to Hanoi', accent:'#3C4B3E',
+    { n:6, dow:'Mon', date:'28 Sep', y:2026, mo:9, d:28, phase:'TRAVEL DAY', title:'Out to Hanoi — straight into it', accent:'#3C4B3E',
       blocks:[
-        { t:'08:00', time:'08:00', icon:'utensils', title:'Mamak breakfast — the closing ritual', detail:'Roti canai + teh tarik near the hotel · stretch option: Village Park nasi lemak, only if out by 06:45' },
-        { t:'09:00', time:'09:00', icon:'car-front', title:'Grab → KLIA Terminal 2', detail:'50–60 min · RM65–85 · AirAsia = T2, not T1 · e-visa printout in hand luggage' },
-        { t:'12:10', time:'12:10', icon:'plane-takeoff', title:'AK512 → Hanoi 14:20', detail:'20kg bag bought online · Vietnam takes over from here' },
+        { t:'06:15', time:'06:15', icon:'alarm-clock', title:'Early alarm — the MH752 trade', detail:'Lands 12:15 = a full Hanoi afternoon. Rather sleep? AK512 12:40→15:00 exists and costs you exactly that afternoon.' },
+        { t:'06:45', time:'06:45', icon:'car-front', title:'Grab → KLIA Terminal 1', detail:'50–60 min · RM65–85 · Malaysia Airlines = T1 · e-visa printout in hand luggage' },
+        { t:'09:35', time:'09:35', icon:'plane-takeoff', title:'MH752 → Hanoi', detail:'09:35 → 12:15 · 30kg + meal included · breakfast airside' },
+        { t:'12:15', tz:7, time:'12:15', icon:'plane-landing', title:'Land Noi Bai — the calm first hour', detail:'E-visa print at immigration (~30–45 min) · Viettel eSIM/SIM ~135–200k · VPBank ATM: fee-free, pull 4–5M₫ · always VND, decline the conversion screen' },
+        { t:'13:30', tz:7, time:'13:30', icon:'car-front', title:'Grab → Old Quarter', detail:'45–60 min · 250–350k₫ · book in-app from arrivals, walk past every "taxi sir?"' },
+        { t:'15:30', tz:7, time:'15:30', icon:'footprints', title:'Hoàn Kiếm + Ngọc Sơn + Note Coffee', detail:'The lake is the city\u2019s front room · Ngọc Sơn 30k, till 18:00 · sticky-note café at 64 Lương Văn Can · sunset 17:45' },
+        { t:'18:45', tz:7, time:'18:45', icon:'train-front', title:'Train Street — seat for the ~19:50 pass', detail:'Café drink = entry ticket · weekday evening passes ~19:50 & 21:15 · the chalkboard is the truth · miss it? Day 13 retries' },
+        { t:'20:30', tz:7, time:'20:30', icon:'utensils', title:'First bowl + Tạ Hiện stools', detail:'Phở or bún chả (pork) · bia hơi ~15k or nước mía on the same stools · bed 22:30 — tomorrow starts 07:30' },
       ]},
-    { n:7, dow:'—', date:'29 Sep – 5 Oct', y:2026, mo:9, d:29, until:{ y:2026, mo:10, d:5 }, phase:'VIETNAM', title:'Hanoi · Ninh Bình · Sapa', accent:'#C99A4E',
+    { n:7, dow:'Tue', date:'29 Sep', y:2026, mo:9, d:29, phase:'VIETNAM', title:'Ninh Bình — the karst day', accent:'#C99A4E',
       blocks:[
-        { time:'28–29', icon:'map-pin', title:'Hanoi — Old Quarter base', detail:'Hoàn Kiếm loop · Train Street · Tạ Hiện · egg coffee at Giang · Ninh Bình day trip (Hoa Lư, Múa, Tràng An)' },
-        { time:'30', icon:'train-front', title:'Full Hanoi day → night train', detail:'Old Quarter deep walk · Trấn Quốc sunset · 22:00 sleeper to Lào Cai, lower berth' },
-        { time:'1–3', icon:'mountain', title:'Sapa — three days on foot', detail:'Fansipan on the first clear morning · Cát Cát + Moana (the rainbow slide) · Lao Chai–Tả Van trek · O Quy Hồ road + glass bridge' },
-        { time:'4', icon:'bus', title:'Limousine van back to Hanoi', detail:'13:30 → 19:30 · shower + real bed beats a second night train' },
-        { time:'5', icon:'coffee', title:'Final Hanoi day', detail:'Long Biên bridge sunrise · mop-up + gifts · chả cá farewell dinner' },
-        { time:'', icon:'map', title:'Full Vietnam guide — coming', detail:'This card is the placeholder; the VN tab lands next, same treatment as Malaysia' },
+        { t:'07:30', tz:7, time:'07:30', icon:'bus', title:'Tour pickup (window 07:20–08:00)', detail:'Small-group limousine $40–55, booked free-cancel · ~2h south · this is the trip\u2019s weather-flex day' },
+        { t:'09:45', tz:7, time:'09:45', icon:'landmark', title:'Hoa Lư ancient capital', detail:'10th-century capital under the cliffs · 45 min, the aperitif' },
+        { t:'11:15', tz:7, time:'11:15', icon:'mountain', title:'Múa viewpoint — 500 steps', detail:'The dragon ridge over Tam Cốc · slow pace, water, hat · the day\u2019s postcard' },
+        { t:'14:00', tz:7, time:'14:00', icon:'sailboat', title:'Tràng An — 3h rowed boat', detail:'Caves + lagoons, rowed by local women (often by feet) · SPF + hat + waterproof pouch · tip the rower 50k' },
+        { t:'19:15', tz:7, time:'19:15', icon:'coffee', title:'Back → egg coffee at Giang', detail:'39 Nguyễn Hữu Huân, the inventor\u2019s family — order it hot · early night, two big days banked' },
       ]},
-    { n:8, dow:'Tue', date:'06 Oct', y:2026, mo:10, d:6, phase:'HOME RUN', title:'Hanoi → KL → Mitsui', accent:'#9C4F2E',
+    { n:8, dow:'Wed', date:'30 Sep', y:2026, mo:9, d:30, phase:'VIETNAM', title:'Hanoi deep day → night train', accent:'#C99A4E',
       blocks:[
-        { t:'13:19', tz:7, time:'13:19', icon:'plane-takeoff', title:'MH753 → KL 16:40', detail:'Lands T1 · 30kg included · MDAC #2 filed from Vietnam days before' },
-        { t:'17:45', time:'17:45', icon:'shopping-bag', title:'Mitsui Outlet Park', detail:'Grab 10 min RM10–15 · outlets till 22:00: sports factory stores → Coach → rest · Nader meets you here with the stored bag' },
+        { t:'07:30', tz:7, time:'07:30', icon:'utensils', title:'Phở Gia Truyền — 49 Bát Đàn', detail:'The queue one · cash, brisk line, brisket · breakfast at Hanoi tempo' },
+        { t:'08:30', tz:7, time:'08:30', icon:'footprints', title:'Old Quarter deep walk', detail:'Hàng Mã lanterns → Ô Quan Chưởng gate → Đồng Xuân market → Phùng Hưng murals · guild streets still selling their names' },
+        { t:'11:30', tz:7, time:'11:30', icon:'utensils', title:'Bánh cuốn lunch', detail:'Silky steamed rolls (usually pork-mushroom; egg/shrimp versions exist)' },
+        { t:'14:00', tz:7, time:'14:00', icon:'landmark', title:'Trấn Quốc Pagoda + West Lake', detail:'Grab 15 min · Hanoi\u2019s oldest pagoda on its causeway · free, knees/shoulders covered · lakeside stroll' },
+        { t:'16:30', tz:7, time:'16:30', icon:'door-open', title:'Hotel — the arranged shower + repack', detail:'Layers OUT for Sapa (15–25°C) · pouch + SPF stay in · bags to go' },
+        { t:'18:30', tz:7, time:'18:30', icon:'drama', title:'Water puppets (if not Monday)', detail:'Thăng Long theatre · ~50 min, from 100k, ticket bought a day ahead · else: pre-train massage' },
+        { t:'21:00', tz:7, time:'21:00', icon:'train-front', title:'Board at Trần Quý Cáp gate', detail:'Grab 10 min · Chapa/Sapaly soft sleeper, LOWER berth · valuables beside your head, big bag under the berth' },
+        { t:'22:00', tz:7, time:'22:00', icon:'moon', title:'Lights out, wheels north', detail:'Earplugs + eye mask · most people sleep better than they expect · Lào Cai 05:30–06:25' },
+      ]},
+    { n:9, dow:'Thu', date:'01 Oct', y:2026, mo:10, d:1, phase:'VIETNAM', title:'Up the mountain — weather decides', accent:'#C99A4E',
+      blocks:[
+        { t:'05:45', tz:7, time:'05:45', icon:'train-front', title:'Lào Cai → van up the switchbacks', detail:'~1h, often bundled with the ticket (else 100–150k) · groggy is normal' },
+        { t:'07:15', tz:7, time:'07:15', icon:'coffee', title:'Sapa — bag drop, breakfast, SKY CHECK', detail:'Room not ready, fine · the iron rule: Fansipan goes to the first clear morning — and weekdays cost 850k vs 900k Saturdays' },
+        { t:'08:30', tz:7, time:'08:30', icon:'mountain', title:'CLEAR → Fansipan · CLOUD → Cát Cát + parks', detail:'Fansipan: cable 850k (20 min over the valley), summit 3,143m, cold, 3–4h · Cloudy flip: Cát Cát 150k cash walk-down (taxi back 100–150k) + Sapa Green Valley rainbow slide 90–120k + Moana 80–90k before 15:00 light' },
+        { t:'15:00', tz:7, time:'15:00', icon:'bed-double', title:'Check in properly · sanctioned nap', detail:'One hour, alarm set, zero guilt — train sleep is partial' },
+        { t:'17:30', tz:7, time:'17:30', icon:'flame', title:'Market skewers or salmon hotpot', detail:'Grill-your-pick (mixed meats — point and ask) · the cold-water salmon/sturgeon hotpot is legit, not a trap · sunset 17:50' },
+      ]},
+    { n:10, dow:'Fri', date:'02 Oct', y:2026, mo:10, d:2, phase:'VIETNAM', title:'The terraces on foot', accent:'#C99A4E',
+      blocks:[
+        { t:'09:00', tz:7, time:'09:00', icon:'footprints', title:'Lao Chai → Tả Van trek', detail:'Local Hmong guide via hotel: group 500–750k incl lunch + van back · private 520–730k · 4–5h, mostly downhill through harvest-gold terraces — the day the trip is for' },
+        { t:'14:30', tz:7, time:'14:30', icon:'car-front', title:'Van back to town', detail:'Included with the trek' },
+        { t:'16:00', tz:7, time:'16:00', icon:'heart-pulse', title:'Red Dao herbal bath + massage', detail:'Medicinal-leaf soak ~150–350k, massage after · scheduled physio, not indulgence' },
+        { t:'18:30', tz:7, time:'18:30', icon:'coffee', title:'Viewpoint café + slow dinner', detail:'Viettrekking Café or any Mường Hoa-facing terrace for blue hour' },
+      ]},
+    { n:11, dow:'Sat', date:'03 Oct', y:2026, mo:10, d:3, phase:'VIETNAM', title:'The pass road', accent:'#C99A4E',
+      blocks:[
+        { t:'08:30', tz:7, time:'08:30', icon:'car-front', title:'Taxi loop out O Quy Hồ', detail:'No Grab in Sapa — hotel phones the driver · agree the full loop with waiting up front: ~500–700k' },
+        { t:'09:00', tz:7, time:'09:00', icon:'waves', title:'Silver Waterfall', detail:'20k to climb the path · 30–40 min' },
+        { t:'10:00', tz:7, time:'10:00', icon:'mountain', title:'Heaven\u2019s Gate — O Quy Hồ viewpoint', detail:'Top of one of Vietnam\u2019s four great passes · wishlist item, ticked' },
+        { t:'11:00', tz:7, time:'11:00', icon:'diamond', title:'Rồng Mây glass bridge', detail:'500k incl the glass elevator up the cliff · 300m skywalk at 2,333m · vertigo is the product' },
+        { t:'15:00', tz:7, time:'15:00', icon:'sparkles', title:'Catch-up slot', detail:'Whatever weather stole: Fansipan-if-pending (accept Saturday\u2019s 900k), the photo parks, massage #2, or a café and nothing at all' },
+      ]},
+    { n:12, dow:'Sun', date:'04 Oct', y:2026, mo:10, d:4, phase:'VIETNAM', title:'Down into a real bed', accent:'#C99A4E',
+      blocks:[
+        { t:'09:00', tz:7, time:'09:00', icon:'coffee', title:'Lazy brunch · last wander · pack', detail:'Checkout, bags with reception' },
+        { t:'14:00', tz:7, time:'14:00', icon:'bus', title:'Hotel pickup → limousine van', detail:'Eco Sapa / Sapa Express 14:30–15:00 departure · $24–26 · 5.5–6h · booked days ahead (Golden Week Sunday fills)' },
+        { t:'20:30', tz:7, time:'20:30', icon:'bed-double', title:'Old Quarter — same hotel, stint two', detail:'Shower → one low-key lap: bánh mì, Tạ Hiện nightcap · the trip\u2019s hardest logistics are all behind you. (2nd night train stays wrong: 05:00 arrival, no room till 14:00.)' },
+      ]},
+    { n:13, dow:'Mon', date:'05 Oct', y:2026, mo:10, d:5, phase:'VIETNAM', title:'Full final Hanoi', accent:'#C99A4E',
+      blocks:[
+        { t:'06:15', tz:7, time:'06:15', icon:'camera', title:'Long Biên bridge at sunrise', detail:'The rusted 1902 rail bridge over the Red River · pedestrian lane, motorbike river, best light before 07:00 · hidden-gem grade, free' },
+        { t:'07:30', tz:7, time:'07:30', icon:'utensils', title:'Xôi breakfast', detail:'Savory sticky rice — Xôi Yến or any queued cart' },
+        { t:'09:00', tz:7, time:'09:00', icon:'landmark', title:'Mop-up block', detail:'Whatever Monday-one missed: Ngọc Sơn 30k · Train Street retry (evening ~19:50 is the reliable slot) · Hỏa Lò Prison ~50k — the best indoor hour in Hanoi' },
+        { t:'12:00', tz:7, time:'12:00', icon:'utensils', title:'Phở cuốn in Ngũ Xã', detail:'Fresh rice-sheet beef rolls in the island neighborhood locals keep quiet · 15-min Grab, worth it' },
+        { t:'14:00', tz:7, time:'14:00', icon:'shopping-bag', title:'Silk + gifts', detail:'Hàng Gai silk · craft shops · Giang\u2019s coffee mix as the take-home' },
+        { t:'17:00', tz:7, time:'17:00', icon:'file-warning', title:'MDAC #2 — file it now', detail:'Malaysia re-entry card for tomorrow · official portal, free, 5 minutes · the ≤3-day window is open' },
+        { t:'19:00', tz:7, time:'19:00', icon:'utensils-crossed', title:'Farewell: chả cá + egg coffee round two', detail:'Turmeric fish + dill on a tabletop brazier — Hanoi\u2019s own dish (Chả Cá Thăng Long ~200–300k) · pack tonight' },
+      ]},
+    { n:14, dow:'Tue', date:'06 Oct', y:2026, mo:10, d:6, phase:'HOME RUN', title:'Hanoi → KL → Mitsui', accent:'#9C4F2E',
+      blocks:[
+        { t:'07:30', tz:7, time:'07:30', icon:'utensils', title:'Last phở, slow', detail:'Spend down the small đồng · keep ~200k for airport water' },
+        { t:'09:45', tz:7, time:'09:45', icon:'car-front', title:'Grab → Noi Bai T2 international', detail:'45–60 min · ~300k · bag drop by 10:45' },
+        { t:'13:05', tz:7, time:'13:05', icon:'plane-takeoff', title:'MH753 → KL 17:30', detail:'30kg included absorbs the gift haul · lands T1 · MDAC #2 already filed' },
+        { t:'18:30', time:'18:30', icon:'shopping-bag', title:'Mitsui Outlet 18:30–21:30', detail:'Grab 10 min RM10–15 · sports factory stores → Coach → the rest · Nader meets you here with the stored bag' },
         { t:'21:45', time:'21:45', icon:'bed-double', title:'Sama-Sama Hotel', detail:'Not the terminal floor — 13h travel day tomorrow after 14 days moving · repack for the 2-piece QR allowance' },
       ]},
-    { n:9, dow:'Wed', date:'07 Oct', y:2026, mo:10, d:7, phase:'TRAVEL HOME', title:'Departure', accent:'#3C4B3E',
+    { n:15, dow:'Wed', date:'07 Oct', y:2026, mo:10, d:7, phase:'TRAVEL HOME', title:'Departure', accent:'#3C4B3E',
       blocks:[
         { t:'06:45', time:'06:45', icon:'bus', title:'Shuttle to T1', detail:'24/7 hotel shuttle, 5 min · QR bag drop' },
         { t:'09:30', time:'09:30', icon:'plane-takeoff', title:'QR845 → Doha → Cairo', detail:'Home 17:50 · ref HV9TBJ · done properly' },
       ]},
   ];
 
-  // Late-September KL approximations; local apps are exact. Shift ~1 min/week.
-  PRAYERS = [
+  // Approximations for the trip window; local apps are exact. Shift ~1 min/week.
+  PRAYERS_KL = [
     { name:'Fajr',    time:'05:55', sub:'', begins:'', icon:'sunrise', H:5,  M:55 },
     { name:'Syuruk',  time:'07:03', sub:'sunrise', begins:'', icon:'sun', H:7, M:3, info:true },
     { name:'Dhuhr',   time:'13:03', sub:'Fri: Jumu’ah', begins:'', icon:'sun', H:13, M:3 },
     { name:'Asr',     time:'16:14', sub:'', begins:'', icon:'cloud-sun', H:16, M:14 },
     { name:'Maghrib', time:'19:08', sub:'sunset', begins:'', icon:'sunset', H:19, M:8 },
     { name:'Isha',    time:'20:17', sub:'', begins:'', icon:'moon', H:20, M:17 },
+  ];
+  PRAYERS_VN = [
+    { name:'Fajr',    time:'04:35', sub:'', begins:'', icon:'sunrise', H:4,  M:35 },
+    { name:'Sunrise', time:'05:45', sub:'sunrise', begins:'', icon:'sun', H:5, M:45, info:true },
+    { name:'Dhuhr',   time:'11:47', sub:'Fri: Jumu’ah', begins:'', icon:'sun', H:11, M:47 },
+    { name:'Asr',     time:'15:10', sub:'', begins:'', icon:'cloud-sun', H:15, M:10 },
+    { name:'Maghrib', time:'17:48', sub:'sunset', begins:'', icon:'sunset', H:17, M:48 },
+    { name:'Isha',    time:'18:57', sub:'', begins:'', icon:'moon', H:18, M:57 },
   ];
 
   KL_ZONES = [
@@ -1396,13 +1750,13 @@ class Component extends DCLogic {
     ]},
     { cat:'Luggage plan', icon:'luggage', note:'The split is the system — get it right on Saturday night.', items:[
       ['Big bag: packed for Nader by Sun evening','Everything not needed in Vietnam + Thursday–Sunday purchases'],
-      ['Cabin bag: 8 days of Vietnam','Airline limit 7kg cabin; 20kg checked bought on AK512'],
+      ['Cabin bag: 8 days of Vietnam','MH cabin 7kg; the 30kg checked allowance rides both MH752 and MH753'],
       ['Foldable duffel / tote','Mitsui haul on 6 Oct needs somewhere to live'],
       ['Zip-locks + packing cubes',''],['Confirm Nader: Sun 27 eve + Tue 6 eve','Fork #5 — fallback is KLIA left luggage ~RM40–55/bag/day'],
     ]},
     { cat:'Before you fly — to-dos', icon:'list-checks', note:'', items:[
       ['Vietnam e-visa applied — TODAY','evisa.gov.vn only · entry date 26 Sep · $25'],['MDAC #1 filed','21–23 Sep window'],
-      ['AK512 + MH753 booked','airasia.com + malaysiaairlines.com direct'],['KL Tower slot booked','~18:30, Sun 27 Sep'],
+      ['MH752 + MH753 booked','malaysiaairlines.com direct — 09:35 out, 13:05 back'],['KL Tower slot booked','~18:30, Sun 27 Sep'],
       ['KLIA hotel booked for 6 Oct','Sama-Sama or CapsuleTransit'],['Bank told: Malaysia + Vietnam + Qatar',''],
       ['eSIM installed or KLIA counter plan',''],['Grab app + card linked','Works in both countries'],['Print everything','Paper survives dead batteries'],
     ]},
@@ -1413,8 +1767,8 @@ class Component extends DCLogic {
     // — Bookings & travel —
     { n:'Flights out — QR1304 + QR844', a:'Travel', c:'booking', p:'booked', cost:'Wed 23 Sep 14:10' },
     { n:'Flights home — QR845 + QR1301', a:'Travel', c:'booking', p:'booked', cost:'Wed 7 Oct 09:30' },
-    { n:'AK512 KUL→HAN + 20kg bag', a:'Travel', c:'booking', p:'open', cost:'Mon 28 Sep 12:10' },
-    { n:'MH753 HAN→KUL', a:'Travel', c:'booking', p:'open', cost:'Tue 6 Oct 13:19' },
+    { n:'MH752 KUL→HAN (30kg incl)', a:'Travel', c:'booking', p:'open', cost:'Mon 28 · 09:35' },
+    { n:'MH753 HAN→KUL (30kg incl)', a:'Travel', c:'booking', p:'open', cost:'Tue 6 · 13:05' },
     { n:'Vietnam e-visa (evisa.gov.vn)', a:'Travel', c:'booking', p:'open', cost:'$25 · apply NOW' },
     { n:'MDAC ×2 (each MY entry)', a:'Travel', c:'booking', p:'open', cost:'Free · ≤3 days before' },
     { n:'Conference hotel (Cyberjaya) — 3 nts', a:'Putrajaya', c:'booking', p:'booked', cost:'24–27 Sep · covered' },
@@ -1477,6 +1831,41 @@ class Component extends DCLogic {
     { n:'SplashMania with the group', a:'Putrajaya', c:'event', p:'booked', cost:'Sat 14–20' },
     { n:'AI@MMU session', a:'Putrajaya', c:'event', p:'booked', cost:'Fri 14–18' },
     { n:'Cyberjaya mamak night', a:'Putrajaya', c:'food', p:'must', cost:'RM5–10' },
+    // — Hanoi —
+    { n:'Hoàn Kiếm + Ngọc Sơn Temple', a:'Hanoi', c:'attr', p:'must', cost:'30k₫' },
+    { n:'Train Street (~19:50 pass)', a:'Hanoi', c:'exp', p:'must', cost:'a drink' },
+    { n:'Water puppets — Thăng Long', a:'Hanoi', c:'event', p:'must', cost:'100–200k' },
+    { n:'Tạ Hiện beer-street stools', a:'Hanoi', c:'exp', p:'must', cost:'15k/glass' },
+    { n:'Old Quarter deep walk + Ô Quan Chưởng', a:'Hanoi', c:'exp', p:'must', cost:'Free' },
+    { n:'Trấn Quốc Pagoda + West Lake', a:'Hanoi', c:'attr', p:'rec', cost:'Free' },
+    { n:'Long Biên bridge at sunrise', a:'Hanoi', c:'exp', p:'rec', cost:'Free' },
+    { n:'Hỏa Lò Prison museum', a:'Hanoi', c:'attr', p:'rec', cost:'~50k' },
+    { n:'Note Coffee (sticky notes)', a:'Hanoi', c:'coffee', p:'rec', cost:'~50k' },
+    { n:'Egg coffee — Cafe Giang ×2', a:'Hanoi', c:'coffee', p:'must', cost:'~35k' },
+    { n:'Phở Gia Truyền, 49 Bát Đàn', a:'Hanoi', c:'food', p:'must', cost:'50–60k' },
+    { n:'Bún chả (Đắc Kim / Hàng Quạt) — pork', a:'Hanoi', c:'food', p:'must', cost:'~60k' },
+    { n:'Chả cá Thăng Long — farewell', a:'Hanoi', c:'food', p:'rec', cost:'200–300k' },
+    { n:'Phở cuốn in Ngũ Xã', a:'Hanoi', c:'food', p:'rec', cost:'~80k' },
+    { n:'Bánh Mì 25 · bánh cuốn · xôi', a:'Hanoi', c:'food', p:'opt', cost:'25–50k' },
+    { n:'Al-Noor Mosque, 12 Hàng Lược', a:'Hanoi', c:'prayer', p:'info', cost:'Free' },
+    { n:'Ninh Bình tour (Hoa Lư · Múa · Tràng An)', a:'Hanoi', c:'booking', p:'open', cost:'$40–55 · Tue 29' },
+    { n:'Night train — Chapa/Sapaly, LOWER berth', a:'Travel', c:'booking', p:'open', cost:'$45–55 · Wed 30' },
+    { n:'Hanoi hotel ×4 nts (both stints)', a:'Hanoi', c:'booking', p:'open', cost:'$25–90/nt' },
+    // — Sapa —
+    { n:'Fansipan cable car', a:'Sapa', c:'attr', p:'must', cost:'850k wkday · 900k Sat' },
+    { n:'Lao Chai–Tả Van trek + Hmong guide', a:'Sapa', c:'exp', p:'must', cost:'500–750k' },
+    { n:'Cát Cát village walk-down', a:'Sapa', c:'attr', p:'must', cost:'150k cash' },
+    { n:'Rồng Mây glass bridge', a:'Sapa', c:'attr', p:'rec', cost:'500k' },
+    { n:'Silver Waterfall', a:'Sapa', c:'attr', p:'rec', cost:'20k' },
+    { n:'Heaven’s Gate — O Quy Hồ', a:'Sapa', c:'attr', p:'rec', cost:'Free-ish' },
+    { n:'Rainbow slide — Sapa Green Valley', a:'Sapa', c:'exp', p:'rec', cost:'90–120k' },
+    { n:'Moana Sapa photo park', a:'Sapa', c:'exp', p:'opt', cost:'80–90k' },
+    { n:'Red Dao herbal bath + massage', a:'Sapa', c:'exp', p:'rec', cost:'150–350k +' },
+    { n:'Salmon/sturgeon hotpot', a:'Sapa', c:'food', p:'rec', cost:'share-size' },
+    { n:'Market skewers (point & ask)', a:'Sapa', c:'food', p:'opt', cost:'10–30k/stick' },
+    { n:'Thắng cố (horse stew) — skip', a:'Sapa', c:'food', p:'info', cost:'—' },
+    { n:'Sapa hotel ×3 nts — valley view', a:'Sapa', c:'booking', p:'open', cost:'BOOK NOW · $40–80' },
+    { n:'Sapa→Hanoi van Sun 4 · 14:30', a:'Travel', c:'booking', p:'open', cost:'$24–26' },
   ];
 
   /* ---------- TIME HELPERS ---------- */
@@ -1672,11 +2061,14 @@ class Component extends DCLogic {
         : (i < idx ? '#C99A4E' : (i===idx && onDay ? 'var(--accent,#B5653F)' : '#E0D7C4'))
     }));
 
-    // prayers state
+    // prayers state — Hanoi times during the Vietnam phase, KL otherwise
+    const inVN = idx >= 5 && idx <= 12;
+    const PRAY = inVN ? this.PRAYERS_VN : this.PRAYERS_KL;
+    const prayerCity = inVN ? 'HANOI · ICT' : 'KUALA LUMPUR · MYT';
     let nextName = null;
-    for (const p of this.PRAYERS) { if (!p.info && (p.H*60+p.M) > nowMin) { nextName = p.name; break; } }
+    for (const p of PRAY) { if (!p.info && (p.H*60+p.M) > nowMin) { nextName = p.name; break; } }
     if (!nextName) nextName = 'Fajr';
-    const prayers = this.PRAYERS.map(p => {
+    const prayers = PRAY.map(p => {
       const isNext = p.name === nextName && !p.info && onDay;
       return {
         name:p.name, time:p.time, sub:p.sub, icon:p.icon, isNext,
@@ -1689,19 +2081,19 @@ class Component extends DCLogic {
 
     // phase-of-trip weather framing (live card above is the real data)
     let weather;
-    if (idx <= 5) weather = { tag:'EQUATORIAL STANDARD', temp:'33°', headline:'hot, humid, storm-prone', detail:'24–33°C every day, humidity ~80%. Storm window 15:00–18:00 — every day in this guide carries an indoor fallback. Sunset ~19:06.', icon:'cloud-sun', grad:'linear-gradient(135deg,#D98B3F,var(--accent,#B5653F))', shadow:'rgba(181,101,63,.6)' };
-    else if (idx === 6) weather = { tag:'VIETNAM INTERLUDE', temp:'30°', headline:'Hanoi hot · Sapa cool', detail:'Hanoi ~32/25°C and sticky; Sapa 15–25°C — the one place the warm layer earns its seat. Typhoon remnants can clip Ninh Bình — that day flexes.', icon:'cloud-sun-rain', grad:'linear-gradient(135deg,#6E8B7E,#3C4B3E)', shadow:'rgba(60,75,62,.55)' };
+    if (idx <= 4) weather = { tag:'EQUATORIAL STANDARD', temp:'33°', headline:'hot, humid, storm-prone', detail:'24–33°C every day, humidity ~80%. Storm window 15:00–18:00 — every day in this guide carries an indoor fallback. Sunset ~19:06.', icon:'cloud-sun', grad:'linear-gradient(135deg,#D98B3F,var(--accent,#B5653F))', shadow:'rgba(181,101,63,.6)' };
+    else if (idx <= 12) weather = { tag:'VIETNAM', temp:'30°', headline:'Hanoi hot · Sapa cool', detail:'Hanoi 25–33°C and sticky; Sapa 15–25°C — the one place the warm layer earns its seat. The north improves through October; typhoon remnants can still clip Ninh Bình — that day flexes. Sunset ~17:45.', icon:'cloud-sun-rain', grad:'linear-gradient(135deg,#6E8B7E,#3C4B3E)', shadow:'rgba(60,75,62,.55)' };
     else weather = { tag:'HOME RUN', temp:'33°', headline:'one more hot one', detail:'Same KL heat for the Mitsui evening, then 13 hours of aircon home. Cairo will feel dry and cold by comparison.', icon:'thermometer-sun', grad:'linear-gradient(135deg,#C99A4E,#9A8A4E)', shadow:'rgba(154,138,78,.55)' };
 
     // today events
     let todayEvents;
-    if (idx <= 5) todayEvents = [
+    if (idx <= 4) todayEvents = [
       { title:'Lake Symphony runs nightly', meta:'KLCC park fountains every ~30 min, 20:00–22:00 — Sunday catches one under the towers', icon:'sparkles', tint:'var(--accent,#B5653F)' },
       { title:'Pasar Minggu is Saturday night', meta:'Kampung Baru’s "Sunday market" runs Sat eve — the name lies; Sunday dinner is stalls, not the market', icon:'store', tint:'#5E7257' },
     ];
     else todayEvents = [
       { title:'Golden Week — Oct 1–7', meta:'China’s holiday floods Sapa exactly on your dates · beds + train booked ahead, Fansipan at the 07:30 first car', icon:'users', tint:'#A23E48' },
-      { title:'Mitsui open till 22:00', meta:'Tue 6 Oct: land 16:40, shop 17:45–21:30, Nader brings the stored bag', icon:'shopping-bag', tint:'#C99A4E' },
+      { title:'Mitsui open till 22:00', meta:'Tue 6 Oct: land 17:30, shop ~18:30–21:30, Nader brings the stored bag', icon:'shopping-bag', tint:'#C99A4E' },
     ];
 
     const nm = this._nextMoment();
@@ -1818,7 +2210,7 @@ class Component extends DCLogic {
     const dbDone = this.state.dbDone;
     const CATLABEL = { exp:'Experiences', attr:'Attractions', food:'Food', coffee:'Coffee', market:'Markets', shop:'Shopping', event:'Events', prayer:'Prayer', daytrip:'Day trips', booking:'Bookings' };
     const PRI = { must:['Must-do','background:#F7E9DF;color:var(--accent,#B5653F)'], rec:['Recommended','background:#EAEFE5;color:#5E7257'], opt:['Optional','background:#F1ECDF;color:#9C8A5E'], booked:['Booked ✓','background:#E2EEDD;color:#3C7A4E'], open:['Open item','background:#F6EDD9;color:#A77D2E'], info:['Note','background:#EDE7DA;color:#9C9486'] };
-    const areaStyle = a => a==='Putrajaya' ? 'background:#EAEFE5;color:#5E7257' : a==='KL' ? 'background:#F7E9DF;color:var(--accent,#B5653F)' : 'background:#ECE5D6;color:#8A7E66';
+    const areaStyle = a => a==='Putrajaya' ? 'background:#EAEFE5;color:#5E7257' : a==='KL' ? 'background:#F7E9DF;color:var(--accent,#B5653F)' : a==='Hanoi' ? 'background:#F9E6E9;color:#A23E48' : a==='Sapa' ? 'background:#E6EDF4;color:#3A5A8C' : 'background:#ECE5D6;color:#8A7E66';
     const allRows = this.MASTER.map((m,i) => {
       const id = 'db'+i, done2 = !!dbDone[id], pr = PRI[m.p]||PRI.info;
       return { id, name:m.n, area:m.a, areaStyle:areaStyle(m.a), cat:CATLABEL[m.c]||m.c, catKey:m.c, cost:m.cost||'', hasCost:!!m.cost,
@@ -1828,7 +2220,7 @@ class Component extends DCLogic {
     });
     const dbRows = allRows.filter(r => (fArea==='all'||r.area===fArea) && (fCat==='all'||r.catKey===fCat) && (!dq || r.name.toLowerCase().includes(dq) || r.cat.toLowerCase().includes(dq) || r.area.toLowerCase().includes(dq)));
     const dbVisited = allRows.filter(r => r.done).length;
-    const dbAreaChips = [['all','All'],['KL','KL'],['Putrajaya','Putrajaya'],['Travel','Travel']].map(([k,l]) => ({ k, l, active:fArea===k, go:()=>this.setDbArea(k),
+    const dbAreaChips = [['all','All'],['KL','KL'],['Putrajaya','Putra'],['Hanoi','Hanoi'],['Sapa','Sapa'],['Travel','Travel']].map(([k,l]) => ({ k, l, active:fArea===k, go:()=>this.setDbArea(k),
       style: fArea===k ? 'background:#2B2722;color:#fff;border-color:#2B2722' : 'background:rgba(251,247,238,.8);color:#5E5749;border-color:#E0D7C4' }));
     const dbCatChips = ['all','exp','attr','food','coffee','market','shop','event','prayer','booking'].map(k => ({ k, l: k==='all'?'All':CATLABEL[k], active:fCat===k, go:()=>this.setDbCat(k),
       style: fCat===k ? 'background:var(--accent,#B5653F);color:#fff;border-color:var(--accent,#B5653F)' : 'background:rgba(251,247,238,.8);color:#5E5749;border-color:#E0D7C4' }));
@@ -1845,6 +2237,22 @@ class Component extends DCLogic {
       { label:'Travel', go:J('ess-travel') },
       { label:'Money', go:J('ess-money') },
       { label:'Contacts', go:J('ess-contacts') },
+    ];
+    const hnNav = [
+      { label:'Arrival kit', go:J('hn-kit') },
+      { label:'Old Quarter', go:J('hn-oq') },
+      { label:'Ninh Bình', go:J('hn-nb') },
+      { label:'Food', go:J('hn-food') },
+      { label:'Street smarts', go:J('hn-street') },
+      { label:'Nights', go:J('hn-night') },
+    ];
+    const spNav = [
+      { label:'The menu', go:J('sp-menu') },
+      { label:'Fansipan', go:J('sp-fansipan') },
+      { label:'The trek', go:J('sp-trek') },
+      { label:'Pass road', go:J('sp-pass') },
+      { label:'Photo parks', go:J('sp-parks') },
+      { label:'Up & down', go:J('sp-updown') },
     ];
     const baseNav = [
       { label:'Experiences', go:J('base-exp') },
@@ -1869,18 +2277,22 @@ class Component extends DCLogic {
       { label:'Full itinerary', icon:'calendar-days', tint:'var(--accent,#B5653F)', go:()=>this.go('itinerary') },
       { label:'Putrajaya base', icon:'landmark', tint:'#5E7257', go:()=>this.go('base') },
       { label:'KL zones', icon:'tower-control', tint:'#9C4F2E', go:()=>this.go('kl') },
+      { label:'Hanoi guide', icon:'lamp', tint:'#A23E48', go:()=>this.go('hanoi') },
+      { label:'Sapa mountains', icon:'mountain', tint:'#3A5A8C', go:()=>this.go('sapa') },
       { label:'Essentials & packing', icon:'briefcase', tint:'#C99A4E', go:()=>this.go('essentials') },
     ];
 
     const navDef = [
-      { key:'itinerary', label:'Itinerary', icon:'calendar-days' },
+      { key:'itinerary', label:'Plan', icon:'calendar-days' },
       { key:'base', label:'Putrajaya', icon:'landmark' },
-      { key:'today', label:'Today', icon:'sparkles' },
       { key:'kl', label:'KL', icon:'tower-control' },
-      { key:'essentials', label:'Essentials', icon:'compass' },
+      { key:'today', label:'Today', icon:'sparkles' },
+      { key:'hanoi', label:'Hanoi', icon:'lamp' },
+      { key:'sapa', label:'Sapa', icon:'mountain' },
+      { key:'essentials', label:'Info', icon:'compass' },
     ];
     const navItems = navDef.map((n,i) => ({
-      label:n.label, icon:n.icon, active:tab===n.key, center:i===2, notCenter:i!==2,
+      label:n.label, icon:n.icon, active:tab===n.key, center:i===3, notCenter:i!==3,
       color: tab===n.key ? 'var(--accent,#B5653F)' : '#A89E8C',
       go:()=>this.go(n.key),
     }));
@@ -1888,7 +2300,7 @@ class Component extends DCLogic {
     const phasePrefix = info.mode==='gap' ? 'NEXT UP · ' : (info.mode==='before' ? 'FIRST UP · ' : (info.mode==='after' ? 'DONE · ' : ''));
 
     return {
-      isToday: tab==='today', isItin: tab==='itinerary', isBase: tab==='base', isKL: tab==='kl', isEss: tab==='essentials',
+      isToday: tab==='today', isItin: tab==='itinerary', isBase: tab==='base', isKL: tab==='kl', isHN: tab==='hanoi', isSP: tab==='sapa', isEss: tab==='essentials',
       tab, clockRef:this.clockRef, cdRef:this.cdRef, tzRef:this.tzRef, cdLabel,
       wxClockRef:this.wxClockRef, wx, wxLoading:this.state.wxLoading, wxErr:this.state.wxErr, wxUpdated,
       wxSkeleton: this.state.wxLoading && !W && !this.state.wxErr,
@@ -1904,7 +2316,7 @@ class Component extends DCLogic {
       dots, prayers, weather, todayEvents, quickLinks, navItems,
       todayBlocks: today.blocks,
       goItin: ()=>this.go('itinerary'),
-      itinDays, baseNav, klNav, klZones, essNav, packing, packPctW, packPct, packDone, packTotal,
+      itinDays, baseNav, klNav, klZones, hnNav, spNav, essNav, prayerCity, packing, packPctW, packPct, packDone, packTotal,
       hideImg,
       showImg: (e)=>{ try { e.currentTarget.style.opacity='1'; } catch(_){} },
     };
