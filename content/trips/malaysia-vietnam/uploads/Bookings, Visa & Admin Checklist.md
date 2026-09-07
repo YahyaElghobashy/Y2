@@ -135,3 +135,77 @@
 **Still unverified:** whether Nguyễn Hữu Huân / Hàng Mắm / Hàng Bạc are drivable at 20:00 Sunday (this is the whole 200 m vs 450 m difference — the binding boundary lives in a map annexed to Quyết định 3273/QĐ-UBND that isn't published in press text) · what Sapa Express/Eco Sapa actually do now for weekend-evening arrivals since 1 Jul 2026 · whether the hotel will meet you at the barrier · whether the LEZ pilot runs unmodified through October · whether electric buggies or cyclos may enter during the window (LEZ text bans "ô tô các loại" with no published carve-out — assume not).
 
 **Correction worth carrying:** **Vietnam has no early-October public holiday.** "Golden Week" here is the *Chinese* National Day holiday (1–7 Oct) driving inbound tourists — it affects crowd density, hotel demand and van punctuality, but it has **zero effect on the legal geography of the zone**.
+
+## 12. ⚠️ E-VISA NAME TYPO — live issue, opened 7 Sep 2026
+
+**Application `E260905EGYA4487883101`, submitted 5 Sep, status "Processing".**
+Given name submitted as **`YAHYA ABDELMOEN YAHIA`**. Passport MRZ reads **`YAHYA ABDELMONEM YAHIA`**. Surname, passport no. A44878831, DOB 27/03/1999, nationality all CORRECT. Note: `50-evisa-fill-sheet.md` line 9 has the spelling RIGHT — the typo was introduced at data entry into the portal. **Use that sheet verbatim for any resubmission.**
+
+**Severity — real, not "probably fine."** evisa.gov.vn's own FAQ requires the name **"exactly as it appears on the ICAO line in your passport"** (= the MRZ). Law 47/2014/QH13 Art. 20(1)/21(1)/22(1): entry requires a valid visa, and suspension of entry is a **discretionary call by the officer at the desk** — nothing compels refusal, nothing compels tolerance. Documented outcomes for *less* severe defects (missing middle name): **denied boarding departing Malaysia, Dec 2023**; **refused at HCMC immigration Sep 2024** — both airlines had boarded her, immigration held her an hour, then sold an emergency visa for **$130 cash**. Timatic is a *rules* database, not a live link to Vietnam's visa system, so the boarding check is a human eyeballing the printout — which is why outcomes are inconsistent. **A coin flip, not a safety net.** Honest gap: every documented modern case is a *missing* name component; no letter-level misspelling with a recorded border outcome was found.
+
+**He CANNOT self-edit while "Processing."** Portal status enum (extracted from its own JS): TAO_MOI (unpaid) · **DANG_XU_LY (Processing)** · **YC_BS (Amendment required)** · CHAP_THUAN (Acceptance) · TU_CHOI (Denial) · HUY (Cancel). The edit link is gated on **YC_BS** — only Immigration can move it there. Amendments are then **free and effectively unlimited**.
+
+**The channel:** https://evisa.gov.vn/support → Type = **"Wrong application information"**, attach the passport data page (jpg/png, <2MB). Backup emails **foreigners@xuatnhapcanh.gov.vn** + **technical_support@immigration.gov.vn**. Hotline **02438257941**. (Only these are confirmed on the official portal; `foreigners@immigration.gov.vn` and `+84 69 2821 700` appear only on agency sites.)
+
+**CRITICAL OPERATIONAL POINT: amendment requests are often NOT emailed.** Check https://evisa.gov.vn/e-visa/search manually **2–3× daily** (app no. + registration email + DOB).
+
+**Hard decision point — Wed 9 Sep.** If status has not moved to "Amendment required" by end of Wednesday, **submit a second, correct application and pay the $25 again.** The one documented support-form success came back within 6 hours, so silence past ~48h means it isn't coming. A fresh application from Thu 10 Sep at 3–5 working days lands ~16–18 Sep — still meets the 17 Sep flight-booking target.
+
+**Duplicate-application risk is thin in BOTH directions.** No official rule either way; no client-side duplicate block in the portal's JS. The "both get suspended" claim traces **exclusively to commercial visa agencies selling expedite services** — treat as marketing. One first-person account: a traveller held two issued e-visas on one passport (one defective, one correct); **immigration rejected the defective one and accepted the valid one**.
+
+**IF IT ISSUES WITH THE TYPO — DO NOT TRAVEL ON IT.** An issued e-visa **cannot be amended**; the only remedy is a fresh application and a second $25. Issuance will feel like resolution. It is not. That is the trap.
+
+**No official expedited processing exists.** Nothing on evisa.gov.vn offers it. Agencies advertising "2-hour/24-hour e-visas" resell the same $25 government application — what they sell is chasing, not priority. **Don't pay one.** The Art. 18 visa-at-border route requires a *prior notice from the Immigration Department* and none of its six categories covers a typo; the $130 airport fix above was officer discretion, not an entitlement. **Do not plan around it.**
+
+**Timing context:** official stated time **3 working days** (immigration.gov.vn); community baseline 3–5, often longer; amended applications **restart the clock**. Vietnam's National Day closure was Sat 29 Aug – Wed 2 Sep, reopening Thu 3 Sep — he applied *after* reopening, so he may sit behind a queue but did not submit into the closure. **Two days elapsed is entirely normal and means nothing yet.**
+
+**Also do:** the pre-arrival declaration at https://prearrival.immigration.gov.vn — the portal "highly recommends" it. The digital arrival card is currently Tan Son Nhat only and encouraged, not mandatory — **not required at Noi Bai**.
+
+### 12b. REVISED 7 Sep after a second, source-level legal pass — REAPPLY TODAY, do not wait for Wed 9 Sep
+
+Three findings from the consolidated law (Văn bản hợp nhất 30/VBHN-VPQH, Công báo 1257+1258, 29-11-2023) and the portal's own content API overturn parts of §12:
+
+1. **DUPLICATE APPLICATIONS ARE EXPLICITLY PERMITTED BY THE IMMIGRATION DEPARTMENT.** Portal article BV0000000262, verbatim: *"If you submit and pay for a second application that is the same as the previous one, the Immigration Department will assume these are two separate applications, and the previous fee will not be refunded. **If both applications are approved, they will be equally valid.**"* This is the Department's own published text. The "both get suspended" warning was agency marketing, as suspected — but now it is not merely unsupported, it is **contradicted at source**. A fresh correct application is the **officially anticipated remedy**.
+2. **PROCESSING CAN RUN 3–15 WORKING DAYS, NOT 3–5.** Portal article BV0000000262: *"typically processed within 03 working days… **If the application needs to be verified by the Police Department, you will receive the results within 03 to 15 working days.**"* Weekends and holidays excluded. **This is why waiting is dangerous:** reapply Thu 10 Sep + a verification trigger = results ~1 Oct, i.e. AFTER the 28 Sep entry. Reapply Mon 7 Sep + verification = ~26 Sep. Starting the clock today buys the entire safety margin.
+3. **THE LAW DOES NOT MANDATE AN EXACT NAME MATCH.** Điều 21's refusal grounds do not include clerical error — the only name-related ground is Điều 21.3, *deliberate* falsification. Exact-match is an operational practice (the FAQ requires the name "exactly as it appears on the ICAO line"), not a statutory rule. So the legal position is weaker than §12 implied. **But** there is equally **no official correction, amendment or withdrawal mechanism anywhere in the law or the portal** — that silence, not a prohibition, is the real problem.
+
+**Boarding risk is HUMAN, not algorithmic.** Timatic is a rules database; it never receives the visa holder's name, and no link exists between any airline and Vietnam's visa records — the only official lookup needs registration code + email + DOB + captcha. The agency claim that "check-in systems are automated so the system will detect the mismatch" is **demonstrably false**. Carrier contracts all turn on the subjective *"documents do not appear to be in order"* (MH art. 14.2; AirAsia 6.5 — whose only named database is INTERPOL's stolen-document list; Vietjet 7.7; VNA 14.2), and ICAO Annex 9 §5.9/§5.14 make agents financially liable for an inadmissible passenger, so they are incentivised to be cautious.
+
+**Evidence conflict, stated honestly:** the first research pass found a Dec-2023 TripAdvisor report of denied boarding *departing Malaysia* for a missing middle name, and a Sep-2024 AARP-reported refusal at HCMC (US$130 emergency visa). The second pass, searching official and carrier sources, found **no documented case of denied boarding specifically for a Vietnam e-visa name mismatch**. Treat the risk as real but poorly quantified.
+
+**TWO MITIGATIONS FOR THE AIRPORT** (because the check is visual): print the e-visa PDF, **and** print the record from https://evisa.gov.vn/e-visa/search — that page shows exactly how the Department holds the name and is the only official verification a check-in agent can be shown.
+
+**Hotline discrepancy:** two numbers appear on the portal — **02438257941** and **0243.938.7320**. Try both.
+
+⚠️ **Fake domains to avoid:** `vietnamimmigration.com` (brands itself "official"), `evisavietnam.gov1.vn` (**gov1.vn is not a Vietnamese government domain**), `vietnamembassy-norway.org`, `vietnamconsulate-sydney.org`, `vietnam-visa.com`, `evisasvietnam.com`, `govietvisa.com`, `intimevisa.com`, `entryvn.com`. **The only genuine domains: `evisa.gov.vn`, `thithucdientu.gov.vn`, `xuatnhapcanh.gov.vn`, `immigration.gov.vn`.**
+
+### 12c. National Day backlog — NO EVIDENCE. Retracted (7 Sep, third pass)
+
+I twice cited a possible post-National-Day backlog as a reason for delay. **That is unsupported and I withdraw it.**
+- An **exhaustive** sweep of TripAdvisor's Vietnam forums — 238 thread pages covering ~19 Aug–7 Sep 2026, plus 158 more for 13–19 Aug — found **ZERO** posts about e-visa processing delays. The scan was validated against known-positive controls (it correctly re-found the February Tet delay threads), so this is a real negative, not a failed search.
+- **Every** "National Day 2026 backlog" claim found was written **before** the holiday by visa agencies selling expedited service (govietvisa, evisasvietnam "Expedite From $44", vietnamvisaeasy "USD 65–185", emergencyvisavietnam). Not one reports what actually happened.
+- Correction: 2 Sep 2026 was the **81st** anniversary — an ordinary year, **no military parade** (the 80th with the big parade was 2025). The 5-day break (Sat 29 Aug–Wed 2 Sep, reopening **Thu 3 Sep**) came from weekend + a swapped Monday, not an anniversary surge.
+
+**TET 2026 PRECEDENT — the closest analogue, and it is reassuring.** The Tet closure was *longer* (9 days, 14–22 Feb, reopening Mon 23 Feb) and did generate visible complaint threads. Yet: "60stevea" applied **15 Feb** — the day before the shutdown — and was approved **25 Feb, two working days after reopening**, saying *"it came through as expected."* Another applied 11 Feb and received it 23 Feb, the first day back. **A longer closure cleared in ~2 working days.**
+
+**Net:** the realistic timeline is more benign than §12b implied. The case for reapplying today rests **solely** on the documented **3–15 working-day police-verification window** — not on any backlog. That argument still holds, because the downside is missing the trip.
+
+**Blind spots, stated:** Reddit (r/VietNam, r/VietNamTravel) and FlyerTalk's 90-page Vietnam visa megathread were both bot-walled and unreadable. They are where the densest anecdote lives, so "no delay reports" is bounded by that. Two dated first-person datapoints exist for Jul 2026 (one self-contradictory, one an Iranian national subject to nationality-based scrutiny — not representative); **zero** for August; **zero** processing outcomes for September.
+
+### 12d. Traveller evidence, fourth pass (7 Sep) — reapply advice CONFIRMED; support form is a lottery ticket
+
+**DUPLICATES — SIX first-person accounts, 2018 → Jul 2026, of one passport holding two e-visa records. ZERO accounts of harm.** Two confirm a **completed border crossing**:
+- **u/ps4db, Apr 2026** (cleanest case — both visas for the *identical* period): *"I was debited for both applications and got 2 visas for the exact same period! Caused no issues with me entering/leaving."*
+- **u/thinkmew, 2018:** *"Got 2 e-visas before entering the country and everything worked out fine!"*
+- Also: u/Beginning-Avocado590 (Jan 2026) held two overlapping e-visas, both showing "accepted" — explicitly disproving the rumour that a new issue cancels the previous one. An Irish traveller (Jul 2026) submitted a second application while the first was still open; the system accepted it. u/Positive_Piano_3658 (Jul 2026): approved *"yes, twice."*
+- **No documented case anywhere of a duplicate being rejected, delayed, or corrupting the first.** The only sources claiming otherwise sell expedite services — and one of them (`vietnam-visa.org.vn`) actually says the opposite: *"you can apply for a new E-Visa while your initial application is still under process. Both E-Visas will be valid."*
+- Honest weakness: most of these were triggered by **payment failures** or were *deliberate* double-applications. Nobody documents duplicating against a *healthy* Processing application and reporting the effect on the first.
+- The scare story traces to a **2018** quote of the *then*-official FAQ (*"The previous e-Visa application will be cancelled once the new e-Visa is issued"*) — context was wanting to enter *before* your validity period, not duplicates generally. Current status unverifiable; no Wayback snapshot exists.
+
+**CORRECTING A PENDING APPLICATION YOURSELF — FIVE first-person reports of silence, 2018 → Aug 2026. ZERO successes.** One traveller's emails **bounced at the server** (u/KeyBudget398, 5 Aug 2026: *"all I get is an email after a day saying it got rejected by their server"*; also *"Can't get through to them via phone"*). Others: *"I emailed to no reply"* (Jul 2026), *"did not get a reply yet"* (Oct 2025), *"not expecting anything to come from it"* (Jul 2026). **Treat the traveller-initiated correction channel as functionally non-existent.** File it anyway — it's free — but do not build the plan on it.
+
+**THE AMENDMENT PATH IS REAL BUT ONLY *THEY* CAN OPEN IT.** When Immigration flags an application they email you and unlock editing, free. Verbatim from one such email (Oct 2024): status *"Amending"* — *"Please enter registration code, registration email and date of birth in E-visa search menu to update application. **No extra fees required.**"* That traveller got the visa before their flight. Corroborated repeatedly, **including an ICAO name correction resubmitted 16 Aug 2026**. One traveller amended five times before approval. ⚠️ Two caveats: flagged nationalities describe an endless amendment loop; and one traveller found the edit window had closed, showing "In Progress" with no update option.
+
+**Domain correction:** `evisa.xuatnhapcanh.gov.vn` is the **old** portal (moved 11/11/2024 to `evisa.gov.vn` / `thithucdientu.gov.vn`), but its `/lien-he` support form still resolves and is live, with a *"Wrong application information"* problem type.
+
+**Remaining gap:** TripAdvisor and FlyerTalk stayed hard-blocked. Four threads are the highest-value unread targets if ever needed — TripAdvisor `k14468085` ("Apply for a visa twice?"), `k13929602` ("Multiple E-Visas"), `k12088640`, and FlyerTalk's *Visa/VOA Info for Vietnam* p.99.
