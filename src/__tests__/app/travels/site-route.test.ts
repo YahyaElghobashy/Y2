@@ -133,6 +133,19 @@ describe("GET /travels/[tripId]/site/[[...path]]", () => {
     expect(res.headers.get("content-type")).toContain("text/markdown")
   })
 
+  it("serves a booking confirmation PDF with application/pdf", async () => {
+    single.mockResolvedValue({
+      data: { hosted_path: "malaysia-vietnam", kind: "hosted" },
+      error: null,
+    })
+    const res = await GET(
+      req(),
+      ctx("t2", ["uploads", "confirmations", "hanoi-eliana-premio-28-30-sep.pdf"])
+    )
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toBe("application/pdf")
+  })
+
   // ── Path-traversal guard ──
   it("404s a ../ traversal that escapes the content root", async () => {
     const res = await GET(req(), ctx("t1", ["..", "..", "..", "etc", "passwd"]))
