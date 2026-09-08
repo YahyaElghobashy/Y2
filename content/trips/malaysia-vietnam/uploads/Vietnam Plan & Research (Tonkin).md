@@ -18,14 +18,14 @@
 ## Structure (final)
 | Date | Sleep | Day |
 |---|---|---|
-| Mon 28 | Hanoi | Land 12:15 (MH752) · Hoàn Kiếm + Ngọc Sơn (30k) + Note Coffee · Train St ~19:50 pass · Tạ Hiện |
-| Tue 29 | Hanoi | Ninh Bình small-group limousine tour $40–55 (pickup 07:20–08:00, Hoa Lư → Múa 500 steps → Tràng An 3h boat, back ~19:15) · egg coffee Giang |
-| Wed 30 | **Night train** | Phở Bát Đàn · OQ deep walk · Trấn Quốc · shower @ hotel · puppets 18:30 (from 100k) · train 21:30–22:00 Trần Quý Cáp gate |
+| Mon 28 | Hanoi | MH752 COMMITTED, land 12:15 · land-and-launch (out 14:35) · **Phở 10 Lý Quốc Sư 15:00** (Bát Đàn = Wed AM) · Ngọc Sơn + Note · Train St ~19:50 · **Tạ Hiện stool session** · sleep 22:45 |
+| Tue 29 | Hanoi | NB limo tour $40–55 (lobby 07:15; front-row seat; **Múa full 500**; route = tour's; tip rower 50k; back ~19:15) · Giang egg coffee HOT · sleep 22:30 |
+| Wed 30 | **Night train** | Bát Đàn 07:30 · OQ arc walk · bánh cuốn · **BOTH: Hỏa Lò 14:00 + Trấn Quốc 15:15** (Hỏa Lò dies first if squeezed) · 16:45 shower/repack/picnic · puppets 18:30 · bún chả dinner + light cabin picnic · Chapa lower berth, Hanoi Station 120 Lê Duẩn (VIP Lounge 2F, Gate 2B — NOT Trần Quý Cáp) gate, ~22:00 |
 | Thu 1 | Sapa | Arr Lào Cai 05:30–06:25 + van 1h · **Fansipan if clear** (850k wkday/900k Sat! + funiculars) else Cát Cát (150k cash) + photo parks |
 | Fri 2 | Sapa | **Lao Chai–Tả Van trek** w/ Hmong guide (group 500–750k incl lunch+van; private 520–730k) · Red Dao bath 150–350k |
-| Sat 3 | Sapa | O Quy Hồ taxi loop 500–700k: Silver Waterfall 20k · Heaven's Gate · **Rồng Mây glass bridge 500k** · PM catch-up slot |
+| Sat 3 | Sapa | O Quy Hồ loop 500–700k: Silver Waterfall · Heaven's Gate · **Rồng Mây MAXED (500k + all add-on rides)** · PM = open menu by design (massage #2 / slide re-runs / Hầu Thào wander) |
 | Sun 4 | Hanoi | Lazy AM · **14:30–15:00 limousine van** (Eco Sapa/Sapa Express $24–26, 5.5–6h, hotel pickup) · OQ ~20:30, shower, real bed |
-| Mon 5 | Hanoi | Long Biên sunrise · Hỏa Lò ~50k · phở cuốn Ngũ Xã · silk/gifts · **MDAC #2** · chả cá farewell |
+| Mon 5 | Hanoi | Long Biên sunrise · fully liquid (museums banked Wed) · phở cuốn Ngũ Xã · **gift list: coffee kit + Hàng Gai silk + Hmong indigo** · MDAC #2 · chả cá → egg coffee 2 → lake lap → pack 23:00 (quiet close, audible) |
 | Tue 6 | — | Phở · Grab 09:45 (~300k, 45–60min) · MH753 13:05 → KUL 17:30 → Mitsui |
 
 ## Key logistics facts (verified)
@@ -48,5 +48,5 @@ Today: e-visa + Sapa hotel → this week: MH752 + MH753 + Hanoi hotel → by 10 
 ## Budget (VN leg, mid-range)
 Flights pair $180–280 · beds 8 nts $260–420 · transport+tours $150–190 · food/fun $25–40/day → **≈$750–1,050 all-in**.
 
-## Sync-later note (do NOT touch yet — user said research only)
-Y2 dc app + KL Playbook artifact still carry stale MH753 13:19→16:40 and "AK512 12:10". Update both when we do the VN build on Y2.
+## Sync status (4 Sep)
+Y2 app fully synced (interview locks, 60 map pins, verified photos) + deployed. Playbook artifacts synced on majors.

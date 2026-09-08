@@ -209,3 +209,22 @@ I twice cited a possible post-National-Day backlog as a reason for delay. **That
 **Domain correction:** `evisa.xuatnhapcanh.gov.vn` is the **old** portal (moved 11/11/2024 to `evisa.gov.vn` / `thithucdientu.gov.vn`), but its `/lien-he` support form still resolves and is live, with a *"Wrong application information"* problem type.
 
 **Remaining gap:** TripAdvisor and FlyerTalk stayed hard-blocked. Four threads are the highest-value unread targets if ever needed — TripAdvisor `k14468085` ("Apply for a visa twice?"), `k13929602` ("Multiple E-Visas"), `k12088640`, and FlyerTalk's *Visa/VOA Info for Vietnam* p.99.
+
+### 4b. NIGHT TRAIN — TICKETED. E-voucher 260907021 (Chapa Express, 7 Sep)
+
+**Confirmed and issued.** Name on the voucher: **Yahya Abdelmonem Yahia Elghobashy** ✓ · SP7 · HA NOI → LAO CAI (SAPA) · **dep 22:40 Wed 30 Sep → arr 06:25 Thu 1 Oct** · **Platform 7** · Deluxe Berth ×1 · booked via 12Go, operated by Chapa Express Train.
+
+⚠️ **BOARDING POINT CORRECTED — it is NOT Trần Quý Cáp.** Every earlier version of this plan (and the Y2 day card) said the Trần Quý Cáp back gate. The e-voucher says otherwise, verbatim:
+> *"please arrive at the **VIP Lounge on the 2nd floor, next to Gate 2B of Hanoi Station (120 Le Duan Street)**, at least **45 minutes** prior to your scheduled departure time. Our representatives will be there to warmly welcome you and assist with the boarding process."*
+
+So: **main station, 120 Lê Duẩn, VIP Lounge 2F by Gate 2B, by 21:55.** ~10 min Grab from Eliana Premio (108 Hàng Bông) — leave ~21:15 for traffic. Chapa staff exchange the voucher for the physical ticket there. All map pins and timeline cards updated.
+
+**LOWER-BERTH CHANNEL IS NOW LIVE** — the voucher publishes working contacts even though chapaexpresstrain.com was offline: **WhatsApp +84 856 671 990 / +84 916 861 836**, plus booking@chapaexpresstrain.com and res@chapaexpresstrain.com. Quote **260907021** + passport A44878831, request a LOWER berth on physio grounds. The voucher assigns class only ("Deluxe Berth x 1"), no berth position — so it is still open.
+
+**Luggage rule (from the voucher):** one suitcase **max 28"** stored under the berth, plus one small backpack or handbag. The 60L goes under the berth.
+
+**Print it.** The voucher contradicts itself — one line says "no need to print it, simply save it on your phone", another says "This is your e-ticket. Please print it and show at check-in." Print it and keep a phone copy.
+
+**Noise advisory, non-refundable:** Chapa states the 100-year-old railway generates noise despite soundproofing, and that this is not grounds for a refund. Earplugs are on the buy list — this is the specific reason.
+
+**Cancellation (unchanged, already inside the penalty window):** >35 days 35% · 21–34 days 70% · ≤20 days 100% · no-show 100%.
