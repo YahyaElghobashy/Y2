@@ -299,3 +299,21 @@ They offer tours, private cars, visa and ticket services. Assessment:
 - ⚠️ **"Taking a rest and shower before the trip departure in case we have room available"** — they publish this as a perk *for guests who book their tours*. It is effectively the late-checkout ask. Better to request it plainly and offer to pay than to buy a tour to unlock it.
 
 **Security rule regardless:** pay at the desk, in person. Never prepay by transfer or a link sent over chat — Booking.com property-chat impersonation is a real pattern. Their own message warns against payment links, which is a good sign, but the rule stands. Verify any WhatsApp number against the one published in the Booking.com thread (**+84 793369789**; office landline **+84 24 3568 6333**).
+
+### 0d. BOTANIC SAPA — direct from the property, 7 Sep. Three things change.
+
+Their automatic confirmation email, verbatim highlights:
+
+**1. ✅ HEATER CONFIRMED — settles the open question.** *"All the rooms have window, balcony, A/C - heater."* Every earlier pass could only infer this (Booking-family listings flagged "heating", Expedia-family didn't, the Vietnamese listing said plain `điều hòa`). **The property states it directly.** Per the climate work, heat mode IS the dehumidifier in a month running 90.8% humidity with 3h sun/day — so this is the single most valuable amenity in the booking, now confirmed rather than hoped for.
+
+**2. ⚠️ THE BOOKED ROOM HAS ALMOST NO VIEW — and there is an upgrade.** Verbatim:
+> *"If you book the **Superior** (twin/double) room, there is just **very little mountain view because of the rooftop from the neighbor**... If you book the **Deluxe** (twin/double) room, it is higher so the **view is more beautiful**."*
+
+He holds the **Superior Double**. This confirms the earlier "city view, not valley view" finding from the property's own mouth, and hands over the fix: **ask to upgrade to Deluxe.** Highest-value action on this booking.
+
+**3. ⚠️ 40m OF STAIRS DOWN FROM THE ROAD — new, and it matters for the back.** Verbatim: *"Our location is NOT at the main road. Need to go down stairs ~40m from Cau May street to us."* Down on arrival, **UP on departure with the 60L**. No lift was already known; a 40m stairway off the main road was not. Raise it with them — it is a 4-room homestay run by the owners, so help carrying is a reasonable ask.
+
+Also: **only 4 rooms** (a homestay, not a hotel — which explains the 290-review base), **no meals**, check-in 13:00 / check-out 11:00, and **they have a cat**. Contacts: **Van +84 912666746**, **Minh Nghia +84 912480433** (WhatsApp/Zalo). They ask for arrival time and will send a map link — he lands Lào Cai 06:25, so Sapa ~07:15, and **they open at 07:00**.
+
+### 0e. CLASSIC STREET — Ms. Kathy made contact, 7 Sep
+Airport transfer offered at $18–30/way and tours via "Asia Travel". **Decline both** — he arrives 4 Oct by road from Sapa, not by air, and every tour is already booked. She asked for his arrival time, which is the opening to settle **the two genuinely open items on this booking**: (a) **which building and floor the room is on, and whether that building's lift serves it** — the property is multiple joined buildings and only one has a lift; (b) **where the Sapa van can legally stop** given Hàng Bè sits inside the Hoàn Kiếm weekend pedestrian zone (cars barred 19:00–24:00 Fri–Sun) and he arrives ~19:30 Sunday with the 60L. Contact: **Ms. Kathy, WhatsApp/hotline +84 38 522 9035**, classicstreethotelhanoi@gmail.com. Trades as **Classic Street Hotel & Spa**.
