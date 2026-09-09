@@ -228,3 +228,49 @@ So: **main station, 120 Lê Duẩn, VIP Lounge 2F by Gate 2B, by 21:55.** ~10 mi
 **Noise advisory, non-refundable:** Chapa states the 100-year-old railway generates noise despite soundproofing, and that this is not grounds for a refund. Earplugs are on the buy list — this is the specific reason.
 
 **Cancellation (unchanged, already inside the penalty window):** >35 days 35% · 21–34 days 70% · ≤20 days 100% · no-show 100%.
+
+## 13. WED 30 SEP — PANEL DAY. Rebuilt 7 Sep.
+
+**Yahya is HOSTING a panel, 16:30–17:15 Hanoi = 12:30–13:15 Cairo** (GMT+7 vs GMT+3 — Egypt is on summer time until late Oct, so the gap is **4 hours**, not 5). Buffers: 30 min before, 15 min after. **He is hosting FROM HIS PHONE — no laptop on this trip.**
+
+### ⚠️ ACTION REQUIRED — the room
+He checks out of Eliana Premio the morning of the 30th and boards the night train that evening, so **as planned he has no room at panel time**. Fix before the day:
+- **Contact:** Eliana Premio Hotel Hanoi · **+84 389 611 369** (WhatsApp works) · via the Booking.com message thread on conf **6873.336.623** · reception is 24h.
+- **Ask for:** late checkout / day-use of the room **until 18:00**. Typical Vietnamese half-day charge ≈ **$25–35**. **Better option: just book the night of 30 Sep outright (~$58)** — no negotiation, no risk of refusal, and the room stays yours until he leaves for the station at 21:15, which also covers the post-dinner bag collection and a second shower.
+- Do it by email/WhatsApp **now**, not on the day.
+
+### Rebuilt timeline (supersedes the old afternoon)
+| Hanoi | Cairo | Block |
+|---|---|---|
+| 07:00 | 03:00 | Checkout on paper — **room held** |
+| 07:30 | 03:30 | Phở Gia Truyền, 49 Bát Đàn |
+| 08:30 | 04:30 | Old Quarter deep walk → ends 10:30 |
+| 10:45 | 06:45 | Grab → Trấn Quốc · **grab a bánh mì en route** |
+| 11:00 | 07:00 | **Trấn Quốc + West Lake** (75 min — more than the old plan gave it) · back 12:30 |
+| 12:45 | 08:45 | Eliana — eat light in the room, shower, change |
+| **13:30** | **09:30** | **LIE DOWN. 90 min horizontal.** His call and the right one — back in physio, hosting, then an overnight train |
+| 15:00 | 11:00 | Rig the phone (see below) |
+| 16:00 | 12:00 | Quiet · final run-through |
+| **16:30–17:15** | **12:30–13:15** | **★ PANEL** |
+| 17:30 | 13:30 | Repack + picnic run + coffee |
+| 18:30 | 14:30 | Water puppets, Thăng Long |
+| 19:45 | 15:45 | Bún chả, Đắc Kim (1 Hàng Mành) |
+| **20:45** | **16:45** | **BACK TO ELIANA — collect the bags** ⚠️ *the step the old plan was missing; Đắc Kim is ~200m from the hotel, so it is a 3-min walk, not a detour* |
+| 21:15 | 17:15 | Grab → Hanoi Station, 120 Lê Duẩn |
+| 21:55 | 17:55 | Chapa VIP Lounge, 2F Gate 2B → SP7, Platform 7 |
+| 22:40 | 18:40 | Depart → Lào Cai 06:25 |
+
+### Changes and why
+- **Sit-down lunch CANCELLED** — his call. A bánh mì eaten in the room replaces it, and the time buys the 90-minute lie-down. Bún chả at 19:45 remains the real meal.
+- **Hỏa Lò Prison CUT.** Matches his own interview ruling: *"if the day runs behind, THIS block dies gracefully."* Trấn Quốc survives and gains time.
+- **Rest moved BEFORE the panel**, not after — explicitly requested, and correct given the physio back and the overnight train.
+- **Evening untouched:** puppets, dinner, station, train all unchanged.
+- Slack: back at the hotel by 12:30 for a 16:30 panel = **4 hours**. Nothing breaks if West Lake overruns.
+
+### Phone-hosting kit (no laptop)
+- **LANDSCAPE, propped at eye level** on books or the suitcase. Handheld looks amateur and the arm shakes over 45 min.
+- **Wired earbuds, not Bluetooth** — lower latency, no pairing drop, no battery drain.
+- **Face the window. Never sit with it behind you** or he is a silhouette.
+- **Test BOTH hotel wifi and the Viettel hotspot before 16:00**, pick the winner, leave the other live. Eliana's wifi sub-score is its weakest; Viettel's 5GB/day easily covers a 45-min video call (~0.5–1GB).
+- Plugged in, **power bank beside him**, Do Not Disturb ON, Egyptian SIM data-roaming still OFF.
+- **Confirm the time zone with the organisers in writing** — a 4-hour gap is exactly what a mis-set calendar invite mangles.
