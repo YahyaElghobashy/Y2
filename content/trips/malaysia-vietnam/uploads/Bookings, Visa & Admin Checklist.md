@@ -274,3 +274,28 @@ He checks out of Eliana Premio the morning of the 30th and boards the night trai
 - **Test BOTH hotel wifi and the Viettel hotspot before 16:00**, pick the winner, leave the other live. Eliana's wifi sub-score is its weakest; Viettel's 5GB/day easily covers a 45-min video call (~0.5–1GB).
 - Plugged in, **power bank beside him**, Do Not Disturb ON, Egyptian SIM data-roaming still OFF.
 - **Confirm the time zone with the organisers in writing** — a 4-hour gap is exactly what a mis-set calendar invite mangles.
+
+### 0b. ⚠️ ELIANA — PAY IN CASH. 12% card surcharge, and part of it is a double-charge.
+
+Direct from the hotel's Booking.com message (7 Sep):
+> *"THE REMAINING BALANCE WILL BE SETTLED IN CASH (VND, USD, Euro, Pound ...) UPON CHECK-IN. IN CASE OF PAYMENT BY CREDIT CARD, AN ADDITIONAL 4% TRANSACTION FEE AND 8% GOVERNMENT TAX WILL BE APPLIED. Total: 12%"*
+
+**On VND 3,030,272 that is VND 363,633 ≈ US$14 ≈ EGP 712 for tapping a card.**
+
+**The 8% is already paid.** The Booking.com confirmation itemises the total as *room EGP 5,482 + 8% VAT EGP 438 = EGP 5,920* — VAT is inside the agreed price. Charging it again at the desk is a double-charge, and Booking's own confirmation states *"The final price shown is the amount you'll pay to the property."* The 4% card fee is common in Vietnam; the extra 8% is not defensible.
+
+**ACTION: bring VND cash.** ~3,050,000₫. Pull it fee-free from a **VPBank ATM** (no fee, 10M₫ per withdrawal) at Noi Bai or in the Old Quarter on arrival day. This is now a concrete reason the cash plan matters, not a general precaution. If they press the card route anyway, point at the Booking confirmation line and pay the 4% at most.
+
+Same rule for **Classic Street** (4–6 Oct, VND 2,592,000) — assume a surcharge until proven otherwise and carry cash for both. Combined that is ~**5,650,000₫ ≈ US$217**, comfortably inside one VPBank withdrawal.
+
+### 0c. Eliana's direct-sales message — what to take and what to decline
+They offer tours, private cars, visa and ticket services. Assessment:
+- **Water puppets — TAKE IT.** They offer to buy tickets in advance to skip the queue. The plan already needs tickets bought on Mon 28 for the Wed 30 18:30 show; letting the hotel do it removes an errand from a day that now also has a hosted panel in it.
+- **Airport pickup $18/way — DECLINE.** Already holding a **free** Booking.com Taxis transfer with flight tracking, ref 172408798.
+- **Ninh Bình tour — DECLINE.** Already booked and paid: Klook 25784, US$48.15, small group, English guide, lunch, free cancellation, 4.8 from 2,175 reviews. Their "$40–98" is an unknown operator with no visible review base, and switching forfeits the Klook cancellation.
+- **Sapa 2–3 days from $79 — DECLINE.** Train, hotel and trek already arranged independently.
+- **Free luggage storage — not needed.** The 60L travels to Sapa.
+- **Free Hanoi walking tour — optional.** The Wed-30 Old Quarter arc is self-guided by design; only worth it if the schedule loosens.
+- ⚠️ **"Taking a rest and shower before the trip departure in case we have room available"** — they publish this as a perk *for guests who book their tours*. It is effectively the late-checkout ask. Better to request it plainly and offer to pay than to buy a tour to unlock it.
+
+**Security rule regardless:** pay at the desk, in person. Never prepay by transfer or a link sent over chat — Booking.com property-chat impersonation is a real pattern. Their own message warns against payment links, which is a good sign, but the rule stands. Verify any WhatsApp number against the one published in the Booking.com thread (**+84 793369789**; office landline **+84 24 3568 6333**).
